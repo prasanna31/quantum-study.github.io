@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Grover's Search and Amplitude Amplification</title>
+    <style>
+        :root {
+            --primary: #244a7c;
+            --secondary: #3478b9;
+            --accent: #e8f2ff;
+            --text: #263238;
+            --muted: #596773;
+            --border: #d7e0e8;
+            --background: #ffffff;
+            --code: #f2f5f8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f2f5f9;
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        .page {
+            max-width: 960px;
+            margin: 32px auto;
+            padding: 54px 68px;
+            background: var(--background);
+            box-shadow: 0 4px 24px rgba(30, 50, 70, 0.08);
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary);
+            line-height: 1.35;
+        }
+
+        h1 {
+            font-size: 2.35rem;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin-top: 52px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 34px;
+        }
+
+        h4 {
+            font-size: 1.05rem;
+        }
+
+        p {
+            margin: 15px 0;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--muted);
+        }
+
+        .chapter-label {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+            font-family: Arial, sans-serif;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .callout {
+            background: var(--accent);
+            border-left: 4px solid var(--secondary);
+            padding: 17px 22px;
+            margin: 24px 0;
+        }
+
+        .note {
+            background: #f5f6f7;
+            border-left: 4px solid #8795a3;
+            padding: 15px 20px;
+            margin: 22px 0;
+        }
+
+        .warning {
+            background: #fff7e7;
+            border-left: 4px solid #c58a20;
+            padding: 15px 20px;
+            margin: 22px 0;
+        }
+
+        .equation {
+            background: var(--code);
+            padding: 17px;
+            margin: 22px 0;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 1rem;
+            line-height: 1.9;
+            overflow-x: auto;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+            background: var(--code);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        pre {
+            background: #f2f5f8;
+            border: 1px solid var(--border);
+            padding: 18px;
+            overflow-x: auto;
+            line-height: 1.65;
+            font-size: 0.9rem;
+        }
+
+        .contents {
+            background: #f7f9fc;
+            padding: 22px 28px;
+            border: 1px solid var(--border);
+            margin: 32px 0;
+        }
+
+        .contents a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .contents a:hover {
+            text-decoration: underline;
+        }
+
+        .diagram {
+            margin: 25px 0;
+            padding: 20px;
+            border: 1px solid var(--border);
+            background: #fbfcfe;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .step {
+            display: inline-block;
+            padding: 12px 15px;
+            margin: 5px;
+            background: var(--accent);
+            border: 1px solid #b8cfe8;
+            border-radius: 5px;
+            min-width: 120px;
+        }
+
+        .arrow {
+            display: inline-block;
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.3rem;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 700px) {
+            .page {
+                margin: 0;
+                padding: 28px 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.45rem;
+            }
+
+            body {
+                font-size: 16px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page {
+                box-shadow: none;
+                margin: 0;
+                max-width: none;
+            }
+
+            a {
+                color: inherit;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="page">
+
+    <header>
+        <div class="chapter-label">Quantum Computing · Chapter 8</div>
+        <h1>Grover's Search and Amplitude Amplification</h1>
+        <p class="subtitle">
+            How a quantum computer uses interference to find a desired answer
+            with far fewer search steps than a classical computer.
+        </p>
+        <p>
+            In the previous chapters, we explored how quantum states, quantum
+            gates, interference, and measurement work together to perform
+            computations. We also studied quantum algorithms that solve
+            problems by extracting hidden mathematical structure.
+        </p>
+        <p>
+            Grover's algorithm takes a different approach. It is useful when
+            we have many possible answers but do not know where the correct
+            answer is located. Rather than examining every possibility one
+            after another, it uses quantum interference to increase the
+            probability of observing a correct answer.
+        </p>
+    </header>
+
+    <nav class="contents">
+        <h3>Chapter contents</h3>
+        <ol>
+            <li><a href="#intro">The central idea</a></li>
+            <li><a href="#search">8.1 Unstructured search</a></li>
+            <li><a href="#oracle">8.2 Oracle construction</a></li>
+            <li><a href="#diffusion">8.3 Grover diffusion operator and geometric interpretation</a></li>
+            <li><a href="#amplification">8.4 Amplitude amplification and estimation</a></li>
+            <li><a href="#counting">8.5 Quantum counting</a></li>
+            <li><a href="#applications">8.6 Applications and limitations</a></li>
+            <li><a href="#summary">Chapter summary</a></li>
+        </ol>
+    </nav>
+
+    <section id="intro">
+        <h2>The central idea: make the right answers more likely</h2>
+
+        <p>
+            Imagine that a teacher has placed one prize inside one of 1,000
+            identical boxes. You know that exactly one box contains the prize,
+            but you have no clue which one it is.
+        </p>
+
+        <p>
+            A classical computer can open the boxes one by one. In the worst
+            case, it may need to examine all 1,000 boxes. If the prize is
+            equally likely to be in any box, a search in random order finds it
+            after about 500 examinations on average.
+        </p>
+
+        <p>
+            A quantum computer cannot simply look inside every box and then
+            read all the answers at once. That common description of quantum
+            computing is misleading. A quantum computer can prepare a
+            superposition of possible answers, but measurement still gives
+            only one outcome at a time.
+        </p>
+
+        <p>
+            The important advantage is that the computer can manipulate the
+            probability amplitudes of those possibilities before measurement.
+            Grover's algorithm repeatedly changes these amplitudes so that
+            correct answers become more likely to appear.
+        </p>
+
+        <div class="callout">
+            <strong>The key idea:</strong> Quantum search does not make every
+            answer directly visible. It uses a sequence of carefully chosen
+            operations to increase the probability of measuring a correct
+            answer.
+        </div>
+
+        <h3>What is an amplitude?</h3>
+
+        <p>
+            A quantum state associates an amplitude with each possible
+            measurement outcome. An amplitude is a mathematical quantity that
+            can be positive, negative, or complex. Its squared magnitude gives
+            the probability of obtaining that outcome when measured.
+        </p>
+
+        <p>
+            For an outcome with amplitude a, its probability is
+        </p>
+
+        <div class="equation">
+            Probability = |a|²
+        </div>
+
+        <p>
+            For example, an amplitude of 1/2 gives a probability of 1/4.
+            An amplitude of 1/√2 gives a probability of 1/2.
+            The probabilities of all possible outcomes must add up to one.
+        </p>
+
+        <p>
+            Amplitudes also have signs and phases. Two amplitudes can reinforce
+            each other or cancel each other through interference. This is the
+            feature that Grover's algorithm exploits.
+        </p>
+
+        <h3>The algorithm in one picture</h3>
+
+        <div class="diagram">
+            <div class="step">Prepare equal superposition</div>
+            <span class="arrow">→</span>
+            <div class="step">Mark correct answers</div>
+            <span class="arrow">→</span>
+            <div class="step">Amplify their amplitudes</div>
+            <span class="arrow">→</span>
+            <div class="step">Measure</div>
+        </div>
+
+        <p>
+            The marking step is called the <strong>oracle</strong>, and the
+            amplitude-amplifying step is called the
+            <strong>diffusion operation</strong>. Together, these operations
+            form the main engine of Grover's algorithm.
+        </p>
+    </section>
+
+    <section id="search">
+        <h2>8.1 Unstructured search</h2>
+
+        <h3>What makes a search problem unstructured?</h3>
+
+        <p>
+            A search problem is called unstructured when the possible
+            candidates have no known pattern that helps us identify the
+            correct answer. The candidates could be numbered records,
+            combinations, or entries in a table. Knowing a candidate's
+            position does not tell us whether it is correct.
+        </p>
+
+        <p>
+            Suppose there are N possible candidates and a function f tells
+            us whether a candidate is a solution. For a candidate x, define
+        </p>
+
+        <div class="equation">
+            f(x) = 1, if x is a valid solution<br>
+            f(x) = 0, otherwise
+        </div>
+
+        <p>
+            Our task is to find an x for which f(x) = 1. We assume that
+            checking a candidate is possible, but that we do not already know
+            the answer or a useful structure that reveals it.
+        </p>
+
+        <h3>Classical search versus quantum search</h3>
+
+        <p>
+            A classical algorithm checks candidates individually. If exactly
+            one candidate is correct and its location is equally likely to be
+            anywhere, a random-order search needs approximately N/2 checks on
+            average and at most N checks in the worst case.
+        </p>
+
+        <p>
+            Grover's algorithm can find a marked candidate using a number of
+            oracle queries proportional to the square root of N, assuming
+            the oracle and other operations are implemented appropriately.
+        </p>
+
+        <div class="equation">
+            Classical worst-case query complexity: O(N)<br>
+            Grover quantum query complexity: O(√N)
+        </div>
+
+        <p>
+            The notation O(N) describes how the amount of work grows as N
+            increases. The notation O(√N) means that the number of oracle
+            queries grows roughly with the square root of the number of
+            candidates.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Number of candidates (N)</th>
+                    <th>Classical worst-case checks</th>
+                    <th>Grover queries, approximately</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>100</td>
+                    <td>100</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td>10,000</td>
+                    <td>10,000</td>
+                    <td>79</td>
+                </tr>
+                <tr>
+                    <td>1,000,000</td>
+                    <td>1,000,000</td>
+                    <td>785</td>
+                </tr>
+                <tr>
+                    <td>1,000,000,000,000</td>
+                    <td>1,000,000,000,000</td>
+                    <td>785,398</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="small">
+            The quantum column uses the approximate optimal iteration count
+            for a single marked item, rounded to the nearest whole number.
+            It counts Grover iterations, not all physical quantum gates or
+            the cost of implementing the oracle. The classical column shows
+            worst-case checks, not average checks.
+        </p>
+
+        <h3>Why is the improvement called a quadratic speedup?</h3>
+
+        <p>
+            Consider a million candidates. The square root of one million is
+            one thousand. So the quantum query count is on the order of a
+            thousand rather than a million.
+        </p>
+
+        <p>
+            This is a substantial improvement, but it is important to
+            describe it correctly. Grover's algorithm gives a
+            <strong>quadratic speedup</strong>, not an exponential speedup.
+            If the number of candidates doubles, the square root does not
+            double. However, if the number of candidates increases from
+            one million to one trillion, the square root increases from
+            one thousand to one million.
+        </p>
+
+        <h3>Representing the candidates with qubits</h3>
+
+        <p>
+            A system of n qubits has 2ⁿ computational basis states. This
+            allows us to represent N = 2ⁿ candidates using n qubits when
+            N is a power of two.
+        </p>
+
+        <p>
+            For example, two qubits represent four basis states:
+        </p>
+
+        <div class="equation">
+            |00⟩, |01⟩, |10⟩, |11⟩
+        </div>
+
+        <p>
+            Three qubits represent eight basis states, and ten qubits
+            represent 1,024 basis states. More generally, n qubits can
+            represent 2ⁿ basis states in a superposition.
+        </p>
+
+        <p>
+            To begin Grover's algorithm, we apply a Hadamard gate to every
+            qubit, starting from the state |0⟩ on each qubit. The Hadamard
+            gate creates an equal superposition of zero and one.
+        </p>
+
+        <p>
+            After applying Hadamard gates to all n qubits, the state becomes
+        </p>
+
+        <div class="equation">
+            |s⟩ = (1/√N) Σₓ |x⟩
+        </div>
+
+        <p>
+            Here, the sum runs over every candidate x. Each candidate has
+            the same initial amplitude, 1/√N, and therefore the same initial
+            probability, 1/N.
+        </p>
+
+        <p>
+            For four candidates, the state is
+        </p>
+
+        <div class="equation">
+            |s⟩ = ½(|00⟩ + |01⟩ + |10⟩ + |11⟩)
+        </div>
+
+        <p>
+            Measuring this state immediately would give each candidate with
+            probability 1/4. We have not yet learnt which candidate is
+            correct. The next steps change this probability distribution.
+        </p>
+    </section>
+
+    <section id="oracle">
+        <h2>8.2 Oracle construction</h2>
+
+        <h3>What is a quantum oracle?</h3>
+
+        <p>
+            An oracle is an operation that tells the algorithm which
+            candidates satisfy a chosen condition. It is often treated as a
+            black box: we know what it does, but the cost of implementing it
+            may depend on the problem.
+        </p>
+
+        <p>
+            In ordinary search, we might evaluate f(x) and receive zero or
+            one. In Grover's algorithm, we usually use a phase oracle.
+            Rather than writing the answer directly into a visible output
+            bit, this oracle changes the sign of the amplitude associated
+            with every marked state.
+        </p>
+
+        <div class="equation">
+            U_f|x⟩ = (-1)ᶠ⁽ˣ⁾|x⟩
+        </div>
+
+        <p>
+            This compact expression describes the phase oracle. If f(x) = 0,
+            the multiplier is +1, so the state remains unchanged. If f(x) = 1,
+            the multiplier is -1, so the amplitude changes sign.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Candidate status</th>
+                    <th>Oracle action</th>
+                    <th>Amplitude after marking</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Not a solution</td>
+                    <td>Leave unchanged</td>
+                    <td>+a</td>
+                </tr>
+                <tr>
+                    <td>Valid solution</td>
+                    <td>Reverse the sign</td>
+                    <td>−a</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            Notice that changing an amplitude's sign does not change its
+            squared magnitude. Therefore, the oracle alone does not increase
+            the probability of measuring the marked state. Its role is to
+            prepare a phase difference that the diffusion operation can
+            turn into a probability difference.
+        </p>
+
+        <div class="callout">
+            The oracle marks the answer through its phase. The diffusion
+            operation then uses interference to make the marked answer more
+            likely to be measured.
+        </div>
+
+        <h3>Building an oracle with a reversible circuit</h3>
+
+        <p>
+            Classical functions can produce outputs and may overwrite
+            intermediate values. Quantum gates, however, must be reversible:
+            distinct input states cannot be mapped to the same output state.
+            Consequently, a practical quantum oracle is often built using
+            reversible logic and additional qubits.
+        </p>
+
+        <p>
+            A common construction uses an auxiliary target qubit. A reversible
+            circuit computes the function value into that target:
+        </p>
+
+        <div class="equation">
+            U_f|x,y⟩ = |x, y ⊕ f(x)⟩
+        </div>
+
+        <p>
+            The symbol ⊕ means XOR. The candidate x is preserved, while the
+            target bit y is flipped if f(x) equals one.
+        </p>
+
+        <p>
+            If the target qubit is prepared in the state
+            (|0⟩ − |1⟩)/√2, flipping it changes the sign of that state.
+            This is called phase kickback. As a result, the reversible
+            computation can produce the phase-oracle action on the candidate
+            register.
+        </p>
+
+        <p>
+            This is a useful bridge between ordinary computation and quantum
+            computation: a classical condition can be implemented as a
+            reversible circuit, and the output of that circuit can influence
+            the phases of quantum states.
+        </p>
+
+        <h3>A simple example with four candidates</h3>
+
+        <p>
+            Suppose the candidates are |00⟩, |01⟩, |10⟩ and |11⟩, and the
+            correct answer is |10⟩. The initial state is
+        </p>
+
+        <div class="equation">
+            |s⟩ = ½(|00⟩ + |01⟩ + |10⟩ + |11⟩)
+        </div>
+
+        <p>
+            After the oracle marks |10⟩, the state becomes
+        </p>
+
+        <div class="equation">
+            U_f|s⟩ = ½(|00⟩ + |01⟩ − |10⟩ + |11⟩)
+        </div>
+
+        <p>
+            The magnitude of every amplitude is still 1/2. The marked
+            candidate has not become more likely yet. Only its sign has
+            changed.
+        </p>
+
+        <p>
+            The next operation uses this sign difference to increase the
+            amplitude of |10⟩. This is the purpose of Grover diffusion.
+        </p>
+
+        <h3>Why the oracle is not free in a real application</h3>
+
+        <p>
+            The theoretical analysis often counts oracle queries rather than
+            individual gates. This is useful because it lets us compare
+            search algorithms independently of the details of a particular
+            problem.
+        </p>
+
+        <p>
+            In a real implementation, however, the oracle may require a
+            substantial circuit. If checking a candidate involves a large
+            database, a complicated simulation, or a lengthy computation,
+            implementing the oracle may be expensive. The total runtime must
+            include this cost, along with state preparation, error correction,
+            and measurement.
+        </p>
+    </section>
+
+    <section id="diffusion">
+        <h2>8.3 Grover diffusion operator and geometric interpretation</h2>
+
+        <h3>The idea of inversion about the mean</h3>
+
+        <p>
+            The diffusion operator is often described as
+            <strong>inversion about the mean</strong>. This sounds abstract,
+            but it can be understood using ordinary numbers.
+        </p>
+
+        <p>
+            Suppose the amplitudes of four candidates are
+        </p>
+
+        <div class="equation">
+            a₁ = 0.5, a₂ = 0.5, a₃ = −0.5, a₄ = 0.5
+        </div>
+
+        <p>
+            Their average is
+        </p>
+
+        <div class="equation">
+            ā = (0.5 + 0.5 − 0.5 + 0.5)/4 = 0.25
+        </div>
+
+        <p>
+            Inversion about the mean replaces each amplitude aᵢ with
+        </p>
+
+        <div class="equation">
+            aᵢ′ = 2ā − aᵢ
+        </div>
+
+        <p>
+            Applying this rule gives
+        </p>
+
+        <div class="equation">
+            a₁′ = 0, &nbsp; a₂′ = 0,<br>
+            a₃′ = 1, &nbsp; a₄′ = 0
+        </div>
+
+        <p>
+            The marked candidate now has amplitude 1, so its probability
+            is 1. The other candidates have amplitude zero.
+        </p>
+
+        <p>
+            This small example is ideal for learning the principle: the
+            negative amplitude moves above the mean when reflected across
+            it, while the positive amplitudes in this particular example
+            move down to zero.
+        </p>
+
+        <p>
+            The diffusion operator does not generally make every unmarked
+            amplitude zero in one step. The example works exactly because
+            there are four equally weighted candidates and one marked item.
+        </p>
+
+        <h3>The mathematical form of the diffusion operator</h3>
+
+        <p>
+            The diffusion operator is defined as
+        </p>
+
+        <div class="equation">
+            D = 2|s⟩⟨s| − I
+        </div>
+
+        <p>
+            Here, |s⟩ is the equal-superposition state, ⟨s| is its conjugate
+            transpose, and I is the identity operator. The term |s⟩⟨s|
+            represents projection onto the direction of the initial
+            superposition.
+        </p>
+
+        <p>
+            The operator reflects a state about the direction |s⟩. When it
+            acts on a state whose amplitudes are real, this reflection has
+            the effect of inversion about their mean.
+        </p>
+
+        <p>
+            For N candidates, the matrix form of the diffusion operator is
+        </p>
+
+        <div class="equation">
+            D = (2/N)J − I
+        </div>
+
+        <p>
+            In this expression, J is the N-by-N matrix whose entries are
+            all one. The operator can be implemented using Hadamard gates,
+            a phase operation that distinguishes the all-zero state, and
+            another layer of Hadamard gates.
+        </p>
+
+        <div class="equation">
+            D = H⊗ⁿ (2|0ⁿ⟩⟨0ⁿ| − I) H⊗ⁿ
+        </div>
+
+        <p>
+            This expression uses a particular convention for the phase
+            operation. Implementations may differ by an overall global
+            phase, which has no effect on measurement probabilities.
+        </p>
+
+        <h3>Understanding Grover's algorithm geometrically</h3>
+
+        <p>
+            The amplitude calculations become much easier to understand when
+            we look at the state as a vector. For the moment, assume that
+            there are M marked solutions among N candidates.
+        </p>
+
+        <p>
+            We can group the marked states into one normalised direction,
+            called |G⟩, and all unmarked states into another normalised
+            direction, called |B⟩. The letters stand for good and bad.
+            These two directions are perpendicular.
+        </p>
+
+        <p>
+            The initial equal-superposition state can then be written as
+        </p>
+
+        <div class="equation">
+            |s⟩ = sin(θ)|G⟩ + cos(θ)|B⟩
+        </div>
+
+        <p>
+            The angle θ is defined by
+        </p>
+
+        <div class="equation">
+            sin²(θ) = M/N<br>
+            θ = arcsin(√(M/N))
+        </div>
+
+        <p>
+            The squared coefficient of |G⟩ is M/N, which is exactly the
+            initial probability of measuring a marked candidate. The
+            coefficient of |B⟩ accounts for the remaining probability.
+        </p>
+
+        <p>
+            The oracle reverses the sign of the good component. The
+            diffusion operator then reflects the resulting vector about
+            the original direction |s⟩. Together, the two reflections
+            produce a rotation towards the good direction.
+        </p>
+
+        <div class="diagram">
+            <p><strong>Geometric picture</strong></p>
+            <p>
+                Initial state |s⟩
+                <br>↓
+                <br>Oracle reflection across the unmarked direction
+                <br>↓
+                <br>Diffusion reflection about the initial state
+                <br>↓
+                <br>New state rotated towards |G⟩
+            </p>
+            <p class="small">
+                The two reflections combine into a rotation in the plane
+                spanned by |G⟩ and |B⟩.
+            </p>
+        </div>
+
+        <p>
+            Each complete Grover iteration rotates the state by an angle
+            of 2θ towards the marked direction. After k iterations, the
+            state is
+        </p>
+
+        <div class="equation">
+            |ψₖ⟩ = sin((2k + 1)θ)|G⟩<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+
+            cos((2k + 1)θ)|B⟩
+        </div>
+
+        <p>
+            Therefore, the probability of measuring a marked solution is
+        </p>
+
+        <div class="equation">
+            P(success) = sin²((2k + 1)θ)
+        </div>
+
+        <p>
+            This formula explains why Grover's algorithm works. Repeated
+            iterations increase the angle towards the good direction,
+            increasing the probability of measuring a correct answer.
+        </p>
+
+        <h3>How many iterations should we perform?</h3>
+
+        <p>
+            We want the angle (2k + 1)θ to be as close as possible to
+            π/2. At that angle, the amplitude of the good component is
+            one and the success probability is one.
+        </p>
+
+        <p>
+            Solving approximately for k gives the usual iteration estimate
+        </p>
+
+        <div class="equation">
+            k ≈ (π/4)√(N/M)
+        </div>
+
+        <p>
+            This estimate assumes that 0 &lt; M &lt; N and that the number
+            of marked solutions is known well enough to choose the
+            iteration count. The exact integer is chosen to maximise the
+            success probability.
+        </p>
+
+        <div class="callout">
+            <strong>Important:</strong> More Grover iterations are not
+            always better. The success probability rises towards a maximum
+            and then falls again. This is called over-rotation.
+        </div>
+
+        <h3>A complete four-candidate example</h3>
+
+        <p>
+            Let us return to the search problem with four candidates and
+            one marked solution. Here N = 4 and M = 1.
+        </p>
+
+        <p>
+            The initial state is
+        </p>
+
+        <div class="equation">
+            |s⟩ = ½(|00⟩ + |01⟩ + |10⟩ + |11⟩)
+        </div>
+
+        <p>
+            Suppose |10⟩ is the marked state. After the oracle, the
+            amplitudes are
+        </p>
+
+        <div class="equation">
+            (½, ½, −½, ½)
+        </div>
+
+        <p>
+            The mean amplitude is 1/4. Inversion about the mean gives
+        </p>
+
+        <div class="equation">
+            (0, 0, 1, 0)
+        </div>
+
+        <p>
+            A measurement now returns |10⟩ with probability one in the
+            ideal circuit. For four candidates with one marked solution,
+            one Grover iteration is sufficient.
+        </p>
+
+        <p>
+            For much larger search spaces, the same principle applies,
+            but many more iterations are needed. The geometric picture
+            remains useful even when it is impossible to write out every
+            amplitude individually.
+        </p>
+    </section>
+
+    <section id="amplification">
+        <h2>8.4 Amplitude amplification and estimation</h2>
+
+        <h3>Grover's algorithm is one example of a broader idea</h3>
+
+        <p>
+            So far, we have started with an equal superposition of every
+            candidate. This is a convenient starting point for search, but
+            it is not the only possible initial state.
+        </p>
+
+        <p>
+            Suppose another algorithm already prepares a state in which
+            correct answers have some probability of being observed.
+            Perhaps the algorithm samples possible solutions, prepares a
+            useful distribution, or performs a quantum computation whose
+            outcomes are sometimes successful.
+        </p>
+
+        <p>
+            We can often use amplitude amplification to increase the
+            probability of success without starting again from an equal
+            superposition.
+        </p>
+
+        <p>
+            Let A be a quantum procedure that prepares an initial state
+        </p>
+
+        <div class="equation">
+            |ψ⟩ = A|0⟩
+        </div>
+
+        <p>
+            Assume that the probability of a successful outcome is p.
+            We can express the state in terms of normalised good and bad
+            components:
+        </p>
+
+        <div class="equation">
+            |ψ⟩ = sin(θ)|G⟩ + cos(θ)|B⟩
+        </div>
+
+        <p>
+            where p = sin²(θ). By combining a phase oracle with a reflection
+            about the prepared state, we can rotate the state towards the
+            successful component.
+        </p>
+
+        <p>
+            A common amplitude-amplification operator is written as
+        </p>
+
+        <div class="equation">
+            Q = A S₀ A† Sχ
+        </div>
+
+        <p>
+            Here, Sχ changes the phase of successful states, S₀ performs
+            a reflection about the starting state |0⟩ (up to the chosen
+            sign convention), A prepares the initial state, and A† reverses
+            that preparation. Equivalent definitions may differ in the
+            order of operations or by an overall sign.
+        </p>
+
+        <p>
+            After k amplification iterations, the success probability has
+            the same rotation form as Grover's algorithm:
+        </p>
+
+        <div class="equation">
+            P(success after k iterations) = sin²((2k + 1)θ)
+        </div>
+
+        <p>
+            Since p = sin²(θ), the initial success probability is amplified
+            by rotating the state towards the good subspace. The method is
+            useful whenever the successful component can be identified by
+            a suitable oracle.
+        </p>
+
+        <h3>Why amplitude amplification matters</h3>
+
+        <p>
+            Imagine that a classical randomised procedure finds a valid
+            solution with probability p on each independent run. Repeating
+            it about 1/p times is enough to obtain a constant probability
+            of success.
+        </p>
+
+        <p>
+            Under the appropriate quantum access and circuit assumptions,
+            amplitude amplification can achieve a constant probability of
+            success using a number of iterations proportional to 1/√p.
+        </p>
+
+        <div class="equation">
+            Classical repetitions: O(1/p)<br>
+            Quantum amplification: O(1/√p)
+        </div>
+
+        <p>
+            For example, if a procedure succeeds with probability 1/100,
+            a classical approach needs roughly 100 independent attempts
+            for an expected success. Quantum amplification can increase
+            the probability of success using roughly 10 amplification
+            iterations, up to constant factors and the precise success
+            target.
+        </p>
+
+        <p>
+            These numbers describe the number of repetitions or
+            amplification iterations, not the full cost of a computation.
+            Each quantum iteration may require running A, its inverse A†,
+            and a phase oracle. If these circuits are expensive, the total
+            cost may be substantial.
+        </p>
+
+        <h3>What is amplitude estimation?</h3>
+
+        <p>
+            Amplitude amplification asks how to make success more likely.
+            Amplitude estimation asks a different question: what is the
+            probability of success in the first place?
+        </p>
+
+        <p>
+            Suppose A prepares a state whose good outcomes occur with
+            probability p. We may wish to estimate p without simply
+            repeating the experiment many times.
+        </p>
+
+        <p>
+            In classical sampling, estimating an unknown probability to
+            additive error ε with a constant confidence generally requires
+            O(1/ε²) independent samples under standard assumptions.
+            Quantum amplitude-estimation methods can achieve an
+            O(1/ε) query dependence in suitable settings, although the
+            precise algorithm, confidence level, and oracle assumptions
+            affect the result.
+        </p>
+
+        <p>
+            A foundational approach to amplitude estimation uses quantum
+            phase estimation on an operator related to amplitude
+            amplification. The eigenphases of that operator contain
+            information about θ, from which p = sin²(θ) can be estimated.
+        </p>
+
+        <p>
+            Some modern variants avoid the full quantum phase-estimation
+            circuit and use different measurement strategies. They may be
+            easier to implement on noisy hardware, but their performance
+            guarantees and resource requirements differ.
+        </p>
+
+        <h3>Where amplitude estimation is useful</h3>
+
+        <p>
+            Consider a simulation that estimates the chance of a particular
+            event, or a financial model that calculates the expected value
+            of a quantity. A quantum procedure may encode the desired
+            probability or expectation into amplitudes.
+        </p>
+
+        <p>
+            Amplitude estimation can then estimate that quantity. The
+            potential advantage comes from reducing the number of costly
+            oracle uses needed for a given precision, not from automatically
+            making every simulation or financial calculation faster.
+        </p>
+
+        <div class="note">
+            <strong>Keep the concepts separate:</strong>
+            <ul>
+                <li><strong>Grover search</strong> finds marked items.</li>
+                <li><strong>Amplitude amplification</strong> increases the probability of successful outcomes.</li>
+                <li><strong>Amplitude estimation</strong> estimates the probability associated with a quantum state.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="counting">
+        <h2>8.5 Quantum counting</h2>
+
+        <h3>Finding an answer versus counting answers</h3>
+
+        <p>
+            Suppose a database contains one million candidates. We might
+            know that at least one candidate is valid, but we may not know
+            how many valid candidates exist.
+        </p>
+
+        <p>
+            Is there one valid candidate? One hundred? Ten thousand?
+            The number of valid candidates changes how Grover's algorithm
+            should be run, because the optimal iteration count depends
+            on M, the number of marked candidates.
+        </p>
+
+        <p>
+            Quantum counting is designed to estimate M. It combines
+            Grover's search operator with quantum phase estimation, linking
+            the geometry of amplitude amplification to a numerical count.
+        </p>
+
+        <h3>How counting emerges from the Grover rotation</h3>
+
+        <p>
+            Recall the angle θ, defined by
+        </p>
+
+        <div class="equation">
+            sin²(θ) = M/N
+        </div>
+
+        <p>
+            The Grover operator performs a rotation whose angle is related
+            to 2θ. Its eigenvalues can be written, under a standard
+            convention, as e⁺⁻²ⁱθ.
+        </p>
+
+        <p>
+            Quantum phase estimation can estimate the phases associated
+            with these eigenvalues. From the estimated phase, we can
+            estimate θ. Once θ is known, we can recover the fraction
+            of marked items and then estimate their number:
+        </p>
+
+        <div class="equation">
+            M/N = sin²(θ)<br>
+            M = N sin²(θ)
+        </div>
+
+        <p>
+            The result is an estimate of the number of marked candidates.
+            The accuracy depends on the phase-estimation precision, the
+            number of candidates, and the way the measurement results are
+            interpreted.
+        </p>
+
+        <h3>Step-by-step picture of quantum counting</h3>
+
+        <div class="diagram">
+            <div class="step">Prepare the search state</div>
+            <span class="arrow">→</span>
+            <div class="step">Construct the Grover operator</div>
+            <br>
+            <span class="arrow">↓</span>
+            <br>
+            <div class="step">Estimate its phase</div>
+            <span class="arrow">→</span>
+            <div class="step">Infer θ</div>
+            <span class="arrow">→</span>
+            <div class="step">Estimate M</div>
+        </div>
+
+        <p>
+            Notice the connection with the Quantum Fourier Transform and
+            phase estimation from the previous chapter. Those tools help
+            turn a quantum phase into a classical numerical estimate.
+            Quantum counting is a good example of quantum algorithms
+            building on one another rather than existing as isolated
+            tricks.
+        </p>
+
+        <h3>Why quantum counting is useful</h3>
+
+        <p>
+            Counting solutions can be valuable when the number of valid
+            items is itself important. For instance, one might want to
+            estimate how many records satisfy a condition, how many
+            assignments meet a set of constraints, or how many solutions
+            exist in a combinatorial problem.
+        </p>
+
+        <p>
+            If the number of marked candidates is known, it is easier to
+            choose the appropriate number of Grover iterations. If it is
+            unknown, quantum counting or other adaptive search techniques
+            can help estimate it or search without relying on an exact
+            count.
+        </p>
+
+        <div class="warning">
+            <strong>A practical caution:</strong> Quantum counting does
+            not make counting automatically easy. It needs a reversible
+            implementation of the marking condition and enough quantum
+            resources to estimate the phase accurately. Large circuits
+            may be costly, particularly on noisy quantum hardware.
+        </div>
+    </section>
+
+    <section id="applications">
+        <h2>8.6 Applications and limitations</h2>
+
+        <h3>1. Combinatorial search and constraint satisfaction</h3>
+
+        <p>
+            Many problems involve choosing values that satisfy a collection
+            of conditions. For example, a scheduling problem may ask
+            whether there is an assignment of people to time slots that
+            obeys all restrictions.
+        </p>
+
+        <p>
+            If we can efficiently prepare candidate assignments and build
+            an oracle that marks the valid ones, Grover's algorithm can
+            search the space of assignments with a quadratic reduction
+            in oracle queries compared with an unstructured classical
+            search.
+        </p>
+
+        <p>
+            The important phrase is "if we can build the oracle". Checking
+            every constraint may itself require a large circuit, and the
+            number of possible assignments may be enormous. The quadratic
+            improvement in queries does not remove the underlying
+            difficulty of the problem.
+        </p>
+
+        <h3>2. Cryptography and key search</h3>
+
+        <p>
+            Grover's algorithm is relevant to cryptography because a
+            secret key can sometimes be searched by checking candidate
+            keys against known information.
+        </p>
+
+        <p>
+            If a symmetric cryptographic key has n bits, there are 2ⁿ
+            possible keys. A brute-force classical search can require
+            O(2ⁿ) candidate checks in the worst case. Under the idealised
+            quantum query model, Grover's algorithm reduces this to
+            O(2ⁿᐟ²) oracle queries.
+        </p>
+
+        <p>
+            This is a quadratic reduction, not a complete break of all
+            symmetric cryptography. The oracle must evaluate the relevant
+            encryption or verification condition, and a real quantum
+            implementation would require substantial hardware and error
+            correction.
+        </p>
+
+        <p>
+            This is one reason cryptographic security margins matter.
+            Security designers consider whether key lengths remain
+            sufficient even when quantum search is available. Grover's
+            algorithm is different from Shor's algorithm: Shor's algorithm
+            exploits mathematical structure to factor integers and solve
+            discrete logarithms efficiently, while Grover's algorithm
+            accelerates generic search.
+        </p>
+
+        <h3>3. Optimisation and candidate generation</h3>
+
+        <p>
+            Some optimisation tasks can be expressed as searching for
+            candidates that satisfy a threshold. For example, if a
+            candidate has a score, an oracle could mark all candidates
+            whose score is above a selected value.
+        </p>
+
+        <p>
+            Amplitude amplification can then help find a candidate in
+            the marked set. Repeating this idea with different thresholds
+            may support certain quantum optimisation strategies.
+        </p>
+
+        <p>
+            However, Grover's algorithm is not a universal optimisation
+            method. Many optimisation problems have useful classical
+            structure, and methods such as dynamic programming,
+            branch-and-bound, local search, or specialised solvers may
+            outperform a generic quantum search. A quantum advantage
+            must be demonstrated for the particular problem and
+            implementation.
+        </p>
+
+        <h3>4. Estimating probabilities and expected values</h3>
+
+        <p>
+            Amplitude estimation may be useful in applications where
+            expensive repeated sampling is required. Examples include
+            estimating event probabilities in simulations, calculating
+            certain expected values, and evaluating risk measures.
+        </p>
+
+        <p>
+            In suitable settings, quantum amplitude estimation offers
+            a better dependence on the desired numerical precision than
+            ordinary Monte Carlo sampling. Yet a complete comparison
+            must include the cost of preparing the quantum state,
+            implementing the model, and handling the outputs.
+        </p>
+
+        <h3>5. Database search: a careful interpretation</h3>
+
+        <p>
+            It is tempting to conclude that Grover's algorithm can search
+            any large database instantly. This is not correct.
+        </p>
+
+        <p>
+            Grover's algorithm assumes that a candidate can be tested by
+            a quantum oracle. If the data are stored in an ordinary
+            classical database, accessing the data and constructing the
+            oracle may dominate the cost. Efficient quantum access to
+            a large data structure is not automatic.
+        </p>
+
+        <p>
+            Therefore, the algorithm is most naturally analysed as a
+            query-complexity improvement. Whether it gives a practical
+            advantage for a particular database depends on the data
+            representation, access model, circuit depth, and hardware.
+        </p>
+
+        <h3>6. Limitations of Grover's algorithm</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Limitation</th>
+                    <th>What it means in practice</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Quadratic, not exponential, speedup</td>
+                    <td>The reduction from N to approximately √N can be significant, but it does not make exponentially large searches automatically easy.</td>
+                </tr>
+                <tr>
+                    <td>Oracle construction</td>
+                    <td>The circuit that identifies valid answers may be expensive to build and execute.</td>
+                </tr>
+                <tr>
+                    <td>Unknown number of solutions</td>
+                    <td>Choosing the iteration count is harder when M is unknown. Adaptive techniques can help.</td>
+                </tr>
+                <tr>
+                    <td>Over-rotation</td>
+                    <td>Running too many iterations can reduce the success probability.</td>
+                </tr>
+                <tr>
+                    <td>Noise and decoherence</td>
+                    <td>Errors can accumulate during repeated oracle and diffusion operations.</td>
+                </tr>
+                <tr>
+                    <td>Measurement gives limited information</td>
+                    <td>A measurement returns an outcome, not the complete list of candidates or their amplitudes.</td>
+                </tr>
+                <tr>
+                    <td>Classical structure may be better</td>
+                    <td>A problem with a strong mathematical pattern may have a classical algorithm that is more suitable than generic quantum search.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Why quantum hardware matters</h3>
+
+        <p>
+            The theoretical algorithm assumes quantum operations can be
+            performed accurately. Real quantum devices experience noise,
+            imperfect gates, and decoherence, which can disturb the
+            intended state before measurement.
+        </p>
+
+        <p>
+            Each Grover iteration typically requires an oracle and a
+            diffusion operation. If the oracle is deep, repeated
+            execution can accumulate errors. Fault-tolerant quantum
+            computing uses quantum error correction to protect logical
+            information, but this introduces substantial resource
+            overhead.
+        </p>
+
+        <p>
+            Consequently, a meaningful practical comparison must consider
+            not only the number of Grover iterations but also the number
+            of logical and physical qubits, circuit depth, gate fidelity,
+            error-correction overhead, and the time needed for state
+            preparation and measurement.
+        </p>
+
+        <h3>What Grover's algorithm teaches us about quantum computing</h3>
+
+        <p>
+            Grover's algorithm is important even when a specific application
+            does not benefit from it. It demonstrates a general principle:
+            quantum computing can improve a computation by manipulating
+            amplitudes and using interference to guide measurement outcomes.
+        </p>
+
+        <p>
+            The oracle creates a distinction between good and bad states.
+            Diffusion converts that distinction into a change in their
+            amplitudes. Repetition gradually moves probability towards
+            the desired outcomes. Amplitude amplification extends this
+            idea beyond ordinary search, while amplitude estimation and
+            quantum counting show how phase information can be used to
+            estimate useful numerical quantities.
+        </p>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter summary</h2>
+
+        <p>
+            Grover's algorithm solves unstructured search problems by
+            repeatedly applying a phase oracle and a diffusion operator.
+            The oracle changes the sign of marked amplitudes, while the
+            diffusion operation reflects amplitudes about their mean.
+            Together, these operations rotate the quantum state towards
+            the marked subspace.
+        </p>
+
+        <p>
+            For N candidates with M marked solutions, the ideal number
+            of Grover iterations is approximately
+        </p>
+
+        <div class="equation">
+            k ≈ (π/4)√(N/M)
+        </div>
+
+        <p>
+            When the number of solutions is small, the query complexity
+            is proportional to √N, giving a quadratic improvement over
+            generic classical search. Amplitude amplification generalises
+            the same rotation principle to other quantum procedures.
+            Amplitude estimation uses phase information to estimate
+            success probabilities, and quantum counting uses related
+            ideas to estimate how many marked solutions exist.
+        </p>
+
+        <div class="callout">
+            <strong>Remember these five ideas:</strong>
+            <ol>
+                <li>An equal superposition gives all candidates equal initial amplitudes.</li>
+                <li>The oracle marks correct candidates by changing their phase.</li>
+                <li>The diffusion operator converts phase differences into amplitude differences.</li>
+                <li>Repeated Grover iterations increase success probability until the state approaches the marked subspace.</li>
+                <li>The speedup is quadratic in query complexity, and practical performance depends on the oracle, circuit cost, and hardware.</li>
+            </ol>
+        </div>
+
+        <h3>Questions to test your understanding</h3>
+
+        <ol>
+            <li>
+                Why does changing the sign of an amplitude not immediately
+                change the probability of measuring its candidate?
+            </li>
+            <li>
+                What is the role of the oracle, and why must a quantum
+                oracle be implemented reversibly?
+            </li>
+            <li>
+                Explain inversion about the mean using the amplitudes
+                0.5, 0.5, −0.5 and 0.5.
+            </li>
+            <li>
+                Why does Grover's algorithm have a quadratic speedup rather
+                than an exponential speedup?
+            </li>
+            <li>
+                What happens if we perform too many Grover iterations?
+            </li>
+            <li>
+                How does amplitude amplification differ from amplitude
+                estimation?
+            </li>
+            <li>
+                How can phase estimation help quantum counting?
+            </li>
+            <li>
+                Why does an efficient oracle matter when deciding whether
+                Grover's algorithm is useful in practice?
+            </li>
+        </ol>
+
+        <h3>Looking ahead</h3>
+
+        <p>
+            Grover's algorithm and Shor's algorithm demonstrate two
+            different sources of quantum advantage. Grover's algorithm
+            improves generic search through amplitude amplification.
+            Shor's algorithm uses the mathematical structure of periodicity
+            and number theory to solve particular problems much faster than
+            known classical methods.
+        </p>
+
+        <p>
+            Together, these algorithms show why it is essential to
+            understand both the mathematics of a problem and the operations
+            a quantum computer can perform. Quantum algorithms are not
+            simply classical programs executed on unusual hardware.
+            Their power comes from choosing quantum states, transformations,
+            and measurements that make useful information more accessible.
+        </p>
+    </section>
+
+    <footer class="footer">
+        <p>
+            <strong>End of Chapter 8.</strong>
+        </p>
+        <p>
+            Suggested further reading: Lov K. Grover, "A fast quantum
+            mechanical algorithm for database search" (1996); Gilles
+            Brassard, Peter Høyer, Michele Mosca and Alain Tapp,
+            "Quantum Amplitude Amplification and Estimation" (2002);
+            and standard texts on quantum computation covering Grover
+            search, phase estimation, and quantum query complexity.
+        </p>
+    </footer>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 12: Noise, Error Mitigation, and Error Correction</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --text: #202938;
+            --muted: #596579;
+            --accent: #2857a4;
+            --accent-light: #e8efff;
+            --border: #dce3ed;
+            --green: #16794a;
+            --green-light: #e8f7ee;
+            --orange: #a65b0a;
+            --orange-light: #fff3df;
+            --purple: #7046a5;
+            --purple-light: #f2eaff;
+            --code: #172033;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behaviour: smooth;
+            scroll-padding-top: 20px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 28px 22px 70px;
+        }
+
+        header {
+            padding: 42px 30px;
+            background: linear-gradient(135deg, #122748, #2857a4);
+            color: white;
+            border-radius: 18px;
+            margin-bottom: 28px;
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 5vw, 3.1rem);
+            line-height: 1.2;
+            margin: 0 0 18px;
+        }
+
+        header p {
+            font-size: 1.08rem;
+            max-width: 760px;
+            color: #e6edff;
+            margin: 0;
+        }
+
+        .chapter-label {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: #c5d6ff;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 1.85rem;
+            line-height: 1.35;
+            margin-top: 48px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 30px;
+            line-height: 1.45;
+        }
+
+        h4 {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 13px 0;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        .intro, .card, .callout, .equation, .diagram, .table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .callout {
+            border-left: 5px solid var(--accent);
+        }
+
+        .callout.green {
+            border-left-color: var(--green);
+            background: var(--green-light);
+        }
+
+        .callout.orange {
+            border-left-color: var(--orange);
+            background: var(--orange-light);
+        }
+
+        .callout.purple {
+            border-left-color: var(--purple);
+            background: var(--purple-light);
+        }
+
+        .callout h3, .callout h4 {
+            margin-top: 0;
+        }
+
+        .equation {
+            text-align: center;
+            background: #f0f4fb;
+            font-family: "Courier New", monospace;
+            font-size: 1.04rem;
+            overflow-wrap: anywhere;
+        }
+
+        .equation p {
+            margin: 7px 0;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 9px;
+            background: var(--accent-light);
+            color: var(--accent);
+            border-radius: 5px;
+            font-size: 0.84rem;
+            font-weight: bold;
+            margin: 3px 4px 3px 0;
+        }
+
+        ul, ol {
+            padding-left: 27px;
+        }
+
+        li {
+            margin: 7px 0;
+        }
+
+        .diagram {
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+
+        .node {
+            min-width: 120px;
+            max-width: 190px;
+            padding: 13px 15px;
+            background: var(--accent-light);
+            border: 1px solid #c7d7ff;
+            border-radius: 9px;
+            font-weight: bold;
+        }
+
+        .node.green {
+            background: var(--green-light);
+            border-color: #b8e2c8;
+        }
+
+        .node.orange {
+            background: var(--orange-light);
+            border-color: #f1d4a6;
+        }
+
+        .arrow {
+            font-size: 1.4rem;
+            color: var(--muted);
+            font-weight: bold;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .mini-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .mini-card h3, .mini-card h4 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf0fa;
+        }
+
+        .table-wrap {
+            padding: 0;
+            overflow-x: auto;
+        }
+
+        pre {
+            background: var(--code);
+            color: #eaf0ff;
+            padding: 18px;
+            border-radius: 9px;
+            overflow-x: auto;
+            line-height: 1.65;
+            font-size: 0.9rem;
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+        }
+
+        .progress-list {
+            counter-reset: stage;
+            list-style: none;
+            padding: 0;
+        }
+
+        .progress-list li {
+            position: relative;
+            padding: 14px 16px 14px 55px;
+            margin: 12px 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+        }
+
+        .progress-list li::before {
+            counter-increment: stage;
+            content: counter(stage);
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            background: var(--accent);
+            color: white;
+            width: 27px;
+            height: 27px;
+            text-align: center;
+            line-height: 27px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        .takeaway {
+            background: #122748;
+            color: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-top: 35px;
+        }
+
+        .takeaway h2 {
+            border: none;
+            margin-top: 0;
+        }
+
+        footer {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                padding: 14px 12px 40px;
+            }
+
+            header {
+                padding: 30px 20px;
+            }
+
+            .two-column, .three-column {
+                grid-template-columns: 1fr;
+            }
+
+            h2 {
+                font-size: 1.55rem;
+            }
+
+            body {
+                font-size: 15px;
+            }
+
+            .equation {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <div class="chapter-label">Quantum Computing · Chapter 12</div>
+        <h1>Noise, Error Mitigation, and Error Correction</h1>
+        <p>
+            A quantum computer does not work with perfectly isolated qubits.
+            Its surroundings disturb quantum states, its control operations are
+            imperfect, and its measurements can be wrong. This chapter explains
+            how we identify these errors, reduce their effects, and build
+            quantum computers that can eventually compute reliably despite them.
+        </p>
+    </header>
+
+    <section class="intro">
+        <h2 style="margin-top:0; border:none;">The central problem</h2>
+        Imagine writing an important answer on a whiteboard while somebody
+        continuously shakes the room. Even if your calculation is correct,
+        the information may become difficult to read. Quantum computing faces
+        a similar problem, except the disturbance comes from interactions with
+        the physical environment and imperfections in the hardware.
+
+        In classical computing, a bit is designed to represent either 0 or 1.
+        A small electrical disturbance often does not change its interpreted
+        value because digital circuits use voltage ranges to represent the two
+        states. Quantum information is more delicate. A qubit can exist in a
+        superposition, and the relative phase between its components matters.
+        Small disturbances can damage this information even when the final
+        measurement still produces an apparently valid 0 or 1.
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">Prepare qubits</div>
+                <div class="arrow">→</div>
+                <div class="node orange">Noise and imperfect gates</div>
+                <div class="arrow">→</div>
+                <div class="node">Measure result</div>
+            </div>
+            <p class="small">
+                A quantum computation can be mathematically correct and still
+                produce an unreliable answer because of physical errors.
+            </p>
+        </div>
+
+        The important distinction in this chapter is that <strong>error mitigation
+        reduces the effect of errors on the answers we estimate, whereas error
+        correction protects quantum information by detecting errors and correcting
+        them without directly measuring the encoded information itself.</strong>
+        Both are useful, but they solve different problems.
+    </section>
+
+    <h2>12.1 Sources of noise</h2>
+
+    <h3>12.1.1 What does noise mean in a quantum computer?</h3>
+
+    Noise is any unwanted physical effect that changes the state of a qubit,
+    makes a gate behave incorrectly, or causes the measurement to report the
+    wrong result.
+
+    An ideal quantum gate performs exactly the mathematical operation specified
+    by the algorithm. A real gate is implemented using physical controls such
+    as microwave pulses, laser beams, or interactions between particles. These
+    controls are never perfectly precise.
+
+    There are several important sources of noise.
+
+    <div class="two-column">
+        <div class="mini-card">
+            <h4>1. Relaxation</h4>
+            A qubit in an excited state can lose energy to its surroundings and
+            move towards its lower-energy state. This can destroy stored quantum
+            information.
+            <p><span class="tag">Energy loss</span></p>
+        </div>
+
+        <div class="mini-card">
+            <h4>2. Dephasing</h4>
+            The relative phase between the components of a superposition changes
+            unpredictably. The qubit may lose its useful quantum interference
+            even without an energy transition.
+            <p><span class="tag">Phase disturbance</span></p>
+        </div>
+
+        <div class="mini-card">
+            <h4>3. Gate errors</h4>
+            A gate rotates a qubit by a slightly incorrect angle, acts at the
+            wrong time, or introduces an unwanted interaction.
+            <p><span class="tag">Control imperfections</span></p>
+        </div>
+
+        <div class="mini-card">
+            <h4>4. Readout errors</h4>
+            The hardware measures the qubit but reports 1 when the state was 0,
+            or reports 0 when the state was 1.
+            <p><span class="tag">Measurement mistakes</span></p>
+        </div>
+
+        <div class="mini-card">
+            <h4>5. Crosstalk</h4>
+            Operating one qubit unintentionally affects another qubit. This
+            becomes especially important when many operations occur in parallel.
+            <p><span class="tag">Unwanted coupling</span></p>
+        </div>
+
+        <div class="mini-card">
+            <h4>6. Leakage</h4>
+            A physical device may have energy levels beyond the two levels
+            chosen to represent a qubit. An operation can accidentally move
+            the system outside those two computational states.
+            <p><span class="tag">Outside the qubit space</span></p>
+        </div>
+    </div>
+
+    <h3>12.1.2 Relaxation and dephasing are different</h3>
+
+    Consider a qubit prepared in the state:
+
+    <div class="equation">
+        |ψ⟩ = α|0⟩ + β|1⟩
+        <p class="small">
+            Here, α and β are complex probability amplitudes, with
+            |α|² + |β|² = 1.
+        </p>
+    </div>
+
+    The qubit contains information in both the populations of the two basis
+    states and their relative phase.
+
+    During relaxation, energy may be lost from the |1⟩ state to the environment.
+    The system can transition towards |0⟩. This is similar to a swinging object
+    gradually losing energy and coming to rest.
+
+    During dephasing, the qubit can retain its energy populations while losing
+    the predictable relationship between the phases of |0⟩ and |1⟩. A useful
+    analogy is two waves that initially rise and fall together but gradually
+    drift out of step. Their interference pattern becomes less predictable.
+
+    These errors matter because quantum algorithms rely on controlled
+    interference. If the phase relationships are damaged, amplitudes that
+    should reinforce each other may no longer do so reliably.
+
+    <div class="callout">
+        <h4>Important distinction</h4>
+        Noise is not simply the same as a wrong answer. A qubit may experience
+        noise during a computation even when a particular measurement happens
+        to return the expected value. Conversely, a single unexpected
+        measurement does not always prove that a gate was faulty; quantum
+        measurements are probabilistic by design.
+    </div>
+
+    <h3>12.1.3 Quantum noise as a mathematical process</h3>
+
+    An ideal quantum operation is represented by a unitary operator U:
+
+    <div class="equation">
+        |ψ⟩ → U|ψ⟩
+    </div>
+
+    In the real world, the state may instead undergo a noisy quantum channel.
+    For a general mixed state represented by a density matrix ρ, a common
+    mathematical description is:
+
+    <div class="equation">
+        ρ → E(ρ) = Σᵢ Kᵢ ρ Kᵢ†
+        <p class="small">
+            The operators Kᵢ describe possible effects of the noise and satisfy
+            Σᵢ Kᵢ†Kᵢ = I for a trace-preserving channel.
+        </p>
+    </div>
+
+    Do not worry if density matrices and these operators are unfamiliar.
+    The main idea is simple: instead of assuming that the computer performs
+    one perfectly known operation, we describe the range of possible outcomes
+    produced by the physical process.
+
+    For example, a bit-flip channel changes |0⟩ into |1⟩ and |1⟩ into |0⟩
+    with probability p. Its effect can be written as:
+
+    <div class="equation">
+        E(ρ) = (1 − p)ρ + pXρX
+    </div>
+
+    Here, X is the Pauli-X gate, which exchanges |0⟩ and |1⟩. With probability
+    1 − p, the state remains unchanged; with probability p, the bit-flip
+    operation occurs.
+
+    This is a simplified model. Real devices can have several kinds of errors,
+    and their noise may depend on the qubits, gates, timing, temperature,
+    calibration, and other operating conditions.
+
+    <h3>12.1.4 Why quantum noise is particularly difficult</h3>
+
+    A classical computer can often copy a bit, compare copies, and replace a
+    corrupted value with the majority value. Quantum information cannot be
+    protected by simply making identical copies of an arbitrary unknown qubit.
+
+    The reason is the <strong>no-cloning theorem</strong>: an unknown quantum
+    state cannot be copied perfectly by a universal physical operation.
+
+    Suppose a qubit is in an unknown state:
+
+    <div class="equation">
+        |ψ⟩ = α|0⟩ + β|1⟩
+    </div>
+
+    We cannot build a general-purpose machine that takes this state and
+    produces two independent, perfect copies of |ψ⟩ for every possible α and β.
+
+    Measuring the qubit directly is not a solution either. Measurement can
+    disturb a superposition and remove information needed by the algorithm.
+
+    Quantum error correction gets around this difficulty by encoding one logical
+    qubit into an entangled state of several physical qubits. It detects
+    information about the error, not the full unknown logical state.
+
+    <div class="callout green">
+        <strong>Connection to the rest of quantum computing:</strong>
+        Superposition and interference make quantum algorithms powerful.
+        Noise damages the phase relationships and correlations that these
+        algorithms use. Error protection must therefore preserve quantum
+        information without directly reading out the unknown state.
+    </div>
+
+    <h2>12.2 Characterising noise: T1, T2, and randomized benchmarking</h2>
+
+    Before reducing errors, we must measure them. This is called
+    <strong>characterisation</strong>. It helps engineers determine which
+    qubits are unreliable, how quickly coherence disappears, and how accurately
+    gates operate.
+
+    Three widely used concepts are T1, T2, and randomized benchmarking.
+
+    <h3>12.2.1 T1: the energy-relaxation time</h3>
+
+    T1 describes how quickly a qubit loses energy from its excited state.
+
+    Imagine preparing a qubit in |1⟩ and allowing it to wait. Because of
+    relaxation, the probability of finding it in |1⟩ gradually decreases.
+
+    Under a simple exponential relaxation model:
+
+    <div class="equation">
+        P₁(t) = P₁(0)e<sup>−t/T₁</sup>
+    </div>
+
+    Here:
+
+    <ul>
+        <li><strong>P₁(0)</strong> is the initial excited-state population.</li>
+        <li><strong>P₁(t)</strong> is the excited-state population after time t.</li>
+        <li><strong>T₁</strong> is the energy-relaxation time.</li>
+    </ul>
+
+    After one T1, the initial excess excited-state population has fallen to
+    approximately 36.8% of its initial value under this model.
+
+    <div class="card">
+        <h4>Example</h4>
+        Suppose a qubit has T1 = 100 microseconds and begins in |1⟩. Ignoring
+        other effects, the excited-state population remaining after 100
+        microseconds is approximately:
+
+        <div class="equation">
+            e<sup>−1</sup> ≈ 0.368
+        </div>
+
+        If the initial excited-state population was 100%, approximately 36.8%
+        remains after that interval.
+    </div>
+
+    A longer T1 is generally desirable because it means the qubit retains its
+    excitation for a longer time. However, T1 alone does not tell us how well
+    the qubit preserves the phase of a superposition.
+
+    <h3>12.2.2 T2: the coherence or dephasing time</h3>
+
+    T2 describes how quickly the phase coherence between the computational
+    basis states disappears.
+
+    A qubit can be prepared in an equal superposition:
+
+    <div class="equation">
+        |+⟩ = (|0⟩ + |1⟩)/√2
+    </div>
+
+    This state has equal probabilities of measuring 0 and 1, but it also has
+    a definite relative phase. That phase allows later gates to create
+    interference.
+
+    As the qubit interacts with its environment, its phase can drift. The
+    coherence then decays, often approximately exponentially:
+
+    <div class="equation">
+        C(t) = C(0)e<sup>−t/T₂</sup>
+    </div>
+
+    Here C(t) represents the magnitude of the relevant coherence term in a
+    simplified model.
+
+    A short T2 means the qubit loses useful phase information quickly.
+    This limits how long a quantum algorithm can safely wait between
+    operations.
+
+    <h3>12.2.3 How T1 and T2 are related</h3>
+
+    For a common model involving independent energy relaxation and pure
+    dephasing:
+
+    <div class="equation">
+        1/T₂ = 1/(2T₁) + 1/Tφ
+    </div>
+
+    Tφ is the pure-dephasing time: it describes dephasing beyond that already
+    associated with energy relaxation.
+
+    This relationship implies:
+
+    <div class="equation">
+        T₂ ≤ 2T₁
+    </div>
+
+    This bound applies to the standard model described above. Real devices
+    may require more detailed models, and measured coherence times can depend
+    on the experimental procedure.
+
+    <div class="callout orange">
+        <strong>Remember:</strong>
+        T1 measures energy relaxation. T2 measures loss of coherence. They
+        are related, but they are not interchangeable.
+    </div>
+
+    <h3>12.2.4 How T1 and T2 are measured</h3>
+
+    A simplified T1 experiment follows these steps:
+
+    <ol>
+        <li>Prepare the qubit in the excited state |1⟩.</li>
+        <li>Allow it to wait for a selected duration.</li>
+        <li>Measure the qubit.</li>
+        <li>Repeat the experiment many times for the same duration.</li>
+        <li>Repeat for several waiting times and fit the observed populations
+            to a decay curve.</li>
+    </ol>
+
+    To estimate T2, an experiment can prepare a superposition, allow the
+    qubit to evolve, and measure how its phase coherence changes. A commonly
+    used method is the Ramsey experiment. A spin-echo experiment adds a
+    refocusing pulse that can reverse some slowly varying phase errors.
+
+    T2 measured with a Ramsey experiment is often called T2*, because it
+    includes certain slowly varying frequency differences and inhomogeneous
+    dephasing effects. A spin-echo measurement can produce a longer coherence
+    time by refocusing some of those effects.
+
+    <div class="diagram">
+        <div class="flow">
+            <div class="node">Prepare</div>
+            <div class="arrow">→</div>
+            <div class="node">Wait</div>
+            <div class="arrow">→</div>
+            <div class="node">Measure</div>
+            <div class="arrow">→</div>
+            <div class="node green">Fit decay</div>
+        </div>
+        <p class="small">
+            Repeated experiments turn noisy individual measurements into
+            statistical estimates of physical parameters.
+        </p>
+    </div>
+
+    <h3>12.2.5 Gate fidelity and randomized benchmarking</h3>
+
+    T1 and T2 describe aspects of a qubit's physical behaviour. They do not
+    directly tell us how accurately a particular gate performs.
+
+    Gate fidelity is a measure of how closely an implemented operation matches
+    its intended ideal operation. Several definitions exist, so a fidelity
+    value must always be interpreted in the context of its definition and
+    measurement method.
+
+    Randomized benchmarking is an experimental technique used to estimate
+    average error behaviour for sequences of quantum gates.
+
+    A simplified experiment works as follows:
+
+    <ol>
+        <li>Choose a sequence of random gates from a suitable gate set.</li>
+        <li>Apply the gates to the qubit or qubits.</li>
+        <li>Append a recovery operation intended to return the system to its
+            starting state in the ideal case.</li>
+        <li>Measure whether the expected result is obtained.</li>
+        <li>Repeat for sequences of different lengths and average the results.</li>
+    </ol>
+
+    In the ideal case, the complete sequence returns the system to its
+    intended starting state. In a real device, errors accumulate as the
+    sequence becomes longer, and the average probability of success usually
+    decreases.
+
+    A commonly used simplified fit is:
+
+    <div class="equation">
+        P(m) = A p<sup>m</sup> + B
+    </div>
+
+    Here:
+
+    <ul>
+        <li><strong>m</strong> is the number of randomised operations or sequence
+            units.</li>
+        <li><strong>p</strong> describes the decay associated with average
+            error under the assumptions of the benchmarking protocol.</li>
+        <li><strong>A and B</strong> account for state preparation, measurement,
+            and other offsets in the fitted signal.</li>
+    </ul>
+
+    For a single qubit and a suitable single-qubit Clifford benchmarking
+    protocol, the average error per Clifford can be estimated as:
+
+    <div class="equation">
+        r ≈ (1 − p)/2
+    </div>
+
+    For a d-dimensional system under the corresponding assumptions, the
+    general relationship is:
+
+    <div class="equation">
+        r ≈ (d − 1)(1 − p)/d
+    </div>
+
+    These expressions are protocol-dependent approximations, not universal
+    formulas for every gate or device. Additional methods are needed to
+    estimate individual gate errors, leakage, coherent errors, or errors
+    specific to a particular operation.
+
+    <h3>12.2.6 Why these measurements work together</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Measurement</th>
+                    <th>What it tells us</th>
+                    <th>Why it matters</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T1</td>
+                    <td>How quickly energy relaxation occurs.</td>
+                    <td>Helps estimate the lifetime of excited-state information.</td>
+                </tr>
+                <tr>
+                    <td>T2 / T2*</td>
+                    <td>How quickly phase coherence is lost.</td>
+                    <td>Helps determine how long superposition and interference remain useful.</td>
+                </tr>
+                <tr>
+                    <td>Gate benchmarking</td>
+                    <td>Average error behaviour of gate sequences.</td>
+                    <td>Helps compare hardware and identify poor operations.</td>
+                </tr>
+                <tr>
+                    <td>Readout calibration</td>
+                    <td>How often measurement reports the wrong basis state.</td>
+                    <td>Helps separate measurement mistakes from algorithmic outcomes.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    These measurements guide hardware improvement and help decide which
+    operations, qubits, and circuit layouts are suitable for a computation.
+
+    <h2>12.3 Error mitigation</h2>
+
+    Error mitigation aims to obtain better estimates of ideal quantum
+    computation results without necessarily encoding every logical qubit in
+    a full quantum error-correcting code.
+
+    This is especially useful for noisy intermediate-scale quantum (NISQ)
+    devices, where the number of available qubits and the quality of operations
+    may be insufficient for large fault-tolerant computations.
+
+    The central idea is that we may not be able to remove every error from
+    every circuit execution, but we can sometimes use additional experiments,
+    calibration data, or statistical methods to estimate what the ideal answer
+    would have been.
+
+    Three important approaches are readout mitigation, zero-noise extrapolation,
+    and probabilistic error cancellation.
+
+    <h3>12.3.1 Readout error mitigation</h3>
+
+    Suppose we prepare a qubit in |0⟩ many times. Because measurement is
+    imperfect, the hardware may sometimes report 1. We can estimate these
+    mistakes by preparing known states and measuring them repeatedly.
+
+    For a single qubit, define a readout confusion matrix:
+
+    <div class="equation">
+        M = [ P(0 reported | 0 prepared) &nbsp; P(0 reported | 1 prepared) ]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[ P(1 reported | 0 prepared) &nbsp; P(1 reported | 1 prepared) ]
+    </div>
+
+    More compactly:
+
+    <div class="equation">
+        q = M p
+    </div>
+
+    Here p is the vector of true outcome probabilities and q is the vector of
+    observed probabilities.
+
+    For example, assume the calibrated readout probabilities are:
+
+    <div class="equation">
+        M = [0.95 &nbsp; 0.10]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[0.05 &nbsp; 0.90]
+    </div>
+
+    This means:
+
+    <ul>
+        <li>If the true state is 0, the device reports 0 with probability 0.95
+            and 1 with probability 0.05.</li>
+        <li>If the true state is 1, the device reports 0 with probability 0.10
+            and 1 with probability 0.90.</li>
+    </ul>
+
+    Suppose the true probabilities are 70% for 0 and 30% for 1. The expected
+    observed probabilities are:
+
+    <div class="equation">
+        q₀ = 0.95 × 0.70 + 0.10 × 0.30 = 0.695<br>
+        q₁ = 0.05 × 0.70 + 0.90 × 0.30 = 0.305
+    </div>
+
+    The hardware would therefore report approximately 69.5% zeros and 30.5%
+    ones, rather than the ideal 70% and 30%.
+
+    If we know the confusion matrix, we can estimate the original probabilities
+    by solving:
+
+    <div class="equation">
+        p ≈ M⁻¹q
+    </div>
+
+    This inverse is only a conceptual shorthand. In practice, the estimate
+    must respect the available data, numerical stability, and probability
+    constraints. For many qubits, the calibration problem becomes considerably
+    more difficult.
+
+    <div class="callout orange">
+        Readout mitigation does not undo all errors in the computation.
+        It corrects statistical bias associated with measurement mistakes
+        described by the calibration model. It cannot generally recover
+        quantum information already destroyed by earlier noise.
+    </div>
+
+    <h3>12.3.2 Zero-noise extrapolation (ZNE)</h3>
+
+    Zero-noise extrapolation estimates the ideal result by deliberately
+    evaluating a computation at several effective noise levels.
+
+    The method begins with an important observation: if we can estimate how
+    an observable changes as noise increases, we may be able to extrapolate
+    that trend towards the zero-noise limit.
+
+    The basic procedure is:
+
+    <ol>
+        <li>Choose a quantum circuit and an observable whose expectation value
+            we want to estimate.</li>
+        <li>Execute the circuit under its ordinary noise conditions.</li>
+        <li>Create additional circuit executions with higher effective noise.</li>
+        <li>Measure the observable at each noise level.</li>
+        <li>Fit an appropriate model and extrapolate towards the zero-noise
+            limit.</li>
+    </ol>
+
+    There are different ways to increase the effective noise. One technique,
+    called gate folding, replaces a gate U with a longer equivalent sequence:
+
+    <div class="equation">
+        U → U U† U
+    </div>
+
+    Ideally, U†U equals the identity, so the overall operation is still U.
+    Physically, however, the longer sequence introduces more opportunities
+    for noise. This can increase the effective error while preserving the
+    intended ideal operation.
+
+    Another approach is to use hardware controls to vary noise strength, where
+    such control is available and sufficiently well characterised.
+
+    <div class="card">
+        <h4>A simple illustrative example</h4>
+        Suppose the measured expectation values at three effective noise
+        strengths are:
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Relative noise scale</th>
+                        <th>Measured expectation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>0.80</td></tr>
+                    <tr><td>2</td><td>0.65</td></tr>
+                    <tr><td>3</td><td>0.50</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        These illustrative points lie on a straight line. Extending that
+        line back to a noise scale of zero gives an estimate of 0.95.
+
+        <div class="equation">
+            Estimated zero-noise value = 0.95
+        </div>
+
+        This is a deliberately simplified example, not a guarantee that real
+        quantum data follows a straight line. Actual extrapolation depends on
+        the noise model, the available measurements, and statistical uncertainty.
+    </div>
+
+    <h4>Advantages of ZNE</h4>
+
+    <ul>
+        <li>It can improve estimates without requiring a complete quantum
+            error-correcting code.</li>
+        <li>It can be applied to expectation values from many kinds of
+            quantum circuits.</li>
+        <li>It can work with several techniques for increasing effective noise.</li>
+    </ul>
+
+    <h4>Limitations of ZNE</h4>
+
+    <ul>
+        <li>Higher-noise executions may produce very poor data.</li>
+        <li>Extrapolation can magnify statistical uncertainty.</li>
+        <li>The assumed relationship between noise and the observable may be
+            inaccurate.</li>
+        <li>It does not recover arbitrary quantum information that has been lost.</li>
+        <li>The extra executions consume measurement time and computational resources.</li>
+    </ul>
+
+    <h3>12.3.3 Probabilistic error cancellation (PEC)</h3>
+
+    Probabilistic error cancellation attempts to correct the average effect
+    of known noise by combining results from specially chosen circuits with
+    positive and negative statistical weights.
+
+    The key idea is that an ideal operation can sometimes be represented as
+    a signed combination of noisy operations. A signed combination allows
+    some contributions to cancel the unwanted effects of others.
+
+    Suppose the ideal operation U is not directly available. We may instead
+    implement noisy operations that approximate related transformations.
+    If the noise model is sufficiently well known, mathematical techniques
+    can express the ideal operation as a combination of these available
+    operations.
+
+    We then sample circuits according to an appropriate probability
+    distribution and weight their measured outcomes. Some contributions
+    receive negative weights.
+
+    The weighted average can estimate the ideal expectation value even though
+    individual circuit executions remain noisy.
+
+    <div class="diagram">
+        <div class="flow">
+            <div class="node">Calibrate the noise model</div>
+            <div class="arrow">→</div>
+            <div class="node">Choose sampled circuits</div>
+            <div class="arrow">→</div>
+            <div class="node">Measure outcomes</div>
+            <div class="arrow">→</div>
+            <div class="node green">Combine weighted results</div>
+        </div>
+    </div>
+
+    PEC is powerful in principle, but it has a serious cost. The weights
+    needed for cancellation can have large magnitudes. Consequently, the
+    number of circuit executions needed to achieve a desired statistical
+    accuracy may grow rapidly with circuit size and noise strength.
+
+    If the noise model is inaccurate, the cancellation may also be incomplete
+    or misleading.
+
+    <div class="callout purple">
+        ZNE asks, "What would the result approach if the noise were reduced
+        towards zero?" PEC asks, "Can we combine noisy operations statistically
+        to reproduce the effect of ideal operations?" Both rely on additional
+        data and assumptions about noise.
+    </div>
+
+    <h3>12.3.4 Comparing error-mitigation methods</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Main idea</th>
+                    <th>Major limitation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Readout mitigation</td>
+                    <td>Calibrate and compensate for measurement mistakes.</td>
+                    <td>Does not repair arbitrary gate errors or lost coherence.</td>
+                </tr>
+                <tr>
+                    <td>ZNE</td>
+                    <td>Measure at several noise levels and extrapolate.</td>
+                    <td>Extrapolation can be unstable and noisy.</td>
+                </tr>
+                <tr>
+                    <td>PEC</td>
+                    <td>Use a noise model and weighted circuit sampling to cancel errors statistically.</td>
+                    <td>Sampling overhead can become very large.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>12.3.5 Mitigation is not the same as correction</h3>
+
+    Error mitigation generally improves estimates of selected outputs or
+    observables. It does not guarantee that the physical qubits remain in
+    the correct quantum state throughout a computation.
+
+    Error correction takes a different approach: it encodes quantum information
+    redundantly and repeatedly obtains information about error patterns.
+
+    Mitigation is useful when full error correction is not available, but
+    its overhead can become prohibitive as circuits grow larger and noise
+    accumulates. It is not a general substitute for fault-tolerant quantum
+    computing.
+
+    <h2>12.4 Quantum error correction basics</h2>
+
+    Quantum error correction (QEC) is one of the central ideas behind building
+    reliable quantum computers.
+
+    Its purpose is to protect a logical quantum state against physical errors
+    by distributing the information across multiple physical qubits and
+    measuring carefully chosen properties of those qubits.
+
+    <h3>12.4.1 Physical qubits and logical qubits</h3>
+
+    A physical qubit is a real quantum device: for example, a superconducting
+    circuit, a trapped ion, or a photon-based qubit.
+
+    A logical qubit is quantum information encoded across several physical
+    qubits. The logical qubit is the unit that the error-corrected computer
+    aims to preserve and manipulate reliably.
+
+    Think of a physical qubit as a single fragile storage component and a
+    logical qubit as an error-protected representation built from several
+    such components.
+
+    The goal is not simply to store multiple independent copies of the same
+    unknown quantum state. Instead, the physical qubits are prepared in a
+    carefully chosen joint state that represents one logical quantum state.
+
+    <h3>12.4.2 Why measuring the qubit directly does not work</h3>
+
+    Suppose the logical qubit is:
+
+    <div class="equation">
+        |ψ⟩ = α|0⟩ + β|1⟩
+    </div>
+
+    If we measure it in the computational basis, we obtain either 0 or 1.
+    That measurement generally destroys the original superposition, so it
+    cannot be used to determine and restore arbitrary α and β.
+
+    Error correction therefore measures a different kind of information:
+    <strong>the error syndrome</strong>.
+
+    A syndrome tells us which error pattern is consistent with the measured
+    properties. It does not reveal the unknown logical amplitudes in the way
+    a direct measurement would.
+
+    This is the clever part of quantum error correction: learn enough about
+    the damage to repair it without directly learning the quantum information
+    we are trying to protect.
+
+    <h3>12.4.3 The three-qubit bit-flip code</h3>
+
+    Begin with a simple example that protects against one type of error:
+    a bit flip.
+
+    A bit flip is the quantum operation X:
+
+    <div class="equation">
+        X|0⟩ = |1⟩ &nbsp;&nbsp;&nbsp; X|1⟩ = |0⟩
+    </div>
+
+    The three-qubit bit-flip code encodes:
+
+    <div class="equation">
+        |0⟩ → |000⟩<br>
+        |1⟩ → |111⟩
+    </div>
+
+    Thus, the logical state becomes:
+
+    <div class="equation">
+        |ψ<sub>L</sub>⟩ = α|000⟩ + β|111⟩
+    </div>
+
+    Notice that the amplitudes α and β have not been copied into three
+    independent qubits. Instead, the logical information is stored in the
+    joint three-qubit state.
+
+    <h4>Step 1: Introduce an error</h4>
+
+    Suppose the first physical qubit flips. The state becomes:
+
+    <div class="equation">
+        α|100⟩ + β|011⟩
+    </div>
+
+    The physical state is no longer in the intended encoded form. However,
+    the error may still be identified without measuring α and β directly.
+
+    <h4>Step 2: Measure parity</h4>
+
+    We measure two parity checks:
+
+    <div class="equation">
+        S₁ = Z₁Z₂<br>
+        S₂ = Z₂Z₃
+    </div>
+
+    Here, Z is the Pauli-Z operator. Measuring the product of two Z operators
+    reveals whether the corresponding computational-basis bits agree or
+    disagree, without individually measuring their values.
+
+    The possible syndrome outcomes are:
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>S₁</th>
+                    <th>S₂</th>
+                    <th>Interpretation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>+1</td><td>+1</td><td>No bit flip detected.</td></tr>
+                <tr><td>−1</td><td>+1</td><td>The first qubit is inconsistent with the second.</td></tr>
+                <tr><td>−1</td><td>−1</td><td>The second qubit is inconsistent with both neighbours.</td></tr>
+                <tr><td>+1</td><td>−1</td><td>The third qubit is inconsistent with the second.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    The syndrome for a single bit flip identifies which physical qubit is
+    inconsistent with the others.
+
+    <h4>Step 3: Correct the error</h4>
+
+    If the syndrome indicates that the first qubit flipped, apply X to the
+    first qubit. This restores the encoded state:
+
+    <div class="equation">
+        α|100⟩ + β|011⟩ → α|000⟩ + β|111⟩
+    </div>
+
+    The unknown amplitudes α and β remain intact.
+
+    <div class="callout green">
+        The three-qubit bit-flip code can correct any single bit-flip error
+        under its idealised assumptions. It cannot, by itself, correct every
+        possible quantum error. In particular, it does not independently
+        protect against arbitrary phase-flip errors.
+    </div>
+
+    <h3>12.4.4 The three-qubit phase-flip code</h3>
+
+    A phase flip is represented by the Pauli-Z operator:
+
+    <div class="equation">
+        Z|0⟩ = |0⟩<br>
+        Z|1⟩ = −|1⟩
+    </div>
+
+    Unlike X, Z does not exchange the basis states. It changes the relative
+    phase of a superposition.
+
+    The three-qubit bit-flip code does not directly detect a single phase flip
+    because it focuses on the wrong set of properties. However, we can
+    construct a related code in the X basis.
+
+    Define:
+
+    <div class="equation">
+        |+⟩ = (|0⟩ + |1⟩)/√2<br>
+        |−⟩ = (|0⟩ − |1⟩)/√2
+    </div>
+
+    The phase-flip code encodes:
+
+    <div class="equation">
+        |0⟩ → |+++⟩<br>
+        |1⟩ → |−−−⟩
+    </div>
+
+    Since Z exchanges |+⟩ and |−⟩, the phase-flip problem becomes analogous
+    to the bit-flip problem in this basis.
+
+    This shows that quantum errors can affect different aspects of information:
+    bit values, phases, or combinations of both.
+
+    <h3>12.4.5 Correcting arbitrary single-qubit errors</h3>
+
+    A general single-qubit error can be described using combinations of the
+    Pauli operators I, X, Y, and Z, where I is the identity operation and:
+
+    <div class="equation">
+        Y = iXZ
+    </div>
+
+    The overall sign convention for Y is not important for the basic
+    explanation here.
+
+    A code that corrects an arbitrary single-qubit error must be able to
+    protect against both bit-flip and phase-flip components. The nine-qubit
+    Shor code is a famous early example of such a code.
+
+    Modern quantum error correction uses more sophisticated constructions,
+    including surface codes, which arrange physical qubits on a lattice and
+    repeatedly measure local parity checks.
+
+    <h3>12.4.6 Why correction must be repeated</h3>
+
+    Correcting a qubit once is not enough. New errors can occur during
+    subsequent gates, waiting periods, measurements, and even the correction
+    procedure itself.
+
+    A practical error-correcting computer repeatedly performs syndrome
+    measurements in rounds. The sequence of syndromes over time provides
+    evidence about how errors develop.
+
+    <div class="diagram">
+        <div class="flow">
+            <div class="node">Encode logical state</div>
+            <div class="arrow">→</div>
+            <div class="node orange">Physical noise</div>
+            <div class="arrow">→</div>
+            <div class="node">Measure syndrome</div>
+            <div class="arrow">→</div>
+            <div class="node green">Infer and correct errors</div>
+        </div>
+        <div class="flow">
+            <div class="node">Repeat syndrome measurements</div>
+            <div class="arrow">↺</div>
+            <div class="node">Protect logical information</div>
+        </div>
+    </div>
+
+    A key challenge is that syndrome measurements, control operations, and
+    classical processing can also be faulty. A useful code must tolerate
+    these imperfections rather than assume that every correction step is
+    perfect.
+
+    <h2>12.5 Stabilizer codes and the surface code</h2>
+
+    Stabilizer codes provide a systematic mathematical framework for quantum
+    error correction. They allow us to describe an encoded quantum state by
+    specifying a set of commuting measurements that the valid code states
+    satisfy.
+
+    The surface code is one of the best-studied stabilizer codes because it
+    combines a useful error-correction structure with local interactions
+    between neighbouring qubits.
+
+    <h3>12.5.1 The Pauli operators</h3>
+
+    Stabilizer codes are commonly described using the Pauli operators:
+
+    <div class="equation">
+        I = [1 0; 0 1]<br><br>
+        X = [0 1; 1 0]<br><br>
+        Z = [1 0; 0 −1]
+    </div>
+
+    The fourth Pauli operator is Y, which combines bit-flip and phase-flip
+    behaviour up to a phase factor.
+
+    These operators form the basic language used to describe many quantum
+    errors. For several qubits, we can form products such as X₁X₂ or Z₂Z₃.
+
+    <h3>12.5.2 What is a stabilizer?</h3>
+
+    A stabilizer is an operator that leaves every valid code state unchanged.
+
+    If a state |ψ⟩ belongs to a code space and S is one of its stabilizers,
+    then:
+
+    <div class="equation">
+        S|ψ⟩ = |ψ⟩
+    </div>
+
+    In a typical stabilizer code, the stabilizer operators are built from
+    products of Pauli operators. They commute with one another, allowing
+    their properties to be measured together without creating a conflict
+    between the measurements.
+
+    The set of states satisfying all stabilizer conditions defines the
+    code space.
+
+    <h3>12.5.3 How stabilizers detect errors</h3>
+
+    Suppose the original encoded state satisfies:
+
+    <div class="equation">
+        S|ψ⟩ = |ψ⟩
+    </div>
+
+    An error E changes the state to E|ψ⟩. If E anticommutes with S, then:
+
+    <div class="equation">
+        SE = −ES
+    </div>
+
+    It follows that:
+
+    <div class="equation">
+        S(E|ψ⟩) = −E|ψ⟩
+    </div>
+
+    The stabilizer measurement now returns −1 instead of +1.
+
+    This change is evidence of an error. The collection of measurement
+    outcomes is called the syndrome.
+
+    If an error commutes with a particular stabilizer, that stabilizer's
+    outcome does not change. Therefore, error detection relies on measuring
+    a suitable set of stabilizers rather than just one.
+
+    <div class="callout">
+        A stabilizer measurement does not ask, "What is the logical qubit's
+        value?" It asks, "Does this physical state satisfy the expected
+        parity relationship?" That distinction allows the code to detect
+        damage without directly measuring the encoded logical state.
+    </div>
+
+    <h3>12.5.4 Code distance</h3>
+
+    The distance of a quantum error-correcting code is the minimum number
+    of physical-qubit errors required to produce an undetectable logical
+    operation, under the usual stabilizer-code definition.
+
+    If a code has distance d, it can correct any arbitrary pattern of up to:
+
+    <div class="equation">
+        t = floor((d − 1)/2)
+    </div>
+
+    physical-qubit errors, provided the code's assumptions hold and the
+    relevant error syndrome is measured reliably enough.
+
+    Examples:
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Code distance</th>
+                    <th>Guaranteed correction capability</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>d = 3</td><td>1 arbitrary physical-qubit error.</td></tr>
+                <tr><td>d = 5</td><td>2 arbitrary physical-qubit errors.</td></tr>
+                <tr><td>d = 7</td><td>3 arbitrary physical-qubit errors.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    This guarantee concerns the code's ideal error-correction capability.
+    Real devices also experience faulty syndrome measurements, correlated
+    errors, leakage, and other effects. These must be included when designing
+    a practical fault-tolerant system.
+
+    <h3>12.5.5 What is the surface code?</h3>
+
+    The surface code is a family of topological stabilizer codes in which
+    qubits and parity checks are arranged on a two-dimensional structure.
+    Each check involves only a small local group of nearby physical qubits.
+
+    A common layout distinguishes between:
+
+    <ul>
+        <li><strong>Data qubits:</strong> physical qubits that collectively
+            encode the logical information.</li>
+        <li><strong>X-type checks:</strong> parity measurements sensitive
+            to certain phase-related error patterns.</li>
+        <li><strong>Z-type checks:</strong> parity measurements sensitive
+            to certain bit-related error patterns.</li>
+        <li><strong>Ancilla or measurement qubits:</strong> additional
+            physical qubits used to extract stabilizer information.</li>
+    </ul>
+
+    Exact layouts depend on the particular surface-code variant. In a common
+    arrangement, measurement qubits interact with nearby data qubits to
+    extract the relevant parity information.
+
+    <div class="diagram">
+        <svg viewBox="0 0 500 310" width="100%" xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-label="Simplified illustrative lattice of data and check qubits">
+            <rect x="20" y="20" width="460" height="260" rx="12"
+                  fill="#f8faff" stroke="#cbd7e8" stroke-width="2"/>
+            <g stroke="#9baecb" stroke-width="2">
+                <line x1="100" y1="70" x2="400" y2="70"/>
+                <line x1="100" y1="140" x2="400" y2="140"/>
+                <line x1="100" y1="210" x2="400" y2="210"/>
+                <line x1="100" y1="70" x2="100" y2="210"/>
+                <line x1="200" y1="70" x2="200" y2="210"/>
+                <line x1="300" y1="70" x2="300" y2="210"/>
+                <line x1="400" y1="70" x2="400" y2="210"/>
+            </g>
+            <g fill="#2857a4" stroke="#ffffff" stroke-width="3">
+                <circle cx="100" cy="70" r="14"/>
+                <circle cx="200" cy="70" r="14"/>
+                <circle cx="300" cy="70" r="14"/>
+                <circle cx="400" cy="70" r="14"/>
+                <circle cx="100" cy="140" r="14"/>
+                <circle cx="200" cy="140" r="14"/>
+                <circle cx="300" cy="140" r="14"/>
+                <circle cx="400" cy="140" r="14"/>
+                <circle cx="100" cy="210" r="14"/>
+                <circle cx="200" cy="210" r="14"/>
+                <circle cx="300" cy="210" r="14"/>
+                <circle cx="400" cy="210" r="14"/>
+            </g>
+            <g fill="#16794a" stroke="#ffffff" stroke-width="3">
+                <rect x="142" y="95" width="26" height="26" rx="5"/>
+                <rect x="242" y="95" width="26" height="26" rx="5"/>
+                <rect x="342" y="95" width="26" height="26" rx="5"/>
+                <rect x="142" y="165" width="26" height="26" rx="5"/>
+                <rect x="242" y="165" width="26" height="26" rx="5"/>
+                <rect x="342" y="165" width="26" height="26" rx="5"/>
+            </g>
+            <text x="250" y="42" text-anchor="middle" fill="#202938"
+                  font-size="14" font-weight="bold">Illustrative local-check lattice</text>
+            <circle cx="100" cy="250" r="7" fill="#2857a4"/>
+            <text x="114" y="255" font-size="12" fill="#202938">Data qubits</text>
+            <rect x="255" y="243" width="14" height="14" rx="3" fill="#16794a"/>
+            <text x="278" y="255" font-size="12" fill="#202938">Check qubits</text>
+        </svg>
+        <p class="small">
+            This drawing illustrates the idea of local data and check qubits.
+            It is not a hardware layout for a specific surface-code variant.
+        </p>
+    </div>
+
+    <h3>12.5.6 Repeated syndrome measurements and decoding</h3>
+
+    A single syndrome measurement may not be sufficient to determine exactly
+    which errors occurred. Measurement operations can also be noisy, and
+    different physical error patterns can produce the same syndrome.
+
+    Surface-code systems therefore repeat their stabilizer measurements over
+    many rounds.
+
+    A change in a stabilizer outcome compared with the previous round is
+    called a detection event. The pattern of detection events across space
+    and time helps identify likely physical errors.
+
+    A classical algorithm called a <strong>decoder</strong> processes these
+    events and chooses a correction or a corresponding logical-frame update.
+    Popular decoder families include minimum-weight perfect matching and
+    union-find methods, with different trade-offs in accuracy and speed.
+
+    The decoder does not need to reconstruct every microscopic detail of the
+    physical noise. Its job is to infer a correction that restores the
+    intended logical information as reliably as possible.
+
+    <h3>12.5.7 Why the surface code is important</h3>
+
+    The surface code is attractive because it uses local interactions and has
+    a relatively practical structure for several hardware platforms.
+
+    It can also tolerate a non-zero rate of physical errors. Below a suitable
+    error threshold, increasing the code distance can reduce the logical
+    error rate.
+
+    The threshold is not a universal number. It depends on the code variant,
+    the physical noise model, the available gates, measurement quality,
+    decoder, circuit design, and assumptions about error correlations.
+
+    Increasing code distance improves protection but also requires more
+    physical qubits, more syndrome measurements, and greater control and
+    processing resources.
+
+    <div class="callout green">
+        The central surface-code strategy is to turn local physical errors
+        into detectable patterns of stabilizer changes. The decoder uses
+        those patterns to protect the logical information encoded across
+        the lattice.
+    </div>
+
+    <h2>12.6 Logical qubits and fault tolerance</h2>
+
+    Error correction gives us a way to protect quantum information, but a
+    useful quantum computer must also perform gates, measurements, and
+    algorithmic operations on that protected information.
+
+    This leads to two connected ideas: logical qubits and fault-tolerant
+    quantum computing.
+
+    <h3>12.6.1 What makes a logical qubit different?</h3>
+
+    A logical qubit is encoded in a subspace of a larger physical system.
+    Its logical basis states, often written |0<sub>L</sub>⟩ and
+    |1<sub>L</sub>⟩, are represented by carefully chosen multi-qubit states.
+
+    A logical superposition is:
+
+    <div class="equation">
+        |ψ<sub>L</sub>⟩ =
+        α|0<sub>L</sub>⟩ + β|1<sub>L</sub>⟩
+    </div>
+
+    The logical amplitudes α and β carry the quantum information. Physical
+    errors may disturb individual qubits, but the encoding and syndrome
+    measurements can allow the system to recover the logical state.
+
+    The number of physical qubits required for a logical qubit depends on
+    the code, code distance, target error rate, hardware, and operations
+    that must be performed.
+
+    One logical qubit is therefore not necessarily one physical qubit.
+    In practical error-corrected systems, a logical qubit can require many
+    physical qubits and repeated measurement cycles.
+
+    <h3>12.6.2 What is a logical error?</h3>
+
+    A physical error affects one or more hardware qubits. A logical error
+    occurs when the accumulated physical errors cause the encoded information
+    to change in a way that the code fails to detect or correct.
+
+    For example, an individual physical-qubit error may produce a syndrome
+    that identifies the damage. A sufficiently long chain of errors can
+    sometimes imitate a logical operation while remaining undetected by the
+    stabilizer checks.
+
+    In a surface code, the distance determines the minimum weight of a
+    non-trivial logical error pattern. A higher distance generally means
+    that a larger pattern of physical errors is needed to cause a logical
+    failure.
+
+    This is why the logical error rate, rather than the physical error rate
+    alone, is a central measure of progress.
+
+    <h3>12.6.3 What does fault tolerance mean?</h3>
+
+    Fault tolerance means designing a quantum computation so that individual
+    faults do not automatically destroy the entire computation.
+
+    It is not enough to correct storage errors while assuming that every gate
+    and measurement is perfect. Real error-correction circuits contain
+    imperfect operations, so the correction procedure itself must be designed
+    to tolerate faults.
+
+    A fault-tolerant design aims to prevent a single physical fault from
+    spreading uncontrollably into many errors within the same encoded block.
+
+    Important ideas include:
+
+    <ul>
+        <li>Using carefully designed logical operations.</li>
+        <li>Preventing unwanted error propagation during gates.</li>
+        <li>Performing repeated syndrome extraction.</li>
+        <li>Using reliable decoders to infer error patterns.</li>
+        <li>Handling faulty measurements and state preparation.</li>
+        <li>Keeping the overall logical error rate sufficiently low.</li>
+    </ul>
+
+    <h3>12.6.4 Physical error rate versus logical error rate</h3>
+
+    Imagine that a physical qubit has a small probability of error during
+    a particular operation. A quantum error-correcting code combines many
+    such qubits and uses redundancy to detect and correct a range of error
+    patterns.
+
+    If the hardware operates within the suitable noise regime and the code
+    is implemented correctly, increasing the code distance can reduce the
+    probability of an uncorrectable logical error.
+
+    <div class="equation">
+        Lower physical error rate + suitable code + reliable syndrome processing
+        → potentially lower logical error rate
+    </div>
+
+    This relationship is not automatic. Correlated noise, leakage, faulty
+    measurements, poor decoding, or excessive operation overhead can undermine
+    the expected improvement.
+
+    A code may also have an operating threshold: below that threshold, increasing
+    its size can improve logical protection; above it, simply adding more
+    physical qubits may not help.
+
+    <h3>12.6.5 The overhead problem</h3>
+
+    Fault-tolerant quantum computing requires more resources than an ideal
+    mathematical circuit suggests.
+
+    Consider an algorithm that needs a certain number of logical qubits and
+    logical operations. The hardware must also provide the physical qubits
+    used to encode them, the ancillas used for syndrome measurements, the
+    control operations, classical decoding, and any additional resources
+    needed to implement logical gates.
+
+    The complete resource requirement may be much larger than the logical
+    circuit alone.
+
+    For example, non-Clifford gates are important for universal quantum
+    computation. In surface-code architectures, many such operations require
+    additional techniques, such as magic-state preparation and distillation,
+    which can consume substantial time and physical resources.
+
+    The exact overhead depends on the algorithm, code, hardware error rates,
+    target success probability, and architecture. There is no single
+    physical-qubit count that applies to every logical qubit or algorithm.
+
+    <h3>12.6.6 Logical gates and universal computation</h3>
+
+    Quantum algorithms use operations such as the Hadamard gate, Pauli gates,
+    controlled operations, and non-Clifford gates.
+
+    An error-corrected system must implement the required operations on
+    encoded information while preserving error protection.
+
+    Some logical operations are relatively straightforward for particular
+    codes. Others require more elaborate procedures.
+
+    For the surface code, logical operations can involve lattice surgery,
+    code deformation, or teleportation-based techniques. Non-Clifford
+    operations commonly rely on special resource states, often called
+    magic states, which are prepared and purified using distillation
+    procedures.
+
+    The point is that a fault-tolerant computer is not simply a collection
+    of protected memory cells. It must also support a practical set of
+    reliable logical operations.
+
+    <div class="diagram">
+        <div class="flow">
+            <div class="node">Physical qubits</div>
+            <div class="arrow">→</div>
+            <div class="node">Error-correcting code</div>
+            <div class="arrow">→</div>
+            <div class="node">Logical qubits</div>
+            <div class="arrow">→</div>
+            <div class="node green">Fault-tolerant algorithm</div>
+        </div>
+    </div>
+
+    <h2>12.7 The path to fault-tolerant quantum computing</h2>
+
+    Building a fault-tolerant quantum computer is not one engineering
+    breakthrough. It requires progress across hardware, control, quantum
+    error correction, classical processing, software, and system architecture.
+
+    A useful way to understand the journey is to follow the progression from
+    a single imperfect qubit to a machine that can run a long quantum algorithm
+    with a predictable probability of success.
+
+    <h3>12.7.1 Stage one: improve physical qubits</h3>
+
+    The first task is to build reliable physical devices.
+
+    Engineers work to improve relaxation and coherence times, reduce gate
+    errors, improve readout accuracy, and minimise unwanted interactions.
+    They also develop calibration procedures and better control electronics.
+
+    Better physical qubits help because the error-correction system has less
+    damage to manage. However, a device with excellent individual qubits
+    does not automatically provide a scalable fault-tolerant computer.
+    The operations and measurements between those qubits must also be reliable.
+
+    <h3>12.7.2 Stage two: characterise the hardware</h3>
+
+    The next task is to measure what the hardware actually does.
+
+    Engineers use T1 and T2 experiments, gate benchmarking, readout calibration,
+    leakage measurements, and other diagnostics to understand the device's
+    error behaviour.
+
+    Characterisation is an ongoing process. Noise can change with temperature,
+    device drift, operating frequency, control settings, and the execution of
+    other circuits.
+
+    Reliable error correction requires a sufficiently accurate understanding
+    of the errors that matter to the architecture.
+
+    <h3>12.7.3 Stage three: demonstrate error suppression</h3>
+
+    Researchers implement small error-correcting codes and measure whether
+    encoded information performs better than unprotected physical qubits
+    under comparable conditions.
+
+    The important test is not simply whether the code can detect an error.
+    The stronger test is whether the complete encoded system reduces the
+    logical error rate after accounting for the overhead of encoding,
+    syndrome extraction, and decoding.
+
+    Demonstrating error suppression as code distance increases is an important
+    step towards scalable fault tolerance.
+
+    <h3>12.7.4 Stage four: scale the code distance</h3>
+
+    Once a code performs well, the next task is to increase its distance and
+    show that stronger protection is achievable.
+
+    Larger code distances require more data qubits, more check qubits,
+    additional control operations, and more syndrome data to process.
+
+    The engineering challenge is to scale the system without allowing new
+    problems, such as crosstalk, wiring complexity, correlated errors, or
+    decoding delays, to dominate.
+
+    <h3>12.7.5 Stage five: build reliable logical operations</h3>
+
+    A useful machine must do more than store a logical state. It must execute
+    logical gates, initialise logical qubits, measure them, and connect
+    operations together into circuits.
+
+    Each operation introduces additional error opportunities and resource
+    requirements.
+
+    Researchers therefore work on fault-tolerant gate implementations,
+    logical-state preparation, logical measurements, magic-state distillation,
+    and efficient scheduling of error-correction cycles.
+
+    <h3>12.7.6 Stage six: run complete fault-tolerant algorithms</h3>
+
+    The final goal is to run quantum algorithms whose depth, number of logical
+    operations, and required accuracy would be impractical without sustained
+    error protection.
+
+    At this stage, the system must coordinate:
+
+    <ul>
+        <li>Physical qubits and control electronics.</li>
+        <li>Repeated syndrome measurements.</li>
+        <li>Fast and reliable classical decoding.</li>
+        <li>Logical gates and state preparation.</li>
+        <li>Resource management and error-budget estimation.</li>
+        <li>Algorithm-level verification and final measurement.</li>
+    </ul>
+
+    The goal is to ensure that the logical error probability remains low
+    enough across the entire computation, not merely during one gate or
+    one short experiment.
+
+    <h3>12.7.7 The complete progression</h3>
+
+    <ol class="progress-list">
+        <li>
+            <strong>Reliable physical hardware</strong><br>
+            Improve coherence, gates, readout, connectivity, and control.
+        </li>
+        <li>
+            <strong>Accurate noise characterisation</strong><br>
+            Measure T1, T2, gate errors, readout errors, leakage, and
+            relevant correlations.
+        </li>
+        <li>
+            <strong>Useful near-term error mitigation</strong><br>
+            Apply calibration, readout mitigation, ZNE, or PEC where their
+            assumptions and resource costs make sense.
+        </li>
+        <li>
+            <strong>Encoded logical qubits</strong><br>
+            Protect quantum information through an appropriate
+            error-correcting code.
+        </li>
+        <li>
+            <strong>Repeated correction and decoding</strong><br>
+            Detect changes in error syndromes and infer likely physical errors.
+        </li>
+        <li>
+            <strong>Scalable logical operations</strong><br>
+            Implement gates, measurements, and state preparation while
+            controlling error propagation.
+        </li>
+        <li>
+            <strong>Fault-tolerant quantum computing</strong><br>
+            Execute long computations with a sufficiently low logical
+            failure probability and manageable resource overhead.
+        </li>
+    </ol>
+
+    <h3>12.7.8 What remains difficult?</h3>
+
+    Several problems must be solved together.
+
+    <div class="two-column">
+        <div class="mini-card">
+            <h4>Hardware scale</h4>
+            Large systems need many well-controlled physical qubits, suitable
+            connectivity, and practical wiring and control arrangements.
+        </div>
+
+        <div class="mini-card">
+            <h4>Error correlations</h4>
+            Error-correction estimates can become unreliable if physical
+            errors are strongly correlated or differ significantly from the
+            assumed noise model.
+        </div>
+
+        <div class="mini-card">
+            <h4>Classical processing</h4>
+            Syndrome data must be processed quickly enough to support the
+            required correction and control strategy.
+        </div>
+
+        <div class="mini-card">
+            <h4>Resource overhead</h4>
+            The total physical-qubit count, operation count, and execution
+            time must remain manageable for useful algorithms.
+        </div>
+
+        <div class="mini-card">
+            <h4>Logical gate reliability</h4>
+            Every gate, measurement, and state-preparation procedure must
+            fit within the overall logical error budget.
+        </div>
+
+        <div class="mini-card">
+            <h4>End-to-end verification</h4>
+            A successful small error-correction experiment does not by itself
+            demonstrate that a large algorithm can run reliably.
+        </div>
+    </div>
+
+    <h3>12.7.9 Why error correction matters for quantum advantage</h3>
+
+    A quantum computer is not useful merely because it contains many qubits.
+    It must perform a task accurately enough to produce a meaningful result.
+
+    Quantum algorithms such as Shor's factoring algorithm and many quantum
+    simulation algorithms can require deep circuits, repeated operations,
+    and precise interference. Without adequate error protection, noise may
+    accumulate until the final output becomes unreliable.
+
+    Error mitigation can improve selected estimates on noisy hardware, but
+    its statistical cost can grow significantly with circuit size and noise.
+    Fault-tolerant computing aims to control logical errors throughout a
+    computation so that useful algorithmic depth becomes achievable.
+
+    This does not mean every quantum algorithm will outperform every
+    classical algorithm. Quantum advantage depends on the task, the
+    algorithm, the available hardware, the resource requirements, and the
+    best classical methods.
+
+    Fault tolerance is an enabling technology, not a guarantee of quantum
+    advantage for every problem.
+
+    <div class="callout green">
+        <strong>The long-term objective:</strong>
+        Build quantum systems in which physical errors still occur, but
+        their effects can be detected, corrected, and controlled well enough
+        that logical quantum information remains reliable throughout useful
+        computations.
+    </div>
+
+    <h2>Putting the chapter together</h2>
+
+    All the topics in this chapter form a connected sequence.
+
+    <div class="diagram">
+        <div class="flow">
+            <div class="node orange">Physical noise</div>
+            <div class="arrow">→</div>
+            <div class="node">Characterisation</div>
+            <div class="arrow">→</div>
+            <div class="node">Mitigation</div>
+        </div>
+        <div class="flow">
+            <div class="node">Encode logical information</div>
+            <div class="arrow">→</div>
+            <div class="node">Measure stabilizers</div>
+            <div class="arrow">→</div>
+            <div class="node">Decode syndromes</div>
+        </div>
+        <div class="flow">
+            <div class="node">Correct physical errors</div>
+            <div class="arrow">→</div>
+            <div class="node green">Reliable logical operations</div>
+            <div class="arrow">→</div>
+            <div class="node green">Fault-tolerant computation</div>
+        </div>
+    </div>
+
+    Noise tells us why quantum information is fragile. Characterisation tells
+    us how the device behaves. Error mitigation improves certain estimates
+    using additional data and statistical techniques. Quantum error correction
+    encodes information and detects error patterns through syndrome
+    measurements. Stabilizer codes provide a mathematical framework for this
+    process, and the surface code offers a practical architecture based on
+    local checks. Logical qubits and fault-tolerant operations then allow
+    these ideas to be assembled into larger computations.
+
+    <section class="takeaway">
+        <h2>Key ideas to remember</h2>
+        <ul>
+            <li><strong>Noise</strong> is an unwanted physical effect that
+                changes quantum states, gates, or measurements.</li>
+            <li><strong>T1</strong> describes energy relaxation, while
+                <strong>T2</strong> describes the loss of phase coherence.</li>
+            <li><strong>Randomized benchmarking</strong> estimates average
+                gate-error behaviour using sequences of random operations.</li>
+            <li><strong>Error mitigation</strong> improves estimates of
+                selected outputs but does not generally protect an entire
+                quantum state throughout a computation.</li>
+            <li><strong>Quantum error correction</strong> encodes information
+                across multiple physical qubits and uses syndrome measurements
+                to detect errors.</li>
+            <li><strong>Stabilizers</strong> describe properties that valid
+                code states satisfy.</li>
+            <li><strong>The surface code</strong> uses local parity checks
+                and repeated syndrome measurements to protect logical qubits.</li>
+            <li><strong>Code distance</strong> describes how many physical
+                errors are required to produce an undetectable logical
+                operation.</li>
+            <li><strong>Fault tolerance</strong> means designing the complete
+                computation to remain reliable despite imperfect components.</li>
+            <li><strong>The ultimate goal</strong> is not to eliminate every
+                physical error, but to control their effects well enough to
+                perform useful quantum computations reliably.</li>
+        </ul>
+    </section>
+
+    <h2>Questions for revision</h2>
+
+    <div class="card">
+        <ol>
+            <li>Why can a quantum computation fail even if every measurement
+                returns a valid binary result?</li>
+            <li>Explain the difference between relaxation and dephasing.</li>
+            <li>What do T1 and T2 measure, and why are both important?</li>
+            <li>How does randomized benchmarking estimate gate-error behaviour?</li>
+            <li>How does readout mitigation use a confusion matrix?</li>
+            <li>Why does zero-noise extrapolation require measurements at
+                several effective noise levels?</li>
+            <li>Why can probabilistic error cancellation require many circuit
+                executions?</li>
+            <li>Why can an error syndrome reveal damage without revealing
+                the complete logical quantum state?</li>
+            <li>How does the three-qubit bit-flip code identify a single
+                bit-flip error?</li>
+            <li>What is a stabilizer, and how can an error change its
+                measurement outcome?</li>
+            <li>What does the distance of a quantum error-correcting code tell us?</li>
+            <li>Why are surface-code syndrome measurements repeated over time?</li>
+            <li>What is the difference between a physical error and a
+                logical error?</li>
+            <li>Why must logical gates and measurements also be fault tolerant?</li>
+            <li>Why does building a fault-tolerant quantum computer require
+                much more than simply increasing the number of physical qubits?</li>
+        </ol>
+    </div>
+
+    <h2>Further reading</h2>
+
+    <div class="card">
+        <ul>
+            <li>
+                Daniel Gottesman, <em>An Introduction to Quantum Error
+                Correction and Fault-Tolerant Quantum Computation</em>.
+                A useful conceptual introduction to quantum error correction.
+            </li>
+            <li>
+                John Preskill, <em>Lecture Notes for Physics 219: Quantum
+                Computation</em>. These notes cover quantum information,
+                noise, error correction, and fault tolerance.
+            </li>
+            <li>
+                Barbara M. Terhal, <em>Quantum Error Correction for Quantum
+                Memories</em>, Reviews of Modern Physics (2015).
+                A detailed review of quantum error-correcting codes.
+            </li>
+            <li>
+                Austin G. Fowler, Matteo Mariantoni, John M. Martinis, and
+                Andrew N. Cleland, <em>Surface codes: Towards practical
+                large-scale quantum computation</em>, Physical Review A
+                (2012).
+            </li>
+            <li>
+                Kristan Temme, Sergey Bravyi, and Jay M. Gambetta,
+                <em>Error mitigation for short-depth quantum circuits</em>,
+                Physical Review Letters (2017).
+            </li>
+            <li>
+                Suguru Endo, Simon C. Benjamin, and Ying Li,
+                <em>Practical quantum error mitigation for near-future
+                applications</em>, Physical Review X (2018).
+            </li>
+        </ul>
+        <p class="small">
+            These references provide routes from introductory concepts to
+            the mathematical and experimental details of quantum error
+            correction and error mitigation.
+        </p>
+    </div>
+
+    <footer>
+        <p>
+            <strong>End of Chapter 12.</strong> The next step is to connect
+            these error-protection ideas with the physical implementations
+            of qubits and the architecture of scalable quantum computers.
+        </p>
+    </footer>
+
+</div>
+</body>
+</html>

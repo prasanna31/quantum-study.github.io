@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 11: Physical Implementations of Qubits</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --paper: #ffffff;
+            --text: #263247;
+            --muted: #58677d;
+            --heading: #173c70;
+            --accent: #176b87;
+            --border: #dce4ef;
+            --soft: #eaf3fb;
+            --code: #edf1f7;
+            --green: #e8f5ec;
+            --yellow: #fff4d9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behaviour: smooth;
+            scroll-padding-top: 20px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .container {
+            width: min(100% - 32px, 1000px);
+            margin: 35px auto;
+            background: var(--paper);
+            padding: clamp(20px, 5vw, 58px);
+            border-radius: 14px;
+            box-shadow: 0 5px 25px rgba(25, 45, 75, 0.07);
+        }
+
+        header {
+            padding-bottom: 28px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        .chapter-label {
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            color: var(--heading);
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.2;
+            margin: 14px 0;
+        }
+
+        h2 {
+            color: var(--heading);
+            font-size: 1.75rem;
+            line-height: 1.35;
+            margin-top: 48px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            color: var(--accent);
+            font-size: 1.23rem;
+            margin-top: 28px;
+        }
+
+        h4 {
+            color: var(--heading);
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 14px 0;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        .lead {
+            font-size: 1.08rem;
+        }
+
+        nav {
+            background: #f2f6fb;
+            border: 1px solid var(--border);
+            padding: 22px 26px;
+            border-radius: 10px;
+            margin: 28px 0;
+        }
+
+        nav h2 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            border: none;
+            padding: 0;
+        }
+
+        nav ol {
+            padding-left: 23px;
+            margin-bottom: 0;
+        }
+
+        nav a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .callout {
+            padding: 18px 22px;
+            margin: 22px 0;
+            border-left: 5px solid var(--accent);
+            background: var(--soft);
+            border-radius: 5px;
+        }
+
+        .important {
+            background: var(--yellow);
+            border-left-color: #d59a22;
+        }
+
+        .success {
+            background: var(--green);
+            border-left-color: #318451;
+        }
+
+        .formula {
+            background: var(--code);
+            padding: 15px;
+            border-radius: 7px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 1.05rem;
+            overflow-wrap: anywhere;
+            margin: 18px 0;
+        }
+
+        .diagram {
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 18px;
+            margin: 22px 0;
+            background: #fbfcfe;
+            text-align: center;
+        }
+
+        .diagram-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .node {
+            border: 1px solid #aac7df;
+            background: #eaf3fb;
+            padding: 10px 15px;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            font-size: 0.94rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf1f9;
+            color: var(--heading);
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fafbfd;
+        }
+
+        code {
+            background: var(--code);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: "Courier New", monospace;
+        }
+
+        .platform-card {
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 18px 22px;
+            margin: 20px 0;
+        }
+
+        .platform-card h3 {
+            margin-top: 0;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e6f0fa;
+            color: #194d79;
+            padding: 3px 9px;
+            border-radius: 5px;
+            font-size: 0.82rem;
+            margin: 3px;
+        }
+
+        .question {
+            margin: 22px 0;
+            padding: 18px;
+            background: #f8faff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        details {
+            margin-top: 12px;
+        }
+
+        summary {
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 15px;
+            }
+
+            .container {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                padding: 22px 17px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+
+<header>
+    <div class="chapter-label">Quantum Computing · Chapter 11</div>
+    <h1>Physical Implementations of Qubits</h1>
+    <p class="subtitle">From superconducting circuits and trapped ions to silicon chips, photons, neutral atoms and topological quantum computing.</p>
+    <p class="lead">
+        A quantum computer needs something physical to represent its qubits. This chapter explains what those physical systems are, how we control them, why different companies and researchers choose different approaches, and what makes building a large, reliable quantum computer so difficult.
+    </p>
+</header>
+
+<nav>
+    <h2>In this chapter</h2>
+    <ol>
+        <li><a href="#foundations">From an abstract qubit to a physical qubit</a></li>
+        <li><a href="#superconducting">11.1 Superconducting qubits</a></li>
+        <li><a href="#ions">11.2 Trapped ions</a></li>
+        <li><a href="#photonic">11.3 Photonic quantum computing</a></li>
+        <li><a href="#neutral">11.4 Neutral atoms</a></li>
+        <li><a href="#spin">11.5 Spin qubits and silicon</a></li>
+        <li><a href="#topological">11.6 Topological qubits</a></li>
+        <li><a href="#comparison">11.7 Comparing quantum computing platforms</a></li>
+        <li><a href="#annealing">11.8 Quantum annealing vs. gate-based models</a></li>
+        <li><a href="#engineering">Building a useful quantum computer</a></li>
+        <li><a href="#revision">Chapter summary and revision questions</a></li>
+    </ol>
+</nav>
+
+<section id="foundations">
+    <h2>11.0 From an abstract qubit to a physical qubit</h2>
+
+    <p>
+        In earlier chapters, we learnt that a classical computer stores information using bits. A bit has one of two values: 0 or 1. A quantum computer uses <strong>qubits</strong>, which follow the laws of quantum mechanics.
+    </p>
+
+    <p>
+        An ideal qubit can be written as:
+    </p>
+
+    <div class="formula">
+        |ψ⟩ = α|0⟩ + β|1⟩
+    </div>
+
+    <p>
+        Here, α and β are complex probability amplitudes. Their squared magnitudes determine the probabilities of measurement outcomes, and they satisfy:
+    </p>
+
+    <div class="formula">
+        |α|² + |β|² = 1
+    </div>
+
+    <p>
+        When we measure the qubit in the computational basis, we obtain 0 with probability |α|² and 1 with probability |β|². The amplitudes also have relative phase, which can affect later quantum interference.
+    </p>
+
+    <p>
+        So far, this description has been mathematical. We can write a qubit on a blackboard, simulate it in Python, or represent it using a state vector in a quantum simulator. But an actual quantum computer needs a physical object whose states behave like |0⟩ and |1⟩.
+    </p>
+
+    <p>
+        That physical object might be an electrical circuit, an ion, a photon, an atom, or an electron trapped inside a tiny semiconductor structure. The physical systems look very different, but each must provide a controllable two-level quantum system, or an effective two-level system, that can store quantum information.
+    </p>
+
+    <div class="callout">
+        <strong>The central idea:</strong> A qubit is an abstract quantum information unit. A physical qubit is the real object or device used to store and manipulate that information.
+    </div>
+
+    <h3>What must a physical qubit be able to do?</h3>
+
+    <p>A useful physical qubit must satisfy several requirements.</p>
+
+    <ol>
+        <li><strong>State preparation:</strong> We must be able to initialise it into a known state, usually |0⟩.</li>
+        <li><strong>Control:</strong> We must be able to perform quantum gates that change its state in a controlled way.</li>
+        <li><strong>Measurement:</strong> We must be able to extract a classical result from it.</li>
+        <li><strong>Coherence:</strong> Its quantum state must survive long enough for useful operations to take place.</li>
+        <li><strong>Entanglement:</strong> It must interact with other qubits in a controlled way so that we can create entangled states.</li>
+        <li><strong>Scalability:</strong> We must have a realistic way to build and control many qubits together.</li>
+    </ol>
+
+    <p>
+        The challenge is that these requirements can conflict with one another. A system that stores quantum information very well might be difficult to control. A system that allows extremely fast operations might be more sensitive to noise. A system with excellent individual qubits might be difficult to connect to thousands of other qubits.
+    </p>
+
+    <h3>Why not use an ordinary transistor?</h3>
+
+    <p>
+        Classical computers already use billions of transistors. Their voltage levels represent binary information, and carefully designed circuits perform logical operations. A transistor is excellent for classical computing, but its ordinary operating states are not automatically suitable for preserving and manipulating quantum superpositions.
+    </p>
+
+    <p>
+        Quantum computing requires much more careful control of quantum states and their interactions with the environment. It is possible to build quantum devices using semiconductor technology, but the device must be engineered to exploit quantum effects rather than simply operate as an ordinary classical switch.
+    </p>
+
+    <div class="diagram">
+        <h4>One goal, several physical approaches</h4>
+        <div class="diagram-row">
+            <div class="node">Mathematical qubit</div>
+            <div class="arrow">→</div>
+            <div class="node">Physical system</div>
+        </div>
+        <div class="diagram-row">
+            <div class="node">Control</div>
+            <div class="node">Entanglement</div>
+            <div class="node">Measurement</div>
+        </div>
+        <div class="diagram-row">
+            <div class="arrow">↓</div>
+        </div>
+        <div class="node">Quantum computation</div>
+    </div>
+</section>
+
+<section id="superconducting">
+    <h2>11.1 Superconducting qubits</h2>
+
+    <p>
+        Superconducting qubits are among the best-known approaches to quantum computing. They are used in systems developed by organisations such as IBM and Google. The basic idea is fascinating: instead of using an individual atom as a qubit, we build a tiny electrical circuit whose behaviour is governed by quantum mechanics.
+    </p>
+
+    <h3>From an electrical circuit to a quantum system</h3>
+
+    <p>
+        In an ordinary circuit, we study quantities such as voltage, current, resistance and capacitance. At sufficiently small scales and with the right circuit design, electrical quantities can exhibit quantum behaviour.
+    </p>
+
+    <p>
+        Superconducting circuits use materials cooled below their superconducting transition temperature. In this state, electrical current can flow without ordinary electrical resistance. The circuit also contains specially designed components called <strong>Josephson junctions</strong>.
+    </p>
+
+    <p>
+        A Josephson junction consists of two superconducting regions separated by a very thin barrier. Cooper pairs, which are pairs of electrons behaving collectively in a superconductor, can tunnel through this barrier. This creates a nonlinear element that is essential for constructing many superconducting qubits.
+    </p>
+
+    <p>
+        Why is nonlinearity important? A simple idealised electrical resonator has equally spaced energy levels. If we tried to use two of those levels as |0⟩ and |1⟩, a control signal intended to address the transition between them could also affect other transitions. It would be difficult to isolate the desired pair of states.
+    </p>
+
+    <p>
+        The Josephson junction introduces nonlinearity, making the energy-level spacing unequal. We can then use two selected energy levels as the computational states of a qubit and control them more selectively.
+    </p>
+
+    <div class="diagram">
+        <h4>Conceptual structure of a superconducting qubit</h4>
+        <div class="diagram-row">
+            <div class="node">Microwave control</div>
+            <div class="arrow">↓</div>
+        </div>
+        <div class="diagram-row">
+            <div class="node">Superconducting circuit</div>
+            <div class="node">Josephson junction</div>
+        </div>
+        <div class="diagram-row">
+            <div class="arrow">↓</div>
+        </div>
+        <div class="node">Quantum energy levels |0⟩ and |1⟩</div>
+        <div class="diagram-row">
+            <div class="arrow">↓</div>
+        </div>
+        <div class="node">Measurement electronics</div>
+    </div>
+
+    <h3>The transmon qubit</h3>
+
+    <p>
+        One widely used superconducting design is the <strong>transmon</strong>. It is designed to reduce sensitivity to certain kinds of charge noise while retaining enough nonlinearity to distinguish the computational energy levels.
+    </p>
+
+    <p>
+        A transmon is not simply a tiny battery that can be switched between two voltages. Its computational states are quantum energy levels of an engineered circuit. The circuit is usually operated inside a dilution refrigerator at temperatures in the millikelvin range, close to absolute zero.
+    </p>
+
+    <p>
+        At these temperatures, thermal energy is reduced so that the qubit is less likely to be unintentionally excited into a higher energy state. The refrigerator also helps establish the controlled environment needed for quantum experiments.
+    </p>
+
+    <h3>How do we control a superconducting qubit?</h3>
+
+    <p>
+        Microwave pulses are used to manipulate the qubit. Their frequency, duration, phase and amplitude determine the rotation applied to the quantum state.
+    </p>
+
+    <p>
+        For example, a suitable pulse can transform |0⟩ into an equal superposition:
+    </p>
+
+    <div class="formula">
+        |0⟩ → (|0⟩ + |1⟩) / √2
+    </div>
+
+    <p>
+        This is the result of a Hadamard-like operation on |0⟩. It is not the only possible pulse sequence, and an arbitrary rotation requires suitable calibration.
+    </p>
+
+    <p>
+        To entangle two superconducting qubits, engineers couple them through a shared circuit element, a tunable coupler or another designed interaction. The choice depends on the architecture.
+    </p>
+
+    <h3>How is the result measured?</h3>
+
+    <p>
+        Superconducting qubits are often coupled to microwave resonators. The qubit affects the resonator's response, and microwave measurement electronics detect this change. The result is processed into a classical outcome, such as 0 or 1.
+    </p>
+
+    <p>
+        Measurement is therefore not simply a person looking at the circuit. It is a carefully calibrated physical process that converts information about the quantum state into a measurable signal.
+    </p>
+
+    <h3>Advantages</h3>
+
+    <ul>
+        <li><strong>Fast gates:</strong> Many single-qubit and two-qubit operations can be performed in nanoseconds to hundreds of nanoseconds, depending on the gate and device.</li>
+        <li><strong>Fabrication:</strong> Circuits can be manufactured using techniques related to established semiconductor and microfabrication processes.</li>
+        <li><strong>Electrical control:</strong> Microwave electronics and designed couplers provide practical methods for controlling qubits.</li>
+        <li><strong>Strong research ecosystem:</strong> There is substantial experience in building, calibrating and operating these devices.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+
+    <ul>
+        <li><strong>Shorter coherence in many devices:</strong> Quantum information can be lost through interactions with materials, control circuitry and the environment.</li>
+        <li><strong>Cooling requirements:</strong> Large systems require specialised cryogenic infrastructure and careful heat management.</li>
+        <li><strong>Wiring and control:</strong> Connecting and controlling many qubits creates engineering challenges inside and around the refrigerator.</li>
+        <li><strong>Fabrication variation:</strong> Small manufacturing differences can change the properties of individual qubits.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Remember:</strong> Superconducting qubits are attractive because they can be controlled quickly using engineered electrical circuits. Their central engineering challenge is maintaining reliable quantum behaviour while scaling the circuits, wiring, cooling and control systems.
+    </div>
+</section>
+
+<section id="ions">
+    <h2>11.2 Trapped ions</h2>
+
+    <p>
+        Imagine taking a single atom, removing one or more electrons from it, and using electric fields to hold the resulting charged particle in a carefully controlled region of space. That is the basic idea behind trapped-ion quantum computing.
+    </p>
+
+    <p>
+        An ion is an atom or molecule with a net electric charge. Since charged particles respond to electric fields, researchers can use electromagnetic fields to confine ions in a trap. The ions can be held in an ordered arrangement inside a vacuum chamber.
+    </p>
+
+    <h3>Where is the qubit stored?</h3>
+
+    <p>
+        The qubit is usually encoded in two selected internal quantum states of the ion. These might be two electronic states or two hyperfine states, which arise from interactions involving electronic and nuclear angular momentum.
+    </p>
+
+    <p>
+        We label these states |0⟩ and |1⟩. The information is stored in the ion's internal state, not in its position in space. The ion's motion, however, is extremely useful because it helps connect different ions and perform two-qubit operations.
+    </p>
+
+    <h3>How do we manipulate trapped ions?</h3>
+
+    <p>
+        Lasers or, in some architectures, microwave fields are used to control the ions. Carefully selected pulses change the internal states of the ions. Laser interactions can also couple an ion's internal state to its motion.
+    </p>
+
+    <p>
+        Consider two ions held in the same trap. They repel each other because they carry the same electric charge, but their collective motion can be organised into shared vibrational modes. These modes act as a temporary communication channel between their internal qubit states.
+    </p>
+
+    <div class="diagram">
+        <h4>Entangling two trapped-ion qubits</h4>
+        <div class="diagram-row">
+            <div class="node">Ion A</div>
+            <div class="arrow">↔</div>
+            <div class="node">Shared motional mode</div>
+            <div class="arrow">↔</div>
+            <div class="node">Ion B</div>
+        </div>
+        <p>
+            Laser or microwave control, combined with suitable interactions, can create a joint quantum state of both ions.
+        </p>
+    </div>
+
+    <p>
+        This shared motion makes it possible to create entanglement between ions. The details depend on the chosen gate mechanism, pulse sequence and trap design.
+    </p>
+
+    <h3>How do we read an ion's state?</h3>
+
+    <p>
+        A common technique is called <strong>state-dependent fluorescence</strong>. A laser is tuned so that one of the selected states scatters many photons, while the other scatters very few under the measurement conditions.
+    </p>
+
+    <p>
+        A detector collects the emitted light. A bright signal is interpreted as one result and a dark signal as the other. The mapping depends on the specific ion and experimental arrangement.
+    </p>
+
+    <h3>Why are trapped ions attractive?</h3>
+
+    <ul>
+        <li><strong>Excellent coherence:</strong> Carefully chosen atomic states can be relatively isolated from environmental disturbances, allowing long coherence times.</li>
+        <li><strong>High gate fidelity:</strong> Well-engineered trapped-ion systems can perform very accurate quantum operations.</li>
+        <li><strong>Consistent qubits:</strong> Ions of the same species have naturally identical atomic structure, unlike fabricated circuits that can vary from device to device.</li>
+        <li><strong>Flexible connectivity:</strong> Ions sharing a trap can interact through common motional modes, although the practical connectivity depends on the architecture.</li>
+    </ul>
+
+    <h3>What makes trapped ions difficult to scale?</h3>
+
+    <p>
+        The main challenge is not that ions cannot form excellent qubits. It is building a large machine that can operate them efficiently.
+    </p>
+
+    <p>
+        As more ions are placed in a trap, their collective motion becomes more complicated. The control sequences may become harder to calibrate, and operations can take longer. Researchers therefore explore segmented traps, ion shuttling and photonic connections between separate traps.
+    </p>
+
+    <p>
+        Shuttling means physically moving ions between different regions of a device. Instead of forcing every ion to interact with every other ion in one large trap, a machine can transport ions to the places where operations are needed.
+    </p>
+
+    <p>
+        Another approach is modular quantum computing. Several smaller ion-trap modules perform local operations and communicate with one another through optical links.
+    </p>
+
+    <div class="callout">
+        <strong>Remember:</strong> Trapped ions use individual atomic ions as qubits. Their natural atomic properties support accurate and stable operations, while large-scale control, transport and interconnection remain major engineering challenges.
+    </div>
+</section>
+
+<section id="photonic">
+    <h2>11.3 Photonic quantum computing</h2>
+
+    <p>
+        A photon is a quantum of electromagnetic radiation. It is the particle associated with light. Unlike superconducting circuits and trapped ions, photonic quantum computing uses light itself to carry quantum information.
+    </p>
+
+    <p>
+        This makes photons particularly interesting because they can travel through optical fibres or free space. They are also useful for connecting quantum devices that are physically far apart.
+    </p>
+
+    <h3>How can a photon represent a qubit?</h3>
+
+    <p>
+        There are several possible encodings. The qubit can be represented using the photon's polarisation, its path through an optical circuit, or other carefully selected optical modes.
+    </p>
+
+    <p>
+        For polarisation encoding, we may define:
+    </p>
+
+    <div class="formula">
+        |0⟩ = |H⟩ &nbsp;&nbsp;&nbsp; |1⟩ = |V⟩
+    </div>
+
+    <p>
+        Here, H represents horizontal polarisation and V represents vertical polarisation. A suitable optical element can transform the photon's polarisation, creating superpositions of these two states.
+    </p>
+
+    <p>
+        For instance, a photon prepared in an equal superposition of horizontal and vertical polarisation can be written as:
+    </p>
+
+    <div class="formula">
+        |ψ⟩ = (|H⟩ + |V⟩) / √2
+    </div>
+
+    <p>
+        A polarisation measurement produces one of the allowed outcomes. The probabilities depend on the photon's state and the measurement basis.
+    </p>
+
+    <h3>How do optical circuits perform quantum operations?</h3>
+
+    <p>
+        Mirrors, beam splitters, phase shifters and other optical components can manipulate photonic quantum states. A beam splitter, for example, can place a photon into a superposition of two possible paths.
+    </p>
+
+    <p>
+        The paths can interfere when they are brought together again. This is one of the basic ideas behind optical quantum circuits.
+    </p>
+
+    <div class="diagram">
+        <h4>A simple optical circuit</h4>
+        <div class="diagram-row">
+            <div class="node">Photon source</div>
+            <div class="arrow">→</div>
+            <div class="node">Beam splitter</div>
+            <div class="arrow">→</div>
+            <div class="node">Phase control</div>
+        </div>
+        <div class="diagram-row">
+            <div class="arrow">↓</div>
+        </div>
+        <div class="node">Interference and measurement</div>
+    </div>
+
+    <p>
+        The situation becomes more complicated when we want two photons to perform an entangling gate. Photons interact very weakly with one another under ordinary conditions. This is excellent for transporting information, but it makes direct photon-photon interactions difficult.
+    </p>
+
+    <p>
+        Optical quantum computers therefore use methods such as measurement-induced gates, interference, ancillary photons, photodetection and feed-forward. Some architectures use matter-based devices or nonlinear optical interactions to support the required operations.
+    </p>
+
+    <p>
+        In measurement-based photonic computing, a large entangled resource state can be prepared first. Computation then proceeds through measurements on selected parts of that state, with later measurement choices sometimes depending on earlier outcomes.
+    </p>
+
+    <h3>Why are photons useful?</h3>
+
+    <ul>
+        <li><strong>Excellent transmission:</strong> Photons can transport quantum information over optical links with relatively low interaction with the environment.</li>
+        <li><strong>Operation outside cryogenic environments:</strong> Some photonic components and optical circuits work at room temperature, although detectors, sources and other components may require cooling.</li>
+        <li><strong>Networking:</strong> Photons are natural candidates for communication between separate quantum processors.</li>
+        <li><strong>Optical integration:</strong> Many optical components can be integrated onto chips.</li>
+    </ul>
+
+    <h3>What are the challenges?</h3>
+
+    <ul>
+        <li><strong>Photon loss:</strong> A photon may be absorbed, scattered or fail to reach the detector.</li>
+        <li><strong>Reliable sources:</strong> Some computations require photons with carefully controlled quantum states and timing.</li>
+        <li><strong>Two-qubit operations:</strong> Creating reliable entangling operations is difficult because photons interact weakly.</li>
+        <li><strong>Detection:</strong> Efficient, low-noise photodetectors and suitable supporting electronics are essential.</li>
+        <li><strong>Feed-forward and resource overhead:</strong> Some architectures require additional photons, detectors, switching and classical processing.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Remember:</strong> Photons are excellent carriers of quantum information. The difficulty is building a complete computational system that creates the right photons, entangles them reliably, detects them efficiently and handles losses.
+    </div>
+</section>
+
+<section id="neutral">
+    <h2>11.4 Neutral atoms</h2>
+
+    <p>
+        Trapped-ion computing uses charged atoms. Neutral-atom quantum computing uses atoms that have no net electric charge. At first, this may seem like a disadvantage: if the atoms are neutral, how can we hold them in place?
+    </p>
+
+    <p>
+        The answer is that neutral atoms can be controlled using carefully arranged laser fields and optical traps. Researchers often use optical tweezers or optical lattices to hold atoms at specific locations.
+    </p>
+
+    <h3>Optical tweezers and optical lattices</h3>
+
+    <p>
+        An optical tweezer is a tightly focused laser beam that creates a potential well. Under suitable conditions, a neutral atom can be confined near the focus. By moving the beam, researchers can move the atom.
+    </p>
+
+    <p>
+        An optical lattice is a repeating arrangement of optical potential wells, often created by interfering laser beams. It can hold many atoms in an ordered structure.
+    </p>
+
+    <p>
+        Arrays of optical tweezers are especially interesting because researchers can rearrange atoms into selected patterns. This provides a flexible way to create quantum registers containing many atomic qubits.
+    </p>
+
+    <h3>How does a neutral atom become a qubit?</h3>
+
+    <p>
+        The qubit can be encoded in two internal atomic states, much like a trapped-ion qubit. Laser or microwave pulses manipulate these states.
+    </p>
+
+    <p>
+        A particularly important technique is to excite an atom into a highly excited state called a <strong>Rydberg state</strong>. In such a state, an electron occupies an orbital with a very large principal quantum number. The atom's properties become strongly affected by nearby atoms.
+    </p>
+
+    <p>
+        When neighbouring atoms are driven towards Rydberg states, their strong interactions can prevent both from being excited under certain conditions. This effect is known as the <strong>Rydberg blockade</strong>.
+    </p>
+
+    <p>
+        The blockade provides a way to create entanglement between neutral-atom qubits. By designing the laser pulses and the arrangement of atoms, researchers can implement controlled interactions needed for quantum gates.
+    </p>
+
+    <div class="diagram">
+        <h4>Rydberg blockade: the basic picture</h4>
+        <div class="diagram-row">
+            <div class="node">Atom A</div>
+            <div class="arrow">↔</div>
+            <div class="node">Atom B</div>
+        </div>
+        <p>
+            Exciting one atom into a Rydberg state changes the energy conditions for exciting a nearby atom. This interaction can be used to produce entanglement.
+        </p>
+    </div>
+
+    <h3>Advantages of neutral atoms</h3>
+
+    <ul>
+        <li><strong>Large arrays:</strong> Optical trapping and rearrangement can support flexible arrangements of many atoms.</li>
+        <li><strong>Identical building blocks:</strong> Atoms of the same isotope share the same atomic structure.</li>
+        <li><strong>Flexible geometry:</strong> The physical arrangement can be changed to suit different experiments and interaction patterns.</li>
+        <li><strong>Strong interactions when needed:</strong> Rydberg excitation can create useful interactions between nearby atoms.</li>
+    </ul>
+
+    <h3>Challenges</h3>
+
+    <ul>
+        <li><strong>Atom loss:</strong> Atoms may escape their traps or be lost during operations.</li>
+        <li><strong>Gate errors:</strong> Laser fluctuations, imperfect control and unwanted interactions can reduce gate fidelity.</li>
+        <li><strong>State preparation and readout:</strong> Preparing, identifying and measuring large arrays reliably requires careful engineering.</li>
+        <li><strong>Parallel control:</strong> Addressing many atoms at once without disturbing their neighbours is challenging.</li>
+    </ul>
+
+    <p>
+        Neutral-atom processors are not restricted to one gate-based design. They can support digital quantum gates, analog quantum simulation and approaches that combine aspects of both.
+    </p>
+
+    <div class="callout">
+        <strong>Remember:</strong> Neutral atoms can be arranged in optical traps and entangled using controlled atomic interactions. Their flexible geometry and potential for large arrays make them promising for quantum simulation and quantum computation.
+    </div>
+</section>
+
+<section id="spin">
+    <h2>11.5 Spin qubits and silicon</h2>
+
+    <p>
+        Silicon is the foundation of modern classical computing. It is used to manufacture the transistors found in laptops, phones and data centres. Researchers are also exploring silicon as a platform for quantum computing.
+    </p>
+
+    <p>
+        One reason is that the quantum properties of individual electrons or atomic nuclei can be used to store information. A quantum property called <strong>spin</strong> is particularly useful.
+    </p>
+
+    <h3>What is spin?</h3>
+
+    <p>
+        Spin is an intrinsic form of angular momentum in quantum mechanics. It is not literally a tiny ball spinning around its own axis. It is a quantum property with measurable consequences, including a magnetic moment.
+    </p>
+
+    <p>
+        For a spin-1/2 particle, such as an electron, measurements along a chosen axis produce two possible outcomes. We can use these as the computational states:
+    </p>
+
+    <div class="formula">
+        |0⟩ = |↑⟩ &nbsp;&nbsp;&nbsp; |1⟩ = |↓⟩
+    </div>
+
+    <p>
+        The arrows describe spin measurement outcomes relative to the selected axis. The electron can also occupy a superposition of the two states.
+    </p>
+
+    <h3>How do we trap an electron in silicon?</h3>
+
+    <p>
+        A common design uses a <strong>quantum dot</strong>. A quantum dot is a tiny region in a semiconductor where an electron can be confined by carefully designed electric fields.
+    </p>
+
+    <p>
+        Gate electrodes placed near the silicon channel control the potential experienced by the electron. By adjusting their voltages, researchers can create a small region that holds one electron or a carefully chosen number of electrons.
+    </p>
+
+    <p>
+        The electron's spin can then serve as the qubit. Some architectures use the spin of an electron bound to a donor atom in silicon, while others use electrons confined in gate-defined quantum dots.
+    </p>
+
+    <div class="diagram">
+        <h4>Conceptual silicon spin qubit</h4>
+        <div class="diagram-row">
+            <div class="node">Gate electrodes</div>
+            <div class="arrow">↓</div>
+        </div>
+        <div class="diagram-row">
+            <div class="node">Quantum dot</div>
+            <div class="arrow">→</div>
+            <div class="node">Electron spin</div>
+        </div>
+        <div class="diagram-row">
+            <div class="arrow">↓</div>
+        </div>
+        <div class="node">Controlled quantum state</div>
+    </div>
+
+    <h3>How is the spin controlled?</h3>
+
+    <p>
+        A magnetic field splits the energy levels associated with the two spin orientations. This energy difference allows researchers to address the spin using a suitable microwave or radio-frequency signal.
+    </p>
+
+    <p>
+        Depending on the architecture, electric signals can also control spin through mechanisms such as electric-dipole spin resonance. This is useful because electrical control can be easier to integrate with semiconductor electronics.
+    </p>
+
+    <h3>How do two spin qubits interact?</h3>
+
+    <p>
+        Two nearby electrons can interact through the exchange interaction, which arises from their quantum-mechanical wavefunctions and the restrictions imposed by their indistinguishability. By controlling the coupling between neighbouring quantum dots, researchers can implement two-qubit gates.
+    </p>
+
+    <p>
+        The interaction depends on the design and separation of the dots, as well as on the applied electrical controls. Coupling qubits reliably without introducing too much unwanted noise is a major engineering task.
+    </p>
+
+    <h3>Why silicon is attractive</h3>
+
+    <ul>
+        <li><strong>Manufacturing ecosystem:</strong> Semiconductor fabrication already provides highly developed processes and infrastructure.</li>
+        <li><strong>Potential for compact devices:</strong> Quantum dots can be extremely small, supporting dense qubit layouts.</li>
+        <li><strong>Long coherence in suitable devices:</strong> Carefully engineered silicon, including isotopically enriched silicon-28, can reduce important sources of nuclear-spin noise.</li>
+        <li><strong>Integration potential:</strong> Classical control electronics and quantum devices may eventually be integrated more closely.</li>
+    </ul>
+
+    <h3>What are the challenges?</h3>
+
+    <ul>
+        <li><strong>Device variability:</strong> Tiny differences in material properties and fabrication can change how individual quantum dots behave.</li>
+        <li><strong>Control complexity:</strong> Many gate electrodes may be required to control and couple a large array of qubits.</li>
+        <li><strong>Readout:</strong> The spin state often has to be converted into a signal that classical electronics can detect.</li>
+        <li><strong>Scaling the control system:</strong> Dense qubit arrays need wiring, signal generation and measurement systems that do not introduce excessive heat or noise.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Remember:</strong> Silicon spin qubits use the quantum spin of an electron or another suitable particle. Their attraction comes from small device sizes and compatibility with semiconductor technology, but controlling large, uniform arrays remains difficult.
+    </div>
+</section>
+
+<section id="topological">
+    <h2>11.6 Topological qubits</h2>
+
+    <p>
+        All the approaches we have discussed so far encode information in identifiable physical states, such as the energy levels of a circuit, the internal states of an ion, the polarisation of a photon or the spin of an electron.
+    </p>
+
+    <p>
+        Topological quantum computing takes a different approach. Its goal is to encode quantum information in a way that makes it less sensitive to certain local disturbances. If successful, this could reduce the effort required to protect quantum information from errors.
+    </p>
+
+    <h3>What does topology mean?</h3>
+
+    <p>
+        Topology is a branch of mathematics concerned with properties that remain unchanged under continuous deformations, provided certain conditions are preserved. For example, in a simplified topological picture, a doughnut and a coffee mug with one handle have the same number of holes.
+    </p>
+
+    <p>
+        In topological quantum computing, the word refers to quantum states and operations whose important properties depend on global features rather than on every small local detail.
+    </p>
+
+    <p>
+        The hope is that quantum information encoded in suitable topological degrees of freedom will be protected against many local disturbances. However, this protection is not absolute, and it does not eliminate the need for careful device engineering.
+    </p>
+
+    <h3>Majorana zero modes</h3>
+
+    <p>
+        One influential proposal for topological quantum computing uses Majorana zero modes. These are special low-energy excitations predicted to emerge in certain engineered superconducting systems.
+    </p>
+
+    <p>
+        In condensed-matter physics, a Majorana mode is associated with a quasiparticle excitation that has a mathematical relationship to its own antiparticle. This does not mean an ordinary electron suddenly becomes its own antiparticle. The modes are collective features of a specially engineered material system.
+    </p>
+
+    <p>
+        Under suitable conditions, pairs of Majorana zero modes can encode information nonlocally. The information is associated with the joint state of spatially separated modes rather than being stored entirely at one small location.
+    </p>
+
+    <p>
+        Separating the relevant degrees of freedom can make the encoded information less sensitive to certain local disturbances. Real devices still face quasiparticle poisoning, imperfect energy gaps, unwanted couplings and other sources of error.
+    </p>
+
+    <h3>What is braiding?</h3>
+
+    <p>
+        In some topological quantum computing proposals, information is manipulated by exchanging the positions of non-Abelian anyons or implementing operations that have the same mathematical effect as such exchanges. This process is called <strong>braiding</strong>.
+    </p>
+
+    <p>
+        The order of these exchanges matters. Performing exchange A followed by exchange B can produce a different operation from performing B followed by A. This is one reason braiding is interesting for quantum computation.
+    </p>
+
+    <p>
+        In an ideal topological system, the resulting operation depends on the overall exchange pattern rather than on every small detail of the physical path. That provides a route towards operations with built-in protection against certain errors.
+    </p>
+
+    <div class="diagram">
+        <h4>The topological computing idea</h4>
+        <div class="diagram-row">
+            <div class="node">Create protected modes</div>
+            <div class="arrow">→</div>
+            <div class="node">Exchange or braid</div>
+            <div class="arrow">→</div>
+            <div class="node">Quantum operation</div>
+        </div>
+        <p>
+            This is a conceptual picture. Real implementations require specific physical systems and experimentally validated control methods.
+        </p>
+    </div>
+
+    <h3>Why is topological quantum computing exciting?</h3>
+
+    <ul>
+        <li><strong>Potential error protection:</strong> The encoding may naturally suppress some local errors.</li>
+        <li><strong>Nonlocal information:</strong> Information can be stored in joint states of separated physical modes.</li>
+        <li><strong>Potential reduction in overhead:</strong> If operations and encoding are sufficiently protected, some error-correction requirements may be reduced.</li>
+    </ul>
+
+    <h3>Why is it difficult?</h3>
+
+    <p>
+        The required physical states are hard to create and verify. Researchers must establish that the observed behaviour really comes from the desired topological physics, distinguish it from competing explanations, and demonstrate reliable quantum operations.
+    </p>
+
+    <p>
+        Even if suitable Majorana modes are realised, not every desired quantum gate is automatically protected by braiding. Additional operations, measurements or error-correction techniques may be needed.
+    </p>
+
+    <div class="callout important">
+        <strong>Important distinction:</strong> Topological quantum computing is a promising research direction, not a universally established, fully scalable solution. Claims about a topological qubit must be supported by convincing experimental evidence of the relevant states and operations.
+    </div>
+
+    <div class="callout">
+        <strong>Remember:</strong> Topological quantum computing aims to protect quantum information through the structure of the encoding itself. Its potential advantage is reduced sensitivity to certain local errors, but creating and controlling the required physical systems remains a major research challenge.
+    </div>
+</section>
+
+<section id="comparison">
+    <h2>11.7 Comparing quantum computing platforms</h2>
+
+    <p>
+        We have now seen six major approaches to implementing qubits. The next question is natural: which one is the best?
+    </p>
+
+    <p>
+        There is no single winner for every purpose. A platform may have excellent gate fidelity but slower operations. Another may provide fast gates but require difficult cooling. A third may scale naturally to large arrays but need additional work to achieve reliable logical computation.
+    </p>
+
+    <p>
+        We must compare platforms using several measurements rather than one headline number.
+    </p>
+
+    <h3>1. Gate fidelity</h3>
+
+    <p>
+        Gate fidelity describes how closely an implemented quantum operation matches its intended ideal operation. Higher fidelity generally means fewer errors per gate, although the exact meaning depends on the fidelity measure being reported.
+    </p>
+
+    <p>
+        Suppose a gate is intended to transform a qubit into a particular state. Noise may cause the actual operation to differ slightly from the ideal one. Gate fidelity provides a way to quantify this difference.
+    </p>
+
+    <p>
+        For a simplified illustration, a reported fidelity of 99.9% corresponds to an infidelity of 0.1% under that reporting convention. It does not mean that every complete computation has a 99.9% chance of success.
+    </p>
+
+    <p>
+        If a computation contains many operations, errors can accumulate. Furthermore, errors can be correlated, and measurement and state-preparation errors also matter.
+    </p>
+
+    <div class="formula">
+        Infidelity = 1 − Fidelity
+    </div>
+
+    <p>
+        Fidelity numbers must be compared carefully. Single-qubit gates, two-qubit gates, measurements and state preparation are different operations, so a comparison is meaningful only when the metrics and experimental conditions are comparable.
+    </p>
+
+    <h3>2. Coherence time</h3>
+
+    <p>
+        Coherence time describes how long certain quantum properties remain usable before environmental interactions and noise significantly disturb them.
+    </p>
+
+    <p>
+        Two commonly discussed measures are T1 and T2. T1 characterises energy relaxation, while T2 characterises the decay of phase coherence under a specified experimental definition.
+    </p>
+
+    <p>
+        A longer coherence time is useful because it gives us more time to manipulate the qubit before its quantum information becomes unreliable. However, coherence time alone does not determine how well a quantum computer works.
+    </p>
+
+    <p>
+        A qubit might remain coherent for a long time but support only slow or difficult-to-control gates. Another might have a shorter coherence time but perform gates quickly and accurately.
+    </p>
+
+    <h3>3. Gate speed</h3>
+
+    <p>
+        Gate speed is the time required to perform a quantum operation. Fast gates can reduce the total duration of a computation, but they must still be accurate.
+    </p>
+
+    <p>
+        A useful rough comparison is between the duration of a gate and the coherence time. If gates are much shorter than the relevant coherence time, there is generally more opportunity to perform a sequence of operations before coherence is lost.
+    </p>
+
+    <p>
+        This is only a rough guide. The full error budget must also include control errors, leakage into unwanted states, crosstalk and measurement limitations.
+    </p>
+
+    <h3>4. Connectivity</h3>
+
+    <p>
+        Connectivity describes which qubits can interact directly, or which interactions can be implemented efficiently by the hardware.
+    </p>
+
+    <p>
+        If two qubits are not directly connected, a circuit may need additional gates to move information or create an interaction between them. These extra operations increase circuit depth and can introduce additional errors.
+    </p>
+
+    <p>
+        For example, a processor in which each qubit connects only to its immediate neighbours may need several operations to entangle distant qubits. A platform with more flexible interactions may reduce this overhead, though the practical cost of each interaction still matters.
+    </p>
+
+    <h3>5. Scalability</h3>
+
+    <p>
+        Scalability is the ability to increase the number of useful qubits without making the entire machine impractically difficult to control.
+    </p>
+
+    <p>
+        It is not enough to manufacture a thousand qubits. We must initialise them, control them, entangle them, measure them, diagnose their errors and keep the overall system operating reliably.
+    </p>
+
+    <p>
+        A scalable design also needs supporting infrastructure: electronics, optical components, cryogenic systems where required, calibration software, classical processors and methods for correcting errors.
+    </p>
+
+    <h3>6. Comparing the major platforms</h3>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Platform</th>
+            <th>Physical qubit</th>
+            <th>Typical strengths</th>
+            <th>Main challenges</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Superconducting</td>
+            <td>Engineered electrical circuit</td>
+            <td>Fast gates; mature microwave control; chip fabrication</td>
+            <td>Cryogenic infrastructure, coherence, wiring and fabrication variation</td>
+        </tr>
+        <tr>
+            <td>Trapped ions</td>
+            <td>Charged atomic ion</td>
+            <td>High gate fidelity in suitable systems; long coherence</td>
+            <td>Gate speed, ion transport and scaling control systems</td>
+        </tr>
+        <tr>
+            <td>Photonic</td>
+            <td>Photon encoded in optical modes</td>
+            <td>Communication, optical transmission and networking</td>
+            <td>Photon loss, sources, detectors and entangling operations</td>
+        </tr>
+        <tr>
+            <td>Neutral atoms</td>
+            <td>Neutral atom</td>
+            <td>Flexible arrays; Rydberg interactions; quantum simulation</td>
+            <td>Atom loss, gate errors, readout and parallel control</td>
+        </tr>
+        <tr>
+            <td>Silicon spin</td>
+            <td>Electron or nuclear spin</td>
+            <td>Small devices; semiconductor manufacturing potential</td>
+            <td>Device variability, dense control wiring and reliable coupling</td>
+        </tr>
+        <tr>
+            <td>Topological</td>
+            <td>Proposed protected quantum degrees of freedom</td>
+            <td>Potential intrinsic protection against certain local errors</td>
+            <td>Creating, verifying and controlling suitable topological states</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>
+        This table is a qualitative guide, not a universal ranking. Performance changes with device generation, qubit design, control methods and experimental conditions.
+    </p>
+
+    <h3>7. Why there is no universal winner</h3>
+
+    <p>
+        Imagine choosing a vehicle. A racing car is designed for speed, a bus for carrying passengers, and a truck for moving heavy loads. Asking which is best without specifying the task does not produce a useful answer.
+    </p>
+
+    <p>
+        Quantum computing platforms are similar. Some are especially attractive for fast digital gates. Others offer excellent coherence, flexible geometry or optical communication. Still others are being investigated because they might provide new forms of error protection.
+    </p>
+
+    <p>
+        A practical comparison must ask which workload is being considered, how many operations it requires, how much error it can tolerate and how much supporting hardware is needed.
+    </p>
+
+    <div class="callout success">
+        <strong>The real goal:</strong> The best platform is not necessarily the one with the largest advertised qubit count or the highest individual gate fidelity. It is the one that can execute the required computation reliably, at a useful scale, with acceptable total resources and cost.
+    </div>
+</section>
+
+<section id="annealing">
+    <h2>11.8 Quantum annealing (D-Wave) vs. gate-based models</h2>
+
+    <p>
+        So far, we have mostly discussed quantum processors designed to execute sequences of quantum gates. These are called <strong>gate-based quantum computers</strong>.
+    </p>
+
+    <p>
+        There is another approach called <strong>quantum annealing</strong>. It is designed primarily to find low-energy configurations of a problem represented by a mathematical energy function.
+    </p>
+
+    <p>
+        D-Wave is a prominent company associated with commercial quantum annealing systems. Its machines use superconducting hardware, but the computational model is different from that of a conventional universal gate-based processor.
+    </p>
+
+    <h3>What is an optimisation problem?</h3>
+
+    <p>
+        Suppose a delivery company wants to plan routes, a factory wants to schedule jobs, or a researcher wants to assign resources while satisfying a set of constraints. In each case, there may be many possible answers, but some are better than others.
+    </p>
+
+    <p>
+        An optimisation problem asks us to find an answer that minimises or maximises an objective while satisfying the required constraints.
+    </p>
+
+    <p>
+        Many discrete optimisation problems can be expressed using binary variables. Let each variable xᵢ take the value 0 or 1. We can define an objective function that assigns a cost to each possible assignment.
+    </p>
+
+    <p>
+        One widely used mathematical representation is a quadratic unconstrained binary optimisation problem, or QUBO:
+    </p>
+
+    <div class="formula">
+        E(x) = Σᵢ aᵢxᵢ + Σᵢ&lt;ⱼ bᵢⱼxᵢxⱼ
+    </div>
+
+    <p>
+        The coefficients aᵢ and bᵢⱼ describe the costs associated with individual binary choices and pairs of choices. The task is to find a binary assignment x that minimises E(x).
+    </p>
+
+    <p>
+        Constraints can sometimes be incorporated by adding penalty terms to the objective. A penalty is designed to make invalid solutions more expensive than valid ones, provided the coefficients are chosen appropriately.
+    </p>
+
+    <h3>How does quantum annealing work?</h3>
+
+    <p>
+        Quantum annealing begins with a quantum system whose initial Hamiltonian has a relatively simple ground state. A Hamiltonian is an operator describing the energy of a quantum system.
+    </p>
+
+    <p>
+        The system is then guided towards a Hamiltonian representing the problem to be solved. In an idealised picture, the evolution is slow enough for the system to remain near its ground state.
+    </p>
+
+    <p>
+        The problem Hamiltonian can be expressed in a form related to the binary optimisation objective. When the final system is measured, the result corresponds to a candidate configuration. The energy of that configuration gives its objective value.
+    </p>
+
+    <div class="diagram">
+        <h4>The quantum annealing process</h4>
+        <div class="diagram-row">
+            <div class="node">Prepare initial state</div>
+            <div class="arrow">→</div>
+            <div class="node">Change Hamiltonian</div>
+            <div class="arrow">→</div>
+            <div class="node">Measure result</div>
+        </div>
+        <div class="diagram-row">
+            <div class="arrow">↓</div>
+        </div>
+        <div class="node">Evaluate candidate solution</div>
+    </div>
+
+    <p>
+        In a simplified formulation, the Hamiltonian changes over time:
+    </p>
+
+    <div class="formula">
+        H(t) = A(t)H_initial + B(t)H_problem
+    </div>
+
+    <p>
+        At the beginning, A(t) is relatively large and B(t) is relatively small. As the anneal proceeds, the relative contribution changes so that the problem Hamiltonian becomes dominant.
+    </p>
+
+    <p>
+        The idealised adiabatic picture says that a system starting in the ground state can remain in the instantaneous ground state if the evolution is sufficiently slow and the relevant energy gap remains large enough. Real hardware has finite run times, noise and other limitations, so successful optimisation is not guaranteed.
+    </p>
+
+    <h3>What is quantum tunnelling in this context?</h3>
+
+    <p>
+        Quantum tunnelling allows a quantum system to pass through a potential barrier in situations where a classical particle with the same energy could not cross it.
+    </p>
+
+    <p>
+        In some optimisation landscapes, this may help a system move between configurations separated by barriers. However, tunnelling does not guarantee that the global optimum will be found quickly. The result depends on the problem structure, energy landscape, device behaviour and annealing schedule.
+    </p>
+
+    <h3>How do gate-based quantum computers work?</h3>
+
+    <p>
+        A gate-based processor executes a circuit: a sequence of quantum operations applied to qubits. The circuit may contain single-qubit gates, entangling gates and measurements.
+    </p>
+
+    <p>
+        A gate-based algorithm can be designed to perform different kinds of tasks, including factoring, quantum simulation, search and optimisation. A sufficiently capable universal gate-based computer can approximate general quantum computations using a suitable set of gates.
+    </p>
+
+    <p>
+        The programmer decides which circuit to execute. The quantum processor applies the gates, and the final measurement produces classical results.
+    </p>
+
+    <div class="diagram">
+        <h4>The gate-based computing process</h4>
+        <div class="diagram-row">
+            <div class="node">Initialise qubits</div>
+            <div class="arrow">→</div>
+            <div class="node">Apply gates</div>
+            <div class="arrow">→</div>
+            <div class="node">Measure</div>
+        </div>
+        <div class="diagram-row">
+            <div class="arrow">↓</div>
+        </div>
+        <div class="node">Interpret classical results</div>
+    </div>
+
+    <h3>Annealing vs. gate-based quantum computing</h3>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Feature</th>
+            <th>Quantum annealing</th>
+            <th>Gate-based computing</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Main approach</td>
+            <td>Guide a system towards low-energy configurations</td>
+            <td>Execute a programmed sequence of quantum gates</td>
+        </tr>
+        <tr>
+            <td>Typical use</td>
+            <td>Optimisation problems mapped to an energy function</td>
+            <td>Quantum algorithms, simulation, search, factoring and optimisation</td>
+        </tr>
+        <tr>
+            <td>Programming model</td>
+            <td>Encode a problem as an energy function, often Ising or QUBO</td>
+            <td>Specify a quantum circuit or algorithm</td>
+        </tr>
+        <tr>
+            <td>Universality</td>
+            <td>Standard annealing is not the same as universal gate-based computation</td>
+            <td>A universal gate set can implement general quantum computations in principle</td>
+        </tr>
+        <tr>
+            <td>Output</td>
+            <td>Measured candidate configurations</td>
+            <td>Measurement samples or classical results derived from a circuit</td>
+        </tr>
+        <tr>
+            <td>Major challenge</td>
+            <td>Embedding, connectivity, noise, energy landscapes and solution quality</td>
+            <td>Gate errors, circuit depth, coherence, measurement and error correction</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>Is quantum annealing always faster than classical optimisation?</h3>
+
+    <p>
+        No. This is an important point. Quantum annealing is not a magic machine that automatically solves every optimisation problem faster than a normal computer.
+    </p>
+
+    <p>
+        A classical algorithm may solve a particular problem quickly. Another problem may be difficult for both classical and quantum approaches. The performance depends on the structure of the problem and the implementation details.
+    </p>
+
+    <p>
+        A fair comparison must include the complete workflow: converting the problem into the required mathematical form, embedding it into the hardware's connectivity graph, selecting parameters, executing repeated runs, and checking the quality of the resulting solutions.
+    </p>
+
+    <p>
+        It must also compare against strong classical optimisation methods, not merely against an unnecessarily slow baseline. Sampling time alone may not represent the total time required to obtain a useful answer.
+    </p>
+
+    <div class="callout important">
+        <strong>Do not confuse the models:</strong> Quantum annealing is a specialised approach to energy-based optimisation. Gate-based computing is a general computational model based on quantum gates. Both use quantum mechanics, but they are not interchangeable descriptions of the same machine.
+    </div>
+</section>
+
+<section id="engineering">
+    <h2>11.9 Building a useful quantum computer</h2>
+
+    <p>
+        Having studied the individual platforms, we can now look at the larger engineering problem. Why is it so difficult to build a quantum computer that solves useful, large-scale problems?
+    </p>
+
+    <p>
+        The answer is that a quantum computer is not merely a collection of physical qubits. It is a complete system in which quantum hardware, classical control, measurement, calibration and error correction must work together.
+    </p>
+
+    <h3>Physical qubits are not the same as logical qubits</h3>
+
+    <p>
+        A <strong>physical qubit</strong> is a qubit implemented directly by hardware, such as a superconducting circuit or an ion. A <strong>logical qubit</strong> is a more reliable qubit encoded across several physical degrees of freedom using a quantum error-correcting code.
+    </p>
+
+    <p>
+        Physical qubits experience errors. A gate may be imperfect, a measurement may return the wrong result, or the qubit may lose its quantum state. Quantum error correction uses redundancy and carefully designed measurements to detect and correct certain errors without directly measuring the encoded logical information.
+    </p>
+
+    <p>
+        The additional qubits used for protection create overhead. Depending on the physical error rates, architecture, error-correcting code and target logical error rate, a useful logical qubit may require many physical qubits.
+    </p>
+
+    <p>
+        Therefore, a processor with thousands of physical qubits does not automatically have thousands of reliable logical qubits. The ability to maintain logical information over long computations is a more meaningful measure of progress towards fault-tolerant quantum computing.
+    </p>
+
+    <h3>The importance of the full error budget</h3>
+
+    <p>
+        Errors can arise at every stage of a computation. Initialisation may prepare the wrong state. Quantum gates may be imperfect. Measurement may misidentify the final state. Qubits may interact unintentionally, and the environment may disturb their coherence.
+    </p>
+
+    <p>
+        Even a platform with impressive individual gate fidelity may struggle with a deep circuit containing a large number of operations. A complete design must consider how all these errors combine and whether they can be detected or corrected.
+    </p>
+
+    <h3>Why classical computers remain essential</h3>
+
+    <p>
+        Quantum computers do not replace all classical computers. Classical systems are needed to compile algorithms into hardware-compatible operations, generate control signals, process measurement results and run error-correction decoders.
+    </p>
+
+    <p>
+        Hybrid algorithms add another layer. In a variational algorithm, for example, a classical optimiser proposes circuit parameters. The quantum processor runs the circuit and estimates an objective value. The classical optimiser then uses that result to choose the next parameters.
+    </p>
+
+    <p>
+        This repeated exchange is one reason why the performance of a quantum algorithm depends on the complete hardware and software stack, not only on the quantum processor.
+    </p>
+
+    <h3>What should we measure when evaluating progress?</h3>
+
+    <ul>
+        <li><strong>Physical-qubit quality:</strong> Gate fidelity, measurement fidelity, coherence and leakage.</li>
+        <li><strong>Connectivity:</strong> How efficiently the required interactions can be implemented.</li>
+        <li><strong>Logical performance:</strong> Whether error-corrected qubits achieve lower error rates and survive longer computations.</li>
+        <li><strong>System scale:</strong> Whether more qubits can be controlled without excessive complexity.</li>
+        <li><strong>Algorithmic usefulness:</strong> Whether the complete system provides a meaningful advantage for a particular task.</li>
+    </ul>
+
+    <div class="callout success">
+        <strong>The engineering lesson:</strong> The aim is not simply to build more qubits. It is to build reliable, controllable and interconnected qubits, protect their information against errors, and use them to execute computations that are valuable in practice.
+    </div>
+</section>
+
+<section id="revision">
+    <h2>11.10 Chapter summary</h2>
+
+    <p>
+        Physical quantum computing begins with an abstract idea: a qubit is a quantum system with two computational basis states. The engineering challenge is to create a real system that stores, manipulates and measures those states reliably.
+    </p>
+
+    <ul>
+        <li><strong>Superconducting qubits:</strong> Use engineered electrical circuits with Josephson junctions, controlled mainly by microwave signals.</li>
+        <li><strong>Trapped ions:</strong> Store information in internal states of charged atoms and use electromagnetic traps and controlled interactions to perform operations.</li>
+        <li><strong>Photonic quantum computing:</strong> Encodes information in light and is especially attractive for communication and quantum networking.</li>
+        <li><strong>Neutral atoms:</strong> Use laser traps and controlled interactions, often involving Rydberg states, to create scalable atomic arrays.</li>
+        <li><strong>Silicon spin qubits:</strong> Use the spin of electrons or other suitable particles and offer potential advantages from semiconductor fabrication.</li>
+        <li><strong>Topological qubits:</strong> Aim to encode quantum information in ways that provide protection against certain local disturbances, but remain a challenging research area.</li>
+        <li><strong>Quantum annealing:</strong> Focuses on finding low-energy configurations of optimisation problems, unlike the general gate-based computational model.</li>
+    </ul>
+
+    <p>
+        No platform is best in every respect. Gate speed, fidelity, coherence, connectivity, scalability and the cost of supporting hardware must all be considered together. Ultimately, useful quantum computing depends on how reliably a complete machine can execute the required computation.
+    </p>
+
+    <h2>Revision questions</h2>
+
+    <div class="question">
+        <h3>1. Why does a superconducting qubit need a Josephson junction?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                The Josephson junction introduces nonlinearity into the circuit's energy levels. This helps distinguish the computational transition from other transitions, allowing the selected quantum states to be controlled more selectively.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>2. Why can trapped ions have long coherence times?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                Suitable atomic states can be relatively well isolated from environmental disturbances. Their natural atomic structure also makes ions of the same species highly consistent. The actual coherence time depends on the state, trap and experimental conditions.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>3. Why are photons good for communication but difficult for quantum gates?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                Photons can carry quantum information through optical links while interacting relatively weakly with their surroundings. However, that weak interaction also makes it difficult to create reliable direct photon-photon entangling operations.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>4. What is the role of Rydberg blockade in neutral-atom computing?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                Rydberg blockade allows the excitation of one atom to affect the excitation of a nearby atom. This controlled interaction can be used to create entanglement and implement quantum gates.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>5. Why is silicon an attractive material for quantum computing?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                Silicon benefits from a mature semiconductor manufacturing ecosystem, supports compact quantum-dot devices, and can provide good coherence in suitably engineered materials. However, fabricating and controlling uniform large-scale qubit arrays remains challenging.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>6. Does topological encoding eliminate all quantum errors?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                No. Topological encoding aims to suppress certain types of local errors. Real devices can still experience unwanted couplings, quasiparticle poisoning, imperfect operations and other disturbances. Not every quantum gate is automatically protected.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>7. Why is gate fidelity alone insufficient for comparing quantum processors?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                A useful comparison must also consider gate duration, coherence, measurement errors, connectivity, circuit depth, leakage, correlated errors and the ability to scale the system. A computation depends on all of these factors.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>8. What is the fundamental difference between quantum annealing and gate-based computing?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                Quantum annealing guides a system towards low-energy configurations of a problem Hamiltonian, commonly for optimisation. Gate-based computing applies a programmed sequence of quantum gates and, with a universal gate set, can implement general quantum computations.
+            </p>
+        </details>
+    </div>
+
+    <div class="question">
+        <h3>9. What is the difference between a physical qubit and a logical qubit?</h3>
+        <details>
+            <summary>Reveal answer</summary>
+            <p>
+                A physical qubit is implemented directly by a hardware system. A logical qubit is encoded using a quantum error-correcting scheme to protect quantum information against certain physical errors. One logical qubit may require many physical qubits.
+            </p>
+        </details>
+    </div>
+
+    <footer>
+        <p><strong>End of Chapter 11</strong></p>
+        <p>
+            Suggested next step: Study quantum error correction and fault-tolerant quantum computing. These topics explain how physical qubits can be combined to create more reliable logical qubits and why error correction is central to building large-scale quantum computers.
+        </p>
+        <p>
+            Technical note: Platform characteristics are qualitative and vary across implementations. Experimental performance claims should be evaluated using comparable metrics and published results rather than qubit counts alone.
+        </p>
+    </footer>
+</section>
+
+</main>
+</body>
+</html>

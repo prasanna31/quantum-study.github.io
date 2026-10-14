@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 10: Variational and Near-Term Quantum Algorithms</title>
+    <style>
+        :root {
+            --primary: #183b66;
+            --secondary: #2869a6;
+            --accent: #087f8c;
+            --background: #f5f8fc;
+            --surface: #ffffff;
+            --text: #263445;
+            --muted: #5c6b7a;
+            --border: #dce5ef;
+            --highlight: #eaf4ff;
+            --code: #172638;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        header {
+            padding: 58px 22px 48px;
+            background: linear-gradient(135deg, #102b4e, #176c89);
+            color: white;
+        }
+
+        header .inner {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .chapter-label {
+            color: #bde7f0;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.35;
+        }
+
+        h1 {
+            max-width: 850px;
+            margin: 15px 0;
+            font-size: clamp(32px, 5vw, 49px);
+        }
+
+        header p {
+            max-width: 780px;
+            color: #e4f2fb;
+            font-size: 18px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 35px auto;
+            padding: 0 22px 60px;
+        }
+
+        section {
+            margin: 35px 0;
+            padding: 30px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(24, 59, 102, 0.035);
+        }
+
+        h2 {
+            margin-top: 0;
+            padding-bottom: 12px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            font-size: 29px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: var(--secondary);
+            font-size: 21px;
+        }
+
+        h4 {
+            color: var(--accent);
+            font-size: 17px;
+        }
+
+        p {
+            margin: 15px 0;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        a {
+            color: var(--secondary);
+        }
+
+        .lead {
+            color: #40566d;
+            font-size: 19px;
+        }
+
+        .callout {
+            margin: 22px 0;
+            padding: 18px 22px;
+            background: var(--highlight);
+            border-left: 4px solid var(--secondary);
+            border-radius: 5px;
+        }
+
+        .warning {
+            background: #fff5e8;
+            border-left-color: #d68b25;
+        }
+
+        .success {
+            background: #eaf8f3;
+            border-left-color: #16856a;
+        }
+
+        .formula {
+            overflow-x: auto;
+            margin: 22px 0;
+            padding: 20px;
+            background: #f0f5fb;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #183b66;
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+            line-height: 1.9;
+            text-align: center;
+        }
+
+        .diagram {
+            margin: 25px 0;
+            padding: 20px;
+            overflow-x: auto;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .flow-box {
+            min-width: 125px;
+            padding: 13px;
+            background: white;
+            border: 1px solid #b9cce0;
+            border-radius: 8px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            color: var(--accent);
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf1f9;
+            color: var(--primary);
+            font-family: Arial, sans-serif;
+        }
+
+        pre {
+            overflow-x: auto;
+            padding: 20px;
+            background: var(--code);
+            border-radius: 9px;
+            color: #e6f1ff;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .contents {
+            columns: 2;
+            column-gap: 35px;
+        }
+
+        .contents li {
+            break-inside: avoid;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 5px;
+            background: #e6f1fb;
+            color: #205c91;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .step {
+            margin: 18px 0;
+            padding-left: 17px;
+            border-left: 3px solid #c6d8eb;
+        }
+
+        footer {
+            padding: 30px 20px;
+            background: #102b4e;
+            color: #d8e7f6;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                font-size: 16px;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            .contents {
+                columns: 1;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="inner">
+        <div class="chapter-label">Quantum Computing · Chapter 10</div>
+        <h1>Variational and Near-Term Quantum Algorithms</h1>
+        <p>
+            How quantum computers and classical computers can work together to
+            solve scientific and mathematical problems, even when quantum
+            hardware is still noisy and limited.
+        </p>
+        <p>
+            <strong>Topics:</strong> NISQ computing, VQE, QAOA, ansatz design,
+            classical optimisation, chemistry and combinatorial optimisation.
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <section id="introduction">
+        <h2>Introduction: What Can We Do With Today's Quantum Computers?</h2>
+
+        <p class="lead">
+            A quantum computer has a remarkable ability to represent and
+            manipulate quantum states. However, today's quantum machines
+            cannot perform every quantum algorithm reliably. Variational
+            algorithms were developed to make useful progress within these
+            limitations.
+        </p>
+
+        <p>
+            Imagine that you have a calculator which can perform certain
+            complicated operations that an ordinary calculator cannot perform
+            efficiently. Unfortunately, this special calculator sometimes
+            produces errors, has limited memory, and cannot execute a very
+            long sequence of operations reliably.
+        </p>
+
+        <p>
+            Would you abandon it completely? Not necessarily. You could use
+            it only for the operations where it has an advantage and let an
+            ordinary computer perform the remaining work. You could also
+            repeat measurements to reduce uncertainty and keep the quantum
+            calculation as short as possible.
+        </p>
+
+        <p>
+            This is the basic idea behind many <strong>variational quantum
+            algorithms</strong>. A quantum processor prepares a state and
+            measures a quantity of interest. A classical computer analyses
+            the result and changes the quantum circuit's parameters. The
+            process continues until a useful solution is found or a stopping
+            condition is reached.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="flow-box">Classical computer<br>chooses parameters</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Quantum processor<br>runs circuit</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Measurements<br>produce results</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Classical computer<br>updates parameters</div>
+            </div>
+            <p class="small">
+                The loop repeats. The classical computer decides what to try
+                next using information obtained from the quantum processor.
+            </p>
+        </div>
+
+        <p>
+            Two especially important examples are the
+            <strong>Variational Quantum Eigensolver (VQE)</strong>, which is
+            often studied in connection with chemistry and ground-state
+            energies, and the
+            <strong>Quantum Approximate Optimisation Algorithm (QAOA)</strong>,
+            which is designed for discrete optimisation problems.
+        </p>
+
+        <p>
+            Before studying these algorithms, we need to understand why
+            near-term quantum computing requires a different approach from
+            the large, fault-tolerant quantum computers imagined for the
+            future.
+        </p>
+    </section>
+
+    <section id="nisq">
+        <h2>10.1 The NISQ Paradigm</h2>
+
+        <h3>What does NISQ mean?</h3>
+
+        <p>
+            NISQ stands for <strong>Noisy Intermediate-Scale Quantum</strong>.
+            The term describes a generation of quantum computers that have a
+            useful number of physical qubits but still suffer from noise and
+            limited circuit capabilities.
+        </p>
+
+        <p>
+            The word <em>intermediate-scale</em> indicates that these
+            processors are beyond the smallest experimental demonstrations.
+            They may contain tens, hundreds, or more physical qubits,
+            depending on the device and the period being discussed. The
+            number of qubits alone, however, does not tell us how powerful
+            the computer is.
+        </p>
+
+        <p>
+            The word <em>noisy</em> is equally important. Quantum information
+            is delicate. Interactions with the surrounding environment,
+            imperfect control pulses, inaccurate gates and measurement
+            errors can change the state we intended to prepare.
+        </p>
+
+        <h3>Why are quantum states so delicate?</h3>
+
+        <p>
+            A classical bit is normally represented as either 0 or 1. A
+            qubit can be prepared in a superposition of its computational
+            basis states:
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = α|0⟩ + β|1⟩
+            <br>
+            |α|² + |β|² = 1
+        </div>
+
+        <p>
+            Here, α and β are complex probability amplitudes. When we measure
+            the qubit in the computational basis, we obtain 0 with
+            probability |α|² and 1 with probability |β|².
+        </p>
+
+        <p>
+            A quantum algorithm relies not only on these probabilities but
+            also on the relationships between amplitudes. Quantum gates
+            create interference, which can increase the likelihood of useful
+            outcomes and decrease the likelihood of unwanted outcomes.
+            Noise can disturb those relationships.
+        </p>
+
+        <h3>The main limitations of NISQ devices</h3>
+
+        <div class="step">
+            <h4>1. Gate errors</h4>
+            <p>
+                A gate is a controlled operation on one or more qubits.
+                Real gates are not perfect. A small error in an individual
+                operation can accumulate when a circuit contains many
+                operations.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>2. Decoherence</h4>
+            <p>
+                A qubit can lose the quantum properties needed by a
+                computation through unwanted interactions with its
+                environment. Coherence times therefore limit how long
+                delicate quantum information can be preserved.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>3. Measurement errors</h4>
+            <p>
+                The hardware may report 1 when the qubit was actually in 0,
+                or the reverse. Repeated measurements help us estimate
+                probabilities, but they do not automatically eliminate
+                systematic measurement errors.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>4. Limited connectivity</h4>
+            <p>
+                Some hardware allows direct interactions only between
+                particular pairs of qubits. If an algorithm needs an
+                interaction between distant qubits, the compiler may need
+                additional operations, such as SWAP gates. These increase
+                circuit depth and can introduce more errors.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>5. Limited circuit depth and execution time</h4>
+            <p>
+                A deep circuit contains many sequential operations. Even if
+                every individual gate is reasonably accurate, the complete
+                circuit may become unreliable when too many operations are
+                performed before measurement.
+            </p>
+        </div>
+
+        <h3>Why not use quantum error correction for everything?</h3>
+
+        <p>
+            Quantum error correction encodes logical quantum information
+            across multiple physical qubits and uses measurements to detect
+            error syndromes. A sufficiently capable fault-tolerant quantum
+            computer can protect logical information and execute much longer
+            computations.
+        </p>
+
+        <p>
+            The difficulty is that reliable logical qubits require additional
+            physical resources, carefully controlled operations and repeated
+            error-correction procedures. Large-scale fault-tolerant machines
+            therefore demand substantial hardware and engineering effort.
+        </p>
+
+        <p>
+            NISQ algorithms take a different route: they try to perform
+            useful computations with the available hardware without
+            assuming that a large fault-tolerant machine already exists.
+            This does not mean they eliminate noise or replace error
+            correction in the long term.
+        </p>
+
+        <h3>Why variational algorithms suit the NISQ era</h3>
+
+        <p>
+            Variational algorithms use parameterised circuits, often called
+            <strong>ansätze</strong>. The quantum processor executes a
+            circuit with selected parameters, and a classical computer
+            chooses new parameters based on the measured result.
+        </p>
+
+        <p>
+            The quantum circuit is usually kept relatively shallow compared
+            with many algorithms designed for fault-tolerant hardware.
+            However, shallow does not automatically mean successful. Some
+            problems require deep circuits, and some variational methods
+            encounter optimisation difficulties even when their circuits
+            are short.
+        </p>
+
+        <div class="callout">
+            <strong>Central idea:</strong> NISQ computing is about working
+            within current hardware limitations. Variational algorithms
+            divide a problem between quantum state preparation and
+            measurement on one side, and classical optimisation on the
+            other.
+        </div>
+
+        <h3>Are NISQ algorithms guaranteed to outperform classical computers?</h3>
+
+        <p>
+            No. This is one of the most important points in this chapter.
+            The fact that an algorithm uses a quantum computer does not
+            establish a quantum advantage. A useful comparison must account
+            for classical algorithms, data preparation, circuit execution,
+            measurement repetitions, hardware errors and the quality of the
+            final answer.
+        </p>
+
+        <p>
+            Variational algorithms are promising research tools, but
+            demonstrating a practical, repeatable advantage for a real
+            problem remains a separate challenge.
+        </p>
+    </section>
+
+    <section id="variational">
+        <h2>The General Variational Principle</h2>
+
+        <p>
+            VQE and QAOA are different algorithms, but both use a common
+            mathematical idea: choose a parameterised quantum state and
+            adjust its parameters to improve a measurable objective.
+        </p>
+
+        <h3>What is a parameterised quantum circuit?</h3>
+
+        <p>
+            Consider a circuit containing rotation gates. A rotation gate
+            changes a qubit's state according to an angle. Instead of fixing
+            every angle in advance, we leave some angles as adjustable
+            parameters:
+        </p>
+
+        <div class="formula">
+            |ψ(θ)⟩ = U(θ)|0...0⟩
+        </div>
+
+        <p>
+            In this expression, |0...0⟩ is the initial state, U(θ) is the
+            quantum circuit, and θ represents the collection of parameters.
+            The notation |ψ(θ)⟩ means that the resulting state depends on
+            those parameters.
+        </p>
+
+        <p>
+            If the circuit has five adjustable rotation angles, for example,
+            the parameter vector can be written as:
+        </p>
+
+        <div class="formula">
+            θ = (θ₁, θ₂, θ₃, θ₄, θ₅)
+        </div>
+
+        <p>
+            Changing θ changes the state prepared by the circuit. We then
+            measure the state to estimate an objective function, such as
+            energy or the cost of an optimisation problem.
+        </p>
+
+        <h3>The objective function</h3>
+
+        <p>
+            An objective function tells us how good a particular parameter
+            choice is. In a minimisation problem, smaller values are better.
+            In a maximisation problem, larger values are better.
+        </p>
+
+        <div class="formula">
+            θ* = arg minθ C(θ)
+        </div>
+
+        <p>
+            Here, C(θ) is the objective function and θ* represents a
+            parameter choice that minimises it. The notation
+            <code>arg min</code> asks for the parameter values, rather than
+            merely the minimum numerical value.
+        </p>
+
+        <p>
+            The classical computer proposes parameters. The quantum computer
+            prepares the corresponding state and returns measurement data.
+            The classical computer estimates the objective and selects
+            another set of parameters. This loop continues until a stopping
+            condition is met.
+        </p>
+
+        <h3>Why is the quantum measurement repeated?</h3>
+
+        <p>
+            A single measurement does not reveal the complete quantum state.
+            It returns one outcome. If the same circuit is prepared and
+            measured repeatedly, the outcomes can be used to estimate
+            probabilities and expectation values.
+        </p>
+
+        <p>
+            Suppose a measurement returns 1 in 70 out of 100 shots. The
+            estimated probability of obtaining 1 is 0.70. This is an
+            estimate, not necessarily the exact underlying probability.
+            Increasing the number of independent shots generally improves
+            the statistical estimate, although it also increases execution
+            cost.
+        </p>
+
+        <div class="callout">
+            A variational algorithm is not simply a quantum circuit that
+            runs once. It is a repeated computational process involving
+            circuit execution, measurement, classical optimisation and
+            decisions about what to run next.
+        </div>
+    </section>
+
+    <section id="vqe">
+        <h2>10.2 Variational Quantum Eigensolver (VQE)</h2>
+
+        <h3>First, what is an eigenvalue problem?</h3>
+
+        <p>
+            Eigenvalues appear throughout mathematics, physics, engineering
+            and computer science. For a matrix A, an eigenvector |v⟩ and its
+            corresponding eigenvalue E satisfy:
+        </p>
+
+        <div class="formula">
+            A|v⟩ = E|v⟩
+        </div>
+
+        <p>
+            The matrix transforms the eigenvector only by multiplying it
+            by the number E. The direction represented by the eigenvector
+            is preserved, although its scale can change.
+        </p>
+
+        <p>
+            In quantum mechanics, the Hamiltonian H represents the energy
+            of a system. Its eigenvalues correspond to allowed energy
+            values, while its eigenstates describe the associated quantum
+            states.
+        </p>
+
+        <div class="formula">
+            H|ψ⟩ = E|ψ⟩
+        </div>
+
+        <p>
+            The lowest energy eigenvalue is called the
+            <strong>ground-state energy</strong>. Finding it is important
+            because the ground state often determines the most stable
+            configuration of a physical system under the conditions being
+            modelled.
+        </p>
+
+        <h3>Why is finding ground-state energy difficult?</h3>
+
+        <p>
+            A system of n qubits has a state space of dimension 2ⁿ.
+            For example, 10 qubits have 1,024 computational basis states,
+            while 50 qubits have more than one quadrillion basis states.
+            Describing a general pure state exactly requires a number of
+            amplitudes that grows exponentially with n.
+        </p>
+
+        <p>
+            Real molecules introduce further complexity because electrons
+            interact with one another, and their quantum states must obey
+            the rules of quantum mechanics. Classical methods can solve
+            many chemical problems effectively, but accurately treating
+            certain strongly correlated systems can be difficult.
+        </p>
+
+        <p>
+            VQE attempts to estimate the ground-state energy by preparing
+            candidate states on a quantum processor and using a classical
+            computer to improve them.
+        </p>
+
+        <h3>The variational principle</h3>
+
+        <p>
+            Let H be a Hamiltonian and |ψ⟩ any valid normalised trial state.
+            Its expected energy is:
+        </p>
+
+        <div class="formula">
+            E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩
+        </div>
+
+        <p>
+            The variational principle states that this expectation value
+            cannot be lower than the true ground-state energy E₀:
+        </p>
+
+        <div class="formula">
+            E(θ) ≥ E₀
+        </div>
+
+        <p>
+            This inequality assumes that H is the correct Hermitian
+            Hamiltonian for the system and that |ψ(θ)⟩ is a valid
+            normalised state. The energy expectation can equal E₀ if the
+            trial state lies entirely in the ground-state subspace.
+        </p>
+
+        <p>
+            This gives VQE a useful target. We do not have to construct
+            the exact ground state immediately. We begin with a manageable
+            family of candidate states and search for the one with the
+            lowest measured energy.
+        </p>
+
+        <h3>How VQE works, step by step</h3>
+
+        <div class="step">
+            <h4>Step 1: Define the physical system</h4>
+            <p>
+                Decide what system is being studied, such as a molecule
+                with a particular geometry. Construct its Hamiltonian,
+                which describes the energy contributions and interactions
+                relevant to the chosen model.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 2: Encode the Hamiltonian into qubit operations</h4>
+            <p>
+                Electronic structure problems are often expressed using
+                fermionic creation and annihilation operators. These can
+                be mapped to qubit operators, producing a Hamiltonian
+                represented as a weighted sum of Pauli strings.
+            </p>
+        </div>
+
+        <div class="formula">
+            H = Σᵢ cᵢ Pᵢ
+        </div>
+
+        <p>
+            Each cᵢ is a real coefficient for a Hermitian Hamiltonian, and
+            each Pᵢ is a tensor product of Pauli operators such as I, X, Y
+            and Z. For example, Z ⊗ Z represents the product of Z
+            measurements on two qubits.
+        </p>
+
+        <div class="step">
+            <h4>Step 3: Choose a trial-state circuit</h4>
+            <p>
+                Select a parameterised circuit U(θ). Starting from an
+                initial state, the circuit prepares a candidate state
+                |ψ(θ)⟩. The circuit structure is called the ansatz.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 4: Estimate the energy</h4>
+            <p>
+                Since the Hamiltonian is a sum of Pauli strings, we can
+                estimate the expectation value of each term and combine
+                them using its coefficient.
+            </p>
+
+            <div class="formula">
+                E(θ) = Σᵢ cᵢ ⟨ψ(θ)|Pᵢ|ψ(θ)⟩
+            </div>
+
+            <p>
+                The terms are measured using suitable circuits and repeated
+                shots. Some compatible Pauli terms can be measured together,
+                reducing the total measurement workload.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 5: Update the parameters</h4>
+            <p>
+                A classical optimiser receives the energy estimate and
+                proposes a new parameter vector. The goal is to lower the
+                estimated energy.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 6: Repeat and assess convergence</h4>
+            <p>
+                The quantum circuit is executed again with the new
+                parameters. The process continues until the energy stops
+                improving sufficiently, a budget is exhausted, or another
+                stopping condition is reached.
+            </p>
+        </div>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="flow-box">Molecular Hamiltonian</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Qubit Hamiltonian</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Ansatz circuit</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Energy estimate</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Classical optimiser</div>
+            </div>
+            <p class="small">
+                The optimiser returns new parameters to the ansatz circuit.
+                The loop continues until the chosen stopping condition is met.
+            </p>
+        </div>
+
+        <h3>A simple numerical example</h3>
+
+        <p>
+            Suppose the true ground-state energy of a small model is
+            -1.00 in the selected energy units. We do not know the exact
+            ground state, so we try several parameter settings.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Trial</th>
+                    <th>Estimated energy</th>
+                    <th>Interpretation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>A</td>
+                    <td>-0.60</td>
+                    <td>The trial state is relatively far from the ground-state energy.</td>
+                </tr>
+                <tr>
+                    <td>B</td>
+                    <td>-0.84</td>
+                    <td>The new parameters have improved the energy estimate.</td>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td>-0.96</td>
+                    <td>The trial energy is closer to the ground-state energy.</td>
+                </tr>
+                <tr>
+                    <td>D</td>
+                    <td>-0.98</td>
+                    <td>A further improvement has been achieved.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            These are illustrative values, not results from a real
+            experiment. They demonstrate the direction of the search.
+            The variational principle means the exact expectation value
+            of a valid trial state cannot fall below the true ground-state
+            energy. In an experiment, statistical uncertainty can make an
+            estimated value appear to violate this inequality slightly.
+        </p>
+
+        <h3>How does VQE estimate the energy from measurements?</h3>
+
+        <p>
+            Consider a one-qubit Hamiltonian:
+        </p>
+
+        <div class="formula">
+            H = 2I + 0.5Z
+        </div>
+
+        <p>
+            Suppose the prepared state produces the outcome 0 with
+            probability 0.8 and the outcome 1 with probability 0.2.
+            The Z measurement assigns +1 to outcome 0 and -1 to outcome 1.
+            Therefore:
+        </p>
+
+        <div class="formula">
+            ⟨Z⟩ = (0.8 × 1) + (0.2 × -1) = 0.6
+            <br>
+            E = 2 + 0.5(0.6) = 2.3
+        </div>
+
+        <p>
+            This is the energy expectation for the given state. VQE would
+            try other parameter settings to find a lower expectation value.
+            In this example, the minimum eigenvalue of H is 1.5, obtained
+            for the state |1⟩.
+        </p>
+
+        <h3>What does a successful VQE calculation give us?</h3>
+
+        <p>
+            The primary result is an estimate of the energy of the
+            optimised trial state. The result can be compared with known
+            calculations or experimental values. In molecular applications,
+            researchers may also calculate energy differences, such as
+            those between molecular geometries.
+        </p>
+
+        <p>
+            However, a low energy estimate does not automatically provide
+            every property of a molecule. Additional measurements or
+            calculations may be required to determine other observables,
+            chemical properties or the quality of the prepared state.
+        </p>
+
+        <h3>Strengths and limitations of VQE</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Strengths</th>
+                    <th>Limitations</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Can use relatively shallow parameterised circuits.</td>
+                    <td>Shallow circuits may not represent the required ground state.</td>
+                </tr>
+                <tr>
+                    <td>Combines quantum measurements with classical optimisation.</td>
+                    <td>Many repeated circuit executions may be necessary.</td>
+                </tr>
+                <tr>
+                    <td>The variational principle provides an energy upper bound for exact trial-state expectations.</td>
+                    <td>A poor ansatz can give a poor upper bound even after optimisation.</td>
+                </tr>
+                <tr>
+                    <td>Can be applied to molecular and other Hamiltonian problems.</td>
+                    <td>Noise, measurement cost and optimiser behaviour can limit accuracy.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout">
+            <strong>Remember:</strong> VQE does not directly calculate every
+            energy eigenvalue. It searches over a chosen family of trial
+            states to minimise the expectation value of a Hamiltonian.
+        </div>
+    </section>
+
+    <section id="qaoa">
+        <h2>10.3 Quantum Approximate Optimisation Algorithm (QAOA)</h2>
+
+        <h3>From physical energy to a mathematical cost</h3>
+
+        <p>
+            VQE is often introduced through the problem of finding a
+            low-energy quantum state. QAOA uses a related variational
+            approach for discrete optimisation problems, where we want
+            to find a good assignment of values to a collection of
+            variables.
+        </p>
+
+        <p>
+            Examples include selecting a group of connected vertices,
+            scheduling jobs, assigning resources and choosing routes.
+            Many of these problems have a huge number of possible
+            solutions, making an exhaustive search impractical for large
+            instances.
+        </p>
+
+        <p>
+            The aim of QAOA is to prepare a quantum state whose measurement
+            is likely to produce a good solution to the chosen
+            optimisation problem.
+        </p>
+
+        <h3>What is combinatorial optimisation?</h3>
+
+        <p>
+            Suppose a delivery company must choose which roads to use,
+            subject to a budget or distance constraint. Every possible
+            route is a candidate solution. We can assign each candidate
+            a cost, such as its total travel distance, and seek the route
+            with the smallest cost.
+        </p>
+
+        <p>
+            Other problems may ask us to maximise a score instead. A common
+            way to handle this is to negate the score and minimise the
+            resulting cost. The exact formulation depends on the problem.
+        </p>
+
+        <h3>Encoding a solution with bits</h3>
+
+        <p>
+            Many discrete problems can be expressed using binary variables:
+        </p>
+
+        <div class="formula">
+            xᵢ ∈ {0, 1}
+        </div>
+
+        <p>
+            A value of 1 might mean that an item is selected, while 0 means
+            it is not. If a problem has n binary variables, there are
+            2ⁿ possible assignments before considering any constraints.
+        </p>
+
+        <p>
+            Quantum algorithms represent these assignments using
+            computational basis states. For example, the three-bit string
+            101 corresponds to the basis state |101⟩.
+        </p>
+
+        <h3>Constructing a cost Hamiltonian</h3>
+
+        <p>
+            QAOA expresses the problem's cost as an operator called the
+            cost Hamiltonian, usually written as H_C. It is constructed so
+            that its eigenvalue on a computational basis state represents
+            the cost of the corresponding assignment.
+        </p>
+
+        <div class="formula">
+            H_C|x⟩ = C(x)|x⟩
+        </div>
+
+        <p>
+            Here, x is a binary assignment and C(x) is its cost. If we
+            minimise the cost, an optimal assignment corresponds to a
+            basis state with the smallest eigenvalue of H_C.
+        </p>
+
+        <p>
+            For many problems, the cost can be expressed using products
+            of binary variables. These terms can be converted into
+            combinations of Pauli-Z operators using the relationship
+            between a binary variable and a Z measurement:
+        </p>
+
+        <div class="formula">
+            xᵢ = (1 - Zᵢ)/2
+        </div>
+
+        <p>
+            This is an operator relationship when Zᵢ represents the Pauli-Z
+            operator on qubit i. Its eigenvalues are +1 and -1, so the
+            expression maps the computational basis value 0 to 0 and
+            the value 1 to 1.
+        </p>
+
+        <h3>The two operations at the heart of QAOA</h3>
+
+        <p>
+            QAOA repeatedly combines two kinds of unitary operations:
+            a cost-dependent operation and a mixing operation.
+        </p>
+
+        <h4>1. Cost unitary</h4>
+
+        <div class="formula">
+            U_C(γ) = exp(-iγH_C)
+        </div>
+
+        <p>
+            The cost unitary applies phases that depend on the cost of
+            each basis state. It does not change the measurement
+            probabilities of a state if applied alone, but it changes
+            relative phases between basis states. Those phase changes
+            can affect later interference.
+        </p>
+
+        <h4>2. Mixer unitary</h4>
+
+        <p>
+            A common mixer is built from Pauli-X operators:
+        </p>
+
+        <div class="formula">
+            H_M = Σᵢ Xᵢ
+            <br>
+            U_M(β) = exp(-iβH_M)
+        </div>
+
+        <p>
+            The mixer helps move amplitude between computational basis
+            states. When combined with the cost unitary, it allows the
+            circuit to redistribute measurement probabilities so that
+            good solutions may become more likely.
+        </p>
+
+        <p>
+            The standard X mixer is not the only possibility. Some
+            constrained problems use specialised mixers designed to
+            preserve feasibility, such as keeping exactly a specified
+            number of variables equal to 1.
+        </p>
+
+        <h3>How QAOA works, step by step</h3>
+
+        <div class="step">
+            <h4>Step 1: Formulate the optimisation problem</h4>
+            <p>
+                Express the objective and any constraints mathematically.
+                Choose a representation that maps candidate solutions to
+                binary variables or quantum basis states.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 2: Build the cost Hamiltonian</h4>
+            <p>
+                Construct H_C so that the cost of a basis state matches
+                the problem's objective value, subject to the chosen
+                encoding and any penalty terms used for constraints.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 3: Prepare an initial state</h4>
+            <p>
+                The standard unconstrained QAOA approach often starts
+                with a uniform superposition over all computational basis
+                states:
+            </p>
+
+            <div class="formula">
+                |+⟩⊗ⁿ = (1/√(2ⁿ)) Σₓ |x⟩
+            </div>
+
+            <p>
+                This state gives equal initial measurement probability
+                to each binary assignment.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 4: Apply cost and mixer operations</h4>
+            <p>
+                Apply a cost unitary followed by a mixer unitary. Repeat
+                this pair p times, with adjustable angles γ and β at
+                each layer.
+            </p>
+        </div>
+
+        <div class="formula">
+            |ψ(γ, β)⟩ =
+            U_M(βₚ)U_C(γₚ) ... U_M(β₁)U_C(γ₁)|+⟩⊗ⁿ
+        </div>
+
+        <p>
+            The integer p is the QAOA depth parameter. Each layer has
+            a cost angle γ and a mixer angle β. Increasing p gives the
+            circuit more flexibility, but also generally increases
+            the number of operations and the risk of noise.
+        </p>
+
+        <div class="step">
+            <h4>Step 5: Measure candidate solutions</h4>
+            <p>
+                Measure the qubits in the computational basis. Each shot
+                produces a bit string, which can be translated into a
+                candidate solution and evaluated using the original
+                classical cost function.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 6: Optimise the angles</h4>
+            <p>
+                Estimate the expected cost from repeated measurements.
+                A classical optimiser proposes new values for the angles
+                in order to lower the expected cost.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 7: Select and verify a solution</h4>
+            <p>
+                After optimisation, collect candidate bit strings,
+                evaluate their actual costs, check feasibility and
+                retain a good solution. The most frequently measured
+                bit string is not guaranteed to be the best one.
+            </p>
+        </div>
+
+        <h3>A simple example: the Max-Cut problem</h3>
+
+        <p>
+            Imagine a network containing several vertices connected by
+            edges. We want to divide the vertices into two groups so
+            that as many edges as possible connect vertices belonging
+            to different groups.
+        </p>
+
+        <p>
+            This is called Max-Cut. It has applications in graph
+            optimisation and serves as a standard example for QAOA.
+        </p>
+
+        <div class="diagram">
+            <svg viewBox="0 0 420 190" width="100%" role="img"
+                 aria-label="A graph with four vertices divided into two groups">
+                <line x1="70" y1="45" x2="210" y2="45" stroke="#7b8da2" stroke-width="3"/>
+                <line x1="70" y1="45" x2="140" y2="145" stroke="#7b8da2" stroke-width="3"/>
+                <line x1="210" y1="45" x2="350" y2="45" stroke="#7b8da2" stroke-width="3"/>
+                <line x1="210" y1="45" x2="140" y2="145" stroke="#7b8da2" stroke-width="3"/>
+                <line x1="140" y1="145" x2="350" y2="45" stroke="#7b8da2" stroke-width="3"/>
+                <line x1="140" y1="145" x2="350" y2="145" stroke="#7b8da2" stroke-width="3"/>
+                <line x1="350" y1="45" x2="350" y2="145" stroke="#7b8da2" stroke-width="3"/>
+                <circle cx="70" cy="45" r="22" fill="#d8edff" stroke="#2869a6" stroke-width="2"/>
+                <circle cx="210" cy="45" r="22" fill="#d8edff" stroke="#2869a6" stroke-width="2"/>
+                <circle cx="140" cy="145" r="22" fill="#d8f5e8" stroke="#16856a" stroke-width="2"/>
+                <circle cx="350" cy="45" r="22" fill="#d8f5e8" stroke="#16856a" stroke-width="2"/>
+                <circle cx="350" cy="145" r="22" fill="#d8edff" stroke="#2869a6" stroke-width="2"/>
+                <text x="70" y="50" text-anchor="middle" font-size="14" fill="#183b66">A</text>
+                <text x="210" y="50" text-anchor="middle" font-size="14" fill="#183b66">B</text>
+                <text x="140" y="150" text-anchor="middle" font-size="14" fill="#176b54">C</text>
+                <text x="350" y="50" text-anchor="middle" font-size="14" fill="#176b54">D</text>
+                <text x="350" y="150" text-anchor="middle" font-size="14" fill="#183b66">E</text>
+            </svg>
+            <p class="small">
+                Vertices are assigned to two groups. Every edge joining
+                different groups contributes to the cut.
+            </p>
+        </div>
+
+        <p>
+            Assign each vertex a binary variable xᵢ. If two vertices
+            have different values, their connecting edge belongs to
+            the cut. If their values are equal, it does not.
+        </p>
+
+        <p>
+            For an edge between vertices i and j, its contribution can
+            be written as:
+        </p>
+
+        <div class="formula">
+            Cutᵢⱼ = xᵢ(1 - xⱼ) + xⱼ(1 - xᵢ)
+            <br>
+            Cutᵢⱼ = xᵢ + xⱼ - 2xᵢxⱼ
+        </div>
+
+        <p>
+            Adding these contributions across all edges gives the total
+            cut size. Since standard QAOA is commonly written as a
+            minimisation of cost, we can define the cost as the negative
+            cut size. Minimising that cost maximises the number of
+            cut edges.
+        </p>
+
+        <p>
+            The quantum circuit prepares candidate assignments. The
+            classical optimiser adjusts the angles, and the measurements
+            provide candidate cuts. QAOA is useful here because it
+            searches through a probability distribution over possible
+            assignments rather than simply evaluating one assignment
+            per circuit execution.
+        </p>
+
+        <h3>Does QAOA guarantee the optimal answer?</h3>
+
+        <p>
+            Not in general. At a finite depth p, the algorithm may produce
+            a distribution that favours good solutions without placing
+            all its probability on the optimum. The result depends on
+            the graph, circuit depth, initial state, optimiser, noise
+            and measurement budget.
+        </p>
+
+        <p>
+            For a small problem, we can often calculate the optimum
+            classically and compare the QAOA output against it. For
+            larger problems, finding a strong classical baseline and
+            evaluating solution quality becomes more challenging.
+        </p>
+
+        <div class="callout">
+            <strong>Remember:</strong> VQE typically minimises a physical
+            energy expectation. QAOA typically prepares candidate
+            solutions for a discrete optimisation problem by alternating
+            cost-dependent and mixing operations.
+        </div>
+    </section>
+
+    <section id="ansatz">
+        <h2>10.4 Ansatz Design: Hardware-Efficient vs. Problem-Inspired</h2>
+
+        <h3>What exactly is an ansatz?</h3>
+
+        <p>
+            An ansatz is a chosen mathematical form for a trial state.
+            In a variational quantum algorithm, it is usually implemented
+            as a parameterised quantum circuit.
+        </p>
+
+        <p>
+            Think of an ansatz as a collection of possible states that
+            the algorithm is allowed to explore. The optimiser chooses
+            parameter values, but it cannot generally leave the family
+            of states that the circuit structure can produce.
+        </p>
+
+        <p>
+            This creates a fundamental trade-off. An ansatz should be
+            expressive enough to represent a useful solution, but it
+            should also be executable on the available hardware and
+            manageable for the classical optimiser.
+        </p>
+
+        <h3>1. Hardware-efficient ansätze</h3>
+
+        <p>
+            A hardware-efficient ansatz is designed around the native
+            gates, connectivity and practical constraints of a quantum
+            processor. It often consists of repeated layers of single-qubit
+            rotations and entangling gates.
+        </p>
+
+        <p>
+            A simplified layer might contain rotations around the Y and
+            Z axes on each qubit, followed by entangling operations
+            between selected pairs of qubits. The rotation angles are
+            adjustable parameters.
+        </p>
+
+        <div class="formula">
+            U(θ) = Uₗ(θₗ) ... U₂(θ₂)U₁(θ₁)
+        </div>
+
+        <p>
+            Each layer Uₖ contains a pattern of gates. Repeating the
+            pattern creates a larger family of possible states.
+        </p>
+
+        <h4>Why use this approach?</h4>
+
+        <ul>
+            <li>
+                It can be adapted to the hardware's available gates and
+                connectivity.
+            </li>
+            <li>
+                It may avoid some of the extra operations required to
+                compile an incompatible circuit.
+            </li>
+            <li>
+                It is flexible and can be used for a range of problems.
+            </li>
+            <li>
+                Its structure can be relatively straightforward to
+                generate automatically.
+            </li>
+        </ul>
+
+        <h4>What is the drawback?</h4>
+
+        <p>
+            The circuit may not reflect the physics or mathematical
+            structure of the problem. It may need many layers before
+            it can represent the desired state. More layers mean more
+            parameters, more gates and more opportunities for noise.
+        </p>
+
+        <p>
+            A particularly important problem is a
+            <strong>barren plateau</strong>. In certain ansätze and
+            circumstances, the gradients of the objective can become
+            extremely small as the number of qubits grows. The optimiser
+            then receives little useful information about which direction
+            to move. Barren plateaus are not inevitable in every
+            variational circuit, but they are a serious design concern.
+        </p>
+
+        <h3>2. Problem-inspired ansätze</h3>
+
+        <p>
+            A problem-inspired ansatz is designed using knowledge of the
+            problem being solved. Instead of choosing a generic sequence
+            of gates, we use the problem's structure to guide circuit
+            construction.
+        </p>
+
+        <p>
+            QAOA is a standard example. Its cost unitary comes from the
+            objective function, while its mixer is selected to move
+            between candidate assignments. The circuit is therefore
+            connected directly to the optimisation problem.
+        </p>
+
+        <p>
+            In chemistry, a problem-inspired ansatz may reflect electronic
+            excitations, symmetries or relationships in the molecular
+            Hamiltonian. The unitary coupled-cluster family is one
+            well-known example used in quantum chemistry.
+        </p>
+
+        <h4>Why use this approach?</h4>
+
+        <ul>
+            <li>
+                The circuit structure can reflect meaningful properties
+                of the problem.
+            </li>
+            <li>
+                It may represent relevant states more efficiently than
+                a generic circuit.
+            </li>
+            <li>
+                It can preserve useful constraints or symmetries when
+                designed carefully.
+            </li>
+            <li>
+                It can reduce the search space by excluding irrelevant
+                state transformations.
+            </li>
+        </ul>
+
+        <h4>What is the drawback?</h4>
+
+        <p>
+            The design may require substantial domain knowledge. A
+            problem-inspired circuit may also contain complicated
+            operations that are expensive to implement on real hardware.
+            If the ansatz is too restrictive, it may be unable to
+            represent the required solution.
+        </p>
+
+        <h3>Comparing the two approaches</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Hardware-efficient</th>
+                    <th>Problem-inspired</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Main design goal</td>
+                    <td>Fit the circuit to the hardware.</td>
+                    <td>Fit the circuit to the problem's structure.</td>
+                </tr>
+                <tr>
+                    <td>Gate selection</td>
+                    <td>Often based on native gates and connectivity.</td>
+                    <td>Often based on the Hamiltonian, constraints or known physics.</td>
+                </tr>
+                <tr>
+                    <td>Flexibility</td>
+                    <td>Can be broadly reusable.</td>
+                    <td>May be specialised to a particular problem family.</td>
+                </tr>
+                <tr>
+                    <td>Domain knowledge</td>
+                    <td>May require less knowledge of the problem's internal structure.</td>
+                    <td>Often requires more mathematical or physical knowledge.</td>
+                </tr>
+                <tr>
+                    <td>Main risk</td>
+                    <td>May need many layers or become difficult to optimise.</td>
+                    <td>May be difficult to implement or too restrictive.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>How should we choose an ansatz?</h3>
+
+        <p>
+            There is no universally best ansatz. The choice depends on
+            the objective, the available qubits, the hardware's native
+            gates, the connectivity, the acceptable circuit depth and
+            the optimiser's behaviour.
+        </p>
+
+        <p>
+            A sensible design process begins with the smallest circuit
+            that can represent meaningful candidate states. We then
+            test whether increasing its expressive power improves the
+            solution enough to justify the extra operations and
+            measurement cost.
+        </p>
+
+        <div class="callout">
+            <strong>Design principle:</strong> A more expressive circuit
+            is not automatically a better circuit. The goal is to find
+            a useful balance between expressiveness, hardware cost and
+            trainability.
+        </div>
+    </section>
+
+    <section id="optimizers">
+        <h2>10.5 Classical Optimisers for Variational Circuits</h2>
+
+        <h3>Why does a quantum algorithm need a classical optimiser?</h3>
+
+        <p>
+            A parameterised quantum circuit may contain several adjustable
+            angles. Even a circuit with ten parameters has an enormous
+            number of possible real-valued parameter combinations.
+            We need a systematic method to decide which values to try.
+        </p>
+
+        <p>
+            The classical optimiser performs this search. It receives
+            estimates of the objective function, and sometimes estimates
+            of its gradient, then proposes the next parameter vector.
+        </p>
+
+        <p>
+            The difficulty is that evaluating the objective can require
+            many quantum circuit executions, and every estimate can
+            contain statistical noise. An optimiser that works well
+            on a clean mathematical function may behave differently
+            when each evaluation is expensive and uncertain.
+        </p>
+
+        <h3>1. Gradient-based methods</h3>
+
+        <p>
+            A gradient describes how the objective changes as the
+            parameters change. For an objective C(θ), the gradient is
+            the vector of partial derivatives:
+        </p>
+
+        <div class="formula">
+            ∇C(θ) =
+            (∂C/∂θ₁, ∂C/∂θ₂, ..., ∂C/∂θₙ)
+        </div>
+
+        <p>
+            For minimisation, a simple gradient-descent update is:
+        </p>
+
+        <div class="formula">
+            θₜ₊₁ = θₜ - η∇C(θₜ)
+        </div>
+
+        <p>
+            Here, η is the learning rate, which controls the step size.
+            If the step is too large, the search may overshoot useful
+            regions. If it is too small, convergence may be slow.
+        </p>
+
+        <p>
+            Gradient-based methods are attractive when reliable gradients
+            can be obtained. However, gradients estimated from noisy
+            measurements may be inaccurate. Small gradients can also
+            make optimisation difficult.
+        </p>
+
+        <h3>2. The parameter-shift rule</h3>
+
+        <p>
+            For many parameterised quantum gates, derivatives can be
+            calculated using additional circuit evaluations rather than
+            ordinary numerical differentiation alone. A common example
+            is the parameter-shift rule.
+        </p>
+
+        <div class="formula">
+            ∂C/∂θ =
+            [C(θ + π/2) - C(θ - π/2)] / 2
+        </div>
+
+        <p>
+            This form applies to common rotation parameters under the
+            appropriate gate and objective assumptions. It is not a
+            universal derivative formula for every possible circuit
+            parameterisation.
+        </p>
+
+        <p>
+            The rule tells us to run circuits with shifted parameter
+            values, measure their objectives and combine the estimates.
+            It is useful because the derivative is obtained from valid
+            quantum circuit evaluations. The cost is that estimating
+            a gradient can require additional executions.
+        </p>
+
+        <h3>3. Gradient-free methods</h3>
+
+        <p>
+            Gradient-free methods choose new parameters using function
+            evaluations without explicitly requiring a gradient. They
+            can be useful when gradient estimates are unreliable or
+            expensive, although they also face difficulties in high
+            dimensions and under noisy evaluations.
+        </p>
+
+        <h4>Nelder–Mead</h4>
+
+        <p>
+            Nelder–Mead maintains a collection of candidate points,
+            called a simplex. It changes this collection through
+            operations such as reflection, expansion and contraction.
+            The method uses objective values to guide the search.
+        </p>
+
+        <p>
+            It is relatively simple to use for problems with a small
+            number of parameters. However, it does not generally
+            guarantee finding a global optimum and can become expensive
+            as the number of parameters increases.
+        </p>
+
+        <h4>COBYLA</h4>
+
+        <p>
+            COBYLA is a derivative-free optimisation method that builds
+            local linear approximations to the objective and constraints.
+            It can be useful when derivatives are unavailable and
+            constraints need to be handled.
+        </p>
+
+        <p>
+            Like other local optimisation methods, it may converge to
+            a solution that is not globally optimal. Noisy objective
+            estimates can also affect its behaviour.
+        </p>
+
+        <h4>SPSA: Simultaneous Perturbation Stochastic Approximation</h4>
+
+        <p>
+            SPSA estimates a gradient using simultaneous perturbations
+            of the parameter vector. Rather than estimating every
+            component through separate parameter shifts, it perturbs
+            many parameters together in a carefully chosen direction.
+        </p>
+
+        <p>
+            This can reduce the number of objective evaluations needed
+            for an approximate gradient, especially when the circuit
+            has many parameters. However, the estimates can be noisy,
+            and its performance depends on the perturbation and
+            learning-rate schedules.
+        </p>
+
+        <h3>4. Adam and adaptive gradient methods</h3>
+
+        <p>
+            Adam is a widely used optimiser in machine learning. It
+            tracks moving averages of gradients and squared gradients
+            to adapt the effective step size for each parameter.
+            It can also be used in variational quantum algorithms
+            when sufficiently useful gradient estimates are available.
+        </p>
+
+        <p>
+            Adam is not automatically superior to gradient-free methods
+            for quantum circuits. Its success depends on gradient
+            quality, measurement noise, circuit structure and the
+            shape of the objective function.
+        </p>
+
+        <h3>Comparison of common optimisers</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Optimiser</th>
+                    <th>Uses gradients?</th>
+                    <th>Potential benefit</th>
+                    <th>Important concern</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gradient descent</td>
+                    <td>Yes</td>
+                    <td>Simple and interpretable updates.</td>
+                    <td>Step-size sensitivity and costly gradients.</td>
+                </tr>
+                <tr>
+                    <td>Adam</td>
+                    <td>Yes</td>
+                    <td>Adaptive parameter-wise updates.</td>
+                    <td>Noisy gradients may still be problematic.</td>
+                </tr>
+                <tr>
+                    <td>Nelder–Mead</td>
+                    <td>No</td>
+                    <td>Simple derivative-free search.</td>
+                    <td>Can scale poorly with many parameters.</td>
+                </tr>
+                <tr>
+                    <td>COBYLA</td>
+                    <td>No</td>
+                    <td>Handles local approximations and constraints.</td>
+                    <td>May be sensitive to noisy evaluations.</td>
+                </tr>
+                <tr>
+                    <td>SPSA</td>
+                    <td>Approximate gradient</td>
+                    <td>Uses simultaneous perturbations.</td>
+                    <td>Gradient estimates can have high variance.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Why optimisation is unusually difficult for quantum circuits</h3>
+
+        <p>
+            In ordinary machine learning, an objective evaluation may be
+            computed directly by software using the available data.
+            In a variational quantum algorithm, objective evaluation can
+            require preparing a quantum state, executing gates, repeating
+            measurements and estimating expectation values.
+        </p>
+
+        <p>
+            This creates several practical challenges:
+        </p>
+
+        <ul>
+            <li>
+                <strong>Shot noise:</strong> a finite number of measurements
+                produces uncertain objective estimates.
+            </li>
+            <li>
+                <strong>Hardware noise:</strong> gate and measurement errors
+                can distort the objective.
+            </li>
+            <li>
+                <strong>Expensive evaluations:</strong> each proposed
+                parameter vector may require many circuit executions.
+            </li>
+            <li>
+                <strong>Local minima and flat regions:</strong> the
+                optimiser may struggle to discover better parameters.
+            </li>
+            <li>
+                <strong>Changing evaluation accuracy:</strong> using too
+                few shots early may mislead the search, while using too
+                many shots throughout can waste resources.
+            </li>
+        </ul>
+
+        <h3>How do researchers make the optimisation more reliable?</h3>
+
+        <p>
+            They may initialise parameters carefully, compare multiple
+            optimiser families, exploit known problem structure and
+            adjust the measurement budget during the search. For example,
+            a promising candidate may receive more shots to estimate
+            its objective more accurately.
+        </p>
+
+        <p>
+            Researchers also monitor the objective over time, test
+            multiple initial points and compare against simpler
+            baselines. An apparently converged optimiser does not
+            prove that the global optimum has been found.
+        </p>
+
+        <div class="callout">
+            <strong>Important distinction:</strong> The quantum circuit
+            defines the states that can be explored. The classical
+            optimiser determines how the parameters are searched.
+            Improving one does not automatically solve the limitations
+            of the other.
+        </div>
+    </section>
+
+    <section id="applications">
+        <h2>10.6 Applications in Chemistry and Combinatorial Optimisation</h2>
+
+        <h3>Application 1: Quantum chemistry</h3>
+
+        <p>
+            Chemistry is a natural area for quantum computing because
+            molecules themselves obey quantum mechanics. Electrons
+            interact, occupy quantum states and influence the energies
+            and properties of molecules.
+        </p>
+
+        <p>
+            A quantum computer can, in principle, represent certain
+            quantum states in ways that are difficult for classical
+            computers to simulate exactly. Variational methods attempt
+            to use this capability without requiring a long,
+            fault-tolerant computation.
+        </p>
+
+        <h4>Finding molecular ground-state energies</h4>
+
+        <p>
+            The electronic Hamiltonian describes the kinetic energy of
+            electrons and their interactions with nuclei and with one
+            another. After selecting a finite basis set and applying
+            an appropriate mapping, it can be expressed in terms of
+            qubit operators.
+        </p>
+
+        <p>
+            VQE prepares a candidate electronic state and estimates
+            the energy associated with it. The classical optimiser
+            adjusts the ansatz parameters to lower the energy.
+        </p>
+
+        <p>
+            A sufficiently accurate energy calculation can contribute
+            to the study of molecular stability, reaction energetics
+            and chemical bonding. However, useful chemistry often
+            requires accurate energy differences rather than a single
+            absolute energy. Those differences can be small compared
+            with the total energies involved, making precision
+            particularly important.
+        </p>
+
+        <h4>Understanding chemical reactions</h4>
+
+        <p>
+            A chemical reaction can be studied by calculating the
+            energies of relevant molecular configurations. By
+            examining how energy changes as the geometry changes,
+            researchers can investigate reaction pathways and
+            energetic barriers.
+        </p>
+
+        <p>
+            A variational quantum calculation is one possible component
+            of this workflow. It does not automatically provide a
+            complete reaction mechanism. Molecular geometry,
+            basis-set choices, nuclear motion and other effects
+            may also need to be considered.
+        </p>
+
+        <h4>Studying strongly correlated systems</h4>
+
+        <p>
+            In some systems, electrons cannot be described accurately
+            by simple approximations in which each electron behaves
+            almost independently. Such systems are called strongly
+            correlated, and they can be difficult for certain
+            classical computational methods.
+        </p>
+
+        <p>
+            Quantum algorithms are being investigated as possible
+            tools for these problems. Whether a particular VQE
+            implementation offers a practical advantage depends on
+            the molecular model, ansatz, hardware quality and
+            available classical methods.
+        </p>
+
+        <h3>Application 2: Combinatorial optimisation</h3>
+
+        <p>
+            Combinatorial optimisation appears whenever a problem
+            requires choosing among a large number of discrete
+            possibilities. The solution must satisfy the problem's
+            requirements while minimising a cost or maximising a score.
+        </p>
+
+        <h4>Graph problems</h4>
+
+        <p>
+            Graphs represent relationships between objects. Vertices
+            can represent people, machines or locations, while edges
+            represent connections. Problems such as Max-Cut, graph
+            colouring and certain network-design tasks can be expressed
+            using binary variables and objective functions.
+        </p>
+
+        <p>
+            QAOA can prepare candidate assignments and optimise their
+            expected cost. The measured bit strings are then checked
+            against the original graph problem.
+        </p>
+
+        <h4>Scheduling</h4>
+
+        <p>
+            Suppose a company must assign jobs to machines while
+            respecting deadlines and resource limits. A binary variable
+            may represent whether a job is assigned to a particular
+            machine or time slot.
+        </p>
+
+        <p>
+            The objective might minimise completion time, energy
+            consumption or a penalty associated with delays.
+            Constraints can be incorporated through penalty terms
+            or by using a circuit designed to preserve feasible
+            assignments.
+        </p>
+
+        <p>
+            The challenge is to create a formulation that uses a
+            manageable number of qubits and does not make constraint
+            violations too attractive. A poor encoding can make an
+            otherwise promising algorithm ineffective.
+        </p>
+
+        <h4>Routing and resource allocation</h4>
+
+        <p>
+            Routing problems ask us to choose paths, while resource
+            allocation problems assign limited resources to competing
+            needs. Both can involve enormous numbers of possible
+            combinations.
+        </p>
+
+        <p>
+            A quantum optimisation approach may encode choices in
+            binary variables, construct a cost Hamiltonian and
+            use a variational circuit to generate candidate solutions.
+            Classical methods can still be required to validate,
+            repair or improve those solutions.
+        </p>
+
+        <h3>How do we know whether the quantum algorithm is useful?</h3>
+
+        <p>
+            A result is meaningful only when we compare it with
+            appropriate alternatives. For chemistry, that may mean
+            comparing energy estimates with trusted numerical
+            methods or experimental data. For optimisation, it
+            may mean comparing solution quality and total runtime
+            with strong classical algorithms.
+        </p>
+
+        <p>
+            A fair evaluation should include the time required to
+            prepare data, compile circuits, execute measurements,
+            optimise parameters and post-process the results.
+            Comparing only the time taken by the quantum processor
+            can produce a misleading conclusion.
+        </p>
+
+        <h3>Practical obstacles across both application areas</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Challenge</th>
+                    <th>Why it matters</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Problem encoding</td>
+                    <td>A formulation may require more qubits or gates than the hardware can support.</td>
+                </tr>
+                <tr>
+                    <td>Measurement cost</td>
+                    <td>Accurate estimates may require many repeated circuit executions.</td>
+                </tr>
+                <tr>
+                    <td>Noise</td>
+                    <td>Hardware errors can reduce the quality of energy estimates or candidate solutions.</td>
+                </tr>
+                <tr>
+                    <td>Optimisation</td>
+                    <td>The classical search may converge slowly or become trapped in an unhelpful region.</td>
+                </tr>
+                <tr>
+                    <td>Classical competition</td>
+                    <td>Well-developed classical algorithms may already solve the problem efficiently.</td>
+                </tr>
+                <tr>
+                    <td>Scalability</td>
+                    <td>A method that works on a small demonstration may not work on a useful real-world instance.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout warning">
+            <strong>Scientific caution:</strong> Variational quantum algorithms
+            have demonstrated useful experimental capabilities, but broad,
+            practical quantum advantage over strong classical methods has
+            not been established for chemistry and combinatorial
+            optimisation in general.
+        </div>
+    </section>
+
+    <section id="comparison">
+        <h2>Putting VQE and QAOA Together</h2>
+
+        <p>
+            Both algorithms use parameterised quantum circuits and
+            classical optimisation. Their main difference lies in
+            the objective they are designed to address and the way
+            their circuits are constructed.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>VQE</th>
+                    <th>QAOA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Typical problem</td>
+                    <td>Estimating a Hamiltonian's ground-state energy.</td>
+                    <td>Discrete combinatorial optimisation.</td>
+                </tr>
+                <tr>
+                    <td>Objective</td>
+                    <td>Minimise the expected energy.</td>
+                    <td>Minimise expected cost or maximise expected reward.</td>
+                </tr>
+                <tr>
+                    <td>Ansatz structure</td>
+                    <td>Often selected for the physical system or hardware.</td>
+                    <td>Alternates cost and mixing operations.</td>
+                </tr>
+                <tr>
+                    <td>Parameters</td>
+                    <td>Typically gate angles or excitation parameters.</td>
+                    <td>Usually cost angles γ and mixer angles β.</td>
+                </tr>
+                <tr>
+                    <td>Measurement result</td>
+                    <td>Expectation values used to estimate energy.</td>
+                    <td>Bit strings representing candidate solutions.</td>
+                </tr>
+                <tr>
+                    <td>Classical role</td>
+                    <td>Updates the trial-state parameters to lower energy.</td>
+                    <td>Updates circuit angles to improve expected cost.</td>
+                </tr>
+                <tr>
+                    <td>Guarantee</td>
+                    <td>Exact trial-state energy is no lower than the true ground-state energy.</td>
+                    <td>Finite-depth QAOA does not generally guarantee an optimal solution.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>The common pattern</h3>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="flow-box">Define the problem</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Construct an objective</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Prepare a parameterised state</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Measure</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">Optimise classically</div>
+            </div>
+            <p class="small">
+                The process repeats, with the latest parameters guiding
+                the next quantum circuit execution.
+            </p>
+        </div>
+
+        <p>
+            This pattern is the central lesson of the chapter. The
+            quantum processor is not asked to solve the entire problem
+            independently in one operation. Instead, it participates
+            in an iterative procedure in which quantum state preparation
+            and measurement work together with classical numerical
+            optimisation.
+        </p>
+    </section>
+
+    <section id="implementation">
+        <h2>A Small Conceptual Implementation</h2>
+
+        <p>
+            The following Python-style pseudocode demonstrates the
+            structure of a generic variational algorithm. It is not
+            tied to a particular quantum framework and does not
+            implement a complete VQE or QAOA calculation.
+        </p>
+
+        <pre><code># 1. Define the objective and parameterised quantum circuit.
+# 2. Initialise the circuit parameters.
+
+parameters = initialise_parameters()
+
+for iteration in range(max_iterations):
+
+    # Prepare and execute the circuit using the current parameters.
+    measurement_data = quantum_circuit_run(parameters)
+
+    # Estimate the objective from the measurements.
+    objective_value = estimate_objective(measurement_data)
+
+    # Decide whether the stopping condition has been met.
+    if converged(objective_value):
+        break
+
+    # Use a classical optimiser to propose new parameters.
+    parameters = optimiser_update(
+        parameters,
+        objective_value
+    )
+
+# Evaluate the final result and verify its quality.
+final_result = evaluate_solution(parameters)</code></pre>
+
+        <p>
+            The functions above represent conceptual operations, not
+            built-in Python functions. A real implementation must
+            define the circuit, measurement process, objective,
+            optimiser, convergence criteria and result validation.
+        </p>
+
+        <h3>What would change between VQE and QAOA?</h3>
+
+        <p>
+            In VQE, the objective estimation step evaluates the
+            Hamiltonian's energy expectation. The final result is
+            often an estimated ground-state energy and, when needed,
+            information about the prepared state.
+        </p>
+
+        <p>
+            In QAOA, the circuit has the alternating cost-and-mixer
+            structure. The measurement outcomes are decoded into
+            candidate bit strings, and the classical objective is
+            evaluated on those candidates. The optimiser uses the
+            expected cost to update the QAOA angles.
+        </p>
+
+        <p>
+            In both cases, the quality of the final answer must be
+            assessed separately from the fact that the optimiser
+            stopped running.
+        </p>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter Summary</h2>
+
+        <ol>
+            <li>
+                <strong>NISQ computing</strong> studies what can be
+                achieved with quantum processors that have limited
+                scale and imperfect operations.
+            </li>
+            <li>
+                <strong>Variational algorithms</strong> combine
+                parameterised quantum circuits with classical
+                optimisation in an iterative loop.
+            </li>
+            <li>
+                <strong>VQE</strong> uses the variational principle
+                to search for a trial state with low expected energy.
+            </li>
+            <li>
+                <strong>QAOA</strong> alternates cost-dependent and
+                mixing operations to produce candidate solutions
+                for discrete optimisation problems.
+            </li>
+            <li>
+                <strong>Ansatz design</strong> balances the ability
+                to represent useful states against circuit depth,
+                hardware restrictions and optimisation difficulty.
+            </li>
+            <li>
+                <strong>Classical optimisers</strong> search for
+                useful parameters, but their performance depends
+                on measurement uncertainty, noise and the structure
+                of the objective.
+            </li>
+            <li>
+                <strong>Applications</strong> include quantum
+                chemistry and combinatorial optimisation, although
+                practical advantage over classical methods must
+                be demonstrated for each problem.
+            </li>
+        </ol>
+
+        <div class="callout success">
+            <strong>The main takeaway:</strong> Variational quantum
+            algorithms make the quantum computer part of a larger
+            computational workflow. Their promise lies in finding
+            useful ways to combine quantum state preparation with
+            classical optimisation, while their limitations remind
+            us that better hardware, better circuits and better
+            algorithms are all necessary.
+        </div>
+    </section>
+
+    <section id="questions">
+        <h2>Questions for Self-Study</h2>
+
+        <ol>
+            <li>
+                What does NISQ stand for, and why is circuit depth
+                important for a noisy quantum processor?
+            </li>
+            <li>
+                What is an ansatz, and why can a highly expressive
+                ansatz still be difficult to train?
+            </li>
+            <li>
+                State the variational principle and explain how VQE
+                uses it to estimate a ground-state energy.
+            </li>
+            <li>
+                Why does VQE express a Hamiltonian as a sum of
+                Pauli strings, and why are repeated measurements
+                needed?
+            </li>
+            <li>
+                What are the cost unitary and mixer unitary in QAOA?
+                Why are both needed in the standard algorithm?
+            </li>
+            <li>
+                Explain how the Max-Cut problem can be represented
+                using binary variables.
+            </li>
+            <li>
+                Compare hardware-efficient and problem-inspired
+                ansätze.
+            </li>
+            <li>
+                How does the parameter-shift rule help estimate
+                gradients, and why can this still be expensive?
+            </li>
+            <li>
+                Why does convergence of a classical optimiser not
+                guarantee that a global optimum has been found?
+            </li>
+            <li>
+                What measurements and classical baselines would you
+                use to determine whether a variational algorithm
+                offers a practical advantage?
+            </li>
+        </ol>
+    </section>
+
+    <section id="next">
+        <h2>Looking Ahead</h2>
+
+        <p>
+            Variational algorithms demonstrate one way to work with
+            today's imperfect quantum hardware. However, they are not
+            the only approach to quantum computing, and their repeated
+            measurement and optimisation costs can become substantial.
+        </p>
+
+        <p>
+            The next stage of understanding quantum algorithms is to
+            study how they connect with quantum simulation, quantum
+            linear algebra, quantum error correction and fault-tolerant
+            computation. These areas help us understand both what
+            current devices can attempt and what future quantum
+            computers may be able to accomplish.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>Chapter 10 · Variational and Near-Term Quantum Algorithms</p>
+    <p>Learn the mathematics, understand the circuit, question the results.</p>
+</footer>
+
+</body>
+</html>

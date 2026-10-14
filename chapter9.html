@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 9: Quantum Simulation and Linear Algebra</title>
+    <style>
+        :root {
+            --primary: #173b67;
+            --secondary: #286a8e;
+            --accent: #e5f1fa;
+            --background: #f5f8fc;
+            --text: #263445;
+            --border: #d8e2ee;
+            --highlight: #fff5d9;
+            --green: #e8f6ed;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        header {
+            background: linear-gradient(135deg, #122b49, #286a8e);
+            color: white;
+            padding: 55px 22px;
+            text-align: center;
+        }
+
+        header h1 {
+            max-width: 900px;
+            margin: auto;
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.25;
+        }
+
+        header p {
+            max-width: 760px;
+            margin: 18px auto 0;
+            color: #e0edf8;
+            font-size: 18px;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 30px auto;
+            padding: 0 22px 55px;
+        }
+
+        nav, section, .concept, .example, .warning, .summary {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 23px 27px;
+            margin: 25px 0;
+        }
+
+        nav h2 {
+            margin-top: 0;
+        }
+
+        nav ol {
+            padding-left: 24px;
+        }
+
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 28px;
+            line-height: 1.35;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: var(--secondary);
+            font-size: 21px;
+            line-height: 1.4;
+        }
+
+        h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .equation {
+            overflow-x: auto;
+            background: #f0f5fb;
+            border-left: 4px solid var(--secondary);
+            padding: 15px 18px;
+            margin: 18px 0;
+            text-align: center;
+            font-family: "Times New Roman", serif;
+            font-size: 19px;
+            line-height: 1.8;
+        }
+
+        .concept {
+            background: var(--accent);
+            border-color: #c6ddeb;
+        }
+
+        .example {
+            background: #fbfcfe;
+        }
+
+        .warning {
+            background: var(--highlight);
+            border-color: #f0df9e;
+        }
+
+        .summary {
+            background: var(--green);
+            border-color: #c7e5d0;
+        }
+
+        .small {
+            font-size: 15px;
+            color: #506175;
+        }
+
+        .tag {
+            display: inline-block;
+            border-radius: 5px;
+            padding: 2px 9px;
+            background: #e5eef8;
+            color: #234c75;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #edf1f5;
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-size: 0.9em;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 18px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf1f8;
+            color: var(--primary);
+        }
+
+        .flow {
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+            line-height: 1.8;
+            padding: 12px;
+        }
+
+        .flow span {
+            display: block;
+            margin: 8px auto;
+            padding: 10px;
+            max-width: 430px;
+            border: 1px solid #cbd9e8;
+            border-radius: 8px;
+            background: #f2f7fc;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #122b49;
+            color: #e0edf8;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+
+            header {
+                padding: 38px 18px;
+            }
+
+            main {
+                padding: 0 12px 35px;
+            }
+
+            section, nav, .concept, .example, .warning, .summary {
+                padding: 18px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Chapter 9: Quantum Simulation and Linear Algebra</h1>
+    <p>Understanding how quantum computers simulate nature, perform mathematical transformations and solve linear systems — and why these abilities do not automatically make every calculation faster.</p>
+</header>
+
+<main>
+
+<nav>
+    <h2>Chapter Contents</h2>
+    <ol>
+        <li><a href="#intro">Why quantum simulation and linear algebra matter</a></li>
+        <li><a href="#hamiltonian">9.1 Simulating quantum systems: Hamiltonian simulation</a></li>
+        <li><a href="#trotter">9.2 Trotter-Suzuki decomposition</a></li>
+        <li><a href="#qubitization">9.3 Qubitization and quantum signal processing</a></li>
+        <li><a href="#block">9.4 Block encodings</a></li>
+        <li><a href="#hhl">9.5 HHL algorithm for linear systems</a></li>
+        <li><a href="#io">9.6 The input/output problem</a></li>
+        <li><a href="#dequantization">9.7 Dequantization and quantum-inspired classical algorithms</a></li>
+        <li><a href="#connections">How all the topics fit together</a></li>
+        <li><a href="#summary">Chapter summary</a></li>
+        <li><a href="#questions">Practice questions</a></li>
+    </ol>
+</nav>
+
+<section id="intro">
+    <h2>Before We Begin: Why Do These Topics Matter?</h2>
+
+    <p>Imagine that you want to understand how a molecule behaves when two of its atoms interact. You might try to calculate the position, energy and behaviour of every particle in the molecule. As the molecule becomes more complicated, the mathematical description becomes extremely large.</p>
+
+    <p>Now imagine another problem. You have a large system of equations and want to find the unknown values. Such problems appear in engineering, physics, machine learning, scientific computing and many other fields.</p>
+
+    <p>These two problems lead us to the main ideas in this chapter:</p>
+
+    <ul>
+        <li><strong>Quantum simulation:</strong> using a quantum computer to reproduce the mathematical evolution of a quantum system.</li>
+        <li><strong>Linear algebra on quantum computers:</strong> representing and processing mathematical objects such as vectors and matrices using quantum states and operations.</li>
+    </ul>
+
+    <p>These ideas are closely connected. Quantum systems evolve according to mathematical operators, and those operators are often represented using matrices. Similarly, many scientific calculations can be expressed as linear algebra problems.</p>
+
+    <div class="concept">
+        <h3>The central idea</h3>
+        <p>A quantum computer is not simply a classical computer that performs every calculation faster. It is a different computational model that can manipulate quantum states through carefully designed operations. The challenge is to turn that ability into a useful advantage for a particular problem.</p>
+    </div>
+
+    <h3>Three mathematical objects we need to understand</h3>
+
+    <p>First, a <strong>vector</strong> is an ordered collection of numbers. In quantum computing, a quantum state can be represented as a vector of complex amplitudes.</p>
+
+    <div class="equation">
+        |ψ⟩ = α|0⟩ + β|1⟩
+    </div>
+
+    <p>Here, α and β are complex numbers satisfying |α|² + |β|² = 1. Their squared magnitudes give the probabilities of measuring the outcomes 0 and 1.</p>
+
+    <p>Second, a <strong>matrix</strong> is a rectangular arrangement of numbers. A matrix can transform one vector into another.</p>
+
+    <div class="equation">
+        |ψ'⟩ = A|ψ⟩
+    </div>
+
+    <p>Third, an <strong>operator</strong> is a mathematical object that acts on a state. In finite-dimensional quantum mechanics, operators are commonly represented by matrices.</p>
+
+    <p>These three objects — vectors, matrices and operators — provide the mathematical language for the rest of the chapter.</p>
+</section>
+
+<section id="hamiltonian">
+    <h2>9.1 Simulating Quantum Systems: Hamiltonian Simulation</h2>
+
+    <h3>What does it mean to simulate a quantum system?</h3>
+
+    <p>Everything around us is made of physical systems. At a microscopic level, atoms, electrons and molecules follow the rules of quantum mechanics. If we want to predict how such a system changes with time, we need to describe its quantum state and how that state evolves.</p>
+
+    <p>A classical computer can simulate quantum systems, but the cost can grow rapidly as the system becomes larger. A quantum computer offers a natural alternative: we can prepare a quantum state and apply operations that reproduce the desired evolution.</p>
+
+    <p>To understand this, consider a simple analogy. If you want to know where a moving car will be after ten seconds, you need a rule describing its motion. Similarly, if you want to know the quantum state of a system after some time, you need a mathematical rule describing its evolution.</p>
+
+    <h3>The Hamiltonian: the rule governing energy and evolution</h3>
+
+    <p>In quantum mechanics, the <strong>Hamiltonian</strong>, usually written as H, represents the total energy operator of a system. It describes the energy structure and determines how the quantum state evolves with time.</p>
+
+    <p>For a system with a time-independent Hamiltonian, the evolution is governed by the Schrödinger equation:</p>
+
+    <div class="equation">
+        iℏ d|ψ(t)⟩/dt = H|ψ(t)⟩
+    </div>
+
+    <p>Let us understand each symbol:</p>
+
+    <ul>
+        <li><strong>|ψ(t)⟩:</strong> the quantum state at time t.</li>
+        <li><strong>H:</strong> the Hamiltonian, which describes the system's energy.</li>
+        <li><strong>ℏ:</strong> the reduced Planck constant.</li>
+        <li><strong>i:</strong> the imaginary unit, satisfying i² = −1.</li>
+        <li><strong>d|ψ(t)⟩/dt:</strong> how quickly the quantum state changes with time.</li>
+    </ul>
+
+    <p>The equation says that the way a quantum state changes depends on the Hamiltonian acting on that state.</p>
+
+    <h3>From the Schrödinger equation to time evolution</h3>
+
+    <p>When H does not change with time, the solution can be written as:</p>
+
+    <div class="equation">
+        |ψ(t)⟩ = U(t)|ψ(0)⟩
+        <br>
+        U(t) = e<sup>−iHt/ℏ</sup>
+    </div>
+
+    <p>Here, |ψ(0)⟩ is the initial state, and U(t) is the time-evolution operator. Applying U(t) to the initial state gives the state after time t.</p>
+
+    <p>In quantum computing, physical quantum gates must preserve the total probability of the state. Such transformations are represented by <strong>unitary matrices</strong>. For a Hermitian Hamiltonian, the evolution operator above is unitary.</p>
+
+    <div class="concept">
+        <h3>A simple way to remember it</h3>
+        <p>The Hamiltonian tells us what energy structure the system has. The time-evolution operator tells us how that system changes over time. Hamiltonian simulation is the task of implementing that evolution on a quantum computer.</p>
+    </div>
+
+    <h3>A simple example: one qubit</h3>
+
+    <p>Suppose a qubit has the Hamiltonian:</p>
+
+    <div class="equation">
+        H = (ℏω/2)X
+        <br>
+        X = [ 0  1 ]
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[ 1  0 ]
+    </div>
+
+    <p>Here, X is the Pauli-X matrix, and ω is a frequency. Since X² = I, the evolution operator becomes:</p>
+
+    <div class="equation">
+        U(t) = cos(ωt/2)I − i sin(ωt/2)X
+    </div>
+
+    <p>If the qubit begins in state |0⟩, then:</p>
+
+    <div class="equation">
+        |ψ(t)⟩ = cos(ωt/2)|0⟩ − i sin(ωt/2)|1⟩
+    </div>
+
+    <p>At the beginning, the state is |0⟩. As time passes, the amplitudes change, and the probability of measuring 1 becomes sin²(ωt/2). The Hamiltonian determines how this change happens.</p>
+
+    <h3>Why is Hamiltonian simulation difficult?</h3>
+
+    <p>The mathematical definition of U(t) is compact, but implementing it as a sequence of quantum gates can be difficult. A large system may have a Hamiltonian involving many interactions among its particles. A quantum processor cannot simply execute an arbitrary mathematical expression without translating it into operations supported by its hardware or computational model.</p>
+
+    <p>The goal is therefore to construct a quantum circuit that approximates or implements the desired evolution accurately, while using as few resources as possible.</p>
+
+    <h3>Where is Hamiltonian simulation useful?</h3>
+
+    <ul>
+        <li><strong>Chemistry:</strong> predicting molecular energies and chemical reactions.</li>
+        <li><strong>Materials science:</strong> studying magnetic materials and electronic behaviour.</li>
+        <li><strong>Physics:</strong> modelling interacting quantum particles.</li>
+        <li><strong>Quantum information:</strong> understanding how quantum states evolve under interactions.</li>
+    </ul>
+
+    <p>These are important research directions. However, a useful simulation must still account for the number of qubits, circuit depth, noise and the accuracy required by the scientific problem.</p>
+</section>
+
+<section id="trotter">
+    <h2>9.2 Trotter-Suzuki Decomposition</h2>
+
+    <h3>The problem: a Hamiltonian may contain many terms</h3>
+
+    <p>Suppose the Hamiltonian of a system can be written as a sum of simpler terms:</p>
+
+    <div class="equation">
+        H = H₁ + H₂ + H₃ + ... + Hₘ
+    </div>
+
+    <p>Each term might describe a different physical effect. For example, one term could represent the energy of individual particles, while another represents interactions between neighbouring particles.</p>
+
+    <p>We need to implement:</p>
+
+    <div class="equation">
+        U(t) = e<sup>−i(H₁+H₂+...+Hₘ)t/ℏ</sup>
+    </div>
+
+    <p>The difficulty is that the exponential of a sum is generally not equal to the product of the exponentials. In particular, if two operators do not commute, then:</p>
+
+    <div class="equation">
+        e<sup>A+B</sup> ≠ e<sup>A</sup>e<sup>B</sup>
+    </div>
+
+    <p>Two operators commute when AB = BA. When all Hamiltonian terms commute, their exponentials can be multiplied directly without the usual splitting error. But physical interactions often produce non-commuting terms.</p>
+
+    <h3>The first-order Trotter formula</h3>
+
+    <p>The Trotter formula solves this problem approximately. Instead of applying the full evolution in one step, we divide the total time t into r smaller time intervals:</p>
+
+    <div class="equation">
+        Δt = t/r
+    </div>
+
+    <p>During each small interval, we apply the evolution associated with each Hamiltonian term separately. The first-order approximation is:</p>
+
+    <div class="equation">
+        e<sup>−iHt/ℏ</sup>
+        ≈
+        [e<sup>−iH₁t/(rℏ)</sup>
+        e<sup>−iH₂t/(rℏ)</sup>
+        ... 
+        e<sup>−iHₘt/(rℏ)</sup>]<sup>r</sup>
+    </div>
+
+    <p>The right-hand side means that we apply the sequence of smaller operations r times.</p>
+
+    <p>Why should this work? Over a sufficiently short time interval, the error introduced by pretending that the terms act separately becomes small. Repeating the short-time sequence approximates the evolution over the full duration.</p>
+
+    <h3>Understanding the idea with a familiar example</h3>
+
+    <p>Imagine walking diagonally across a field. Instead of moving diagonally in one step, you could take a small step forward and then a small step sideways. If you repeat this pattern with sufficiently small steps, you approach the same destination.</p>
+
+    <p>This analogy explains the splitting idea, but there is an important difference: quantum operators need not commute. The order of operations can affect the final state, so splitting quantum evolution introduces a mathematical error that must be controlled.</p>
+
+    <h3>What causes the error?</h3>
+
+    <p>Consider two operators A and B. The Baker-Campbell-Hausdorff expansion shows that the product of their exponentials contains additional terms involving their commutator:</p>
+
+    <div class="equation">
+        [A,B] = AB − BA
+    </div>
+
+    <p>For a first-order splitting, the leading error over the full simulation time is typically proportional to 1/r for fixed Hamiltonian terms and fixed total time. More precisely, its bound depends on the time, the operator norms and the commutators of the terms.</p>
+
+    <p>If the operators commute, the commutator vanishes, and the splitting can be exact in the ideal mathematical setting.</p>
+
+    <h3>Second-order and higher-order Suzuki formulas</h3>
+
+    <p>We can improve the approximation by using a more carefully arranged sequence of operations. A common second-order symmetric formula for two terms is:</p>
+
+    <div class="equation">
+        e<sup>(A+B)Δt</sup>
+        ≈
+        e<sup>AΔt/2</sup>
+        e<sup>BΔt</sup>
+        e<sup>AΔt/2</sup>
+    </div>
+
+    <p>When this sequence is repeated, the leading global error generally decreases quadratically with the step size, under the usual assumptions. Higher-order Suzuki formulas use more elaborate symmetric sequences to obtain still better accuracy per approximation step.</p>
+
+    <p>However, higher-order formulas often require more operations per step. A method that has a smaller mathematical error per step is not automatically the cheapest method to run on real hardware.</p>
+
+    <h3>Accuracy versus computational cost</h3>
+
+    <p>Increasing r usually reduces the Trotter approximation error, but it also increases the number of circuit operations. Every additional gate consumes time and can introduce hardware error.</p>
+
+    <table>
+        <tr>
+            <th>Choice</th>
+            <th>Advantage</th>
+            <th>Disadvantage</th>
+        </tr>
+        <tr>
+            <td>Few Trotter steps</td>
+            <td>Shorter circuit and lower gate count.</td>
+            <td>Potentially larger approximation error.</td>
+        </tr>
+        <tr>
+            <td>Many Trotter steps</td>
+            <td>Usually a more accurate approximation.</td>
+            <td>Deeper circuit and greater hardware cost.</td>
+        </tr>
+        <tr>
+            <td>Higher-order decomposition</td>
+            <td>Can reduce approximation error more efficiently in suitable cases.</td>
+            <td>Requires a more complicated sequence of operations.</td>
+        </tr>
+    </table>
+
+    <div class="concept">
+        <h3>The key lesson</h3>
+        <p>Trotter-Suzuki decomposition converts one difficult evolution into a sequence of easier evolutions. It is a foundational technique for quantum simulation, especially when the Hamiltonian is expressed as a sum of terms that can be implemented separately.</p>
+    </div>
+</section>
+
+<section id="qubitization">
+    <h2>9.3 Qubitization and Quantum Signal Processing</h2>
+
+    <h3>Why look beyond Trotterisation?</h3>
+
+    <p>Trotter-Suzuki decomposition is intuitive and widely useful, but its efficiency depends on the structure of the Hamiltonian, the chosen decomposition and the required accuracy. Researchers have developed other methods that can provide stronger complexity guarantees in suitable settings.</p>
+
+    <p>Two important ideas are <strong>qubitization</strong> and <strong>quantum signal processing</strong>. They are closely related techniques for constructing controlled transformations of quantum states and using them to implement useful functions of operators.</p>
+
+    <h3>First, understand a normal signal</h3>
+
+    <p>In ordinary electronics, a signal carries information. A circuit changes the signal according to some rule. For instance, a circuit might amplify a signal or filter out particular frequencies.</p>
+
+    <p>Quantum signal processing has a related mathematical goal. It uses a sequence of carefully selected quantum operations to transform information encoded in certain amplitudes or eigenvalues.</p>
+
+    <p>The word "signal" here does not mean that we simply feed an ordinary electrical waveform into a quantum computer. It refers to a mathematical quantity encoded in the quantum operation being processed.</p>
+
+    <h3>What is qubitization?</h3>
+
+    <p>Qubitization is a framework for turning a suitably normalized Hamiltonian into a structured unitary operation. Under appropriate assumptions, this operation contains information about the Hamiltonian's eigenvalues in its eigenphases.</p>
+
+    <p>To understand the term <strong>eigenvalue</strong>, consider a matrix A and a non-zero vector |v⟩. If:</p>
+
+    <div class="equation">
+        A|v⟩ = λ|v⟩
+    </div>
+
+    <p>then |v⟩ is an eigenvector and λ is its eigenvalue. The matrix changes the vector only by multiplying it by λ, rather than changing its direction into a different vector.</p>
+
+    <p>For a Hermitian Hamiltonian, eigenvalues represent possible energy values associated with its energy eigenstates. Quantum simulation can therefore be understood partly as implementing transformations whose behaviour depends on these eigenvalues.</p>
+
+    <h3>How does a unitary operation encode a Hamiltonian?</h3>
+
+    <p>Suppose a Hamiltonian H has been normalised by a positive scale factor α so that its eigenvalues lie within the interval [−1, 1]. Qubitization constructs a unitary whose eigenphases are related to the eigenvalues of H.</p>
+
+    <p>In a common formulation, the relationship has the form:</p>
+
+    <div class="equation">
+        λ/α = cos(θ)
+    </div>
+
+    <p>Here, λ is an eigenvalue of H, α is the normalisation scale, and θ is a corresponding eigenphase parameter. The exact relationship depends on the chosen qubitization construction and convention.</p>
+
+    <p>This is useful because unitary operations are the natural building blocks of quantum circuits, and the eigenphases can be manipulated using quantum signal processing.</p>
+
+    <h3>Quantum signal processing: shaping a mathematical function</h3>
+
+    <p>Quantum signal processing, or QSP, uses a sequence of unitary operations interleaved with adjustable phase rotations. The phases are chosen so that the resulting operation implements a desired polynomial transformation of an encoded quantity.</p>
+
+    <p>For example, suppose the Hamiltonian's eigenvalues are represented by numbers x in [−1, 1]. A suitable QSP sequence can implement a polynomial P(x) that approximates a desired function over this interval.</p>
+
+    <div class="equation">
+        x → P(x)
+    </div>
+
+    <p>The expression above represents a transformation of the encoded mathematical value. It does not mean that a quantum circuit directly prints every value of P(x). Rather, the circuit transforms a quantum state in a way that reflects the polynomial.</p>
+
+    <p>When the sequence is constructed correctly, its action on each relevant eigenstate corresponds to the selected polynomial transformation of the associated eigenvalue, subject to the constraints required by quantum mechanics.</p>
+
+    <h3>Quantum singular value transformation</h3>
+
+    <p>A closely related framework is called <strong>quantum singular value transformation (QSVT)</strong>. It generalises these ideas from eigenvalues of Hermitian operators to singular values of more general matrices.</p>
+
+    <p>QSVT can be used to build important algorithms, including methods for Hamiltonian simulation and quantum linear-system solving. Block encodings, which we study in the next section, provide a key way to supply the matrix to these techniques.</p>
+
+    <h3>Why are these methods important for Hamiltonian simulation?</h3>
+
+    <p>The evolution operator is a function of the Hamiltonian:</p>
+
+    <div class="equation">
+        U(t) = e<sup>−iHt/ℏ</sup>
+    </div>
+
+    <p>Therefore, if we can implement an appropriate polynomial approximation to the exponential function over the relevant eigenvalue range, we can approximate the desired evolution.</p>
+
+    <p>Qubitization and quantum signal processing provide a systematic route to this kind of construction. For important classes of Hamiltonians, they achieve near-optimal dependence on simulation time and target error, although the full resource cost still depends on how the Hamiltonian is represented and accessed.</p>
+
+    <div class="concept">
+        <h3>The key lesson</h3>
+        <p>Trotterisation breaks evolution into short pieces. Qubitization and quantum signal processing use a more structured representation of the Hamiltonian and carefully designed transformations to approximate functions of that Hamiltonian. These methods are especially important in advanced quantum algorithm design.</p>
+    </div>
+</section>
+
+<section id="block">
+    <h2>9.4 Block Encodings</h2>
+
+    <h3>Why do we need a way to represent matrices?</h3>
+
+    <p>Quantum algorithms often require access to a matrix A. However, a quantum circuit cannot simply take an arbitrary classical matrix and apply it as though it were a single quantum gate.</p>
+
+    <p>There are two important reasons. First, a general matrix need not be unitary, whereas an isolated quantum operation must be unitary. Second, a large matrix may contain too many entries to load and process efficiently.</p>
+
+    <p>Block encoding offers a useful way to represent a matrix inside a larger unitary operation. This allows powerful quantum operations to act on matrices that are not themselves unitary.</p>
+
+    <h3>The central idea</h3>
+
+    <p>Suppose A is a matrix and α is a positive normalisation factor. A unitary U is a block encoding of A, with appropriate ancilla qubits and a suitable convention, if:</p>
+
+    <div class="equation">
+        (⟨0|<sup>⊗a</sup> ⊗ I) U
+        (|0⟩<sup>⊗a</sup> ⊗ I)
+        = A/α
+    </div>
+
+    <p>Here, a is the number of ancilla qubits, and I is the identity operator on the system register. The expression extracts the block of U associated with the ancillas being in the all-zero state.</p>
+
+    <p>In simpler language, the larger unitary U contains A/α in a particular part of its matrix representation. By preparing and using the ancillas correctly, a quantum algorithm can access that encoded matrix through the unitary operation.</p>
+
+    <h3>Why must we divide by α?</h3>
+
+    <p>Unitary matrices preserve vector lengths. An arbitrary matrix A may stretch vectors by an amount that is incompatible with being a unitary operation. In particular, its largest singular value may be greater than one.</p>
+
+    <p>Dividing by a suitable α ensures that the encoded matrix has operator norm at most one. For an exact block encoding, α must be large enough to satisfy this condition.</p>
+
+    <div class="equation">
+        ||A|| ≤ α
+    </div>
+
+    <p>The notation ||A|| commonly refers here to the operator norm, which measures the maximum stretching effect of A on a unit vector.</p>
+
+    <h3>A small illustrative example</h3>
+
+    <p>Consider the matrix:</p>
+
+    <div class="equation">
+        A = [ 1  0 ]
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[ 0  1/2 ]
+    </div>
+
+    <p>This matrix leaves the first component unchanged and halves the second component. It is not unitary because it does not preserve the length of every vector.</p>
+
+    <p>However, its operator norm is one, so a block encoding can represent A without requiring a normalisation factor greater than one. The larger unitary uses additional space to encode the desired action in one of its blocks.</p>
+
+    <p>This example explains the principle, rather than specifying a particular circuit implementation. Constructing the actual unitary requires a circuit that satisfies the block-encoding condition.</p>
+
+    <h3>How block encoding connects to quantum signal processing</h3>
+
+    <p>Block encoding gives us a representation of a matrix. QSVT then uses controlled operations derived from that encoding to transform its singular values through a chosen polynomial.</p>
+
+    <div class="flow">
+        <span>Classical description or oracle for matrix A</span>
+        ↓
+        <span>Unitary block encoding of A/α</span>
+        ↓
+        <span>Quantum signal processing / QSVT</span>
+        ↓
+        <span>Approximate a desired matrix function</span>
+    </div>
+
+    <p>Different functions can be useful for different tasks. An exponential function can support Hamiltonian simulation. An approximation to a reciprocal function can support linear-system algorithms, provided the relevant spectrum avoids zero and the approximation is well behaved over that spectrum.</p>
+
+    <h3>What makes a block encoding efficient?</h3>
+
+    <p>The existence of a block encoding is not enough to establish a quantum speedup. We must also know how expensive it is to implement the unitary.</p>
+
+    <ul>
+        <li>How many gates are required to implement the block encoding?</li>
+        <li>How many ancilla qubits are needed?</li>
+        <li>Does the circuit exploit sparsity or another useful structure in A?</li>
+        <li>Does the normalisation factor α make the subsequent algorithm expensive?</li>
+        <li>How many times must the block encoding be used?</li>
+    </ul>
+
+    <div class="concept">
+        <h3>The key lesson</h3>
+        <p>A block encoding is a bridge between general matrices and unitary quantum circuits. It is not merely a storage format; it is a way of making matrix information accessible to quantum algorithms through a larger unitary operation.</p>
+    </div>
+</section>
+
+<section id="hhl">
+    <h2>9.5 HHL Algorithm for Linear Systems</h2>
+
+    <h3>Why are linear systems important?</h3>
+
+    <p>Many problems in science and engineering can be written as a system of linear equations. For example, suppose three unknown quantities x, y and z must satisfy three equations:</p>
+
+    <div class="equation">
+        2x + y = 5
+        <br>
+        x − y = 1
+    </div>
+
+    <p>From the second equation, x = y + 1. Substituting this into the first equation gives:</p>
+
+    <div class="equation">
+        2(y + 1) + y = 5
+        <br>
+        3y = 3
+        <br>
+        y = 1, &nbsp; x = 2
+    </div>
+
+    <p>This small example is easy to solve by hand. Real applications can involve millions of unknowns and equations, so we often use matrix notation.</p>
+
+    <h3>The matrix form Ax = b</h3>
+
+    <p>A linear system is written as:</p>
+
+    <div class="equation">
+        Ax = b
+    </div>
+
+    <p>Here:</p>
+
+    <ul>
+        <li><strong>A</strong> is a matrix containing the coefficients of the equations.</li>
+        <li><strong>x</strong> is the vector of unknown values.</li>
+        <li><strong>b</strong> is the vector containing the known right-hand-side values.</li>
+    </ul>
+
+    <p>If A is invertible, the solution can be expressed as:</p>
+
+    <div class="equation">
+        x = A<sup>−1</sup>b
+    </div>
+
+    <p>This equation gives a mathematical description of the solution. It does not mean that we should always calculate the inverse explicitly. Classical numerical methods usually solve the system without constructing the full inverse matrix.</p>
+
+    <h3>What is the HHL algorithm?</h3>
+
+    <p>The HHL algorithm, named after Aram Harrow, Avinatan Hassidim and Seth Lloyd, is a quantum algorithm for solving certain linear systems. Instead of outputting the complete classical vector x, it aims to prepare a quantum state proportional to that vector.</p>
+
+    <div class="equation">
+        |b⟩ = b/||b||
+        <br>
+        |x⟩ ∝ A<sup>−1</sup>|b⟩
+    </div>
+
+    <p>Here, the notation |b⟩ means that the vector b has been encoded as a normalised quantum state. The final state |x⟩ represents the normalised solution vector, assuming the relevant conditions are satisfied.</p>
+
+    <p>This difference is crucial. HHL does not generally produce every entry of x as an ordinary list of numbers. Its natural output is a quantum state from which selected properties may be estimated.</p>
+
+    <h3>Why can a quantum state represent a large vector?</h3>
+
+    <p>A register of n qubits has 2ⁿ computational basis states. A general pure state of those qubits can be written as:</p>
+
+    <div class="equation">
+        |ψ⟩ = Σ<sub>j=0</sub><sup>N−1</sup> x<sub>j</sub>|j⟩
+        <br>
+        N = 2ⁿ
+    </div>
+
+    <p>In this expression, each x<sub>j</sub> is an amplitude associated with a basis state |j⟩. Thus, a state of n qubits can represent a normalised vector with N = 2ⁿ components.</p>
+
+    <p>However, this does not mean that a quantum computer can freely read all N amplitudes in one measurement. Measurement returns a limited classical outcome, and extracting the full vector can require many repetitions.</p>
+
+    <h3>The main stages of HHL</h3>
+
+    <p>HHL combines several quantum algorithmic ideas. The following sequence gives the main conceptual picture.</p>
+
+    <div class="flow">
+        <span>1. Prepare the input state |b⟩</span>
+        ↓
+        <span>2. Perform quantum phase estimation on A</span>
+        ↓
+        <span>3. Apply a controlled operation related to 1/λ</span>
+        ↓
+        <span>4. Reverse the phase-estimation procedure</span>
+        ↓
+        <span>5. Obtain a state proportional to A⁻¹b, subject to success and approximation</span>
+    </div>
+
+    <h3>Stage 1: Prepare |b⟩</h3>
+
+    <p>The classical vector b must be encoded into the amplitudes of a quantum state. Preparing this state can itself be expensive if the input has no useful structure or if its entries are supplied as a long classical list.</p>
+
+    <p>This is the first important assumption in discussions of quantum speedup: we must account for the cost of preparing the data, not only the cost of manipulating it after preparation.</p>
+
+    <h3>Stage 2: Estimate the eigenvalues of A</h3>
+
+    <p>For the original HHL formulation, A is assumed to be Hermitian, or the problem is transformed into an equivalent form that satisfies the necessary requirements. Suppose:</p>
+
+    <div class="equation">
+        A|u<sub>j</sub>⟩ = λ<sub>j</sub>|u<sub>j</sub>⟩
+    </div>
+
+    <p>The vectors |u<sub>j</sub>⟩ are eigenvectors, and λ<sub>j</sub> are the corresponding eigenvalues.</p>
+
+    <p>The input state can be expanded in this eigenbasis:</p>
+
+    <div class="equation">
+        |b⟩ = Σ<sub>j</sub> β<sub>j</sub>|u<sub>j</sub>⟩
+    </div>
+
+    <p>Quantum phase estimation is used to obtain information about the eigenvalues while retaining the association between the eigenvalue information and the corresponding eigenstate components.</p>
+
+    <p>For Hermitian A, its eigenvalues are real. A controlled simulation of a suitable unitary related to A can encode eigenvalue information in phases that phase estimation can measure or process coherently.</p>
+
+    <h3>Stage 3: Apply the reciprocal of each eigenvalue</h3>
+
+    <p>The mathematical reason for using eigenvalues is that the inverse of A acts simply in its eigenbasis. If no eigenvalue is zero:</p>
+
+    <div class="equation">
+        A<sup>−1</sup>|u<sub>j</sub>⟩
+        = (1/λ<sub>j</sub>)|u<sub>j</sub>⟩
+    </div>
+
+    <p>Therefore:</p>
+
+    <div class="equation">
+        A<sup>−1</sup>|b⟩
+        = Σ<sub>j</sub> (β<sub>j</sub>/λ<sub>j</sub>)|u<sub>j</sub>⟩
+    </div>
+
+    <p>Notice what happened. The eigenvectors remain the same, but each component is multiplied by the reciprocal of its eigenvalue.</p>
+
+    <p>HHL uses a controlled quantum operation to implement an approximation to this reciprocal weighting. It does not simply divide an ordinary classical register by every eigenvalue. The reciprocal transformation is performed through a controlled quantum process.</p>
+
+    <p>Because quantum operations must preserve probability, the reciprocal cannot be applied arbitrarily with no constraints. A scaling factor and an ancilla-assisted operation are used, and the desired state is obtained probabilistically in the original formulation.</p>
+
+    <h3>Stage 4: Reverse phase estimation</h3>
+
+    <p>After the reciprocal operation, the algorithm reverses the phase-estimation circuit to remove the eigenvalue information from the auxiliary register. When the procedure works as intended, the remaining system register has amplitudes proportional to β<sub>j</sub>/λ<sub>j</sub>.</p>
+
+    <h3>Stage 5: Obtain the solution state</h3>
+
+    <p>The resulting state is proportional to A⁻¹|b⟩. In an idealised expression:</p>
+
+    <div class="equation">
+        |x⟩ =
+        A<sup>−1</sup>|b⟩ /
+        ||A<sup>−1</sup>|b⟩||
+    </div>
+
+    <p>The denominator normalises the state so that the total probability is one.</p>
+
+    <p>There is no contradiction between normalising the state and solving the system. A quantum algorithm may only need a normalised solution state to estimate a particular property of the solution. But if the application requires every entry of the classical vector, additional measurement and post-processing costs must be included.</p>
+
+    <h3>A small conceptual example</h3>
+
+    <p>Consider a diagonal matrix:</p>
+
+    <div class="equation">
+        A = [ 2  0 ]
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[ 0  4 ]
+    </div>
+
+    <p>Suppose:</p>
+
+    <div class="equation">
+        b = [ 1 ]
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[ 1 ]
+    </div>
+
+    <p>The classical solution is:</p>
+
+    <div class="equation">
+        x = A<sup>−1</sup>b
+        = [ 1/2 ]
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[ 1/4 ]
+    </div>
+
+    <p>The normalised input state has equal amplitudes for the two basis states. The inverse transformation reduces the first component by a factor of 2 and the second by a factor of 4. After normalisation, the amplitudes are proportional to 1/2 and 1/4.</p>
+
+    <p>This illustrates the central idea of HHL. It is an eigenvalue-weighting procedure that prepares a state representing the solution, rather than a procedure that prints the solution vector directly.</p>
+
+    <h3>The condition number: why small eigenvalues matter</h3>
+
+    <p>HHL becomes more challenging when A has eigenvalues that are very different in magnitude. For an invertible Hermitian matrix, the condition number is commonly defined as:</p>
+
+    <div class="equation">
+        κ(A) =
+        max<sub>j</sub>|λ<sub>j</sub>| /
+        min<sub>j</sub>|λ<sub>j</sub>|
+    </div>
+
+    <p>For a general invertible matrix, the corresponding definition uses its largest and smallest singular values.</p>
+
+    <p>If one eigenvalue is very close to zero, its reciprocal is very large. Small errors in the input or in the computation can then have a substantial effect on the solution.</p>
+
+    <p>HHL must also implement its reciprocal transformation over the relevant eigenvalue range. Its resource requirements depend on the condition number, the desired accuracy and the implementation. In the original algorithm, the condition number is a major contributor to the cost.</p>
+
+    <h3>What kind of speedup can HHL provide?</h3>
+
+    <p>Under suitable assumptions, HHL can offer a substantial advantage for certain large, structured linear systems when the objective is to estimate a property of the solution state rather than read out every component.</p>
+
+    <p>The original HHL algorithm has polynomial dependence on important parameters such as the condition number and inverse target error, with the exact complexity depending on the access model and assumptions. Later quantum linear-system algorithms improved aspects of this dependence.</p>
+
+    <p>It is not correct to claim that HHL always solves every system exponentially faster than a classical computer. A meaningful comparison must account for the matrix representation, sparsity, condition number, data preparation, requested output and the best applicable classical algorithms.</p>
+
+    <div class="warning">
+        <h3>Important distinction</h3>
+        <p>HHL is a quantum algorithm for preparing a state related to the solution of a linear system. It is not automatically a faster replacement for software that calculates and returns a complete classical vector.</p>
+    </div>
+</section>
+
+<section id="io">
+    <h2>9.6 Caveats: The Input/Output Problem</h2>
+
+    <h3>The part of quantum speedup that is easy to overlook</h3>
+
+    <p>Suppose a quantum algorithm can manipulate an enormous vector represented by amplitudes using a relatively short circuit. It may sound as though we can obtain the answer to a huge problem almost instantly.</p>
+
+    <p>But there are two practical questions we must ask:</p>
+
+    <ul>
+        <li>How did the information enter the quantum computer?</li>
+        <li>How will we extract the information we need from the final state?</li>
+    </ul>
+
+    <p>These are known as the <strong>data-loading problem</strong> and the <strong>readout problem</strong>. They are particularly important when comparing quantum linear-algebra algorithms with classical numerical methods.</p>
+
+    <h3>Problem 1: Loading classical data</h3>
+
+    <p>Imagine that a classical computer gives us a vector containing one million numbers. A quantum algorithm may require us to prepare a state whose amplitudes encode those numbers.</p>
+
+    <div class="equation">
+        |b⟩ =
+        Σ<sub>j=0</sub><sup>N−1</sup>
+        b<sub>j</sub>|j⟩ / ||b||
+    </div>
+
+    <p>This is called amplitude encoding. In principle, n qubits can represent a vector with N = 2ⁿ components in its amplitudes.</p>
+
+    <p>However, the compact quantum-state representation does not guarantee that state preparation is cheap. For a general classical vector, loading all its entries can require resources that grow with N. The cost depends on the circuit model, the structure of the vector and whether a suitable data-access mechanism is already available.</p>
+
+    <p>For example, a vector generated by a simple formula may be easy to prepare, while a vector containing millions of unrelated arbitrary values may be much harder.</p>
+
+    <h3>Problem 2: Reading the output</h3>
+
+    <p>Quantum measurement returns classical outcomes according to probabilities derived from amplitudes. It does not expose every amplitude in one measurement.</p>
+
+    <p>For an N-component state, learning all amplitudes accurately may require many measurements and further classical processing. The cost depends on the desired precision, the state, and the measurements available.</p>
+
+    <p>This creates a fundamental distinction between two tasks:</p>
+
+    <table>
+        <tr>
+            <th>Task</th>
+            <th>What is required?</th>
+        </tr>
+        <tr>
+            <td>Prepare a solution state</td>
+            <td>Produce a quantum state whose amplitudes represent the solution.</td>
+        </tr>
+        <tr>
+            <td>Estimate one property</td>
+            <td>Measure the state to estimate a specified quantity, such as an expectation value.</td>
+        </tr>
+        <tr>
+            <td>Print the entire solution vector</td>
+            <td>Recover all required classical entries with the requested accuracy.</td>
+        </tr>
+    </table>
+
+    <p>A quantum algorithm may be attractive for the first two tasks but not for the third.</p>
+
+    <h3>Why the distinction matters in machine learning</h3>
+
+    <p>Many machine-learning problems involve large vectors, matrices and datasets. A quantum algorithm might process a quantum representation of such data, but the end-to-end cost depends on how the data is prepared and how the desired prediction or other result is extracted.</p>
+
+    <p>If the data already comes from a quantum physical process, quantum-state preparation may be natural. If the data begins as a large classical table, encoding it into a quantum state may add significant cost.</p>
+
+    <p>Similarly, if the algorithm's final result is one useful statistic, readout may be manageable. If the application requires millions of ordinary numerical outputs, the readout requirement can remove much of the potential advantage.</p>
+
+    <h3>What about quantum random-access memory?</h3>
+
+    <p>Quantum random-access memory, often abbreviated as QRAM, is a proposed approach for accessing classical data in a quantum computation. Under an appropriate architecture, it could support certain data-access operations more efficiently than loading every value independently each time.</p>
+
+    <p>However, QRAM should not be treated as a free, universally available feature. Building, controlling and maintaining such a memory raises substantial engineering and fault-tolerance challenges. The cost of preparing and maintaining the data-access structure must be included in a realistic analysis.</p>
+
+    <div class="concept">
+        <h3>The key lesson</h3>
+        <p>A quantum algorithm's speedup must be judged from end to end. State preparation, matrix access, quantum processing, measurement and classical post-processing all contribute to the total cost.</p>
+    </div>
+</section>
+
+<section id="dequantization">
+    <h2>9.7 Dequantization Results: Quantum-Inspired Classical Algorithms</h2>
+
+    <h3>Can a classical algorithm copy a quantum algorithm's advantage?</h3>
+
+    <p>For many years, researchers developed quantum algorithms that appeared to offer dramatic advantages for certain linear-algebra and machine-learning tasks. Later work showed that some of these advantages depended strongly on the assumptions about how data could be accessed.</p>
+
+    <p>In particular, some quantum algorithms assumed that large classical datasets could be accessed in a special way, such as through a data structure supporting efficient sampling and norm-related queries. Researchers then asked a natural question:</p>
+
+    <p><strong>Can a classical computer use a similar data-access assumption to solve the same problem efficiently?</strong></p>
+
+    <p>In several important settings, the answer was yes. This led to the development of quantum-inspired classical algorithms.</p>
+
+    <h3>What does "dequantization" mean?</h3>
+
+    <p>In this context, dequantization means finding a classical algorithm that reproduces the relevant computational advantage claimed by a quantum algorithm under comparable input and output assumptions.</p>
+
+    <p>The classical algorithm does not use qubits or quantum gates. Instead, it exploits mathematical structure and a particular way of accessing the data to achieve a similar computational result.</p>
+
+    <p>Dequantization does not mean that quantum computing is useless. It means that a proposed quantum speedup must be compared against the strongest relevant classical methods, using the same problem definition and fair assumptions.</p>
+
+    <h3>How sampling can help a classical algorithm</h3>
+
+    <p>Suppose a classical vector is very large, but we have an efficient mechanism for sampling its entries with probabilities related to their magnitudes. We may be able to estimate certain quantities without reading every entry individually.</p>
+
+    <p>For example, imagine that a very large dataset contains many small values and a few values that contribute most of its squared magnitude. Sampling entries according to their squared magnitudes can reveal useful information about the vector without treating every entry equally.</p>
+
+    <p>This approach is not universally effective. It relies on particular access assumptions, and the required accuracy, sampling complexity and structure of the problem determine whether it provides an advantage.</p>
+
+    <h3>The connection to quantum linear algebra</h3>
+
+    <p>Some quantum linear-algebra algorithms work with vectors encoded in amplitudes. Certain theoretical models of classical data access allow classical algorithms to perform related operations using efficient sampling and data structures.</p>
+
+    <p>In some cases, these classical algorithms match important parts of the quantum algorithm's scaling. This changes how we should interpret the original speedup claim.</p>
+
+    <p>The relevant comparison is not simply "quantum versus classical". It is:</p>
+
+    <div class="equation">
+        Quantum algorithm + its access assumptions
+        <br>
+        versus
+        <br>
+        Best classical algorithm + comparable access assumptions
+    </div>
+
+    <h3>What is the role of low-rank structure?</h3>
+
+    <p>A matrix has low rank when its rows or columns contain a limited number of independent directions. Such matrices often admit compact approximations, which can make certain calculations much cheaper.</p>
+
+    <p>For instance, instead of storing and manipulating every entry of a large matrix, a method may work with a smaller representation that captures its dominant structure. Classical numerical linear algebra has long used low-rank approximations, and quantum-inspired algorithms may exploit related ideas.</p>
+
+    <p>However, low rank alone does not guarantee that every desired computation becomes easy. The result depends on the matrix, the requested output and the accuracy requirements.</p>
+
+    <h3>What should we learn from quantum-inspired algorithms?</h3>
+
+    <p>These results encourage researchers to be precise about the computational model. A claim of exponential speedup is meaningful only when the quantum algorithm is compared against appropriate classical alternatives under clearly stated assumptions.</p>
+
+    <p>It is also useful to distinguish a theoretical access model from a real implementation. A classical algorithm may have a strong complexity guarantee under a particular data structure, but building and maintaining that structure can itself be expensive.</p>
+
+    <table>
+        <tr>
+            <th>Question</th>
+            <th>Why it matters</th>
+        </tr>
+        <tr>
+            <td>How is the input accessed?</td>
+            <td>Special access assumptions may change the cost of both quantum and classical algorithms.</td>
+        </tr>
+        <tr>
+            <td>What is the requested output?</td>
+            <td>Estimating one quantity can be cheaper than recovering an entire vector.</td>
+        </tr>
+        <tr>
+            <td>What is the best classical baseline?</td>
+            <td>Comparing only with an inefficient classical method can exaggerate the advantage.</td>
+        </tr>
+        <tr>
+            <td>What accuracy is required?</td>
+            <td>Both quantum and classical resource costs depend on the requested precision.</td>
+        </tr>
+        <tr>
+            <td>What does the hardware cost?</td>
+            <td>Memory access, noise, error correction and implementation can change the practical result.</td>
+        </tr>
+    </table>
+
+    <div class="concept">
+        <h3>The key lesson</h3>
+        <p>Quantum-inspired classical algorithms remind us that the real source of an advantage may be the structure of the data and the access model, rather than quantum hardware alone. Strong quantum algorithms should be evaluated against strong classical algorithms.</p>
+    </div>
+</section>
+
+<section id="connections">
+    <h2>How All the Topics Fit Together</h2>
+
+    <p>At first, Hamiltonian simulation, matrix encoding, HHL and dequantization may look like separate subjects. In reality, they form a connected story.</p>
+
+    <h3>Step 1: Start with a mathematical problem</h3>
+
+    <p>We may want to simulate a physical system, which requires implementing a function of its Hamiltonian. Alternatively, we may want to solve a linear system Ax = b, which requires applying the inverse of a matrix to a vector.</p>
+
+    <h3>Step 2: Represent the relevant operator</h3>
+
+    <p>We need a way to make the matrix or Hamiltonian accessible to the quantum computer. For a structured Hamiltonian, this may involve decomposing it into terms. For more general matrices, block encoding can provide a useful representation.</p>
+
+    <h3>Step 3: Implement the desired transformation</h3>
+
+    <p>For Hamiltonian simulation, we want the exponential of the Hamiltonian. Trotter-Suzuki decomposition approximates it through shorter evolutions. Qubitization and quantum signal processing provide another systematic route to implementing functions of the Hamiltonian.</p>
+
+    <p>For a linear system, we want an inverse transformation. HHL uses phase estimation and controlled reciprocal weighting. Modern approaches can use block encoding and quantum singular value transformation to implement suitable approximations to the inverse function.</p>
+
+    <h3>Step 4: Check the full cost</h3>
+
+    <p>We must count the resources needed to prepare the input, access the matrix, perform the transformation, control errors and extract the desired result. The output requirement is often just as important as the quantum circuit itself.</p>
+
+    <h3>Step 5: Compare against classical algorithms</h3>
+
+    <p>Finally, we compare the full quantum procedure against the best classical algorithm that solves the same task to the same accuracy, under comparable input and output assumptions. Quantum-inspired algorithms are part of this comparison.</p>
+
+    <div class="flow">
+        <span>Physical or mathematical problem</span>
+        ↓
+        <span>Represent the Hamiltonian or matrix</span>
+        ↓
+        <span>Choose a simulation or linear-algebra algorithm</span>
+        ↓
+        <span>Implement the required quantum transformation</span>
+        ↓
+        <span>Measure the required property or read out the answer</span>
+        ↓
+        <span>Compare total resources with classical methods</span>
+    </div>
+
+    <h3>Comparison of the major techniques</h3>
+
+    <table>
+        <tr>
+            <th>Technique</th>
+            <th>Main purpose</th>
+            <th>Central idea</th>
+        </tr>
+        <tr>
+            <td>Hamiltonian simulation</td>
+            <td>Reproduce quantum evolution.</td>
+            <td>Implement the unitary generated by H.</td>
+        </tr>
+        <tr>
+            <td>Trotter-Suzuki</td>
+            <td>Approximate evolution from a sum of terms.</td>
+            <td>Split the evolution into smaller operations.</td>
+        </tr>
+        <tr>
+            <td>Qubitization</td>
+            <td>Build structured access to a Hamiltonian.</td>
+            <td>Encode its spectral information in a unitary.</td>
+        </tr>
+        <tr>
+            <td>Quantum signal processing / QSVT</td>
+            <td>Implement functions of encoded operators.</td>
+            <td>Use carefully designed sequences of quantum operations.</td>
+        </tr>
+        <tr>
+            <td>Block encoding</td>
+            <td>Represent a general matrix using a unitary.</td>
+            <td>Place a scaled matrix in a block of a larger unitary.</td>
+        </tr>
+        <tr>
+            <td>HHL</td>
+            <td>Prepare a state representing a linear-system solution.</td>
+            <td>Apply inverse-eigenvalue weighting.</td>
+        </tr>
+        <tr>
+            <td>Quantum-inspired algorithms</td>
+            <td>Achieve comparable results classically in suitable models.</td>
+            <td>Exploit data access, sampling and matrix structure.</td>
+        </tr>
+    </table>
+</section>
+
+<section id="summary">
+    <h2>Chapter Summary</h2>
+
+    <p>Quantum simulation and linear algebra are central areas of quantum algorithm design because they connect quantum computation to physical systems and mathematical problems that appear throughout science and engineering.</p>
+
+    <ul>
+        <li><strong>Hamiltonian simulation</strong> implements the time evolution dictated by a system's energy operator.</li>
+        <li><strong>Trotter-Suzuki decomposition</strong> approximates a complicated evolution by repeatedly applying simpler evolutions.</li>
+        <li><strong>Qubitization and quantum signal processing</strong> provide structured techniques for implementing functions of encoded operators.</li>
+        <li><strong>Block encoding</strong> represents a suitably scaled matrix inside a larger unitary operation.</li>
+        <li><strong>HHL</strong> prepares a quantum state proportional to the solution of certain linear systems rather than directly printing the complete solution vector.</li>
+        <li><strong>Input/output costs</strong> matter because preparing quantum states and extracting classical information can be expensive.</li>
+        <li><strong>Dequantization</strong> demonstrates that some apparent quantum advantages can also be obtained by classical algorithms under suitable data-access assumptions.</li>
+    </ul>
+
+    <div class="summary">
+        <h3>The most important takeaway</h3>
+        <p>The strength of a quantum algorithm does not come from merely representing a large amount of information in qubit amplitudes. Its real value comes from implementing a useful transformation and obtaining the desired result with fewer total resources than the best classical alternative.</p>
+    </div>
+</section>
+
+<section id="questions">
+    <h2>Practice Questions</h2>
+
+    <h3>Conceptual questions</h3>
+
+    <ol>
+        <li>What is a Hamiltonian, and how does it determine the evolution of a quantum state?</li>
+        <li>Why is the exponential of a sum of non-commuting operators generally different from the product of their exponentials?</li>
+        <li>How does Trotter-Suzuki decomposition control the approximation of quantum evolution?</li>
+        <li>What is the relationship between qubitization, quantum signal processing and quantum singular value transformation?</li>
+        <li>Why can a general matrix not simply be applied as a single quantum gate?</li>
+        <li>What does a block encoding represent, and why is a normalisation factor used?</li>
+        <li>What is the difference between solving Ax = b classically and preparing a quantum state proportional to A⁻¹b?</li>
+        <li>Why does the condition number affect the difficulty of quantum linear-system algorithms?</li>
+        <li>Why can the cost of loading classical data remove a theoretical quantum speedup?</li>
+        <li>What are quantum-inspired classical algorithms, and what do they teach us about fair algorithm comparisons?</li>
+    </ol>
+
+    <h3>Numerical and reasoning questions</h3>
+
+    <ol>
+        <li>
+            <strong>Hamiltonian evolution:</strong> If H = (ℏω/2)X, write the time-evolution operator and explain why it is unitary.
+        </li>
+        <li>
+            <strong>Trotterisation:</strong> Write the first-order Trotter approximation for H = H₁ + H₂ over total time t using r steps.
+        </li>
+        <li>
+            <strong>Linear algebra:</strong> Solve the system 2x + y = 5 and x − y = 1 using matrix notation.
+        </li>
+        <li>
+            <strong>Condition number:</strong> A Hermitian matrix has eigenvalues 2 and 10. Calculate its condition number using the ratio of the largest to the smallest absolute eigenvalue.
+        </li>
+        <li>
+            <strong>Input/output reasoning:</strong> A quantum algorithm prepares a state representing a vector with one million entries. Explain why recovering every entry can still be expensive.
+        </li>
+    </ol>
+
+    <h3>Answers to numerical questions</h3>
+
+    <details>
+        <summary>Question 1: Hamiltonian evolution</summary>
+        <p>The evolution operator is U(t) = exp(−iHt/ℏ) = cos(ωt/2)I − i sin(ωt/2)X. Since H is Hermitian, U(t) is unitary.</p>
+    </details>
+
+    <details>
+        <summary>Question 2: Trotterisation</summary>
+        <p>For the first-order formula, exp(−i(H₁ + H₂)t/ℏ) is approximated by [exp(−iH₁t/(rℏ)) exp(−iH₂t/(rℏ))]ʳ. Its accuracy depends on the operators, the evolution time and the number of steps.</p>
+    </details>
+
+    <details>
+        <summary>Question 3: Linear algebra</summary>
+        <p>The solution is x = 2 and y = 1. In matrix form, A = [[2, 1], [1, −1]], x = [x, y]ᵀ and b = [5, 1]ᵀ.</p>
+    </details>
+
+    <details>
+        <summary>Question 4: Condition number</summary>
+        <p>κ(A) = 10/2 = 5.</p>
+    </details>
+
+    <details>
+        <summary>Question 5: Input/output reasoning</summary>
+        <p>The quantum state does not reveal all its amplitudes in one measurement. Recovering every entry to useful precision may require many measurements and classical post-processing, in addition to the cost of preparing the state.</p>
+    </details>
+</section>
+
+</main>
+
+<footer>
+    <p>Chapter 9 — Quantum Simulation and Linear Algebra</p>
+    <p>Build the mathematical intuition first. Then study the circuits, complexity bounds and practical limitations.</p>
+</footer>
+
+</body>
+</html>

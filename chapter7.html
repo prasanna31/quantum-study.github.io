@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Shor's Algorithm</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            line-height: 1.85;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 28px;
+            color: #252a34;
+            background: #ffffff;
+        }
+
+        h1, h2, h3 {
+            line-height: 1.35;
+            color: #17365d;
+        }
+
+        h1 {
+            font-size: 2.35rem;
+            border-bottom: 3px solid #17365d;
+            padding-bottom: 14px;
+        }
+
+        h2 {
+            margin-top: 46px;
+            border-bottom: 1px solid #d5dce5;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            margin-top: 30px;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        .intro, .note, .example, .warning {
+            padding: 16px 20px;
+            margin: 22px 0;
+            border-left: 4px solid #527da8;
+            background: #f3f7fb;
+        }
+
+        .warning {
+            border-left-color: #b46b35;
+            background: #fff7ee;
+        }
+
+        .equation {
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 1.05rem;
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 18px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .toc {
+            background: #f7f9fc;
+            padding: 20px 30px;
+            border: 1px solid #dce3eb;
+            border-radius: 8px;
+        }
+
+        .toc a {
+            color: #174e83;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 22px 0;
+        }
+
+        th, td {
+            border: 1px solid #cbd3dd;
+            padding: 11px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf0f7;
+        }
+
+        code {
+            background: #f0f2f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        li {
+            margin-bottom: 9px;
+        }
+
+        .summary {
+            background: #f2f7f2;
+            padding: 18px 22px;
+            border-left: 4px solid #54845a;
+            margin-top: 28px;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 18px;
+            border-top: 1px solid #d5dce5;
+            color: #5d6570;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Chapter 7: Shor's Algorithm</h1>
+
+        <div class="intro">
+            <p>
+                Imagine that someone gives you a very large number and asks you to
+                find the two prime numbers that were multiplied to produce it.
+                Multiplying two numbers is usually straightforward. Reversing the
+                process can be extremely difficult when the numbers are sufficiently
+                large.
+            </p>
+
+            <p>
+                Modern cryptography takes advantage of this difference. Shor's
+                algorithm, discovered by mathematician Peter Shor in 1994, showed
+                that a sufficiently powerful, fault-tolerant quantum computer could
+                factor large integers much more efficiently than the best known
+                classical algorithms.
+            </p>
+
+            <p>
+                This chapter develops the idea from the factoring problem to the
+                quantum circuit, and finally to its consequences for cybersecurity.
+                The central lesson is that a quantum computer does not simply try
+                every possible factor at once. It uses quantum interference and the
+                Quantum Fourier Transform to uncover a hidden mathematical pattern.
+            </p>
+        </div>
+    </header>
+
+    <nav class="toc">
+        <h2>Chapter Contents</h2>
+        <ol>
+            <li><a href="#factoring">7.1 The Factoring Problem and RSA</a></li>
+            <li><a href="#order">7.2 Order Finding</a></li>
+            <li><a href="#walkthrough">7.3 Full Algorithm Walkthrough</a></li>
+            <li><a href="#resources">7.4 Resource Estimates for Breaking Real-World Cryptography</a></li>
+            <li><a href="#postquantum">7.5 Implications and Post-Quantum Cryptography</a></li>
+        </ol>
+    </nav>
+
+    <section id="factoring">
+        <h2>7.1 The Factoring Problem and RSA</h2>
+
+        <h3>7.1.1 Why is factoring important?</h3>
+
+        <p>
+            Consider the number 21. We can write it as 3 multiplied by 7.
+            Finding these factors is easy because the number is small. Now
+            imagine a number containing hundreds or thousands of decimal digits.
+            It may have been created by multiplying two enormous prime numbers.
+            Recovering those prime numbers is a very different problem.
+        </p>
+
+        <p>
+            A prime number is a positive integer greater than 1 whose only
+            positive divisors are 1 and itself. Examples include 2, 3, 5, 7,
+            11 and 13. Prime numbers are important because every integer
+            greater than 1 has a unique prime factorisation, apart from the
+            order in which the factors are written.
+        </p>
+
+        <div class="example">
+            <strong>Example: Factorisation</strong>
+
+            <div class="equation">
+                21 = 3 × 7
+            </div>
+
+            <p>
+                Multiplication takes us from 3 and 7 to 21. Factoring asks us
+                to travel in the opposite direction: given 21, find 3 and 7.
+                For small numbers, both directions are easy. For specially
+                constructed large numbers, the reverse direction becomes much
+                harder for classical computers.
+            </p>
+        </div>
+
+        <p>
+            The important distinction is between a problem that is difficult
+            for currently known classical algorithms and one that is
+            mathematically impossible. Factoring is not impossible. In fact,
+            classical computers can factor many large integers. The difficulty
+            grows substantially as the numbers become larger.
+        </p>
+
+        <h3>7.1.2 How does classical factoring work?</h3>
+
+        <p>
+            One simple method is trial division. To factor a number N, we test
+            whether smaller integers divide it without leaving a remainder.
+            We only need to test possible divisors up to the square root of N:
+            if N has a non-trivial factorisation, at least one factor must be
+            no greater than that square root.
+        </p>
+
+        <p>
+            This method is useful for understanding the problem, but it becomes
+            impractical for very large integers. More advanced classical
+            algorithms, particularly the general number field sieve, can factor
+            suitable integers much faster than trial division. Even so, the
+            computational cost remains significant for properly chosen RSA
+            keys.
+        </p>
+
+        <p>
+            Shor's algorithm changes the situation because its main quantum
+            subroutine solves a related problem called order finding. Factoring
+            can then be reduced to finding the period of a mathematical
+            sequence.
+        </p>
+
+        <h3>7.1.3 Understanding RSA</h3>
+
+        <p>
+            RSA is a public-key cryptographic system. It allows people to
+            communicate securely without first sharing a secret encryption key
+            through a private channel. RSA can also be used for digital
+            signatures, although real-world signature systems require careful
+            padding and implementation.
+        </p>
+
+        <p>
+            RSA relies on a pair of related keys: a public key that can be
+            shared and a private key that must remain secret. The public key
+            is constructed using a large number N formed by multiplying two
+            secret primes.
+        </p>
+
+        <p>
+            The mathematical construction can be understood through the
+            following steps.
+        </p>
+
+        <ol>
+            <li>
+                Choose two distinct prime numbers, p and q.
+            </li>
+            <li>
+                Multiply them to obtain N.
+            </li>
+            <li>
+                Calculate the value of Euler's totient function for N.
+            </li>
+            <li>
+                Choose a public exponent e that is coprime to the totient.
+            </li>
+            <li>
+                Calculate a private exponent d, which is the multiplicative
+                inverse of e modulo the totient.
+            </li>
+        </ol>
+
+        <div class="equation">
+            N = p × q
+        </div>
+
+        <p>
+            When p and q are distinct primes, Euler's totient function is
+            given by:
+        </p>
+
+        <div class="equation">
+            φ(N) = (p − 1)(q − 1)
+        </div>
+
+        <p>
+            The public key contains N and e. The private exponent d satisfies:
+        </p>
+
+        <div class="equation">
+            e × d ≡ 1 (mod φ(N))
+        </div>
+
+        <p>
+            The symbol ≡ means that the two sides have the same remainder
+            when divided by the modulus. The private exponent can be calculated
+            efficiently when the secret primes, or the totient, are known.
+        </p>
+
+        <div class="example">
+            <strong>A small RSA example</strong>
+
+            <p>
+                Choose p = 5 and q = 11.
+            </p>
+
+            <div class="equation">
+                N = 5 × 11 = 55
+            </div>
+
+            <div class="equation">
+                φ(55) = (5 − 1)(11 − 1) = 40
+            </div>
+
+            <p>
+                Choose e = 3. Since 3 and 40 have no common factor other than
+                1, this is a valid public exponent.
+            </p>
+
+            <p>
+                We need d such that 3d leaves a remainder of 1 when divided
+                by 40. Choosing d = 27 works because:
+            </p>
+
+            <div class="equation">
+                3 × 27 = 81 ≡ 1 (mod 40)
+            </div>
+
+            <p>
+                The public key is (55, 3), while the private exponent is 27.
+                These numbers are intentionally tiny, so this example is
+                completely insecure. It illustrates the mathematics, not
+                real-world RSA security.
+            </p>
+        </div>
+
+        <h3>7.1.4 Why does factoring threaten RSA?</h3>
+
+        <p>
+            The public modulus N is known to everyone. However, if an attacker
+            can recover p and q, the attacker can calculate φ(N) and then
+            derive d. The private key is no longer secret.
+        </p>
+
+        <p>
+            This explains the connection between factoring and RSA. RSA is not
+            based on the claim that factoring is impossible. Its security
+            depends on the computational difficulty of recovering the secret
+            factors from a sufficiently large modulus, together with correct
+            key generation and implementation.
+        </p>
+
+        <p>
+            There is an important qualification: factoring N gives an efficient
+            way to break RSA, but the security of RSA is not formally proven
+            to be equivalent to the factoring problem in every possible
+            formulation. The practical attack is clear, even though the
+            theoretical relationship is more nuanced.
+        </p>
+
+        <h3>7.1.5 Where does quantum computing enter the picture?</h3>
+
+        <p>
+            A classical computer processes information using bits. A quantum
+            computer uses qubits, which can be placed in superpositions and
+            manipulated through quantum gates.
+        </p>
+
+        <p>
+            Superposition alone does not make a quantum computer powerful.
+            Measuring a superposition gives only one outcome. The advantage
+            comes from arranging quantum operations so that amplitudes for
+            useful outcomes reinforce one another while other amplitudes
+            cancel.
+        </p>
+
+        <p>
+            Shor's algorithm uses this principle to discover the period of a
+            modular arithmetic function. That period provides enough
+            information to factor N with a high probability of success.
+        </p>
+
+        <div class="note">
+            <strong>Key idea:</strong> Shor's algorithm does not directly ask
+            a quantum computer to guess the secret prime factors. It transforms
+            factoring into a problem of finding periodic structure, then uses
+            quantum interference to extract information about that period.
+        </div>
+    </section>
+
+    <section id="order">
+        <h2>7.2 Order Finding</h2>
+
+        <h3>7.2.1 From factoring to a repeating pattern</h3>
+
+        <p>
+            Suppose we want to factor an integer N. We choose another integer
+            a such that 1 &lt; a &lt; N and the greatest common divisor of a
+            and N is 1.
+        </p>
+
+        <div class="equation">
+            gcd(a, N) = 1
+        </div>
+
+        <p>
+            The greatest common divisor, written gcd, is the largest integer
+            that divides both numbers exactly. If gcd(a, N) is already
+            greater than 1, we have immediately found a non-trivial factor
+            of N, and there is no need to run the quantum part of the
+            algorithm.
+        </p>
+
+        <p>
+            Otherwise, consider the sequence of remainders obtained by
+            repeatedly raising a to a power and dividing by N:
+        </p>
+
+        <div class="equation">
+            f(x) = aˣ mod N
+        </div>
+
+        <p>
+            Here, mod N means that we keep the remainder after division by N.
+            Although the powers of a grow rapidly, the remainders can only
+            take values from 0 to N − 1. Because a and N are coprime, the
+            sequence eventually repeats in a structured way.
+        </p>
+
+        <div class="example">
+            <strong>Example: A repeating modular sequence</strong>
+
+            <p>
+                Take a = 2 and N = 15. Calculate successive powers of 2,
+                keeping only the remainder after division by 15.
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>x</th>
+                        <th>2ˣ</th>
+                        <th>2ˣ mod 15</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>0</td><td>1</td><td>1</td></tr>
+                    <tr><td>1</td><td>2</td><td>2</td></tr>
+                    <tr><td>2</td><td>4</td><td>4</td></tr>
+                    <tr><td>3</td><td>8</td><td>8</td></tr>
+                    <tr><td>4</td><td>16</td><td>1</td></tr>
+                    <tr><td>5</td><td>32</td><td>2</td></tr>
+                    <tr><td>6</td><td>64</td><td>4</td></tr>
+                    <tr><td>7</td><td>128</td><td>8</td></tr>
+                </tbody>
+            </table>
+
+            <p>
+                The sequence of remainders is 1, 2, 4, 8, 1, 2, 4, 8, and
+                so on. The pattern repeats every four steps.
+            </p>
+        </div>
+
+        <h3>7.2.2 What is the order?</h3>
+
+        <p>
+            The order of a modulo N is the smallest positive integer r such
+            that raising a to the power r gives a remainder of 1 when divided
+            by N. In mathematical notation:
+        </p>
+
+        <div class="equation">
+            aʳ ≡ 1 (mod N)
+        </div>
+
+        <p>
+            The smallest positive integer satisfying this equation is called
+            the multiplicative order of a modulo N, written ordₙ(a).
+        </p>
+
+        <p>
+            In our example, 2⁴ = 16, and 16 leaves a remainder of 1 when
+            divided by 15. No smaller positive power gives a remainder of 1.
+            Therefore:
+        </p>
+
+        <div class="equation">
+            ord₁₅(2) = 4
+        </div>
+
+        <p>
+            Finding this number r is the order-finding problem. It is the
+            central computational task inside Shor's algorithm.
+        </p>
+
+        <h3>7.2.3 How does the order help us factor N?</h3>
+
+        <p>
+            Suppose the order r is even. Then we can write:
+        </p>
+
+        <div class="equation">
+            aʳ ≡ 1 (mod N)
+        </div>
+
+        <p>
+            Since r is even, let x = a^(r/2). Squaring x gives aᵣ, so:
+        </p>
+
+        <div class="equation">
+            x² ≡ 1 (mod N)
+        </div>
+
+        <p>
+            Rearranging this relationship gives:
+        </p>
+
+        <div class="equation">
+            x² − 1 ≡ 0 (mod N)
+        </div>
+
+        <div class="equation">
+            (x − 1)(x + 1) ≡ 0 (mod N)
+        </div>
+
+        <p>
+            This means that N divides the product (x − 1)(x + 1). Under the
+            right conditions, the two expressions have non-trivial common
+            factors with N. We can discover those factors by calculating:
+        </p>
+
+        <div class="equation">
+            p' = gcd(a^(r/2) − 1, N)
+        </div>
+
+        <div class="equation">
+            q' = gcd(a^(r/2) + 1, N)
+        </div>
+
+        <p>
+            These values are candidate factors. If they are both greater than
+            1 and less than N, we have obtained a non-trivial factorisation.
+        </p>
+
+        <h3>7.2.4 Why can this method fail?</h3>
+
+        <p>
+            Finding an order does not guarantee that every choice of a will
+            reveal the factors. There are two common reasons for failure.
+        </p>
+
+        <ul>
+            <li>
+                The order r may be odd. In this case, the even-order
+                factorisation step cannot be applied directly.
+            </li>
+            <li>
+                Even if r is even, a^(r/2) may be congruent to −1 modulo N.
+                Then one of the two greatest common divisor calculations
+                produces N and the other produces 1, rather than revealing
+                useful factors.
+            </li>
+        </ul>
+
+        <p>
+            The solution is to choose another value of a and try again.
+            For suitable odd composite integers, the standard algorithm
+            succeeds with a probability bounded away from zero over suitable
+            random choices, and repeated attempts make success highly likely.
+        </p>
+
+        <h3>7.2.5 Why is order finding difficult classically but efficient quantumly?</h3>
+
+        <p>
+            A classical computer can calculate individual values of aˣ mod N
+            efficiently. The difficulty is discovering the period efficiently
+            for the large instances relevant to factoring. Merely generating
+            a long list of remainders is not a practical general solution.
+        </p>
+
+        <p>
+            A quantum computer can prepare a superposition of many possible
+            exponents, compute the corresponding modular function, and use
+            interference to obtain information about the repeating pattern.
+            The Quantum Fourier Transform, introduced in the previous chapter,
+            is the key mathematical tool that makes this possible.
+        </p>
+
+        <p>
+            The quantum part is followed by classical processing, including
+            continued fractions, greatest common divisor calculations and
+            checks of candidate factors. Shor's algorithm is therefore a
+            combination of quantum and classical computation, with the
+            quantum subroutine providing the crucial speedup.
+        </p>
+    </section>
+
+    <section id="walkthrough">
+        <h2>7.3 Full Algorithm Walkthrough</h2>
+
+        <h3>7.3.1 An overview of the complete process</h3>
+
+        <p>
+            We now have the two essential ingredients: the factoring problem
+            can be reduced to order finding, and the Quantum Fourier Transform
+            can help discover the order. Let us put them together.
+        </p>
+
+        <ol>
+            <li>Choose the integer N that we want to factor.</li>
+            <li>Choose a candidate integer a.</li>
+            <li>Calculate gcd(a, N). If it is greater than 1, a factor is already known.</li>
+            <li>Use a quantum circuit to obtain information about the order r.</li>
+            <li>Use classical continued-fraction calculations to recover a candidate order.</li>
+            <li>Check whether the candidate is valid and even.</li>
+            <li>Calculate the two greatest common divisors.</li>
+            <li>If the result is unsuccessful, repeat with another choice of a or another quantum measurement.</li>
+        </ol>
+
+        <p>
+            The classical steps are important. A quantum measurement does not
+            normally display the order r directly. It produces a measurement
+            result from which we infer the period.
+        </p>
+
+        <h3>7.3.2 Step 1: Choose the number to factor</h3>
+
+        <p>
+            Let us factor:
+        </p>
+
+        <div class="equation">
+            N = 15
+        </div>
+
+        <p>
+            In a real application, N might contain hundreds or thousands of
+            bits. We use 15 because every step can be checked by hand.
+        </p>
+
+        <h3>7.3.3 Step 2: Choose a and check the greatest common divisor</h3>
+
+        <p>
+            Choose:
+        </p>
+
+        <div class="equation">
+            a = 2
+        </div>
+
+        <p>
+            Calculate gcd(2, 15). Since 2 and 15 share no common factor
+            other than 1, we continue to the quantum order-finding stage.
+        </p>
+
+        <div class="equation">
+            gcd(2, 15) = 1
+        </div>
+
+        <h3>7.3.4 Step 3: Prepare the quantum registers</h3>
+
+        <p>
+            The order-finding circuit typically uses two quantum registers.
+            The first register stores possible exponents, while the second
+            register stores the results of modular exponentiation.
+        </p>
+
+        <p>
+            Let the first register have enough qubits to represent a range
+            of exponents. If it contains m qubits, it can represent 2ᵐ
+            computational basis states, from 0 to 2ᵐ − 1.
+        </p>
+
+        <p>
+            The first register is prepared in a uniform superposition of
+            these basis states using Hadamard gates. In simplified notation:
+        </p>
+
+        <div class="equation">
+            |ψ⟩ = (1/√Q) Σₓ |x⟩
+        </div>
+
+        <p>
+            Here, Q = 2ᵐ and the sum runs from x = 0 to Q − 1. The symbol
+            |x⟩ represents a computational basis state, and the factor
+            1/√Q ensures that the total probability is 1.
+        </p>
+
+        <p>
+            The second register is prepared in a suitable initial state,
+            commonly the state representing the integer 1.
+        </p>
+
+        <h3>7.3.5 Step 4: Perform modular exponentiation</h3>
+
+        <p>
+            The quantum circuit applies a reversible operation that computes
+            aˣ mod N while preserving the exponent x. Its action can be
+            represented as:
+        </p>
+
+        <div class="equation">
+            |x⟩|1⟩ → |x⟩|aˣ mod N⟩
+        </div>
+
+        <p>
+            For our example, the second register contains the corresponding
+            remainders:
+        </p>
+
+        <div class="equation">
+            1, 2, 4, 8, 1, 2, 4, 8, ...
+        </div>
+
+        <p>
+            Since the first register contains a superposition of exponents,
+            the quantum state now contains correlations between exponents
+            and their modular results. This is a quantum superposition of
+            correlated possibilities, not a classical list that can be read
+            out all at once.
+        </p>
+
+        <p>
+            Modular exponentiation is often the most expensive part of the
+            circuit. A practical implementation must perform arithmetic
+            reversibly, manage temporary qubits and control errors.
+        </p>
+
+        <h3>7.3.6 Step 5: Extract periodic information using the QFT</h3>
+
+        <p>
+            The first register contains information related to the periodic
+            function aˣ mod N. Applying the inverse Quantum Fourier Transform
+            converts this periodic structure into measurement outcomes that
+            are concentrated near particular fractions.
+        </p>
+
+        <p>
+            For an idealised description, suppose the first register has
+            Q = 2ᵐ possible states. The measured integer y often provides
+            information approximately described by:
+        </p>
+
+        <div class="equation">
+            y / Q ≈ s / r
+        </div>
+
+        <p>
+            Here, r is the unknown order and s is an integer associated with
+            the particular measurement. The approximation is important
+            because Q is usually chosen as a power of two, and it may not be
+            an exact multiple of r.
+        </p>
+
+        <p>
+            Different measurements may produce different values of s.
+            Some measurements give especially useful information, while
+            others may not immediately reveal the order.
+        </p>
+
+        <h3>7.3.7 Step 6: Recover the order using continued fractions</h3>
+
+        <p>
+            Continued fractions provide a classical method for finding
+            rational numbers that closely approximate a given fraction.
+            After measuring y, we examine the continued-fraction expansion
+            of y/Q and test suitable denominators as candidates for r.
+        </p>
+
+        <p>
+            The candidate must be checked. A denominator recovered from one
+            measurement may be a divisor of the true order rather than the
+            order itself. We can test a candidate r by checking whether:
+        </p>
+
+        <div class="equation">
+            aʳ mod N = 1
+        </div>
+
+        <p>
+            If this test fails, the candidate is not the order. Additional
+            measurements or further classical checks may be required.
+        </p>
+
+        <p>
+            There is a subtle but important point here. A single measurement
+            does not always determine the full order. For example, if s and
+            r share a common factor, the fraction s/r may simplify to a
+            fraction with a smaller denominator. Practical order-finding
+            algorithms handle this possibility through repeated measurements
+            and verification.
+        </p>
+
+        <h3>7.3.8 Step 7: Calculate the factors</h3>
+
+        <p>
+            For our example, suppose the order-finding stage gives:
+        </p>
+
+        <div class="equation">
+            r = 4
+        </div>
+
+        <p>
+            This is correct because:
+        </p>
+
+        <div class="equation">
+            2⁴ = 16 ≡ 1 (mod 15)
+        </div>
+
+        <p>
+            The order is even, so we calculate:
+        </p>
+
+        <div class="equation">
+            a^(r/2) = 2² = 4
+        </div>
+
+        <p>
+            Now compute the greatest common divisors.
+        </p>
+
+        <div class="equation">
+            gcd(4 − 1, 15) = gcd(3, 15) = 3
+        </div>
+
+        <div class="equation">
+            gcd(4 + 1, 15) = gcd(5, 15) = 5
+        </div>
+
+        <p>
+            We have successfully recovered both factors:
+        </p>
+
+        <div class="equation">
+            15 = 3 × 5
+        </div>
+
+        <p>
+            Notice the division of responsibility. The quantum circuit helps
+            identify the period. Classical arithmetic then converts the
+            period into the factors.
+        </p>
+
+        <h3>7.3.9 The complete algorithm in pseudocode</h3>
+
+        <p>
+            The following pseudocode summarises the standard approach. The
+            quantum order-finding subroutine is shown as one operation;
+            its implementation includes state preparation, modular
+            exponentiation, the inverse QFT, measurement and classical
+            post-processing.
+        </p>
+
+        <pre><code>function ShorFactor(N):
+
+    if N is even:
+        return 2, N / 2
+
+    if N is a prime power:
+        return its non-trivial factors
+
+    repeat:
+        choose a random integer a such that 1 &lt; a &lt; N
+
+        g = gcd(a, N)
+
+        if g &gt; 1:
+            return g, N / g
+
+        r = QuantumOrderFinding(a, N)
+
+        if r is invalid:
+            continue
+
+        if r is odd:
+            continue
+
+        x = modular_power(a, r / 2, N)
+
+        if x == N - 1:
+            continue
+
+        p = gcd(x - 1, N)
+        q = gcd(x + 1, N)
+
+        if 1 &lt; p &lt; N and 1 &lt; q &lt; N:
+            return p, q
+
+        otherwise, repeat</code></pre>
+
+        <p>
+            This is an explanatory outline rather than production-ready
+            code. A real implementation must handle measurement statistics,
+            candidate-order verification, modular arithmetic, quantum
+            circuit errors and additional edge cases. If N is composite
+            but not a prime power, the repeated procedure can find
+            non-trivial factors with high probability.
+        </p>
+
+        <h3>7.3.10 Where does the speedup come from?</h3>
+
+        <p>
+            The speedup comes from the way the quantum circuit extracts
+            global information about the periodic function. It does not
+            come from simply storing many values in superposition.
+        </p>
+
+        <p>
+            If we measured the exponent register immediately after modular
+            exponentiation, we would obtain only one outcome. The useful
+            structure becomes accessible because the quantum operations
+            preserve and manipulate relative amplitudes, allowing interference
+            to reveal information about the period.
+        </p>
+
+        <p>
+            For an input N with n bits, Shor's algorithm has polynomial
+            quantum circuit complexity under standard arithmetic-circuit
+            models. The precise resource count depends on the implementation,
+            the desired success probability and whether we count logical
+            gates, physical gates or total execution time.
+        </p>
+
+        <div class="note">
+            <strong>Connection to the previous chapter:</strong> The Quantum
+            Fourier Transform is useful here because periodic structure in
+            one representation becomes concentrated frequency information
+            in another. Shor's algorithm applies that principle to modular
+            arithmetic.
+        </div>
+    </section>
+
+    <section id="resources">
+        <h2>7.4 Resource Estimates for Breaking Real-World Cryptography</h2>
+
+        <h3>7.4.1 Why is a quantum algorithm not enough?</h3>
+
+        <p>
+            Learning that Shor's algorithm is efficient does not mean that
+            an existing quantum computer can immediately break modern RSA.
+            An algorithm is a mathematical procedure. Running it successfully
+            requires hardware with enough reliable qubits, gates and execution
+            time to complete the computation before errors overwhelm the
+            result.
+        </p>
+
+        <p>
+            Today's quantum processors have limited numbers of usable
+            qubits and are affected by noise. A long computation can fail
+            because small errors accumulate during gate operations,
+            measurements and storage of quantum information.
+        </p>
+
+        <p>
+            Large-scale factoring therefore requires fault-tolerant quantum
+            computation. This means encoding logical qubits using multiple
+            physical qubits and repeatedly detecting and correcting errors
+            while the computation proceeds.
+        </p>
+
+        <h3>7.4.2 Logical qubits and physical qubits</h3>
+
+        <p>
+            A logical qubit is a qubit protected by an error-correcting code.
+            It is not simply one physical qubit. Many physical qubits may
+            be required to create a logical qubit with an acceptably low
+            error rate, depending on the hardware quality, error-correction
+            method and target reliability.
+        </p>
+
+        <p>
+            For this reason, resource estimates distinguish between logical
+            and physical qubits.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Resource</th>
+                    <th>Meaning</th>
+                    <th>Why it matters</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Logical qubits</td>
+                    <td>Error-protected units of quantum information</td>
+                    <td>Determine how much protected information the algorithm can hold.</td>
+                </tr>
+                <tr>
+                    <td>Physical qubits</td>
+                    <td>Actual hardware qubits</td>
+                    <td>Must support the logical qubits and error-correction operations.</td>
+                </tr>
+                <tr>
+                    <td>Logical gates</td>
+                    <td>Operations performed on protected qubits</td>
+                    <td>Determine the logical computation and part of its runtime.</td>
+                </tr>
+                <tr>
+                    <td>Non-Clifford resources</td>
+                    <td>Special operations or states used to implement general quantum circuits</td>
+                    <td>Can dominate the cost of fault-tolerant computation.</td>
+                </tr>
+                <tr>
+                    <td>Code distance</td>
+                    <td>A parameter related to the error-detection and correction strength of a code</td>
+                    <td>Higher protection generally requires more physical resources and time.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>7.4.3 How large is RSA-2048?</h3>
+
+        <p>
+            RSA-2048 uses a modulus N that is 2048 bits long. This means
+            that N can be represented using 2048 binary digits. It does
+            not mean that the quantum circuit requires exactly 2048 qubits.
+        </p>
+
+        <p>
+            The circuit also needs qubits for arithmetic, temporary values,
+            control operations and error correction. The number of physical
+            qubits can be much larger than the number of logical qubits
+            because error correction introduces substantial overhead.
+        </p>
+
+        <p>
+            Different published implementations use different arithmetic
+            circuits and error-correction assumptions. Some optimise the
+            number of logical qubits, while others optimise gate counts or
+            estimated runtime. Consequently, a resource estimate must always
+            be read alongside the assumptions under which it was calculated.
+        </p>
+
+        <h3>7.4.4 Estimating the scale of the computation</h3>
+
+        <p>
+            The time required for fault-tolerant factoring depends on several
+            interacting quantities:
+        </p>
+
+        <ul>
+            <li>
+                The logical gate count of modular exponentiation and the
+                other quantum operations.
+            </li>
+            <li>
+                The speed at which the hardware can perform the required
+                physical operations.
+            </li>
+            <li>
+                The error rate of physical qubits and gates.
+            </li>
+            <li>
+                The error-correction code, its cycle time and the number of
+                physical qubits available.
+            </li>
+            <li>
+                The overhead for operations such as preparing and using
+                special resource states in fault-tolerant circuits.
+            </li>
+        </ul>
+
+        <p>
+            A rough way to think about runtime is that the number of dependent
+            logical operations, multiplied by the time required for each
+            relevant operation, places a lower bound on execution time.
+            Error correction and parallel operations affect the final result.
+        </p>
+
+        <p>
+            The asymptotic running time of Shor's algorithm is polynomial
+            in the input size, unlike the best known classical general-purpose
+            factoring algorithms, whose cost grows much more rapidly.
+            However, asymptotic complexity alone does not tell us the exact
+            number of hours or physical qubits needed for a particular RSA
+            key. Those figures depend on the architecture and implementation.
+        </p>
+
+        <h3>7.4.5 Why estimates differ</h3>
+
+        <p>
+            Research papers sometimes report strikingly different qubit
+            counts or runtimes for factoring the same RSA modulus. This does
+            not necessarily mean that one result is incorrect. Researchers
+            may be making different assumptions about hardware, error
+            correction, gate connectivity, arithmetic design and acceptable
+            failure probability.
+        </p>
+
+        <p>
+            A resource estimate might assume a very large, highly connected
+            quantum processor with rapid error-correction cycles. Another
+            might assume slower operations but more parallel hardware.
+            Neither estimate can be applied universally without considering
+            the assumptions.
+        </p>
+
+        <div class="warning">
+            <strong>Important distinction:</strong> A theoretical demonstration
+            of polynomial-time factoring is not the same as a practical
+            demonstration of breaking RSA-2048. As of October 2026, RSA-2048
+            has not been publicly demonstrated as factored by a quantum
+            computer. Estimates about when this may become possible remain
+            uncertain.
+        </div>
+
+        <h3>7.4.6 What about smaller cryptographic keys?</h3>
+
+        <p>
+            Researchers can use small numbers to demonstrate Shor's algorithm
+            on real quantum devices. Such experiments are useful for testing
+            quantum circuits, measurements and classical post-processing.
+            They do not establish that the same device can break a modern
+            cryptographic key.
+        </p>
+
+        <p>
+            For a small number, the classical solution may be trivial.
+            The educational value lies in demonstrating the quantum procedure,
+            not in showing a meaningful security threat.
+        </p>
+
+        <h3>7.4.7 Is RSA the only system at risk?</h3>
+
+        <p>
+            No. Shor's algorithm also threatens cryptographic systems whose
+            security depends on the difficulty of discrete logarithms.
+            This includes widely used public-key systems based on finite
+            fields and elliptic curves.
+        </p>
+
+        <p>
+            RSA relies on factoring, while elliptic-curve cryptography relies
+            on the elliptic-curve discrete logarithm problem. These are
+            different mathematical problems, but sufficiently powerful
+            fault-tolerant quantum computers can attack both efficiently
+            using Shor-type methods.
+        </p>
+
+        <p>
+            By contrast, symmetric encryption and cryptographic hash functions
+            face a different quantum threat. Grover's algorithm can provide
+            a quadratic speedup for certain search tasks, rather than the
+            exponential-type improvement in the relevant security problem
+            that Shor's algorithm provides for factoring and discrete
+            logarithms.
+        </p>
+    </section>
+
+    <section id="postquantum">
+        <h2>7.5 Implications and Post-Quantum Cryptography</h2>
+
+        <h3>7.5.1 What is the quantum threat?</h3>
+
+        <p>
+            Much of today's digital security relies on public-key cryptography.
+            It protects secure web connections, software updates, digital
+            signatures, financial transactions and the exchange of secret
+            keys.
+        </p>
+
+        <p>
+            If an attacker had access to a sufficiently powerful fault-tolerant
+            quantum computer, Shor's algorithm could undermine RSA and
+            traditional discrete-logarithm systems. This would affect not
+            only encrypted communication but also the systems that use
+            vulnerable public-key algorithms to establish trust.
+        </p>
+
+        <p>
+            The risk is not that quantum computers automatically reveal every
+            password or decrypt every file. An attacker still needs the
+            relevant cryptographic material, access to the communication
+            or stored data, and a practical way to exploit the vulnerable
+            system. The algorithm changes the security assumptions on which
+            certain cryptographic systems depend.
+        </p>
+
+        <h3>7.5.2 The harvest-now, decrypt-later threat</h3>
+
+        <p>
+            Consider an attacker who records encrypted communication today.
+            The attacker may be unable to decrypt it using current resources.
+            However, if the communication uses vulnerable public-key
+            cryptography and the attacker retains the necessary data, a
+            future quantum computer might make decryption possible.
+        </p>
+
+        <p>
+            This is commonly called the harvest-now, decrypt-later threat.
+            It matters especially for information that must remain confidential
+            for many years, such as long-term government records, sensitive
+            business plans and certain personal information.
+        </p>
+
+        <p>
+            The risk depends on the protocol and the cryptographic design.
+            Recording an encrypted session does not guarantee that a future
+            attacker can decrypt it. But organisations should assess whether
+            their key-establishment mechanisms are vulnerable and how long
+            their data needs protection.
+        </p>
+
+        <h3>7.5.3 What is post-quantum cryptography?</h3>
+
+        <p>
+            Post-quantum cryptography, often abbreviated as PQC, is the study
+            and use of cryptographic algorithms designed to resist attacks
+            from both classical and known quantum algorithms.
+        </p>
+
+        <p>
+            These algorithms are designed to run on ordinary computers.
+            They do not require users to own a quantum computer. The aim is
+            to replace vulnerable cryptographic mechanisms with alternatives
+            whose underlying mathematical problems are believed to remain
+            difficult even for quantum attackers.
+        </p>
+
+        <p>
+            Post-quantum cryptography is different from quantum cryptography.
+            Quantum cryptography uses quantum physical systems to support
+            cryptographic tasks, while PQC uses classical computation and
+            mathematical constructions designed for a post-quantum threat
+            model.
+        </p>
+
+        <h3>7.5.4 Important families of post-quantum algorithms</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Family</th>
+                    <th>Basic idea</th>
+                    <th>Typical use or status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Lattice-based cryptography</td>
+                    <td>Uses mathematical problems involving structured high-dimensional lattices.</td>
+                    <td>Includes standardised algorithms for key establishment and digital signatures.</td>
+                </tr>
+                <tr>
+                    <td>Hash-based signatures</td>
+                    <td>Builds signatures from cryptographic hash functions.</td>
+                    <td>Useful for digital signatures; some constructions have state-management requirements.</td>
+                </tr>
+                <tr>
+                    <td>Code-based cryptography</td>
+                    <td>Uses problems related to decoding error-correcting codes.</td>
+                    <td>An important family for public-key encryption and key establishment.</td>
+                </tr>
+                <tr>
+                    <td>Multivariate cryptography</td>
+                    <td>Uses systems of multivariate polynomial equations.</td>
+                    <td>Has been explored for signatures and other applications; security varies by construction.</td>
+                </tr>
+                <tr>
+                    <td>Isogeny-based cryptography</td>
+                    <td>Uses relationships between certain elliptic curves.</td>
+                    <td>Some prominent proposals have been broken, illustrating why careful cryptanalysis is essential.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            Not every proposal in these families is secure. Cryptographic
+            systems must be evaluated through public analysis, rigorous
+            implementation and ongoing research. A new mathematical idea
+            should never be treated as secure simply because it is described
+            as quantum-resistant.
+        </p>
+
+        <h3>7.5.5 NIST's post-quantum standards</h3>
+
+        <p>
+            The US National Institute of Standards and Technology (NIST)
+            finalised its first major set of post-quantum cryptographic
+            standards in 2024. Three particularly important standards are:
+        </p>
+
+        <ul>
+            <li>
+                <strong>FIPS 203 — ML-KEM:</strong> A lattice-based key
+                encapsulation mechanism, based on CRYSTALS-Kyber, intended
+                to establish shared secret keys.
+            </li>
+            <li>
+                <strong>FIPS 204 — ML-DSA:</strong> A lattice-based digital
+                signature standard, based on CRYSTALS-Dilithium.
+            </li>
+            <li>
+                <strong>FIPS 205 — SLH-DSA:</strong> A stateless hash-based
+                digital signature standard, based on SPHINCS+.
+            </li>
+        </ul>
+
+        <p>
+            A key encapsulation mechanism is used to establish a shared secret
+            between parties. That secret can then be used with symmetric
+            cryptography to protect communication. A digital signature,
+            on the other hand, allows a receiver to verify that a message
+            was signed by the holder of the corresponding private key and
+            has not been altered.
+        </p>
+
+        <p>
+            These standards are intended to address different needs. ML-KEM
+            is used for key establishment, while ML-DSA and SLH-DSA provide
+            digital signatures. The correct choice depends on the protocol,
+            performance requirements, security requirements and applicable
+            standards.
+        </p>
+
+        <h3>7.5.6 Does post-quantum cryptography solve everything?</h3>
+
+        <p>
+            Replacing RSA with a post-quantum algorithm is not as simple as
+            changing one line of code. Cryptographic algorithms are embedded
+            in network protocols, certificates, hardware devices, software
+            libraries, identity systems and long-lived infrastructure.
+        </p>
+
+        <p>
+            A migration must consider public-key sizes, signature sizes,
+            network bandwidth, memory use, processor performance, certificate
+            limits and compatibility with older systems. Implementations
+            must also avoid side-channel attacks, poor randomness, insecure
+            key storage and mistakes in protocol design.
+        </p>
+
+        <p>
+            Organisations often need a cryptographic inventory: a record of
+            which algorithms they use, where they are used, who operates
+            them and how they can be replaced. Systems with long confidentiality
+            requirements or difficult upgrade paths deserve particular
+            attention.
+        </p>
+
+        <h3>7.5.7 What about symmetric encryption?</h3>
+
+        <p>
+            Shor's algorithm does not directly provide an efficient method
+            for recovering every symmetric key. Grover's algorithm gives a
+            quadratic speedup for idealised unstructured key search.
+        </p>
+
+        <p>
+            For example, a generic exhaustive search over a key space of
+            size 2ⁿ takes on the order of 2ⁿ classical trials. In the ideal
+            query model, Grover's algorithm can reduce the number of oracle
+            queries to approximately 2^(n/2). This is still exponential in
+            n, unlike the polynomial-time quantum factoring algorithm.
+        </p>
+
+        <p>
+            This is one reason larger symmetric key sizes can provide
+            additional protection against quantum search. However, actual
+            security depends on the algorithm, mode of operation, implementation
+            and security requirements. Organisations should follow current
+            cryptographic guidance rather than make changes based only on
+            a simplified mathematical comparison.
+        </p>
+
+        <h3>7.5.8 A practical migration strategy</h3>
+
+        <p>
+            Preparing for quantum threats is a long-term engineering exercise.
+            A sensible approach includes the following steps.
+        </p>
+
+        <ol>
+            <li>
+                <strong>Identify vulnerable cryptography.</strong> Find where
+                RSA, traditional Diffie–Hellman and elliptic-curve algorithms
+                are used for key establishment or signatures.
+            </li>
+            <li>
+                <strong>Prioritise sensitive information.</strong> Consider
+                the consequences if stored or intercepted data were decrypted
+                years later.
+            </li>
+            <li>
+                <strong>Review standards and vendor roadmaps.</strong> Use
+                established standards and verify that libraries and platforms
+                support the required algorithms.
+            </li>
+            <li>
+                <strong>Test compatibility.</strong> Evaluate handshake sizes,
+                certificates, latency, bandwidth, memory use and performance.
+            </li>
+            <li>
+                <strong>Plan cryptographic agility.</strong> Design systems
+                so that algorithms and keys can be replaced without rebuilding
+                the entire application.
+            </li>
+            <li>
+                <strong>Deploy and monitor carefully.</strong> Validate
+                interoperability, maintain secure key management and track
+                future standards and security advisories.
+            </li>
+        </ol>
+
+        <h3>7.5.9 The broader lesson</h3>
+
+        <p>
+            Shor's algorithm is important for more than the specific problem
+            of factoring integers. It demonstrates that a change in the
+            model of computation can alter which mathematical problems are
+            practical to solve.
+        </p>
+
+        <p>
+            For decades, cryptographic systems were designed around the
+            capabilities of classical computers. Quantum computing requires
+            us to revisit some of those assumptions. The response is not
+            to abandon digital security, but to build cryptographic systems
+            that remain secure under stronger computational models.
+        </p>
+    </section>
+
+    <section>
+        <h2>Chapter Summary</h2>
+
+        <div class="summary">
+            <p>
+                Shor's algorithm connects three ideas: integer factorisation,
+                periodicity in modular arithmetic, and the Quantum Fourier
+                Transform.
+            </p>
+
+            <ul>
+                <li>
+                    <strong>Factoring:</strong> Given N, find non-trivial
+                    integers whose product is N.
+                </li>
+                <li>
+                    <strong>RSA:</strong> Uses a public modulus formed from
+                    secret prime factors. Recovering those factors allows an
+                    attacker to derive the private key.
+                </li>
+                <li>
+                    <strong>Order finding:</strong> Find the smallest positive
+                    r for which aʳ ≡ 1 (mod N), assuming gcd(a, N) = 1.
+                </li>
+                <li>
+                    <strong>Quantum Fourier Transform:</strong> Helps turn
+                    the periodic structure of modular exponentiation into
+                    measurement outcomes that reveal information about r.
+                </li>
+                <li>
+                    <strong>Classical post-processing:</strong> Uses continued
+                    fractions and greatest common divisors to recover and
+                    verify candidate factors.
+                </li>
+                <li>
+                    <strong>Resource requirements:</strong> Practical
+                    cryptographic attacks require large-scale fault-tolerant
+                    quantum computers, not merely a small quantum processor.
+                </li>
+                <li>
+                    <strong>Post-quantum cryptography:</strong> Replaces
+                    vulnerable public-key mechanisms with carefully evaluated
+                    alternatives designed to resist quantum attacks.
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>Check Your Understanding</h2>
+
+        <ol>
+            <li>
+                Why is multiplying two large primes generally easier than
+                recovering those primes from their product?
+            </li>
+            <li>
+                What are the public modulus N and the private exponent d
+                used for in RSA?
+            </li>
+            <li>
+                For a = 2 and N = 15, calculate the order r by listing the
+                modular remainders.
+            </li>
+            <li>
+                Why must r be even for the standard factor-recovery step
+                described in this chapter?
+            </li>
+            <li>
+                What is the role of the inverse Quantum Fourier Transform
+                in Shor's algorithm?
+            </li>
+            <li>
+                Why does a measurement outcome not always reveal the full
+                order directly?
+            </li>
+            <li>
+                Why are logical qubits and physical qubits counted separately
+                in resource estimates?
+            </li>
+            <li>
+                How does post-quantum cryptography differ from quantum
+                cryptography?
+            </li>
+            <li>
+                What is the difference between the threats posed by Shor's
+                algorithm and Grover's algorithm?
+            </li>
+        </ol>
+    </section>
+
+    <footer>
+        <p>
+            <strong>Further reading:</strong>
+        </p>
+
+        <ul>
+            <li>
+                Peter W. Shor, “Algorithms for Quantum Computation:
+                Discrete Logarithms and Factoring,” Proceedings of the
+                35th Annual Symposium on Foundations of Computer Science,
+                1994.
+            </li>
+            <li>
+                Michael A. Nielsen and Isaac L. Chuang,
+                <em>Quantum Computation and Quantum Information</em>.
+            </li>
+            <li>
+                National Institute of Standards and Technology (NIST),
+                Post-Quantum Cryptography project and the FIPS 203, FIPS 204
+                and FIPS 205 standards.
+            </li>
+        </ul>
+
+        <p>
+            <em>End of Chapter 7.</em>
+        </p>
+    </footer>
+
+</body>
+</html>
