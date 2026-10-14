@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 2: Mathematical Prerequisites for Quantum Computing</title>
+<style>
+:root{--bg:#fbf8f3;--fg:#222;--mut:#666;--card:#fff;--ac:#c2410c;--ac2:#0f766e;--bd:#e5ded3;--code:#f3ece1;--hl:#fff3d6}
+@media (prefers-color-scheme:dark){:root{--bg:#161412;--fg:#ece7df;--mut:#a8a095;--card:#201d1a;--ac:#fb923c;--ac2:#5eead4;--bd:#3a342d;--code:#2a2621;--hl:#3a2f1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 Georgia,'Times New Roman',serif}
+header,main{max-width:840px;margin:auto;padding:0 18px}
+header{padding-top:40px}
+h1{font-size:2rem;line-height:1.25;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 20px}
+nav{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 18px;margin-bottom:14px}
+nav a{display:block;color:var(--ac);text-decoration:none;padding:2px 0}
+section{margin:46px 0}
+h2{font-size:1.55rem;border-bottom:3px solid var(--ac);display:inline-block;padding-bottom:2px;margin-bottom:6px}
+h3{color:var(--ac2);margin:28px 0 4px;font-size:1.15rem}
+.box{background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--ac2);border-radius:10px;padding:10px 16px;margin:16px 0}
+.box.warn{border-left-color:var(--ac)}
+.box.try{border-left-color:#7c3aed}
+.eq{background:var(--code);border-radius:8px;padding:10px 14px;margin:14px 0;overflow-x:auto;font-family:'Cambria Math',Cambria,serif;font-size:1.1rem;text-align:center}
+.ex{background:var(--hl);border-radius:8px;padding:8px 14px;margin:12px 0}
+.m{display:inline-grid;grid-template-columns:repeat(var(--c),auto);gap:2px 14px;padding:0 8px;border-left:2px solid;border-right:2px solid;border-radius:6px;vertical-align:middle;margin:0 4px}
+.m i{font-style:normal;text-align:center}
+.row{border-left:0;border-right:0;border-top:0}
+summary{cursor:pointer;color:var(--ac);font-weight:bold}
+details{margin:8px 0;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 14px}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:12px 0;display:block;overflow-x:auto}
+td,th{border:1px solid var(--bd);padding:6px 10px;text-align:left}
+th{background:var(--code)}
+footer{text-align:center;color:var(--mut);padding:30px 0 50px}
+</style>
+</head>
+<body>
+<header>
+<h1>Chapter 2: Mathematical Prerequisites</h1>
+<p class="sub">The maths you need before quantum computing, built up slowly, with the reason behind every idea. You only need school algebra to begin.</p>
+<nav>
+<a href="#s1">2.1 Complex numbers</a>
+<a href="#s2">2.2 Vectors, vector spaces, and inner products</a>
+<a href="#s3">2.3 Matrices, unitary and Hermitian operators</a>
+<a href="#s4">2.4 Eigenvalues and eigenvectors</a>
+<a href="#s5">2.5 Tensor products</a>
+<a href="#s6">2.6 Probability and statistics essentials</a>
+<a href="#s7">2.7 Dirac (bra-ket) notation</a>
+<a href="#s8">2.8 Exercises</a>
+</nav>
+
+<h3>How to read this chapter</h3>
+<p>Many students open a quantum book, see symbols like |ψ⟩ and U†, and feel it is some secret language. It is not. The whole subject rests on a small story:</p>
+<ol>
+<li>The <b>state</b> of a qubit is a list of complex numbers (<em>2.1, 2.2</em>).</li>
+<li>Every <b>operation</b> on it is a matrix (<em>2.3</em>).</li>
+<li>Every <b>measurement</b> gives one of a matrix's special numbers (<em>2.4</em>).</li>
+<li>Many qubits together are glued by the <b>tensor product</b> (<em>2.5</em>).</li>
+<li>What you actually see in the lab is decided by <b>probability</b> (<em>2.6</em>).</li>
+<li>And <b>Dirac notation</b> is just a tidy way of writing all of the above (<em>2.7</em>).</li>
+</ol>
+<p>Keep a pen and paper beside you. Whenever you see a small example, work it out yourself before reading the answer. That alone will teach you more than reading this twice.</p>
+</header>
+
+<main>
+
+<!-- ============ 2.1 ============ -->
+<section id="s1">
+<h2>2.1 Complex numbers</h2>
+
+<h3>The problem that created them</h3>
+<p>Solve x² = 4. Easy: x = 2 or x = −2. Now solve x² = −1. Try 1, then −1, then 0.5, then anything you like. Squaring a real number never gives a negative answer, because a positive times a positive is positive, and a negative times a negative is also positive. So inside the real numbers, this equation has <em>no solution</em>.</p>
+<p>Mathematicians did what they had done before. When negative numbers were first needed (to say "I owe you ₹50"), people also complained they were "fake". Eventually everyone accepted them. Similarly, we just <em>define</em> a new number <b>i</b> with the property:</p>
+<div class="eq">i² = −1</div>
+<p>That is all. i is not mysterious; it is simply "the thing which, when squared, gives −1". Everything else follows by ordinary algebra.</p>
+
+<h3>What a complex number looks like</h3>
+<div class="eq">z = a + b i</div>
+<p><b>a</b> is called the <b>real part</b> and <b>b</b> the <b>imaginary part</b> (the names are historical; both are perfectly ordinary real numbers). Examples: 3 + 2i, −1 + 4i, 5 (this is 5 + 0i), and 7i (this is 0 + 7i). So real numbers are just complex numbers whose imaginary part is zero. Nothing was thrown away; we only added more room.</p>
+
+<h3>The complex plane: seeing a complex number</h3>
+<p>A complex number is a pair (a, b), so draw it as a point on a flat graph. The horizontal axis is the real axis and the vertical axis is the imaginary axis. 3 + 2i is the point 3 steps right and 2 steps up. This picture is the most important one in this section, because it turns algebra into geometry.</p>
+
+<h3>The four basic operations</h3>
+<p><b>Addition and subtraction</b>: treat a and b parts separately, like x and y coordinates.</p>
+<div class="ex">(3 + 2i) + (1 − 5i) = (3 + 1) + (2 − 5)i = <b>4 − 3i</b></div>
+<p><b>Multiplication</b>: expand brackets exactly as you do in school, then replace every i² by −1.</p>
+<div class="ex">(3 + 2i)(1 + i) = 3·1 + 3·i + 2i·1 + 2i·i<br>= 3 + 3i + 2i + 2i²<br>= 3 + 5i − 2 &nbsp;(since i² = −1)<br>= <b>1 + 5i</b></div>
+<p><b>Powers of i</b> go in a cycle of four: i¹ = i, i² = −1, i³ = −i, i⁴ = 1, and then it repeats. Keep this in mind; we will see why in the polar form below.</p>
+
+<p><b>Conjugate</b>: change the sign of the imaginary part. If z = a + bi then z* = a − bi. On the plane, z* is the mirror image of z in the real axis.</p>
+
+<p><b>Modulus</b> (the size of z, written |z|): the distance from the origin, found with Pythagoras.</p>
+<div class="eq">|z| = √(a² + b²)</div>
+<p>For 3 + 4i, |z| = √(9 + 16) = 5. A 3-4-5 triangle, as you know from school.</p>
+
+<div class="box">
+<b>Why the conjugate is so useful.</b> Multiply z by z*:
+<div class="eq">(a + bi)(a − bi) = a² − (bi)² = a² + b² = |z|²</div>
+The imaginary terms cancel completely, and you always get a <em>real, non-negative</em> number. This is the single trick that allows quantum mechanics to produce ordinary probabilities from complex numbers. Remember it.
+</div>
+
+<p><b>Division</b> uses the same trick. To compute (3 + 2i)/(1 − i), multiply top and bottom by the conjugate of the bottom, so the bottom becomes real:</p>
+<div class="ex">(3 + 2i)(1 + i) / [(1 − i)(1 + i)] = (3 + 3i + 2i − 2) / 2 = <b>(1 + 5i)/2</b></div>
+
+<h3>Polar form: describing a point by distance and angle</h3>
+<p>Instead of "go a right and b up", you can say "go r units away from the origin, in the direction at angle θ from the real axis". Here r = |z|. By basic trigonometry, a = r cos θ and b = r sin θ, so:</p>
+<div class="eq">z = r (cos θ + i sin θ)</div>
+<p>Now comes a beautiful fact called <b>Euler's formula</b>:</p>
+<div class="eq">e<sup>iθ</sup> = cos θ + i sin θ</div>
+<p>You do not need the proof now (it comes from the series expansions of e, sin and cos, which you will see later in calculus). What you need is the meaning: <b>e<sup>iθ</sup> is the point on the unit circle at angle θ</b>. So any complex number can be written compactly as</p>
+<div class="eq">z = r e<sup>iθ</sup></div>
+<p>where r is the size and θ is the direction (called the <b>phase</b> or <b>argument</b>). Some values worth memorising, with angles in radians (π radians = 180°):</p>
+<table>
+<tr><th>θ</th><th>0</th><th>π/2 (90°)</th><th>π (180°)</th><th>3π/2 (270°)</th><th>2π (360°)</th></tr>
+<tr><td>e<sup>iθ</sup></td><td>1</td><td>i</td><td>−1</td><td>−i</td><td>1</td></tr>
+</table>
+
+<h3>Multiplication is rotation plus stretching</h3>
+<p>This is the real reason polar form is great. Multiply two numbers in polar form:</p>
+<div class="eq">(r₁ e<sup>iθ₁</sup>)(r₂ e<sup>iθ₂</sup>) = r₁r₂ · e<sup>i(θ₁ + θ₂)</sup></div>
+<p>Sizes multiply, angles add. So multiplying by a number of size 1 (like e<sup>iφ</sup>) <em>only rotates</em>, by angle φ, without changing the size. In particular, multiplying by i = e<sup>iπ/2</sup> rotates by 90°. Four such rotations make 360°, a full circle, which is exactly why i⁴ = 1. The cycle of powers of i is not a coincidence; it is the geometry of rotation.</p>
+
+<div class="box warn">
+<b>Why quantum computing cares.</b> The numbers describing a qubit are called <b>amplitudes</b>, and they are complex. Their <em>sizes</em> decide the probabilities of outcomes. Their <em>angles</em> (phases) decide how different possibilities add up or cancel when they meet. That cancelling and reinforcing is called <b>interference</b>, and it is the engine behind quantum speed-ups. Real numbers alone would give only a weaker version of this; the extra angle is what makes it rich.
+</div>
+
+<div class="box try">
+<b>Check yourself:</b> What is e<sup>iπ</sup> × e<sup>iπ/2</sup>? (Add the angles: 3π/2, which is −i.) And what is |e<sup>iθ</sup>| for any θ? (Always 1; it sits on the unit circle.)
+</div>
+</section>
+
+<!-- ============ 2.2 ============ -->
+<section id="s2">
+<h2>2.2 Vectors, vector spaces, and inner products</h2>
+
+<h3>Vectors as lists</h3>
+<p>In school you drew a vector as an arrow. An arrow in a plane is fixed by two numbers: how far across and how far up. So we can just as well say a vector is <b>an ordered list of numbers</b>, written as a column:</p>
+<div class="eq"><span class="m" style="--c:1"><i>2</i><i>3</i></span></div>
+<p>The great thing about "list of numbers" is that it works for any length. A list of 2 numbers lives in a plane; of 3 numbers, in ordinary space; of 8 numbers, in a space you cannot draw but can still calculate in. In quantum computing the numbers are complex. For instance, (1/√2, i/√2) is a legitimate vector.</p>
+
+<h3>The two moves allowed on vectors</h3>
+<ul>
+<li><b>Adding</b>: entry by entry. (1, 2) + (3, 4) = (4, 6). Geometrically, place arrows head to tail.</li>
+<li><b>Scaling</b>: multiply every entry by one number (a <b>scalar</b>). 3·(1, 2) = (3, 6). The arrow becomes 3 times as long. If the scalar is complex, say i·(1, 2) = (i, 2i), the entries also get rotated.</li>
+</ul>
+
+<h3>Vector space</h3>
+<p>A <b>vector space</b> is a collection of vectors with one promise: if you add two members, or scale a member, the result is still in the collection. You can never "fall out" by doing these moves. All lists of two complex numbers form one such space, called <b>ℂ²</b>. That is where one qubit lives. All lists of four complex numbers form ℂ⁴, which is where two qubits live.</p>
+<p>Combining vectors like this:</p>
+<div class="eq">c₁v₁ + c₂v₂ + … + cₙvₙ</div>
+<p>is called a <b>linear combination</b>. In quantum language, a linear combination of possible states is a <b>superposition</b>. So when people say "a qubit can be 0 and 1 at once", the mathematics underneath is nothing fancier than this: the state is the vector 0.6·(vector for 0) + 0.8·(vector for 1).</p>
+
+<h3>Basis and dimension</h3>
+<p>Can we describe every vector in ℂ² using just a couple of special ones? Yes. A <b>basis</b> is a set of vectors such that (1) every vector in the space can be built from them by a linear combination, and (2) none of them is wasted, meaning no basis vector can be built from the others. The usual one for a qubit is:</p>
+<div class="eq">|0⟩ = <span class="m" style="--c:1"><i>1</i><i>0</i></span> &nbsp;&nbsp; |1⟩ = <span class="m" style="--c:1"><i>0</i><i>1</i></span></div>
+<p>Any vector (α, β) equals α|0⟩ + β|1⟩. For example, (3, 4i) = 3|0⟩ + 4i|1⟩. The number of vectors in a basis is the <b>dimension</b>. ℂ² has dimension 2, ℂ⁴ has dimension 4.</p>
+<p>A basis is like a choice of measuring scale. The same arrow can be described by different numbers if you choose different basis vectors, just as the same place can be given in different coordinate systems. This idea, "same state, different basis", appears in every quantum algorithm.</p>
+
+<h3>Inner product: a number that says how alike two vectors are</h3>
+<p>The <b>inner product</b> takes two vectors and returns <em>one number</em>. For real vectors you know it as the dot product: multiply matching entries and add. For complex vectors there is one change: <b>conjugate the first vector's entries</b>.</p>
+<div class="eq">⟨u, v⟩ = u₁* v₁ + u₂* v₂ + … + uₙ* vₙ</div>
+<div class="ex">u = (1, i), v = (2, 3).<br>⟨u, v⟩ = (1)*·2 + (i)*·3 = 1·2 + (−i)·3 = <b>2 − 3i</b></div>
+
+<p><b>Why that conjugate?</b> Think about what we want. We want the inner product of a vector with itself to be its length squared, a real non-negative number. Take u = (1, i). Without a conjugate we would compute 1·1 + i·i = 1 − 1 = 0, and a vector that is clearly not zero would get "length zero". Nonsense. With the conjugate: 1*·1 + i*·i = 1 + (−i)(i) = 1 + 1 = 2. Sensible. In general ⟨u, u⟩ = |u₁|² + |u₂|² + …, which is the modulus-squared trick from 2.1 in action.</p>
+
+<h3>Length, unit vectors, orthogonality</h3>
+<ul>
+<li><b>Norm</b> (length): ‖u‖ = √⟨u, u⟩.</li>
+<li><b>Unit vector</b>: norm exactly 1. <b>Normalising</b> a vector means dividing it by its norm to make it a unit vector. Every valid quantum state is a unit vector.</li>
+<li><b>Orthogonal</b>: ⟨u, v⟩ = 0. The vectors have "zero overlap", like the x-axis and y-axis. |0⟩ and |1⟩ are orthogonal: ⟨0, 1⟩ = 1·0 + 0·1 = 0.</li>
+<li><b>Orthonormal basis</b>: basis vectors that are all unit length and mutually orthogonal. They are the nicest possible coordinate system.</li>
+</ul>
+<p>A second orthonormal basis for a qubit, used everywhere, is</p>
+<div class="eq">|+⟩ = (|0⟩ + |1⟩)/√2, &nbsp;&nbsp; |−⟩ = (|0⟩ − |1⟩)/√2</div>
+<p>Check orthogonality: ⟨+, −⟩ = ½(1·1 + 1·(−1)) = 0. Check the length of |+⟩: ½(1 + 1) = 1. Both fine.</p>
+
+<h3>A very useful consequence: reading off coordinates</h3>
+<p>If {e₁, e₂} is an orthonormal basis and v = c₁e₁ + c₂e₂, then the coefficient c₁ is just ⟨e₁, v⟩. Take the inner product of both sides with e₁: the e₂ term vanishes (orthogonal) and the e₁ term gives c₁·1. So to find "how much of e₁ is inside v", take an inner product. This is exactly how measurement probabilities will be computed.</p>
+
+<div class="box">
+<b>Meaning in quantum.</b> If a system is in state v and you test whether it is in state u (both unit vectors), the probability of "yes" is |⟨u, v⟩|². The inner product measures <em>overlap</em>: 1 means same state, 0 means perfectly distinguishable.
+</div>
+</section>
+
+<!-- ============ 2.3 ============ -->
+<section id="s3">
+<h2>2.3 Matrices, unitary and Hermitian operators</h2>
+
+<h3>A matrix is a machine for vectors</h3>
+<p>A matrix is a rectangular table of numbers, but never think of it as "just a table". Think of it as a <b>machine</b>: a vector goes in, another vector comes out. In quantum computing, every gate, every evolution in time, every measurement is such a machine; the technical word is <b>operator</b>.</p>
+<p>How does the machine work? Take each <em>row</em> of the matrix, multiply it entry by entry with the vector, and add. That sum is one entry of the output.</p>
+<div class="eq"><span class="m" style="--c:2"><i>0</i><i>1</i><i>1</i><i>0</i></span> <span class="m" style="--c:1"><i>1</i><i>0</i></span> = <span class="m" style="--c:1"><i>0·1 + 1·0</i><i>1·1 + 0·0</i></span> = <span class="m" style="--c:1"><i>0</i><i>1</i></span></div>
+<p>The matrix called <b>X</b> turned |0⟩ into |1⟩ (and, try it, |1⟩ into |0⟩). It is the quantum NOT gate.</p>
+
+<h3>Linearity: the rule these machines obey</h3>
+<p>Every quantum operator is <b>linear</b>: A(c₁u + c₂v) = c₁Au + c₂Av. Practically, it means that to know what A does to <em>everything</em>, you only need what it does to the basis vectors. For example, X sends |0⟩→|1⟩ and |1⟩→|0⟩. Hence X(α|0⟩ + β|1⟩) = α|1⟩ + β|0⟩, with no extra work. The columns of a matrix are literally "where each basis vector goes".</p>
+
+<h3>Multiplying matrices</h3>
+<p>Doing machine A and then machine B is the same as one combined machine, the product BA. Entry (row i, column j) of the product = row i of the left matrix multiplied entry-wise with column j of the right matrix, then added.</p>
+<div class="ex">
+<span class="m" style="--c:2"><i>1</i><i>2</i><i>3</i><i>4</i></span><span class="m" style="--c:2"><i>0</i><i>1</i><i>1</i><i>0</i></span> = <span class="m" style="--c:2"><i>2</i><i>1</i><i>4</i><i>3</i></span>
+&nbsp;&nbsp; but &nbsp;&nbsp;
+<span class="m" style="--c:2"><i>0</i><i>1</i><i>1</i><i>0</i></span><span class="m" style="--c:2"><i>1</i><i>2</i><i>3</i><i>4</i></span> = <span class="m" style="--c:2"><i>3</i><i>4</i><i>1</i><i>2</i></span>
+</div>
+<p>Two different answers, so <b>order matters: AB ≠ BA in general</b>. (Multiplying by X on the right swapped the columns; on the left it swapped the rows.) Real life agrees: wearing socks then shoes is not the same as shoes then socks. A very concrete quantum example: with X and Z (defined below), XZ = −ZX. This non-commutativity is behind famous things like the uncertainty principle.</p>
+<p>Notice also the <b>right-to-left</b> rule. "First A, then B, on vector v" is written <b>BAv</b>, because A touches v first.</p>
+<p>The <b>identity matrix</b> I has 1s on the diagonal and 0s elsewhere. Iv = v for every v; it is the "do nothing" machine. The <b>inverse</b> of A, written A⁻¹, undoes A: A⁻¹A = I.</p>
+
+<h3>The four stars: Pauli matrices and Hadamard</h3>
+<div class="eq">
+X = <span class="m" style="--c:2"><i>0</i><i>1</i><i>1</i><i>0</i></span>
+&nbsp; Y = <span class="m" style="--c:2"><i>0</i><i>−i</i><i>i</i><i>0</i></span>
+&nbsp; Z = <span class="m" style="--c:2"><i>1</i><i>0</i><i>0</i><i>−1</i></span>
+&nbsp; H = (1/√2)<span class="m" style="--c:2"><i>1</i><i>1</i><i>1</i><i>−1</i></span>
+</div>
+<ul>
+<li><b>X</b> flips |0⟩ ↔ |1⟩ (bit flip).</li>
+<li><b>Z</b> leaves |0⟩ alone and puts a minus sign on |1⟩ (phase flip). Z(α|0⟩ + β|1⟩) = α|0⟩ − β|1⟩.</li>
+<li><b>Y</b> does both a flip and a phase, with an i.</li>
+<li><b>H</b> (Hadamard) turns |0⟩ into |+⟩ and |1⟩ into |−⟩. It is the standard way to create superposition.</li>
+</ul>
+
+<h3>The dagger (†): conjugate transpose</h3>
+<p>For a matrix A, form A† in two steps: (1) <b>transpose</b>, i.e. turn rows into columns; (2) <b>conjugate</b> every entry.</p>
+<div class="eq">A = <span class="m" style="--c:2"><i>1</i><i>i</i><i>2</i><i>3</i></span> &nbsp;⟹&nbsp; A† = <span class="m" style="--c:2"><i>1</i><i>2</i><i>−i</i><i>3</i></span></div>
+<p>The dagger is the matrix version of conjugation. One property you will use often: (AB)† = B†A†. The order reverses, just as taking off shoes and socks reverses putting them on. Also, the inner product can be written as ⟨u, v⟩ = u†v, i.e. dagger of the first, then multiply.</p>
+
+<h3>Hermitian matrices: the "real-valued" kind</h3>
+<p>A matrix is <b>Hermitian</b> if <b>A† = A</b>. In words: flipping across the diagonal and conjugating changes nothing. That forces two patterns: the diagonal entries must be real, and the entries mirrored across the diagonal must be conjugates of each other.</p>
+<p>Check Y: transposing swaps −i and i; conjugating then flips them back. So Y† = Y. ✓. X and Z are Hermitian too (real and symmetric).</p>
+<p><b>Why do we care?</b> In quantum mechanics, every physical quantity you can measure (energy, spin, position) corresponds to a Hermitian matrix. And as 2.4 will show, Hermitian matrices have only <em>real</em> eigenvalues, which are the possible measurement results. A lab instrument cannot read "3 + 2i volts", so it makes sense that measurement is tied to a class of matrices guaranteeing real answers.</p>
+
+<h3>Unitary matrices: the "never stretch" kind</h3>
+<p>A matrix U is <b>unitary</b> if <b>U†U = I</b>, meaning its dagger is its inverse (U⁻¹ = U†). What does that buy us? Let us see what U does to a length. The new length squared is</p>
+<div class="eq">(Uv)†(Uv) = v†U†Uv = v†Iv = v†v</div>
+<p>The length did not change. Not only that: inner products between any two vectors are preserved too. So unitary matrices are the <b>rotations</b> (and reflections, with complex phases allowed) of vector spaces. They turn things around, but never stretch or squash.</p>
+<p>Why must quantum gates be unitary? A state's probabilities must always add to 1, which means the state vector must always have length 1. A gate that changed the length would produce "probabilities" adding to 0.7 or 3. Only length-preserving machines are allowed, and that is precisely the unitary class. A bonus: U† undoes U, so every quantum gate is <b>reversible</b>.</p>
+<div class="ex">Verify that H is unitary: H is real and symmetric, so H† = H. Then H†H = ½[[1,1],[1,−1]]·[[1,1],[1,−1]] = ½[[2,0],[0,2]] = I. ✓. So applying H twice returns to the start: HH|0⟩ = H|+⟩ = |0⟩.</div>
+
+<table>
+<tr><th>Type</th><th>Condition</th><th>Intuition</th><th>Role in quantum</th></tr>
+<tr><td>Hermitian</td><td>A† = A</td><td>Real-valued, "measurable"</td><td>Observables / measurements</td></tr>
+<tr><td>Unitary</td><td>U†U = I</td><td>Rotation, length-preserving</td><td>Gates, time evolution</td></tr>
+</table>
+<div class="box warn">X, Y, Z and H happen to be <em>both</em> Hermitian and unitary. That is a special property of these particular matrices, not something true for all matrices. A rotation by 30° is unitary but not Hermitian; the matrix [[2,0],[0,3]] is Hermitian but not unitary.</div>
+</section>
+
+<!-- ============ 2.4 ============ -->
+<section id="s4">
+<h2>2.4 Eigenvalues and eigenvectors</h2>
+
+<h3>The idea in one picture</h3>
+<p>Imagine a matrix as a machine that moves and turns the whole plane. Most arrows get knocked off their original line. But for certain special arrows, the machine <em>only stretches them along the same line</em>. Those arrows are <b>eigenvectors</b> ("eigen" is German for "own" or "characteristic"), and the stretch factor is the <b>eigenvalue</b>:</p>
+<div class="eq">A v = λ v &nbsp;&nbsp; (v ≠ 0)</div>
+<p>λ (lambda) is just a number. If λ = 2, the arrow doubles; if λ = −1, it flips to the opposite direction; if λ = 1, it is untouched.</p>
+
+<h3>Easy example: diagonal matrices</h3>
+<p>For Z = diag(1, −1): Z|0⟩ = (+1)|0⟩ and Z|1⟩ = (−1)|1⟩. So |0⟩ is an eigenvector with eigenvalue +1, and |1⟩ has eigenvalue −1. For any diagonal matrix, the eigenvalues are just the diagonal entries and the eigenvectors are the basis vectors.</p>
+
+<h3>Less obvious: X</h3>
+<div class="eq">X(|0⟩ + |1⟩) = |1⟩ + |0⟩ = (+1)(|0⟩ + |1⟩)<br>X(|0⟩ − |1⟩) = |1⟩ − |0⟩ = (−1)(|0⟩ − |1⟩)</div>
+<p>So |+⟩ and |−⟩ are eigenvectors of X with eigenvalues +1 and −1. Notice that X looks completely different from Z, yet it has the same eigenvalues. Only the eigenvectors differ. This is why "measuring in the X basis" and "measuring in the Z basis" give different information about the same qubit.</p>
+
+<h3>The method for finding them</h3>
+<ol>
+<li>Start from Av = λv and move everything to one side: (A − λI)v = 0.</li>
+<li>If A − λI could be inverted, we could multiply by the inverse and force v = 0, which is not allowed. So A − λI must be <em>non-invertible</em>, which means its determinant is zero: <b>det(A − λI) = 0</b>. (For a 2×2 matrix [[p,q],[r,s]], det = ps − qr.) This is the <b>characteristic equation</b>.</li>
+<li>Solve it for λ. Then, for each λ, solve (A − λI)v = 0 to get the eigenvector.</li>
+</ol>
+<div class="ex"><b>Full worked example.</b> A = [[2,1],[1,2]].<br>
+det [[2−λ, 1],[1, 2−λ]] = (2−λ)² − 1 = 0, so 2 − λ = ±1, giving <b>λ = 1 or 3</b>.<br>
+For λ = 3: (A − 3I)v = [[−1,1],[1,−1]]v = 0 ⟹ −v₁ + v₂ = 0 ⟹ v = (1, 1) (normalised: (1,1)/√2).<br>
+For λ = 1: [[1,1],[1,1]]v = 0 ⟹ v₁ + v₂ = 0 ⟹ v = (1, −1) (normalised: (1,−1)/√2).<br>
+Verify: A(1,1) = (3,3) = 3·(1,1) ✓. Also, (1,1) and (1,−1) are orthogonal, which is not an accident; see below.</div>
+
+<h3>The guarantees for Hermitian matrices</h3>
+<p>Take any Hermitian A (A† = A). Then:</p>
+<ul>
+<li><b>All eigenvalues are real.</b> Quick reason: if Av = λv, then v†Av = λ v†v. But taking the dagger of the left side gives v†A†v = v†Av, so it equals its own conjugate, i.e. it is real. Since v†v is real and positive, λ must be real.</li>
+<li><b>Eigenvectors of different eigenvalues are orthogonal.</b> (Our example above shows exactly this.)</li>
+<li>You can always pick a complete <b>orthonormal basis made of eigenvectors</b>.</li>
+</ul>
+<p>For <b>unitary</b> matrices, every eigenvalue has |λ| = 1, so each looks like e<sup>iθ</sup>, a pure phase. (Because length is preserved, an eigenvector can only be rotated, never stretched.)</p>
+
+<h3>Diagonalising: the payoff</h3>
+<p>If you switch to the eigenvector basis, a Hermitian matrix becomes <em>diagonal</em>: it is simply "multiply the first coordinate by λ₁, the second by λ₂". In writing: A = Σ λᵢ |vᵢ⟩⟨vᵢ| (we will decode this notation in 2.7). Every hard-looking Hermitian matrix is secretly a bunch of stretches along perpendicular directions, which makes calculations like A¹⁰⁰ or e<sup>A</sup> easy.</p>
+
+<div class="box">
+<b>Meaning in quantum.</b> Here is the big rule of measurement: when you measure an observable (a Hermitian matrix A), <b>the only possible outcomes are the eigenvalues of A</b>, and immediately afterwards the system is in the corresponding eigenvector. That is why measuring Z on a qubit can only give +1 or −1, never 0.37. And the chance of each outcome is the squared overlap of the state with that eigenvector (details in 2.6).
+</div>
+</section>
+
+<!-- ============ 2.5 ============ -->
+<section id="s5">
+<h2>2.5 Tensor products</h2>
+
+<h3>The question that needs it</h3>
+<p>One qubit is a vector in ℂ² (two numbers). How do we describe <em>two</em> qubits? Your first guess might be to keep two separate vectors, one per qubit. That works only if the qubits are completely independent. Nature allows more: two qubits can be linked so tightly that neither has a state of its own. To cover every possibility we need one single, bigger vector for the pair. The <b>tensor product ⊗</b> is the rule that builds the bigger space from the smaller ones.</p>
+
+<h3>Tensor product of vectors</h3>
+<p>Take each entry of the first vector, and multiply it by the <em>whole</em> second vector. Stack the results:</p>
+<div class="eq"><span class="m" style="--c:1"><i>a</i><i>b</i></span> ⊗ <span class="m" style="--c:1"><i>c</i><i>d</i></span> = <span class="m" style="--c:1"><i>a·c</i><i>a·d</i><i>b·c</i><i>b·d</i></span></div>
+<p>Compute |0⟩ ⊗ |1⟩ = (1, 0) ⊗ (0, 1) = (1·0, 1·1, 0·0, 0·1) = (0, 1, 0, 0). We shorten |0⟩⊗|1⟩ to <b>|01⟩</b>: "first qubit is 0, second is 1". The four basis states of two qubits are:</p>
+<table>
+<tr><th>State</th><th>Vector</th></tr>
+<tr><td>|00⟩</td><td>(1, 0, 0, 0)</td></tr>
+<tr><td>|01⟩</td><td>(0, 1, 0, 0)</td></tr>
+<tr><td>|10⟩</td><td>(0, 0, 1, 0)</td></tr>
+<tr><td>|11⟩</td><td>(0, 0, 0, 1)</td></tr>
+</table>
+<p>It is just binary counting: the position of the 1 in the vector equals the binary number read as an index. A general two-qubit state is α|00⟩ + β|01⟩ + γ|10⟩ + δ|11⟩ with |α|² + |β|² + |γ|² + |δ|² = 1.</p>
+
+<h3>Why dimensions multiply</h3>
+<p>2 × 2 = 4 for two qubits, 2 × 2 × 2 = 8 for three, and <b>2ⁿ for n qubits</b>. Describing 10 qubits needs 1,024 complex numbers; 30 qubits need over a billion; 50 qubits need about 10¹⁵ numbers, which is petabytes of memory. This explosion is the honest reason simulating quantum systems on ordinary computers becomes impossible so quickly, and also the hope that quantum hardware can do what classical machines cannot.</p>
+
+<h3>Tensor product of matrices</h3>
+<p>Same recipe: each entry of the first matrix multiplies the entire second matrix, giving a larger block matrix. If gate A acts on qubit 1 and gate B on qubit 2 <em>simultaneously</em>, the combined gate is A ⊗ B, and it obeys</p>
+<div class="eq">(A ⊗ B)(u ⊗ v) = (Au) ⊗ (Bv)</div>
+<p>A common situation is acting on only one of the qubits. Then the other gets the identity. For example, X ⊗ I flips the first qubit and leaves the second alone:</p>
+<div class="eq">X ⊗ I = <span class="m" style="--c:4"><i>0</i><i>0</i><i>1</i><i>0</i><i>0</i><i>0</i><i>0</i><i>1</i><i>1</i><i>0</i><i>0</i><i>0</i><i>0</i><i>1</i><i>0</i><i>0</i></span></div>
+<p>Apply it to |00⟩ = (1,0,0,0): you get (0,0,1,0) = |10⟩. ✓ The first qubit flipped.</p>
+<p>Gates that act on two qubits <em>jointly</em> need not be of the form A ⊗ B. The famous one is <b>CNOT</b>, which flips the second qubit only if the first is 1:</p>
+<div class="eq">CNOT = <span class="m" style="--c:4"><i>1</i><i>0</i><i>0</i><i>0</i><i>0</i><i>1</i><i>0</i><i>0</i><i>0</i><i>0</i><i>0</i><i>1</i><i>0</i><i>0</i><i>1</i><i>0</i></span></div>
+<p>Because CNOT cannot be split into "one gate here, one gate there", it can create links between qubits, as we see now.</p>
+
+<h3>Product states vs entangled states</h3>
+<p>A state of the form u ⊗ v is a <b>product state</b>: each qubit has its own definite state, and they simply sit next to each other. But not every vector in ℂ⁴ can be written like that. Consider</p>
+<div class="eq">|Φ⁺⟩ = (|00⟩ + |11⟩)/√2 = (1/√2, 0, 0, 1/√2)</div>
+<p>Suppose it were (a, b) ⊗ (c, d) = (ac, ad, bc, bd). Then we would need ad = 0 (the |01⟩ entry) and bc = 0 (the |10⟩ entry), while ac ≠ 0 and bd ≠ 0. From ac ≠ 0 we get a ≠ 0 and c ≠ 0. From bd ≠ 0 we get b ≠ 0 and d ≠ 0. But then ad ≠ 0, which contradicts ad = 0. So <b>no such a, b, c, d exist</b>. This state is <b>entangled</b>: the pair has a definite state but neither qubit does by itself. Measure one qubit and you get 0 or 1 randomly; yet the second qubit's result is guaranteed to match. This is the resource behind quantum teleportation and many algorithms.</p>
+<p>You can make this exact state yourself: start with |00⟩, apply H to the first qubit to get (|00⟩ + |10⟩)/√2, then apply CNOT. The |10⟩ part becomes |11⟩, giving |Φ⁺⟩.</p>
+
+<div class="box">
+<b>Memory aid.</b> Tensor product = "and, together". Independent things combine by ⊗, just as independent probabilities combine by multiplication (see 2.6). Entanglement is what you get when the combined space has states that are <em>not</em> just "this and that".
+</div>
+</section>
+
+<!-- ============ 2.6 ============ -->
+<section id="s6">
+<h2>2.6 Probability and statistics essentials</h2>
+
+<h3>Why this matters here</h3>
+<p>Quantum mechanics does not tell you what will happen in a single measurement. It tells you the <em>chances</em> of each result. So you need to be comfortable with probability even before the quantum twist is added.</p>
+
+<h3>Probability basics</h3>
+<p>The probability of an event is a number between 0 (impossible) and 1 (certain). If a list of outcomes cannot happen together (like the faces of a die) and covers all possibilities, their probabilities <b>add up to exactly 1</b>. A fair die: six faces × 1/6 = 1. This "sum to 1" rule is the same as the unit-length rule for qubit states, as you will see in a minute.</p>
+<p><b>Independent events</b> do not influence each other, and then P(A and B) = P(A) × P(B). Two fair coins both showing heads: ½ × ½ = ¼. <b>Mutually exclusive events</b> cannot both occur, and then P(A or B) = P(A) + P(B). Rolling a 1 or a 2: 1/6 + 1/6 = 1/3.</p>
+<p><b>Conditional probability</b>, P(A | B) = "chance of A, given that B already happened", is P(A and B) / P(B). It matters in quantum because after you measure one qubit of an entangled pair, the odds for the other change (they become conditional on your result).</p>
+
+<h3>Expected value (long-run average)</h3>
+<p>If outcome xᵢ happens with probability pᵢ, then</p>
+<div class="eq">E[X] = Σ pᵢ xᵢ</div>
+<p>For a die: (1 + 2 + 3 + 4 + 5 + 6)/6 = 3.5. You never roll 3.5, but if you rolled a million times, the average would be very close to it. Expected value is the <em>centre of gravity</em> of the outcomes.</p>
+
+<h3>Variance and standard deviation (how spread out)</h3>
+<p>Two games can have the same average but feel very different: one always gives ₹50, the other gives ₹0 or ₹100 with equal chance. <b>Variance</b> captures this:</p>
+<div class="eq">Var(X) = E[(X − μ)²] = E[X²] − (E[X])²</div>
+<p>where μ = E[X]. The <b>standard deviation</b> σ = √Var is in the same units as X. For the die: E[X²] = (1 + 4 + 9 + 16 + 25 + 36)/6 = 91/6 ≈ 15.17, so Var = 15.17 − 3.5² ≈ 2.92 and σ ≈ 1.71. For the "always ₹50" game, Var = 0; the result is certain.</p>
+
+<h3>Law of large numbers</h3>
+<p>The more times you repeat an experiment, the closer the observed frequency gets to the true probability. For n independent trials with success chance p, the typical error is about √(p(1−p)/n). With p = 0.5 and n = 1000, the count of successes has a standard deviation of √(1000 × 0.25) ≈ 16, so you will usually see between roughly 470 and 530, not exactly 500. Quantum experiments are run this way: repeat the circuit many times (each repeat is a <b>shot</b>) and count the results.</p>
+
+<h3>The Born rule: where vectors meet probability</h3>
+<p>A qubit in the state α|0⟩ + β|1⟩, when measured in the {|0⟩, |1⟩} basis, gives</p>
+<div class="eq">P(0) = |α|², &nbsp;&nbsp; P(1) = |β|²</div>
+<p>This is why the state must be a unit vector: |α|² + |β|² = 1 is exactly the "probabilities sum to 1" rule. And it is why gates must be unitary: they must keep that sum fixed. More generally, if you measure in an orthonormal basis {|eᵢ⟩}, then P(i) = |⟨eᵢ|ψ⟩|². That is the same overlap formula from 2.2.</p>
+<div class="ex"><b>Example 1.</b> State (1/√2)|0⟩ + (i/√2)|1⟩. P(0) = |1/√2|² = ½; P(1) = |i/√2|² = ½. The "i" has modulus 1, so it does not change the probability here.</div>
+<div class="ex"><b>Example 2.</b> State (3/5)|0⟩ + (4i/5)|1⟩. P(0) = 9/25 = 0.36, P(1) = 16/25 = 0.64. Sum = 1 ✓.</div>
+
+<h3>Collapse</h3>
+<p>After measurement the state is no longer the old superposition; it becomes the basis state you saw. If you measured 1, the qubit is now |1⟩, and measuring again immediately gives 1 with certainty. The superposition is used up. This is why you cannot "read out" all the amplitudes: one measurement gives only one bit of information.</p>
+
+<h3>Expected value of an observable</h3>
+<p>For a Hermitian operator A with eigenvalues λᵢ, the average of many measurements on identical copies of |ψ⟩ is Σ P(i)λᵢ. For Z with state √0.75|0⟩ + √0.25|1⟩: 0.75(+1) + 0.25(−1) = <b>0.5</b>. In general, ⟨Z⟩ = |α|² − |β|².</p>
+
+<h3>Phase: invisible, until it is not</h3>
+<p>Take |+⟩ = (|0⟩ + |1⟩)/√2 and |−⟩ = (|0⟩ − |1⟩)/√2. Measured in the 0/1 basis, both give 50% / 50%, so the minus sign seems to do nothing. But apply H to each: H|+⟩ = |0⟩ (always gives 0), while H|−⟩ = |1⟩ (always gives 1). The sign, a phase of e<sup>iπ</sup> on one amplitude, completely changes the later outcome. Amplitudes with the same direction add up; with opposite directions they cancel. That is interference. And note: multiplying the <em>whole</em> state by a phase like e<sup>iθ</sup> changes nothing observable (a <b>global phase</b>), but a phase on only <em>part</em> of the state (a <b>relative phase</b>) does.</p>
+
+<div class="box warn">Quantum "probabilities" are built from amplitudes, which can be negative or complex and can cancel. Ordinary probabilities can never cancel; they only add. That single difference is where the quantum advantage comes from.</div>
+</section>
+
+<!-- ============ 2.7 ============ -->
+<section id="s7">
+<h2>2.7 Dirac (bra-ket) notation</h2>
+
+<h3>Why a new notation?</h3>
+<p>Writing columns of numbers every time is slow and hides the meaning. Paul Dirac proposed a compact system. The name is a pun on "bracket": ⟨ ⟩ is split into a left half, the <b>bra</b> ⟨ |, and a right half, the <b>ket</b> | ⟩.</p>
+
+<h3>Kets: column vectors</h3>
+<p>A <b>ket</b> |ψ⟩ means "the column vector called ψ". The symbol inside is just a label; you can write |0⟩, |+⟩, |happy⟩ or |ψ⟩. Superposition then reads naturally:</p>
+<div class="eq">|ψ⟩ = α|0⟩ + β|1⟩</div>
+
+<h3>Bras: row vectors</h3>
+<p>A <b>bra</b> ⟨ψ| is the dagger of the ket: a <em>row</em> with every entry conjugated.</p>
+<div class="eq">|ψ⟩ = <span class="m" style="--c:1"><i>α</i><i>β</i></span> &nbsp;⟹&nbsp; ⟨ψ| = <span class="m" style="--c:2"><i>α*</i><i>β*</i></span></div>
+<p>Remember: a bra is not simply a "row-version" of the ket; the conjugation is part of the definition.</p>
+
+<h3>Putting them together</h3>
+<p>Joining a bra and a ket in two different orders gives two very different objects:</p>
+<table>
+<tr><th>Written</th><th>Name</th><th>Shape</th><th>Meaning</th></tr>
+<tr><td>⟨φ|ψ⟩</td><td>Inner product (bra-ket)</td><td>row × column = <b>number</b></td><td>Overlap of φ and ψ</td></tr>
+<tr><td>|ψ⟩⟨φ|</td><td>Outer product (ket-bra)</td><td>column × row = <b>matrix</b></td><td>An operator</td></tr>
+<tr><td>⟨φ|A|ψ⟩</td><td>Matrix element</td><td>number</td><td>Apply A to ψ, then take overlap with φ</td></tr>
+<tr><td>|u⟩|v⟩ or |uv⟩</td><td>Tensor product</td><td>bigger column</td><td>Combined system</td></tr>
+</table>
+
+<h3>Orthonormality, written neatly</h3>
+<div class="eq">⟨0|0⟩ = 1, &nbsp; ⟨1|1⟩ = 1, &nbsp; ⟨0|1⟩ = ⟨1|0⟩ = 0</div>
+<p>Hence, for |ψ⟩ = α|0⟩ + β|1⟩, we get ⟨0|ψ⟩ = α and ⟨1|ψ⟩ = β. The coefficients are read off by sandwiching with bras, exactly the "reading coordinates" idea from 2.2. And the Born rule becomes one line: <b>P(φ) = |⟨φ|ψ⟩|²</b>. The normalisation condition becomes ⟨ψ|ψ⟩ = 1.</p>
+
+<h3>Outer products and projectors</h3>
+<p>Compute |0⟩⟨0|: the column (1, 0) times the row (1, 0) gives</p>
+<div class="eq">|0⟩⟨0| = <span class="m" style="--c:2"><i>1</i><i>0</i><i>0</i><i>0</i></span></div>
+<p>Apply it to α|0⟩ + β|1⟩. Using the notation: |0⟩⟨0|(α|0⟩ + β|1⟩) = |0⟩(α⟨0|0⟩ + β⟨0|1⟩) = α|0⟩. It <b>keeps the |0⟩ component and deletes everything else</b>. Such a matrix is a <b>projector</b>; it "casts a shadow" of a vector onto a chosen direction. Two telltale signs: P† = P (Hermitian) and P² = P (doing it twice is the same as once, since the shadow of a shadow is the same shadow).</p>
+<p>Likewise, |+⟩⟨+| = ½[[1,1],[1,1]], the projector onto |+⟩. Measuring "is it |+⟩?" is physically applying this projector, and the probability of yes is ⟨ψ|(|+⟩⟨+|)|ψ⟩ = |⟨+|ψ⟩|².</p>
+
+<h3>Completeness: the identity in disguise</h3>
+<p>For any orthonormal basis, the sum of the projectors is the identity:</p>
+<div class="eq">|0⟩⟨0| + |1⟩⟨1| = <span class="m" style="--c:2"><i>1</i><i>0</i><i>0</i><i>0</i></span> + <span class="m" style="--c:2"><i>0</i><i>0</i><i>0</i><i>1</i></span> = I</div>
+<p>This is a powerful trick. Since I changes nothing, you can slip it in anywhere to break a state into basis pieces: |ψ⟩ = I|ψ⟩ = |0⟩⟨0|ψ⟩ + |1⟩⟨1|ψ⟩. It is the same statement as "α = ⟨0|ψ⟩, β = ⟨1|ψ⟩".</p>
+
+<h3>The spectral form: any Hermitian matrix in one line</h3>
+<p>Connecting 2.4 and 2.7: if a Hermitian matrix A has eigenvalues λᵢ and orthonormal eigenvectors |vᵢ⟩, then</p>
+<div class="eq">A = Σᵢ λᵢ |vᵢ⟩⟨vᵢ|</div>
+<p>Meaning: "stretch the first direction by λ₁, the second by λ₂, and add". Examples: Z = (+1)|0⟩⟨0| + (−1)|1⟩⟨1|, which expands to diag(1, −1) ✓. And X = (+1)|+⟩⟨+| + (−1)|−⟩⟨−|. Check the top-left entry: ½(1) − ½(1)... let us do the whole thing: |+⟩⟨+| = ½[[1,1],[1,1]] and |−⟩⟨−| = ½[[1,−1],[−1,1]]. Subtracting the second from the first: ½[[0,2],[2,0]] = [[0,1],[1,0]] = X ✓.</p>
+
+<div class="box warn"><b>Classic slip:</b> ⟨ψ|φ⟩ is a <em>number</em>, |ψ⟩⟨φ| is a <em>matrix</em>. Same symbols, reversed order, completely different objects. Whenever you see an expression, ask, "what shape is this?" Also remember ⟨ψ|φ⟩ = ⟨φ|ψ⟩*; swapping bra and ket conjugates the number.</div>
+</section>
+
+<!-- ============ 2.8 ============ -->
+<section id="s8">
+<h2>2.8 Exercises</h2>
+<p>Try each one on paper first. Open the answer only after a sincere attempt; even a wrong attempt teaches you more than peeking.</p>
+
+<h3>Complex numbers</h3>
+<details><summary>Q1. Compute (2 + 3i)(4 − i) and |3 − 4i|.</summary>
+(2 + 3i)(4 − i) = 8 − 2i + 12i − 3i² = 8 + 10i + 3 = <b>11 + 10i</b>. And |3 − 4i| = √(9 + 16) = <b>5</b>.</details>
+<details><summary>Q2. Compute (1 + i)/(2 − i).</summary>
+Multiply top and bottom by (2 + i): numerator (1 + i)(2 + i) = 2 + i + 2i + i² = 1 + 3i. Denominator (2 − i)(2 + i) = 4 + 1 = 5. Answer: <b>(1 + 3i)/5</b>.</details>
+<details><summary>Q3. Write 1 + i in polar form, and use it to find (1 + i)⁸.</summary>
+r = √2, θ = π/4, so 1 + i = √2 e<sup>iπ/4</sup>. Then (1 + i)⁸ = (√2)⁸ e<sup>i·2π</sup> = 16 × 1 = <b>16</b>. (Doing it by expanding brackets eight times would be painful. Polar form is the shortcut.)</details>
+
+<h3>Vectors and inner products</h3>
+<details><summary>Q4. Find ⟨u, v⟩ for u = (1, 2i) and v = (3, 1 + i). Are they orthogonal?</summary>
+⟨u, v⟩ = 1·3 + (2i)*(1 + i) = 3 + (−2i)(1 + i) = 3 − 2i − 2i² = 3 − 2i + 2 = <b>5 − 2i</b>. Not zero, so <b>not orthogonal</b>.</details>
+<details><summary>Q5. Normalise (3, 4i) to a valid qubit state.</summary>
+Norm = √(9 + 16) = 5. State = <b>(3/5, 4i/5)</b>. Check: 9/25 + 16/25 = 1 ✓.</details>
+<details><summary>Q6. Show that |+⟩ and |−⟩ form an orthonormal basis.</summary>
+⟨+|+⟩ = ½(1 + 1) = 1, ⟨−|−⟩ = ½(1 + 1) = 1, ⟨+|−⟩ = ½(1·1 + 1·(−1)) = 0. Unit length and orthogonal, and two such vectors in a 2-dimensional space form a basis. ✓</details>
+
+<h3>Matrices</h3>
+<details><summary>Q7. Compute XZ and ZX. What do you notice?</summary>
+XZ = [[0,1],[1,0]]·[[1,0],[0,−1]] = [[0,−1],[1,0]]. ZX = [[1,0],[0,−1]]·[[0,1],[1,0]] = [[0,1],[−1,0]]. So <b>XZ = −ZX</b>. They do not commute; they differ by a sign.</details>
+<details><summary>Q8. Show H is unitary, and find H|1⟩.</summary>
+H†H = H·H = ½[[1+1, 1−1],[1−1, 1+1]] = I ✓. H|1⟩ = (1/√2)(1, −1) = <b>|−⟩</b>.</details>
+<details><summary>Q9. Is A = [[2, 1 − i],[1 + i, 3]] Hermitian?</summary>
+Transpose: [[2, 1 + i],[1 − i, 3]]. Conjugate: [[2, 1 − i],[1 + i, 3]] = A. <b>Yes</b>. Diagonal real, off-diagonals conjugate of each other.</details>
+<details><summary>Q10. Is U = (1/√2)[[1, i],[i, 1]] unitary?</summary>
+U† = (1/√2)[[1, −i],[−i, 1]]. U†U = ½[[1·1 + (−i)(i), 1·i + (−i)·1],[(−i)·1 + 1·i, (−i)(i) + 1]] = ½[[1 + 1, i − i],[−i + i, 1 + 1]] = I. <b>Yes</b>.</details>
+
+<h3>Eigenvalues</h3>
+<details><summary>Q11. Find the eigenvalues and eigenvectors of Y = [[0, −i],[i, 0]].</summary>
+det [[−λ, −i],[i, −λ]] = λ² − (−i)(i) = λ² − 1 = 0, so <b>λ = ±1</b>. For λ = +1: −v₁ − i v₂ = 0 ⟹ v₁ = −i v₂, giving v ∝ (1, i). Check: Y(1, i) = (−i·i, i·1) = (1, i) ✓. For λ = −1: v ∝ (1, −i). Normalised: (1, ±i)/√2.</details>
+<details><summary>Q12. Find the eigenvalues of [[4,1],[2,3]].</summary>
+det [[4−λ, 1],[2, 3−λ]] = (4−λ)(3−λ) − 2 = λ² − 7λ + 10 = 0 ⟹ (λ−2)(λ−5) = 0, so <b>λ = 2 and 5</b>. (Notice this matrix is not Hermitian, but the eigenvalues still exist; its eigenvectors, however, will not be orthogonal.)</details>
+
+<h3>Tensor products and entanglement</h3>
+<details><summary>Q13. Compute |1⟩ ⊗ |0⟩, and (H ⊗ I)|00⟩.</summary>
+|1⟩⊗|0⟩ = (0,1)⊗(1,0) = (0,0,1,0) = <b>|10⟩</b>. And (H ⊗ I)|00⟩ = (H|0⟩) ⊗ (I|0⟩) = |+⟩ ⊗ |0⟩ = <b>(|00⟩ + |10⟩)/√2</b>.</details>
+<details><summary>Q14. Apply CNOT to (|00⟩ + |10⟩)/√2. What state is produced?</summary>
+CNOT leaves |00⟩ alone (control is 0) and turns |10⟩ into |11⟩. Result: <b>(|00⟩ + |11⟩)/√2</b>, the entangled Bell state.</details>
+<details><summary>Q15. Is (|01⟩ + |10⟩)/√2 entangled?</summary>
+Suppose it equals (a,b)⊗(c,d) = (ac, ad, bc, bd). We need ac = 0 and bd = 0, but ad ≠ 0 and bc ≠ 0. ac = 0 means a = 0 or c = 0, but that makes ad = 0 or bc = 0. Contradiction. <b>Yes, entangled</b>.</details>
+
+<h3>Probability and measurement</h3>
+<details><summary>Q16. A qubit is in (1/2)|0⟩ + (√3/2)|1⟩. Find P(0), P(1), and the average of Z.</summary>
+P(0) = 1/4, P(1) = 3/4 (sum 1 ✓). Average of Z = ¼(+1) + ¾(−1) = <b>−0.5</b>.</details>
+<details><summary>Q17. For |ψ⟩ = |+⟩, what is the probability of getting 0 when you measure in the Z basis? What if you first apply H?</summary>
+Directly: |⟨0|+⟩|² = |1/√2|² = <b>½</b>. After H: H|+⟩ = |0⟩, so P(0) = <b>1</b>. Same state, a different measurement setup, a different result; this is how interference is exploited.</details>
+<details><summary>Q18. A coin is flipped 400 times with P(heads) = ½. What are the expected number of heads and the standard deviation?</summary>
+Mean = 400 × ½ = <b>200</b>. σ = √(400 × ½ × ½) = √100 = <b>10</b>. So a result between about 180 and 220 (within 2σ) is perfectly normal.</details>
+
+<h3>Dirac notation</h3>
+<details><summary>Q19. Write the projector |+⟩⟨+| as a matrix and verify P² = P.</summary>
+|+⟩ = (1,1)/√2, so P = ½[[1,1],[1,1]]. P² = ¼[[1+1, 1+1],[1+1, 1+1]] = ¼[[2,2],[2,2]] = ½[[1,1],[1,1]] = <b>P</b> ✓.</details>
+<details><summary>Q20. Write the spectral decomposition of Z and use it to find Z|ψ⟩ for |ψ⟩ = α|0⟩ + β|1⟩.</summary>
+Z = |0⟩⟨0| − |1⟩⟨1|. So Z|ψ⟩ = |0⟩⟨0|ψ⟩ − |1⟩⟨1|ψ⟩ = <b>α|0⟩ − β|1⟩</b>.</details>
+<details><summary>Q21 (thinking). Why must quantum gates be unitary, and why can a quantum computer not copy an unknown state?</summary>
+First part: gates must keep total probability equal to 1, so they must preserve vector length; length-preserving matrices are exactly the unitary ones. As a bonus, U† undoes U, so every gate is reversible. Second part (a taste of what is ahead): "copying" would require a map taking |ψ⟩ to |ψ⟩⊗|ψ⟩. That map is not linear (the output has squared terms like α²), so it cannot be a unitary gate. This is the <em>no-cloning theorem</em>, and you can now see that it is a direct consequence of the maths in this chapter.</details>
+</section>
+
+<footer>
+<p><b>Chapter in one breath:</b> complex numbers give us amplitudes with size and phase; vectors hold states; inner products give overlaps and probabilities; matrices (unitary) are gates and matrices (Hermitian) are measurements; eigenvalues are the possible readings; tensor products join qubits; and bra-ket notation writes it all cleanly. On to the qubits!</p>
+</footer>
+
+</main>
+</body>
+</html>

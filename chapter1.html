@@ -1,181 +1,225 @@
 <!DOCTYPE html>
 <html lang="en-IN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chapter 1: Classical Computing, Explained Step by Step</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chapter 1: Why Quantum? The Big Picture</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,700&family=Sora:wght@500;700&display=swap">
 <style>
-:root{--bg:#faf8f4;--card:#fff;--ink:#1f2430;--mute:#5d6577;--acc:#b4531f;--line:#e6e0d6;--code:#f3efe7}
-@media(prefers-color-scheme:dark){:root{--bg:#15171c;--card:#1d2027;--ink:#e8e6e1;--mute:#a0a6b5;--acc:#f0a070;--line:#2d313b;--code:#262a33}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Georgia,"Times New Roman",serif}
-main{max-width:820px;margin:0 auto;padding:32px 18px 60px}
-h1{font-size:2rem;line-height:1.25;margin:0 0 6px}
-h2{font-size:1.25rem;margin:0 0 10px;color:var(--acc)}
-h2 span{font-family:system-ui,sans-serif;font-size:.8rem;background:var(--acc);color:var(--bg);padding:2px 8px;border-radius:99px;margin-right:8px;vertical-align:2px}
-.chain{background:var(--card);border-left:4px solid var(--acc);padding:14px 18px;border-radius:6px;margin:18px 0 26px;color:var(--mute)}
-.chain b{color:var(--ink)}
-section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 16px}
-ul,ol{padding-left:22px;margin:8px 0}
-li{margin:5px 0}
-p{margin:8px 0}
-.key{background:var(--code);border-radius:6px;padding:10px 14px;margin:10px 0;font-size:.96rem}
-.wrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:.95rem;margin:8px 0}
-th,td{border:1px solid var(--line);padding:6px 10px;text-align:left}
-th{background:var(--code)}
-code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.92em}
-footer{font-family:system-ui,sans-serif;color:var(--mute);font-size:.85rem;margin-top:24px}
+:root{--bg:#f6f8fb;--surface:#fff;--ink:#16213a;--muted:#55627e;--line:#d9e0ec;--accent:#0b6e8a;--tint:#e3f1f6;--warn:#fdf0dc;--warnline:#e0a23a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--surface:#172138;--ink:#e6ebf6;--muted:#9eabc7;--line:#2a3856;--accent:#5cc3e0;--tint:#14303c;--warn:#33280f;--warnline:#d9a441}}
+:root[data-theme="dark"]{--bg:#0f1626;--surface:#172138;--ink:#e6ebf6;--muted:#9eabc7;--line:#2a3856;--accent:#5cc3e0;--tint:#14303c;--warn:#33280f;--warnline:#d9a441}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*:before,*:after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Literata,Georgia,serif;line-height:1.75;font-size:18px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:48px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-top:48px;font-family:Sora,system-ui,sans-serif;font-size:14px}
+nav a{display:block;padding:7px 0;color:var(--muted);text-decoration:none;border-left:3px solid var(--line);padding-left:12px}
+nav a:hover,nav a:focus-visible{color:var(--accent);border-color:var(--accent);outline:none}
+main{padding:48px 0 80px;max-width:68ch}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.25}
+h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 12px}
+h2{font-size:1.65rem;margin:64px 0 8px;padding-top:24px;border-top:2px solid var(--line)}
+h3{font-size:1.1rem;margin:32px 0 4px;color:var(--accent)}
+.lead{color:var(--muted);font-size:1.15rem}
+p{margin:12px 0}
+.box{background:var(--tint);border-left:4px solid var(--accent);padding:12px 18px;margin:20px 0;border-radius:4px}
+.warn{background:var(--warn);border-left-color:var(--warnline)}
+.box p{margin:6px 0}
+.tablewrap{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--tint);font-family:Sora,system-ui,sans-serif;font-size:.9rem}
+ul{padding-left:22px}li{margin:6px 0}
+.tl{list-style:none;padding:0;border-left:3px solid var(--accent);margin:20px 0 20px 6px}
+.tl li{padding-left:20px;margin:14px 0}
+.tl b{font-family:Sora,system-ui,sans-serif;color:var(--accent)}
+.recap{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 24px 16px}
+footer{color:var(--muted);font-size:.9rem;margin-top:48px}
+@media (max-width:820px){.wrap{display:block}nav{display:none}main{padding-top:32px}body{font-size:17px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
+<div class="wrap">
+<nav aria-label="Sections">
+<a href="#s1">1.1 Classical limits</a>
+<a href="#s2">1.2 History</a>
+<a href="#s3">1.3 Can and cannot</a>
+<a href="#s4">1.4 Advantage vs supremacy</a>
+<a href="#s5">1.5 State of the field</a>
+<a href="#s6">1.6 Roadmap</a>
+<a href="#recap">Recap</a>
+</nav>
 <main>
-<h1>Chapter 1: Classical Computing, Explained Step by Step</h1>
+<h1>Chapter 1: Why Quantum? The Big Picture</h1>
+<p class="lead">People keep saying "quantum computers will change everything". Some of that is true and a lot of it is hype. This chapter helps you tell the two apart.</p>
+<div class="box warn"><p>Numbers in 1.5 (qubit counts, records, dates) change every few months. Treat them as a snapshot and check the latest before using them in a project or exam.</p></div>
 
-<div class="chain"><b>The logical chain of this chapter:</b><br>
-Computers (1.1, 1.2) → store data as bits (1.3) → process bits with gates (1.4) → gates follow Boolean logic (1.5) → logic is organised into algorithms (1.6) → maths supports everything (1.7, 1.8, 1.9) → complexity measures how hard problems are (1.10) → limits show why we need something new (1.11).</div>
-
-<section id="s11">
-<h2><span>1.1</span>Classical Computing</h2>
-<p><b>What it is:</b> Computing based on classical physics, where every physical state is definite. A tubelight is either ON or OFF; it is never "both".</p>
+<h2 id="s1">1.1 Limits of classical computing</h2>
+<p>A "classical computer" is any everyday computer: your phone, your laptop, the server behind a website. It stores information as bits, each either 0 or 1.</p>
+<h3>The good years are slowing down</h3>
+<p>For about 60 years, computers got faster and cheaper because engineers kept shrinking transistors. Moore's Law says the number of transistors on a chip doubles roughly every two years. That ride is slowing:</p>
 <ul>
-<li>Hardware: transistors acting as tiny switches (high voltage = 1, low voltage = 0).</li>
-<li>Design: the von Neumann architecture, i.e. CPU + memory + input/output, running a stored program one instruction at a time (fetch → decode → execute).</li>
-<li><b>Why it matters:</b> Your laptop, phone and even a supercomputer are all classical. Quantum computing is always judged against this baseline.</li>
+<li>Transistors are now only a few nanometres wide, a few dozen atoms. Electrons leak through walls meant to stop them (quantum tunnelling).</li>
+<li>Chips get too hot to pack tighter.</li>
+<li>Clock speeds have been stuck near 3 to 5 GHz for almost twenty years, so makers add more cores and GPUs instead. These help only when a job splits into independent pieces.</li>
 </ul>
-</section>
-
-<section id="s12">
-<h2><span>1.2</span>Computers, Computation and Information</h2>
-<p>Three ideas, each building on the previous one:</p>
-<ol>
-<li><b>Information</b> is the answer to a question. Claude Shannon measured it as the reduction in uncertainty. A fair coin toss gives exactly 1 bit; formula: H = −Σ p·log₂(p).</li>
-<li><b>Computation</b> is converting input information into output information by following fixed rules (an algorithm), like a recipe.</li>
-<li><b>Computer</b> is any physical device that can hold information, change it by rules, and show the result.</li>
-</ol>
-<div class="key"><b>Church-Turing thesis:</b> Anything that can be computed at all can be computed by a Turing machine. Hence, all classical computers have the <i>same power</i>; they differ only in speed.</div>
-</section>
-
-<section id="s13">
-<h2><span>1.3</span>Classical Bits and Binary Representation</h2>
-<p><b>Bit</b> = a variable that is exactly 0 or 1. This is the smallest unit of classical information.</p>
-<ul>
-<li>Why binary? Two voltage levels are easy to build and resistant to noise.</li>
-<li>Place values are powers of 2: 1011₂ = 8 + 0 + 2 + 1 = 11.</li>
-<li>Everything is encoded in bits: numbers (two's complement, IEEE 754), text (ASCII, Unicode), images (pixel values), audio (samples).</li>
-<li>n bits can represent 2ⁿ different values, <b>but only one value at a time</b>.</li>
-<li>Bits can be copied and read freely without disturbing them. (A qubit cannot be copied; remember this for later.)</li>
-</ul>
-</section>
-
-<section id="s14">
-<h2><span>1.4</span>Logic Gates</h2>
-<p>Having stored bits, we now need to <i>change</i> them. Gates are small circuits that do this.</p>
-<div class="wrap"><table>
-<tr><th>Gate</th><th>Rule</th></tr>
-<tr><td>NOT</td><td>Flips the bit</td></tr>
-<tr><td>AND</td><td>1 only if both inputs are 1</td></tr>
-<tr><td>OR</td><td>1 if at least one input is 1</td></tr>
-<tr><td>XOR</td><td>1 if inputs are different</td></tr>
-<tr><td>NAND / NOR</td><td>Universal: <i>any</i> circuit can be built using only NAND (or only NOR)</td></tr>
+<p>But this is <em>not</em> the main reason for quantum computing. A cleverer chip design might fix a size problem. The real reason goes deeper.</p>
+<h3>The real problem: doubling again and again</h3>
+<p>Remember the chessboard and rice grains story? One grain on square one, two on square two, four on square three, doubling each time. By square 64 you need more rice than has ever been grown. That is exponential growth.</p>
+<div class="tablewrap"><table>
+<tr><th>Kind of growth</th><th>What happens</th></tr>
+<tr><td>Polynomial (n × n)</td><td>Double the input, work becomes 4 times. Manageable.</td></tr>
+<tr><td>Exponential (2ⁿ)</td><td>Add just one more item and the work doubles.</td></tr>
 </table></div>
+<p>Even a computer a million times faster handles only about 20 more items before it is stuck again.</p>
+<h3>Where it bites: simulating nature</h3>
+<p>To describe n quantum particles on a normal computer, you must store about 2ⁿ numbers.</p>
+<div class="tablewrap"><table>
+<tr><th>Particles</th><th>Numbers needed</th><th>Verdict</th></tr>
+<tr><td>10</td><td>1,024</td><td>Tiny file</td></tr>
+<tr><td>30</td><td>about 1 billion (≈16 GB)</td><td>Fits on a good laptop</td></tr>
+<tr><td>50</td><td>about 10¹⁵</td><td>Beyond almost every machine</td></tr>
+<tr><td>300</td><td>about 2 × 10⁹⁰</td><td>The universe has only ~10⁸⁰ atoms</td></tr>
+</table></div>
+<p>Yet a real molecule with a few hundred electrons exists happily in nature. Nature is not "calculating"; it just does what it does. That observation is where quantum computing begins.</p>
+<h3>Problems we would love to solve</h3>
 <ul>
-<li>Gates → adders → registers → ALU → CPU. A processor is just billions of gates.</li>
-<li><b>Irreversibility:</b> AND takes 2 bits and gives 1, so the inputs cannot be recovered. By Landauer's principle, erasing one bit releases at least kT·ln2 of heat. Reversible gates (Toffoli, Fredkin) avoid this, and quantum gates must be reversible.</li>
+<li><b>Molecules and materials:</b> new medicines, batteries and catalysts. The enzyme that turns nitrogen from air into fertiliser is too complex to simulate classically.</li>
+<li><b>Codes:</b> online banking relies on multiplying two huge primes being easy but factoring the result being brutally hard.</li>
+<li><b>Search</b> through huge unsorted collections, and some <b>optimisation</b> such as best delivery routes.</li>
 </ul>
-</section>
-
-<section id="s15">
-<h2><span>1.5</span>Boolean Logic</h2>
-<p>Gates are the <i>hardware</i>; Boolean algebra is the <i>mathematics</i> behind them (George Boole). It works only with 0 and 1 using ∧ (AND), ∨ (OR), ¬ (NOT).</p>
+<h3>A little complexity theory</h3>
 <ul>
-<li>Key laws: commutative, associative, distributive, and <b>De Morgan:</b> ¬(A∧B) = ¬A ∨ ¬B.</li>
-<li>Any truth table can be written as a formula (sum-of-products), hence any function can be built from gates.</li>
-<li>Simplifying formulae (Karnaugh maps) reduces gate count, saving cost and power.</li>
-<li><b>SAT problem:</b> "Can this formula be made true?" It is the first proven NP-complete problem (links to 1.10).</li>
+<li><b>P:</b> problems a normal computer solves quickly.</li>
+<li><b>NP:</b> problems whose answer you can <em>check</em> quickly, even if finding it is hard (a sudoku).</li>
+<li><b>BQP:</b> problems a quantum computer solves quickly, with a tiny chance of error that repetition shrinks.</li>
 </ul>
-</section>
+<p>Whether BQP is truly bigger than what normal computers do quickly is not proved, but Shor's algorithm is strong evidence. The Extended Church-Turing Thesis says any real computer can be imitated efficiently by an ordinary one. Quantum computing is its biggest challenge.</p>
 
-<section id="s16">
-<h2><span>1.6</span>Classical Algorithms</h2>
-<p>Circuits do small jobs; an <b>algorithm</b> is a finite, clear, terminating step-by-step method to solve a whole problem.</p>
-<ul>
-<li>Common approaches: divide and conquer (merge sort), greedy, dynamic programming, backtracking, randomised methods.</li>
-<li>We judge an algorithm by how its time/memory grows with input size n, using Big-O:
-<ul>
-<li>O(log n) binary search → very fast</li>
-<li>O(n log n) good sorting</li>
-<li>O(n²) simple multiplication</li>
-<li>O(2ⁿ) brute force → becomes impossible quickly</li>
-</ul></li>
-<li>Benchmarks for quantum comparison: <i>unstructured search</i> takes O(n) classically versus O(√n) with Grover; <i>factoring</i> is sub-exponential classically versus polynomial with Shor.</li>
+<h2 id="s2">1.2 A brief history: Feynman, Deutsch, Shor, Grover</h2>
+<p>Around 1980, Paul Benioff and Yuri Manin started wondering about quantum computing. Rolf Landauer said "information is physical": a bit lives in a real object, so physics decides what you can do with it. Charles Bennett showed computing can in principle be reversible, which suits quantum physics, where nothing is lost.</p>
+<ul class="tl">
+<li><b>Feynman, 1981.</b> If simulating quantum physics on a normal computer explodes in memory, build the computer from quantum parts. In one line: to imitate nature, use nature. This is the quantum simulator, still the most believable use.</li>
+<li><b>Deutsch, 1985.</b> Described a universal quantum computer, the way a laptop can run any program. His puzzle: a black box is either constant or balanced. A normal computer may need over half of all inputs to be sure; a quantum one asks once. Useless in real life, but it showed interference can reveal a "big picture" property (Deutsch-Jozsa, with Jozsa in 1992).</li>
+<li><b>Bernstein-Vazirani 1993, Simon 1994.</b> More proven speed-ups. Simon's was exponential and inspired Shor.</li>
+<li><b>Shor, 1994.</b> A quantum method for factoring and discrete logarithms, the problems guarding internet security. It turns factoring into finding a repeating pattern, which the Quantum Fourier Transform does well: wrong answers cancel and the right pattern stands out. The best classical method is sub-exponential; Shor is polynomial.</li>
+<li><b>Grover, 1996.</b> Searches an unsorted list with a square-root speed-up. For 1,000,000 entries: about 500,000 classical checks versus around 800 for Grover. Proven optimal, and not exponential. It halves effective key strength, so AES-256 behaves like 128-bit and stays safe.</li>
 </ul>
-</section>
-
-<section id="s17">
-<h2><span>1.7</span>Mathematical Foundations</h2>
-<p>The basic toolkit needed before going further:</p>
+<h3>Other pieces that made it believable</h3>
 <ul>
-<li><b>Sets, functions, relations</b> for describing problems precisely.</li>
-<li><b>Modular arithmetic</b> (clock arithmetic), the base of RSA encryption.</li>
-<li><b>Proof techniques:</b> induction, contradiction, construction.</li>
-<li><b>Logarithms and exponentials</b> to understand growth rates.</li>
-<li><b>Complex numbers:</b> z = a + bi; Euler's formula e^(iθ) = cosθ + i·sinθ. Unused in classical computing but central to quantum amplitudes.</li>
+<li><b>Quantum error correction</b> (Shor 1995, Steane 1996): possible even though quantum states cannot be copied.</li>
+<li><b>Threshold theorem</b> (late 1990s): below a certain error rate, arbitrarily long computations are possible at manageable cost.</li>
+<li><b>Seth Lloyd, 1996:</b> proved Feynman right about simulation.</li>
+<li><b>Later:</b> HHL for linear equations (2008), and VQE and QAOA (2014) for today's imperfect machines.</li>
 </ul>
-</section>
 
-<section id="s18">
-<h2><span>1.8</span>Linear Algebra Fundamentals</h2>
-<p>Why now? Because bits, gates and (later) qubits can all be written as vectors and matrices.</p>
+<h2 id="s3">1.3 What quantum computers can (and cannot) do</h2>
+<h3>Where the power comes from</h3>
+<p>A qubit can be a mixture of 0 and 1, like a coin spinning in the air. Three ideas work together:</p>
 <ul>
-<li><b>Vector:</b> a list of numbers; <b>matrix:</b> a rule that transforms vectors. Matrix multiplication is <i>not</i> commutative (AB ≠ BA in general).</li>
-<li><b>Inner product</b> ⟨u|v⟩ measures how much two vectors overlap; norm = √⟨v|v⟩ is the length.</li>
-<li><b>Eigenvector:</b> Av = λv. The matrix only stretches it, never rotates it.</li>
-<li><b>Hermitian matrix</b> (A = A†): real eigenvalues, represents measurable quantities. <b>Unitary matrix</b> (U†U = I): preserves length, so it is reversible.</li>
-<li><b>Tensor product (⊗):</b> joins systems together; sizes multiply (2 bits → 4 states).</li>
+<li><b>Superposition:</b> n qubits hold a blend of all 2ⁿ bit patterns.</li>
+<li><b>Entanglement:</b> qubits linked so that only the whole group has a complete description.</li>
+<li><b>Interference:</b> each possibility has an amplitude, and amplitudes add or cancel like waves. Noise-cancelling headphones use a similar idea.</li>
 </ul>
-<div class="key"><b>Worked example:</b> |0⟩ = [1, 0]ᵀ, |1⟩ = [0, 1]ᵀ, and NOT gate = [[0,1],[1,0]]. Multiply NOT with |0⟩ and you get |1⟩.</div>
-</section>
-
-<section id="s19">
-<h2><span>1.9</span>Probability and Statistics</h2>
-<p>Real-world data is noisy and many algorithms use randomness, so we need a way to handle uncertainty.</p>
+<div class="box warn"><p><b>The biggest myth:</b> "A quantum computer tries every answer at once and picks the right one." Wrong. Measuring gives just one random answer. The real skill is arranging steps so wrong answers cancel and the right one becomes likely. Without that, superposition gives nothing.</p></div>
+<div class="tablewrap"><table>
+<tr><th>Expected to help</th><th>Not expected or not known to help</th></tr>
+<tr><td>Simulating molecules, materials and particles (huge speed-up)</td><td>Solving the hardest NP problems quickly; Grover's square root still leaves exponential time</td></tr>
+<tr><td>Factoring and discrete logs (huge, needs a big error-corrected machine)</td><td>Everyday tasks like YouTube, WhatsApp or Word. Quantum machines will be add-on specialists, like a GPU</td></tr>
+<tr><td>Search, amplitude estimation, some Monte Carlo (square-root speed-up)</td><td>"Big data": loading data is slow, and n qubits return at most n bits</td></tr>
+<tr><td>Hidden-pattern problems, a few questions about knots</td><td>Guaranteed better AI: Ewin Tang (2018) matched a celebrated quantum ML speed-up with a classical algorithm</td></tr>
+<tr><td>Made-up sampling tasks that prove a point but are not useful</td><td>Copying unknown states (no-cloning), faster-than-light messages, or ignoring noise (decoherence)</td></tr>
+</table></div>
+<p>Think of a Formula 1 car: wonderful on a race track, a poor choice for buying vegetables.</p>
+<h3>Why it still matters</h3>
 <ul>
-<li>Probabilities lie between 0 and 1 and sum to 1 over all outcomes.</li>
-<li><b>Conditional probability:</b> P(A|B) = P(A∧B)/P(B). <b>Bayes' rule:</b> P(A|B) = P(B|A)·P(A)/P(B).</li>
-<li><b>Expectation:</b> E[X] = Σ x·p(x). <b>Variance:</b> E[X²] − (E[X])².</li>
-<li>Common distributions: Bernoulli, binomial, normal. Law of large numbers: more trials give a better estimate.</li>
+<li><b>Security:</b> Shor could break RSA and elliptic curves, so the world is moving to post-quantum cryptography. NIST published its first standards in August 2024. "Harvest now, decrypt later" means someone can record data today and unlock it years later, so long-lived secrets need protection early.</li>
+<li><b>Chemistry and materials:</b> fertilisers, batteries, solar materials, drugs.</li>
+<li><b>Finance and logistics:</b> possible gains, but the least certain area.</li>
 </ul>
-<div class="key"><b>Key contrast for later:</b> Classical probabilities are never negative and only add up. Quantum amplitudes can be negative or complex and can <i>cancel</i> each other (interference). This is the source of quantum advantage.</div>
-</section>
 
-<section id="s110">
-<h2><span>1.10</span>Computation and Complexity</h2>
-<p>Now that we can write algorithms, we ask: <i>how hard is a problem itself?</i></p>
+<h2 id="s4">1.4 Quantum advantage vs. quantum supremacy</h2>
 <ul>
-<li><b>P:</b> solvable quickly (polynomial time), e.g. sorting.</li>
-<li><b>NP:</b> answer can be <i>checked</i> quickly, e.g. SAT, factoring, travelling salesman.</li>
-<li><b>NP-complete:</b> the hardest problems in NP; solve one quickly and you solve all of them.</li>
-<li><b>BPP:</b> solvable quickly with randomness. <b>PSPACE, EXP:</b> bigger classes.</li>
-<li>Order: P ⊆ NP ⊆ PSPACE ⊆ EXP. Whether P = NP is still an open question.</li>
-<li><b>Reduction</b> = converting problem A into B to show B is at least as hard.</li>
-<li>Quantum class <b>BQP</b> probably contains problems outside P (like factoring) but likely not NP-complete problems.</li>
+<li><b>Supremacy</b> (John Preskill, 2012): a quantum device does <em>some</em> task no normal computer can finish in reasonable time. It need not be useful.</li>
+<li><b>Advantage:</b> a quantum device beats the best normal method (faster, cheaper, more accurate, less energy), ideally on something people care about.</li>
 </ul>
-</section>
+<p>Many scientists now avoid "supremacy" because of its overtones and because it suggests a final victory. "Advantage" or "beyond-classical" is preferred.</p>
+<h3>The famous claims</h3>
+<ul>
+<li><b>Google Sycamore (2019):</b> 53 qubits, about 200 seconds, versus an estimated 10,000 years classically. IBM replied about 2.5 days with clever disk use, and later tensor-network methods cut it further.</li>
+<li><b>China's Jiuzhang (from 2020):</b> photon-based boson sampling.</li>
+<li><b>Google (2024-25):</b> newer Willow experiments, including 2025's "Quantum Echoes", described as a verifiable advantage on a physics task.</li>
+</ul>
+<p>Each claim is followed by classical scientists trying to beat it. That is how science stays honest. An advantage claim compares against the best <em>known</em> classical method at that moment, so it is a snapshot, not a trophy.</p>
+<h3>What makes a claim convincing?</h3>
+<ul>
+<li>A clearly defined task with a clear success measure.</li>
+<li>Solid theory, not just a benchmark, saying classical computers will struggle.</li>
+<li>Checkability. Factoring is easy to check (multiply back); random circuit sampling is very hard to check.</li>
+<li>Usefulness: someone should care about the answer.</li>
+<li>A fair fight against the best classical algorithm and hardware, including cost and energy.</li>
+</ul>
 
-<section id="s111">
-<h2><span>1.11</span>Limitations of Classical Computing</h2>
-<p>Putting everything together, classical computers face four kinds of walls:</p>
-<ol>
-<li><b>Computability:</b> Some problems are impossible for <i>any</i> computer, e.g. the Halting Problem (Turing, 1936).</li>
-<li><b>Intractability:</b> Exponential-time problems (hard optimisation, breaking RSA by factoring, simulating molecules) become unmanageable. Simulating n qubits needs 2ⁿ numbers, so 300 qubits would need more numbers than atoms in the universe.</li>
-<li><b>Physical limits:</b> Transistors are approaching atomic size, heat and leakage are rising, and Moore's Law is slowing down.</li>
-<li><b>Sequential bottleneck:</b> Memory-CPU speed gap (von Neumann bottleneck); by Amdahl's law, parallelism gives only limited speed-up.</li>
-</ol>
-<div class="key"><b>Conclusion:</b> These limits motivate quantum computing, which uses superposition, entanglement and interference to handle <i>specific</i> problems (factoring, search, chemistry simulation) more efficiently. Note that it does <b>not</b> solve undecidable problems; it only changes what is <i>efficiently</i> solvable.</div>
-</section>
+<h2 id="s5">1.5 The current state of the field (NISQ era and beyond)</h2>
+<p>In 2018, Preskill named today's period <b>NISQ</b>: Noisy Intermediate-Scale Quantum. "Intermediate" means tens to a few thousand qubits. "Noisy" means each operation errs about 0.1% to 1%, so after a few hundred operations errors wash out the answer.</p>
+<div class="tablewrap"><table>
+<tr><th>Qubit type</th><th>Good</th><th>Bad</th></tr>
+<tr><td>Superconducting (Google, IBM, Rigetti)</td><td>Very fast, chip-making methods</td><td>Cooled to ~10-15 millikelvin; limited connections</td></tr>
+<tr><td>Trapped ions (Quantinuum, IonQ)</td><td>Very accurate; any ion talks to any other</td><td>Slower; hard to scale</td></tr>
+<tr><td>Neutral atoms (QuEra, Pasqal, Atom Computing, Infleqtion)</td><td>Hundreds to thousands in a rearrangeable grid</td><td>Slower cycles; atoms get lost</td></tr>
+<tr><td>Photonic (PsiQuantum, Xanadu, USTC)</td><td>Room-temperature parts; good for networking</td><td>Photon loss; probabilistic operations</td></tr>
+<tr><td>Silicon spin (Intel)</td><td>Uses existing chip factories</td><td>Early stage; hard to make identical</td></tr>
+<tr><td>Topological (Microsoft)</td><td>Naturally error-protected, if it works</td><td>"Majorana 1" (2025) evidence still debated</td></tr>
+</table></div>
+<p>There is no clear winner. Headlines shout qubit counts, but that is like judging a cricket team by the number of players. What matters is two-qubit accuracy, coherence time, connectivity, usable program length, readout quality and, above all, the quality of <em>logical</em> (error-corrected) qubits. 100 excellent qubits can beat 1,000 poor ones.</p>
+<h3>What runs on NISQ machines</h3>
+<ul>
+<li><b>VQE</b> for molecular energies and <b>QAOA</b> for optimisation, both hybrid loops between a quantum chip and a normal computer.</li>
+<li><b>Error mitigation:</b> run circuits many times and process results cleverly to reduce noise, without extra qubits.</li>
+</ul>
+<p>Honestly, no NISQ algorithm has yet shown a clear, widely accepted practical win. Training can also hit "barren plateaus", flat regions where the learning signal vanishes.</p>
+<h3>Beyond NISQ: fault tolerance</h3>
+<p>The goal is error correction: spread one logical qubit across many physical qubits, like writing a message several times so mistakes can be fixed. The surface code needs error rates below about 1% and hundreds to thousands of physical qubits per logical one.</p>
+<ul>
+<li><b>December 2024:</b> Google's 105-qubit Willow chip showed logical error <em>falling</em> as the code grew (distance 3, 5, 7). This "below threshold" result is what theory promised.</li>
+<li>Quantinuum, IBM, and Harvard with QuEra also report progress in logical qubits, fast decoding and quantum LDPC codes.</li>
+<li>Roadmaps promise fault-tolerant machines around 2029-2030. Treat these as goals; dates tend to slip.</li>
+</ul>
+<h3>How big a machine do we need?</h3>
+<ul>
+<li><b>Breaking RSA-2048:</b> about a billion physical qubits in 2012 estimates; a 2025 estimate by Craig Gidney says under a million noisy qubits for under a week. Today's chips have hundreds to a few thousand.</li>
+<li><b>The nitrogen-fixing enzyme:</b> thousands of logical qubits and enormous numbers of operations.</li>
+</ul>
+<h3>India's place</h3>
+<p>The National Quantum Mission (approved 2023, about Rs 6,000 crore through 2030-31) covers computing, communication, sensing and materials, with hubs at top institutions. You need no lab to start: IBM, Amazon Braket and Azure Quantum offer cloud access, and Qiskit, Cirq and PennyLane are free.</p>
+<div class="box"><p><b>Reading quantum news sensibly:</b> What was the task? What was the error rate? Physical or logical qubits? Was the classical method fairly tuned? Has anyone repeated it? Press releases often skip these.</p></div>
 
-<footer>Chapter 1 notes · Classical computing foundations for quantum computing</footer>
+<h2 id="s6">1.6 Roadmap of the book</h2>
+<div class="tablewrap"><table>
+<tr><th>Part</th><th>Covers</th><th>Aim</th></tr>
+<tr><td>I. The basics</td><td>Linear algebra, qubits, Bloch sphere, measurement, entanglement, no-cloning, gates, circuits</td><td>Learn the language</td></tr>
+<tr><td>II. First algorithms</td><td>Deutsch-Jozsa, Bernstein-Vazirani, Simon, QFT, phase estimation, Shor</td><td>See interference at work</td></tr>
+<tr><td>III. Search and simulation</td><td>Grover, amplitude amplification, quantum walks, simulation, chemistry</td><td>Return to Feynman's dream</td></tr>
+<tr><td>IV. Noise and error correction</td><td>Decoherence, stabiliser and surface codes, threshold theorem</td><td>Why it is hard and how we manage</td></tr>
+<tr><td>V. Hardware and practice</td><td>Platforms, compilation, mitigation, hybrid algorithms, coding on cloud devices</td><td>Hands-on with real devices</td></tr>
+<tr><td>VI. Uses and future</td><td>Post-quantum crypto, QKD, quantum ML, optimisation, careers</td><td>The bigger picture</td></tr>
+</table></div>
+<p>Keep a notebook and derive key results yourself. Run every example on a simulator first, then real hardware. Return to this chapter after Part II; it will make more sense then.</p>
+
+<h2 id="recap">Quick recap</h2>
+<div class="recap"><ol>
+<li>Classical computers are limited not just by chip size. Some problems blow up exponentially and faster hardware cannot fix that.</li>
+<li>Feynman: use quantum to simulate quantum. Deutsch gave the model. Shor and Grover showed real power.</li>
+<li>Quantum speed-ups are real but specific. No trying all answers at once, and no cracking the hardest NP problems.</li>
+<li>"Supremacy" often means a made-up task. A useful, checkable advantage is the harder goal.</li>
+<li>We are in the NISQ era, moving slowly to error-corrected machines.</li>
+<li>Because of "harvest now, decrypt later", prepare for post-quantum security today.</li>
+</ol></div>
+<footer>Figures reflect a 2025-26 snapshot. Verify before quoting.</footer>
 </main>
+</div>
 </body>
 </html>
