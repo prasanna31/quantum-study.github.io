@@ -1,0 +1,1498 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Early Quantum Algorithms</title>
+
+    <style>
+        :root {
+            --ink: #243047;
+            --muted: #526176;
+            --accent: #2457a7;
+            --light: #edf4ff;
+            --border: #d6dfeb;
+            --paper: #ffffff;
+            --background: #f3f5f9;
+            --highlight: #fff6dc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--ink);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        header {
+            background: #17263f;
+            color: white;
+            padding: 55px 22px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.2;
+            margin: 0 0 15px;
+        }
+
+        header p {
+            max-width: 760px;
+            margin: auto;
+            color: #d9e5f7;
+        }
+
+        main {
+            max-width: 920px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            background: var(--paper);
+            padding: clamp(22px, 5vw, 46px);
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        h2, h3, h4 {
+            color: #183b70;
+            line-height: 1.4;
+        }
+
+        h2 {
+            font-size: 29px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            margin-top: 34px;
+            font-size: 23px;
+        }
+
+        h4 {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .math {
+            font-family: "Courier New", monospace;
+            background: var(--light);
+            padding: 17px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+            text-align: center;
+            line-height: 1.9;
+            margin: 20px 0;
+        }
+
+        .note {
+            background: var(--light);
+            border-left: 5px solid var(--accent);
+            padding: 16px 20px;
+            margin: 22px 0;
+            border-radius: 4px;
+        }
+
+        .warning {
+            background: var(--highlight);
+            border-left: 5px solid #b38317;
+            padding: 16px 20px;
+            margin: 22px 0;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--light);
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+            font-size: 0.93em;
+            overflow-wrap: anywhere;
+        }
+
+        .diagram {
+            background: #f7f9fc;
+            border: 1px dashed #a7b8d1;
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+            margin: 20px 0;
+            font-family: "Courier New", monospace;
+            line-height: 2;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                font-size: 12pt;
+            }
+
+            header {
+                background: white;
+                color: black;
+                padding: 20px;
+            }
+
+            header p {
+                color: black;
+            }
+
+            section {
+                border: none;
+                padding: 15px 0;
+                break-inside: avoid-page;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <p>QUANTUM COMPUTING • BEGINNER'S GUIDE</p>
+    <h1>Chapter 5: Early Quantum Algorithms</h1>
+    <p>
+        How quantum states, interference and carefully designed measurements
+        allow a quantum computer to solve certain problems more efficiently.
+    </p>
+</header>
+
+<main>
+
+<section id="introduction">
+    <h2>Chapter Introduction</h2>
+
+    Imagine that you have a secret number in mind. Someone has written a
+    computer program that can answer questions about this number, but the
+    program does not reveal the number directly. You can only ask it
+    carefully chosen questions and observe its answers.
+
+    How many questions must you ask before you can discover the secret?
+
+    This kind of problem helps us understand why quantum algorithms are
+    interesting. A classical computer and a quantum computer can approach
+    the same problem in very different ways.
+
+    Early quantum algorithms, developed mainly during the 1980s and 1990s,
+    showed that quantum mechanics was not merely a theory about atoms and
+    particles. It could also be used to design computational procedures
+    that outperform particular classical approaches.
+
+    In this chapter, we will build the ideas in the following order:
+
+    <ol>
+        <li>Understand quantum parallelism and interference.</li>
+        <li>Study the Deutsch and Deutsch–Jozsa algorithms.</li>
+        <li>Discover how the Bernstein–Vazirani algorithm finds a hidden bit string.</li>
+        <li>Understand how Simon's algorithm discovers a hidden XOR pattern.</li>
+        <li>Identify the actual source of quantum speedups.</li>
+    </ol>
+
+    Before beginning, one important distinction must be clear: a quantum
+    computer does not simply calculate every answer and then allow us to
+    read all of them. Measurement gives us limited information. The central
+    challenge is to arrange the computation so that the information we
+    want becomes visible in the final measurement.
+
+</section>
+
+<section id="parallelism">
+    <h2>5.1 Quantum Parallelism and Interference</h2>
+
+    <h3>5.1.1 From a classical bit to a qubit</h3>
+
+    A classical computer represents information using bits. A bit has one
+    of two possible values: 0 or 1.
+
+    A quantum computer uses quantum bits, called qubits. A qubit can be
+    prepared in a quantum state that combines the computational basis
+    states 0 and 1.
+
+    We write a general pure qubit state as:
+
+    <div class="math">
+        |ψ⟩ = α|0⟩ + β|1⟩
+    </div>
+
+    Here, |0⟩ and |1⟩ are the two computational basis states. The symbols
+    α and β are complex numbers called probability amplitudes.
+
+    Their squared magnitudes determine the probabilities of the
+    corresponding measurement outcomes:
+
+    <div class="math">
+        P(0) = |α|²<br>
+        P(1) = |β|²<br>
+        |α|² + |β|² = 1
+    </div>
+
+    The last equation ensures that the total probability is one.
+
+    For example, consider this state:
+
+    <div class="math">
+        |ψ⟩ = (|0⟩ + |1⟩)/√2
+    </div>
+
+    Measuring this qubit in the computational basis gives 0 with
+    probability 1/2 and 1 with probability 1/2.
+
+    Does this mean that the qubit is simply a classical bit whose value
+    we do not know? No. Quantum states can have relative phases between
+    their amplitudes, and those phases affect the results of later
+    operations. This difference becomes crucial when we study interference.
+
+    <h3>5.1.2 Creating a superposition</h3>
+
+    One important quantum operation is the Hadamard gate, represented
+    by H. It transforms the computational basis states as follows:
+
+    <div class="math">
+        H|0⟩ = (|0⟩ + |1⟩)/√2<br><br>
+        H|1⟩ = (|0⟩ - |1⟩)/√2
+    </div>
+
+    Applying H to |0⟩ creates an equal superposition of 0 and 1.
+
+    The negative sign in the second expression is not decoration.
+    It changes the relative phase of the state, which can later change
+    measurement probabilities.
+
+    Now consider a register containing n qubits, initially prepared
+    in the all-zero state:
+
+    <div class="math">
+        |0⟩<sup>⊗n</sup> = |00...0⟩
+    </div>
+
+    Applying a Hadamard gate to each qubit creates:
+
+    <div class="math">
+        H<sup>⊗n</sup>|0...0⟩
+        = (1/√(2ⁿ)) Σ<sub>x∈{0,1}ⁿ</sub> |x⟩
+    </div>
+
+    The register now contains a superposition of all 2ⁿ possible
+    n-bit strings.
+
+    For two qubits, the state is:
+
+    <div class="math">
+        (|00⟩ + |01⟩ + |10⟩ + |11⟩)/2
+    </div>
+
+    Each of the four basis states has an amplitude of 1/2 and a
+    measurement probability of 1/4.
+
+    <h3>5.1.3 What quantum parallelism actually means</h3>
+
+    Suppose we have a function f(x) that takes an input x and returns
+    an output f(x). A quantum algorithm can use an oracle to evaluate
+    this function coherently on a superposition of inputs.
+
+    A suitable oracle performs the transformation:
+
+    <div class="math">
+        U<sub>f</sub>|x⟩|y⟩ = |x⟩|y ⊕ f(x)⟩
+    </div>
+
+    The symbol ⊕ represents bitwise XOR. The second register is changed
+    according to the function output, while the first register preserves
+    the input.
+
+    If the second register begins in |0⟩, applying the oracle to a
+    uniform superposition gives:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub> |x⟩|0⟩<br><br>
+        → (1/√(2ⁿ)) Σ<sub>x</sub> |x⟩|f(x)⟩
+    </div>
+
+    In this mathematical sense, the function has been evaluated
+    coherently across all basis inputs in the superposition.
+
+    This is called quantum parallelism.
+
+    But there is an important limitation. If we measure both registers
+    in the computational basis, we obtain only one input-output pair,
+    not a complete list of all function values.
+
+    Therefore, quantum parallelism alone does not give us an exponential
+    speedup. We need a way to extract useful information from the
+    superposition.
+
+    <div class="warning">
+        <strong>Remember:</strong> A superposition of many possible inputs
+        is not the same as being able to read every result. The algorithm
+        must encode useful information into a form that can be recovered
+        through measurement.
+    </div>
+
+    <h3>5.1.4 Interference: the missing ingredient</h3>
+
+    Quantum amplitudes behave differently from ordinary probabilities.
+    When quantum states are combined, their amplitudes can add or cancel
+    before measurement.
+
+    Consider the following two states:
+
+    <div class="math">
+        |+⟩ = (|0⟩ + |1⟩)/√2<br><br>
+        |−⟩ = (|0⟩ − |1⟩)/√2
+    </div>
+
+    Apply a Hadamard gate to each state.
+
+    <div class="math">
+        H|+⟩ = |0⟩<br><br>
+        H|−⟩ = |1⟩
+    </div>
+
+    Let us understand the first result. The state |+⟩ contains equal
+    amplitudes for 0 and 1. The Hadamard gate transforms these amplitudes
+    so that the contributions to |1⟩ cancel, while the contributions
+    to |0⟩ reinforce each other.
+
+    The opposite happens for |−⟩. The contributions to |0⟩ cancel,
+    and the contributions to |1⟩ reinforce each other.
+
+    This is quantum interference.
+
+    <div class="diagram">
+        Positive and negative amplitudes<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; ↓<br>
+        Quantum operations combine amplitudes<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; ↓<br>
+        Some outcomes cancel; others reinforce<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; ↓<br>
+        Measurement reveals the surviving outcomes
+    </div>
+
+    <h3>5.1.5 Constructive and destructive interference</h3>
+
+    There are two useful terms:
+
+    <ul>
+        <li><strong>Constructive interference:</strong> amplitudes combine
+        to increase the probability of an outcome.</li>
+        <li><strong>Destructive interference:</strong> amplitudes cancel
+        partly or completely, reducing the probability of an outcome.</li>
+    </ul>
+
+    Suppose two paths lead to the same final state. If their amplitudes
+    are a and b, the resulting probability is:
+
+    <div class="math">
+        P = |a + b|²
+    </div>
+
+    This is generally not equal to |a|² + |b|² because the cross terms
+    can increase or decrease the total probability.
+
+    If the amplitudes are equal and opposite, they cancel:
+
+    <div class="math">
+        a + (-a) = 0
+    </div>
+
+    If they are equal and have the same phase, they reinforce one another.
+
+    The lesson is that a quantum algorithm can manipulate phases so that
+    unwanted outcomes disappear and useful outcomes become more likely.
+
+    <h3>5.1.6 Phase kickback</h3>
+
+    Phase kickback is a technique that helps quantum algorithms use
+    function values without necessarily storing them as ordinary,
+    directly readable output bits.
+
+    Recall the oracle:
+
+    <div class="math">
+        U<sub>f</sub>|x⟩|y⟩ = |x⟩|y ⊕ f(x)⟩
+    </div>
+
+    Prepare the second qubit in |−⟩:
+
+    <div class="math">
+        |−⟩ = (|0⟩ − |1⟩)/√2
+    </div>
+
+    If f(x) = 0, the oracle leaves |−⟩ unchanged. If f(x) = 1,
+    it swaps |0⟩ and |1⟩, turning |−⟩ into −|−⟩.
+
+    Therefore:
+
+    <div class="math">
+        U<sub>f</sub>|x⟩|−⟩ = (-1)<sup>f(x)</sup>|x⟩|−⟩
+    </div>
+
+    The function value has become a phase on the input state.
+
+    For a superposition of inputs, the result is:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub> (-1)<sup>f(x)</sup>|x⟩|−⟩
+    </div>
+
+    The output qubit is now unchanged apart from its independent state.
+    The input register carries the phase pattern determined by f(x).
+
+    That phase pattern can be manipulated by later gates to reveal
+    properties of the function.
+
+    <h3>5.1.7 Why this section matters</h3>
+
+    The early quantum algorithms in this chapter repeatedly use the
+    same pattern:
+
+    <ol>
+        <li>Prepare a superposition of possible inputs.</li>
+        <li>Use a quantum oracle to encode information about a function.</li>
+        <li>Use phase relationships and interference to combine that information.</li>
+        <li>Measure the resulting state to learn a property of the function.</li>
+    </ol>
+
+    The aim is not to read every possible answer. It is to arrange the
+    computation so that the final measurement answers the question
+    that actually matters.
+
+</section>
+
+<section id="deutsch">
+    <h2>5.2 Deutsch and Deutsch–Jozsa Algorithms</h2>
+
+    <h3>5.2.1 The Deutsch problem</h3>
+
+    Let us begin with a function that accepts one bit and returns one bit:
+
+    <div class="math">
+        f : {0,1} → {0,1}
+    </div>
+
+    There are four possible functions of this form.
+
+    <table>
+        <tr>
+            <th>Function</th>
+            <th>f(0)</th>
+            <th>f(1)</th>
+            <th>Type</th>
+        </tr>
+        <tr>
+            <td>f(x) = 0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>Constant</td>
+        </tr>
+        <tr>
+            <td>f(x) = 1</td>
+            <td>1</td>
+            <td>1</td>
+            <td>Constant</td>
+        </tr>
+        <tr>
+            <td>f(x) = x</td>
+            <td>0</td>
+            <td>1</td>
+            <td>Balanced</td>
+        </tr>
+        <tr>
+            <td>f(x) = 1 − x</td>
+            <td>1</td>
+            <td>0</td>
+            <td>Balanced</td>
+        </tr>
+    </table>
+
+    A constant function produces the same output for every input.
+    A balanced function produces 0 for half the inputs and 1 for
+    the other half.
+
+    The task is to determine whether f is constant or balanced.
+
+    A classical computer needs two function queries in the worst case.
+    If the two outputs are equal, the function is constant; if they
+    differ, it is balanced.
+
+    The Deutsch algorithm can determine the answer with one quantum
+    oracle query.
+
+    This is an early demonstration of a quantum advantage in a
+    carefully defined query problem.
+
+    <h3>5.2.2 Constructing the algorithm</h3>
+
+    The circuit begins with two qubits:
+
+    <div class="diagram">
+        First qubit:  |0⟩ ── H ──┐── U_f ── H ── Measure<br>
+        Second qubit: |1⟩ ── H ──┘── U_f ───────────────
+    </div>
+
+    The first qubit begins in |0⟩. The second begins in |1⟩.
+
+    After applying Hadamard gates, the state becomes:
+
+    <div class="math">
+        |+⟩|−⟩
+    </div>
+
+    Using phase kickback, the oracle changes this into:
+
+    <div class="math">
+        ( (-1)<sup>f(0)</sup>|0⟩
+        + (-1)<sup>f(1)</sup>|1⟩ )/√2
+        ⊗ |−⟩
+    </div>
+
+    The first qubit now contains a phase pattern determined by the
+    two function values.
+
+    Apply another Hadamard gate to the first qubit. The resulting
+    first-qubit state is:
+
+    <div class="math">
+        (1/2) [
+        ( (-1)<sup>f(0)</sup> + (-1)<sup>f(1)</sup> )|0⟩
+        + ( (-1)<sup>f(0)</sup> - (-1)<sup>f(1)</sup> )|1⟩
+        ]
+    </div>
+
+    Notice that the two coefficients are sums and differences of
+    the phase values. This is where interference reveals the answer.
+
+    <h3>5.2.3 Interpreting the measurement</h3>
+
+    There are two cases.
+
+    <h4>Case 1: The function is constant</h4>
+
+    If f(0) = f(1), the two phase values are equal.
+
+    The coefficient of |1⟩ becomes zero, so the first qubit is
+    measured as 0 with certainty.
+
+    <h4>Case 2: The function is balanced</h4>
+
+    If f(0) differs from f(1), the two phase values have opposite signs.
+
+    The coefficient of |0⟩ becomes zero, so the first qubit is
+    measured as 1 with certainty.
+
+    <table>
+        <tr>
+            <th>Measured first qubit</th>
+            <th>Conclusion</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>f is constant</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>f is balanced</td>
+        </tr>
+    </table>
+
+    A single query gives the correct classification with certainty
+    under the promised problem definition.
+
+    <h3>5.2.4 What did Deutsch really teach us?</h3>
+
+    The algorithm does not obtain both function values as two ordinary
+    readable answers. Instead, it encodes the relationship between
+    those values into a relative phase.
+
+    The final Hadamard gate converts that relationship into a measurable
+    result.
+
+    This is the important idea: the algorithm computes a property of
+    the function, rather than revealing every value of the function.
+
+    <h3>5.2.5 Generalising the problem: Deutsch–Jozsa</h3>
+
+    Now suppose the function accepts n-bit inputs:
+
+    <div class="math">
+        f : {0,1}ⁿ → {0,1}
+    </div>
+
+    There are 2ⁿ possible inputs.
+
+    The Deutsch–Jozsa problem promises that the function belongs to
+    one of two categories:
+
+    <ul>
+        <li><strong>Constant:</strong> every input produces the same output.</li>
+        <li><strong>Balanced:</strong> exactly half of the inputs produce 0
+        and the other half produce 1.</li>
+    </ul>
+
+    The task is to determine which category the function belongs to.
+
+    A deterministic classical algorithm may need 2ⁿ⁻¹ + 1 queries
+    in the worst case. After seeing the same output for 2ⁿ⁻¹ inputs,
+    it still cannot rule out the possibility that the next input changes
+    the function's classification. The promise is what makes the problem
+    well-defined.
+
+    The quantum algorithm needs only one oracle query.
+
+    <h3>5.2.6 The Deutsch–Jozsa circuit</h3>
+
+    Begin with n input qubits and one auxiliary qubit:
+
+    <div class="math">
+        |0⟩<sup>⊗n</sup>|1⟩
+    </div>
+
+    Apply Hadamard gates to every qubit:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub>|x⟩ ⊗ |−⟩
+    </div>
+
+    Apply the oracle. By phase kickback, the state becomes:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub>
+        (-1)<sup>f(x)</sup>|x⟩ ⊗ |−⟩
+    </div>
+
+    Apply Hadamard gates to the n input qubits once more.
+
+    The amplitude of the all-zero output state |0...0⟩ is:
+
+    <div class="math">
+        A(0ⁿ) = (1/2ⁿ) Σ<sub>x∈{0,1}ⁿ</sub> (-1)<sup>f(x)</sup>
+    </div>
+
+    Let us interpret this expression.
+
+    If f is constant with output 0, every term is +1. The sum is 2ⁿ,
+    so the amplitude is +1.
+
+    If f is constant with output 1, every term is −1. The sum is −2ⁿ,
+    so the amplitude is −1.
+
+    In either constant case, the probability of measuring 0...0 is one.
+
+    If f is balanced, half the terms are +1 and half are −1. They cancel,
+    giving an amplitude of zero.
+
+    Therefore, a balanced function never produces the all-zero output
+    string after the final Hadamard transformation.
+
+    <div class="math">
+        P(0ⁿ) = 1, if f is constant<br><br>
+        P(0ⁿ) = 0, if f is balanced
+    </div>
+
+    Measuring 0...0 tells us that the function is constant. Any other
+    output tells us that it is balanced.
+
+    <h3>5.2.7 Why the promise matters</h3>
+
+    The algorithm depends on knowing that the function is either
+    constant or balanced. If arbitrary functions are allowed, the
+    same measurement rule does not solve every possible classification
+    problem.
+
+    Also, the one-query quantum result should not be interpreted as
+    a universal claim that quantum computers are exponentially faster
+    for all tasks. It is a separation in a specific oracle query model,
+    with a particular promise and a particular measure of cost.
+
+    <h3>5.2.8 The lesson from Deutsch–Jozsa</h3>
+
+    The Deutsch–Jozsa algorithm makes the role of interference easier
+    to see than almost any other introductory example.
+
+    A constant function creates phase contributions that all have
+    the same sign. A balanced function creates equal numbers of
+    positive and negative contributions. The final Hadamard transform
+    combines them so that these two cases produce different measurement
+    outcomes.
+
+    The quantum computer does not need to inspect each function value
+    individually. It uses the overall pattern of the values.
+
+</section>
+
+<section id="bernstein-vazirani">
+    <h2>5.3 Bernstein–Vazirani Algorithm</h2>
+
+    <h3>5.3.1 The hidden-string problem</h3>
+
+    Imagine that someone has selected a secret binary string:
+
+    <div class="math">
+        s = 1011
+    </div>
+
+    You cannot see this string directly. Instead, you can query a
+    function that accepts an n-bit string x and returns the parity
+    of the bitwise AND of x and s.
+
+    The function is defined as:
+
+    <div class="math">
+        f(x) = s · x mod 2<br><br>
+        f(x) = s₁x₁ ⊕ s₂x₂ ⊕ ... ⊕ sₙxₙ
+    </div>
+
+    Here, the dot represents the binary inner product. Multiplication
+    is performed bit by bit, and the selected bits are added modulo 2.
+    Addition modulo 2 is equivalent to XOR.
+
+    For example, let:
+
+    <div class="math">
+        s = 1011<br>
+        x = 1101
+    </div>
+
+    The bitwise products are:
+
+    <div class="math">
+        1×1, 0×1, 1×0, 1×1<br>
+        = 1, 0, 0, 1
+    </div>
+
+    Their XOR is:
+
+    <div class="math">
+        f(1101) = 1 ⊕ 0 ⊕ 0 ⊕ 1 = 0
+    </div>
+
+    The function returns only one bit, even though the secret string
+    may contain many bits.
+
+    The task is to discover s.
+
+    <h3>5.3.2 Classical approach</h3>
+
+    A classical computer can recover the hidden string by querying
+    the function on each standard basis input.
+
+    For example, querying:
+
+    <div class="math">
+        x = 1000
+    </div>
+
+    returns s₁. Querying 0100 returns s₂, and so on.
+
+    Thus, n queries are sufficient.
+
+    In the standard deterministic classical query model, n queries
+    are also necessary to determine an arbitrary n-bit secret string:
+    each query supplies only one bit of information, and there are
+    2ⁿ possible secrets.
+
+    <h3>5.3.3 The quantum approach</h3>
+
+    The Bernstein–Vazirani algorithm discovers the entire hidden string
+    with one quantum oracle query.
+
+    Its circuit is closely related to the Deutsch–Jozsa circuit:
+
+    <div class="diagram">
+        n input qubits: |0...0⟩ ── H ── U_f ── H ── Measure<br>
+        auxiliary qubit:    |1⟩ ── H ── U_f ───────────────
+    </div>
+
+    The auxiliary qubit is prepared in |−⟩. This allows the function
+    value to be transferred into the phase of the input register.
+
+    After the first set of Hadamard gates, the input register is:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub>|x⟩
+    </div>
+
+    After the oracle, it becomes:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub>
+        (-1)<sup>s·x</sup>|x⟩
+    </div>
+
+    The hidden string is now encoded in the phase of each basis state.
+
+    <h3>5.3.4 How the final Hadamard gates recover s</h3>
+
+    The Hadamard transform on n qubits maps a basis state |x⟩ to:
+
+    <div class="math">
+        H<sup>⊗n</sup>|x⟩
+        = (1/√(2ⁿ)) Σ<sub>y</sub>
+        (-1)<sup>x·y</sup>|y⟩
+    </div>
+
+    Applying it to the phase-encoded state gives:
+
+    <div class="math">
+        (1/2ⁿ) Σ<sub>x</sub> Σ<sub>y</sub>
+        (-1)<sup>s·x + x·y</sup>|y⟩
+    </div>
+
+    Because addition in the exponent is modulo 2, we can combine
+    the two terms:
+
+    <div class="math">
+        (-1)<sup>s·x + x·y</sup>
+        = (-1)<sup>x·(s ⊕ y)</sup>
+    </div>
+
+    Therefore, the amplitude of an output string y is:
+
+    <div class="math">
+        A(y) = (1/2ⁿ) Σ<sub>x</sub>
+        (-1)<sup>x·(s ⊕ y)</sup>
+    </div>
+
+    If y = s, then s XOR y is the all-zero string. Every term is +1,
+    so the amplitude is one.
+
+    If y differs from s, then s XOR y has at least one bit equal to 1.
+    As x ranges over all binary strings, half the terms are +1 and
+    half are −1. They cancel.
+
+    Thus:
+
+    <div class="math">
+        A(y) = 1, if y = s<br><br>
+        A(y) = 0, if y ≠ s
+    </div>
+
+    The final state of the input register is exactly |s⟩.
+
+    Measuring the register returns the hidden string with certainty.
+
+    <h3>5.3.5 A small example</h3>
+
+    Suppose the secret string is:
+
+    <div class="math">
+        s = 101
+    </div>
+
+    The algorithm proceeds as follows:
+
+    <ol>
+        <li>Prepare three input qubits in |000⟩.</li>
+        <li>Apply Hadamard gates to create a superposition of all eight inputs.</li>
+        <li>Query the oracle once to encode s·x into the phases.</li>
+        <li>Apply Hadamard gates again to the input register.</li>
+        <li>Measure the three qubits and obtain 101.</li>
+    </ol>
+
+    No repeated classical-style queries are required in the ideal
+    algorithm.
+
+    <h3>5.3.6 Why this is more than a clever trick</h3>
+
+    The secret string has not been copied into the output register
+    by directly calculating each of its bits. Instead, its relationship
+    with all possible inputs is encoded into a phase pattern.
+
+    The final Hadamard transform converts that pattern into the
+    binary string itself.
+
+    The algorithm demonstrates that a quantum query can reveal a
+    global property of a function in a way that requires many
+    deterministic classical queries.
+
+    <div class="note">
+        <strong>Important qualification:</strong> The one-query result
+        assumes access to the specified quantum oracle. It compares
+        oracle queries, not the total cost of every possible physical
+        implementation. Real hardware, oracle construction and noise
+        must also be considered.
+    </div>
+
+</section>
+
+<section id="simon">
+    <h2>5.4 Simon's Algorithm</h2>
+
+    <h3>5.4.1 A more subtle hidden pattern</h3>
+
+    The Bernstein–Vazirani algorithm hides a bit string inside a
+    function that returns one bit. Simon's algorithm tackles a
+    different problem: it finds a hidden string that describes a
+    symmetry in a function.
+
+    Consider a function:
+
+    <div class="math">
+        f : {0,1}ⁿ → {0,1}ⁿ
+    </div>
+
+    We are promised that there is a secret string
+    s ∈ {0,1}ⁿ such that:
+
+    <div class="math">
+        f(x) = f(y) exactly when y = x or y = x ⊕ s
+    </div>
+
+    Equivalently, the function satisfies:
+
+    <div class="math">
+        f(x) = f(x ⊕ s)
+    </div>
+
+    for every x.
+
+    We assume s is non-zero. Under this promise, each output corresponds
+    to a pair of inputs, x and x XOR s.
+
+    The challenge is to discover s without testing all possible pairs.
+
+    <h3>5.4.2 Understanding XOR symmetry</h3>
+
+    XOR compares bits according to this rule:
+
+    <table>
+        <tr>
+            <th>a</th>
+            <th>b</th>
+            <th>a XOR b</th>
+        </tr>
+        <tr><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>0</td><td>1</td><td>1</td></tr>
+        <tr><td>1</td><td>0</td><td>1</td></tr>
+        <tr><td>1</td><td>1</td><td>0</td></tr>
+    </table>
+
+    XOR with a fixed string flips the positions in which that string
+    contains a 1.
+
+    For example:
+
+    <div class="math">
+        x = 0110<br>
+        s = 1010<br><br>
+        x ⊕ s = 1100
+    </div>
+
+    Simon's promise tells us that the function returns the same
+    output for 0110 and 1100.
+
+    This is not simply a function that returns the same output for
+    arbitrary pairs of inputs. The repeated outputs follow a precise
+    pattern, determined by the hidden string s.
+
+    <h3>5.4.3 Why classical discovery is difficult</h3>
+
+    A classical algorithm can query the function at different inputs
+    and look for a repeated output.
+
+    When it finds two distinct inputs x and y with f(x) = f(y),
+    it obtains:
+
+    <div class="math">
+        x ⊕ y = s
+    </div>
+
+    This reveals the secret string immediately.
+
+    However, before such a collision occurs, each new output may
+    simply look unrelated to the previous ones. For a function with
+    2ⁿ inputs and 2ⁿ⁻¹ possible output pairs, finding a collision
+    by random sampling typically takes on the order of 2ⁿᐟ² queries.
+
+    A classical algorithm can use more sophisticated methods, but
+    under the standard black-box model, finding the hidden XOR
+    period requires exponentially many queries in the worst case
+    for bounded-error classical algorithms.
+
+    Simon's algorithm achieves the task with a number of quantum
+    queries that grows polynomially with n.
+
+    <h3>5.4.4 Step 1: Prepare two registers</h3>
+
+    Use two n-qubit registers. The first stores the input, and the
+    second stores the function output.
+
+    Start with:
+
+    <div class="math">
+        |0ⁿ⟩|0ⁿ⟩
+    </div>
+
+    Apply Hadamard gates to the first register:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub>|x⟩|0ⁿ⟩
+    </div>
+
+    This creates a uniform superposition over all 2ⁿ inputs.
+
+    <h3>5.4.5 Step 2: Query the function</h3>
+
+    Apply the oracle:
+
+    <div class="math">
+        (1/√(2ⁿ)) Σ<sub>x</sub>|x⟩|f(x)⟩
+    </div>
+
+    Each input is now correlated with its function output.
+
+    Because f(x) = f(x XOR s), pairs of inputs share the same
+    second-register value.
+
+    The state contains the information needed to discover the hidden
+    symmetry, but we do not obtain the secret simply by measuring
+    both registers.
+
+    <h3>5.4.6 Step 3: Measure the output register</h3>
+
+    Suppose we measure the second register and obtain some output z.
+
+    Under Simon's promise, that output corresponds to exactly two
+    inputs, x and x XOR s.
+
+    The first register is therefore left in a state proportional to:
+
+    <div class="math">
+        |x⟩ + |x ⊕ s⟩
+    </div>
+
+    After normalisation, the state is:
+
+    <div class="math">
+        (|x⟩ + |x ⊕ s⟩)/√2
+    </div>
+
+    The specific x depends on the measurement. We do not need to
+    know it.
+
+    The important point is that the first register contains a
+    superposition of two inputs related by the secret string.
+
+    <h3>5.4.7 Step 4: Apply Hadamard gates again</h3>
+
+    Apply H to every qubit of the first register.
+
+    Using the Hadamard transformation:
+
+    <div class="math">
+        H<sup>⊗n</sup>|x⟩ =
+        (1/√(2ⁿ)) Σ<sub>y</sub>
+        (-1)<sup>x·y</sup>|y⟩
+    </div>
+
+    The amplitude of an output string y is proportional to:
+
+    <div class="math">
+        (-1)<sup>x·y</sup>
+        + (-1)<sup>(x⊕s)·y</sup>
+    </div>
+
+    Since:
+
+    <div class="math">
+        (x ⊕ s) · y = x · y ⊕ s · y
+    </div>
+
+    the amplitude can be factored as:
+
+    <div class="math">
+        (-1)<sup>x·y</sup>
+        [1 + (-1)<sup>s·y</sup>]
+    </div>
+
+    This expression is the heart of Simon's algorithm.
+
+    <h3>5.4.8 Step 5: The measurement gives a linear equation</h3>
+
+    Consider the term in square brackets:
+
+    <div class="math">
+        1 + (-1)<sup>s·y</sup>
+    </div>
+
+    There are two possibilities.
+
+    If s·y = 0 modulo 2, then:
+
+    <div class="math">
+        1 + 1 = 2
+    </div>
+
+    The amplitudes reinforce one another.
+
+    If s·y = 1 modulo 2, then:
+
+    <div class="math">
+        1 − 1 = 0
+    </div>
+
+    The amplitudes cancel completely.
+
+    Therefore, only strings y satisfying the equation below can
+    appear in the measurement:
+
+    <div class="math">
+        s · y = 0 mod 2
+    </div>
+
+    Each execution gives one random linear equation involving the
+    unknown secret string s.
+
+    This is the key result. We may not know s yet, but we have
+    learned a constraint that it must satisfy.
+
+    <h3>5.4.9 Step 6: Repeat and solve</h3>
+
+    Repeat the quantum procedure to collect several measurement
+    outcomes:
+
+    <div class="math">
+        s · y₁ = 0 mod 2<br>
+        s · y₂ = 0 mod 2<br>
+        s · y₃ = 0 mod 2<br>
+        ...
+    </div>
+
+    Each equation is a binary linear equation. The unknown bits of
+    s are the variables, and all arithmetic is performed modulo 2.
+
+    Once we collect enough linearly independent equations, we can
+    solve the system using Gaussian elimination over the binary field.
+
+    For example, suppose the secret is:
+
+    <div class="math">
+        s = 101
+    </div>
+
+    Possible measurement strings must satisfy:
+
+    <div class="math">
+        s · y = 0 mod 2
+    </div>
+
+    The strings 010, 101 and 111 are examples of strings that satisfy
+    this equation:
+
+    <div class="math">
+        101 · 010 = 0<br>
+        101 · 101 = 1 ⊕ 0 ⊕ 1 = 0 mod 2<br>
+        101 · 111 = 1 ⊕ 0 ⊕ 1 = 0 mod 2
+    </div>
+
+    Collecting independent equations narrows down the possible
+    values of s until the hidden string can be identified.
+
+    In the ideal query model, O(n) repetitions suffice to obtain
+    enough independent information with high probability. The
+    precise number of repetitions depends on the probability of
+    obtaining independent samples.
+
+    <h3>5.4.10 Why Simon's algorithm was important</h3>
+
+    Simon's algorithm was a major early demonstration of the
+    power of quantum computation because it provided an exponential
+    separation between quantum and classical query complexity for
+    its hidden-period problem.
+
+    Its power does not come from measuring all 2ⁿ inputs at once.
+    Instead, the algorithm converts a hidden symmetry into constraints
+    that can be extracted by interference.
+
+    The quantum computer generates the constraints. A classical
+    computer then solves the resulting system of equations.
+
+    This division of work is common in quantum algorithms: the
+    quantum part prepares and measures states to extract useful
+    information, while classical computation performs ordinary
+    post-processing.
+
+</section>
+
+<section id="comparison">
+    <h2>5.5 Lessons Learned: Where Speedups Come From</h2>
+
+    We have now studied four related algorithms. They all use quantum
+    states, function queries and measurement, but each extracts a
+    different kind of information.
+
+    <h3>5.5.1 Comparing the algorithms</h3>
+
+    <table>
+        <tr>
+            <th>Algorithm</th>
+            <th>Hidden property</th>
+            <th>Quantum query complexity</th>
+            <th>Classical comparison</th>
+        </tr>
+        <tr>
+            <td>Deutsch</td>
+            <td>Whether a one-bit function is constant or balanced</td>
+            <td>1</td>
+            <td>2 deterministic queries in the worst case</td>
+        </tr>
+        <tr>
+            <td>Deutsch–Jozsa</td>
+            <td>Constant or balanced n-bit function</td>
+            <td>1</td>
+            <td>2ⁿ⁻¹ + 1 deterministic queries in the worst case</td>
+        </tr>
+        <tr>
+            <td>Bernstein–Vazirani</td>
+            <td>An n-bit hidden string</td>
+            <td>1</td>
+            <td>n deterministic queries in the standard model</td>
+        </tr>
+        <tr>
+            <td>Simon</td>
+            <td>A hidden XOR period</td>
+            <td>O(n) queries with high probability</td>
+            <td>Exponential worst-case query complexity for bounded-error classical algorithms</td>
+        </tr>
+    </table>
+
+    These comparisons concern the stated oracle problems. They do not
+    establish the same speedups for every implementation or every
+    possible computational model.
+
+    <h3>5.5.2 Lesson 1: Superposition creates possibilities, not readable answers</h3>
+
+    A register of n qubits can represent a superposition involving
+    2ⁿ computational basis states.
+
+    This is a remarkable feature, but the number of basis states
+    is not the number of classical answers that can be extracted
+    by measuring the register.
+
+    Measurement returns one outcome per measurement of the register.
+    The algorithm must therefore arrange the amplitudes so that
+    the desired information can be inferred from that outcome.
+
+    This is why quantum parallelism is a starting point rather
+    than a complete explanation of quantum speedup.
+
+    <h3>5.5.3 Lesson 2: Interference turns phase into information</h3>
+
+    In the Deutsch algorithm, the relative phase between two inputs
+    tells us whether the function is constant or balanced.
+
+    In Deutsch–Jozsa, the phase pattern across all inputs determines
+    whether the amplitude of the all-zero state survives.
+
+    In Bernstein–Vazirani, the phase pattern encodes a hidden string.
+
+    In Simon's algorithm, interference removes measurement outcomes
+    that violate the hidden XOR relationship.
+
+    The same mathematical mechanism appears in different forms:
+    quantum operations combine amplitudes, and measurement probabilities
+    depend on the resulting amplitudes.
+
+    <h3>5.5.4 Lesson 3: Quantum algorithms often target a property, not a complete output table</h3>
+
+    Suppose a function has 2ⁿ possible inputs. Writing down its entire
+    truth table may require exponentially many classical queries.
+
+    But perhaps the task does not require the full table. Maybe it
+    asks whether the function is balanced, or asks for a hidden string,
+    or asks for a hidden period.
+
+    These are much more focused questions.
+
+    The early algorithms show that the quantum computer can sometimes
+    exploit the structure of the problem to extract exactly the
+    information required without reconstructing every function value.
+
+    <h3>5.5.5 Lesson 4: The promise defines the problem</h3>
+
+    Each algorithm works under particular assumptions about the
+    function.
+
+    Deutsch–Jozsa assumes that the function is constant or balanced.
+    Bernstein–Vazirani assumes that the function is generated by a
+    hidden linear string.
+    Simon's algorithm assumes that the function has a specific
+    two-to-one XOR symmetry.
+
+    These promises are not minor technical details. They restrict
+    the possible inputs and make the desired information identifiable
+    with fewer queries.
+
+    Without the promise, the algorithm might not solve the original
+    problem at all.
+
+    <h3>5.5.6 Lesson 5: Count the right cost</h3>
+
+    When someone says that a quantum algorithm is faster, ask:
+    faster according to which measure?
+
+    Common measures include:
+
+    <ul>
+        <li><strong>Query complexity:</strong> How many times must the
+        algorithm call the function oracle?</li>
+        <li><strong>Gate complexity:</strong> How many elementary quantum
+        operations are required?</li>
+        <li><strong>Time complexity:</strong> How does the total
+        computational time grow with the input size?</li>
+        <li><strong>Space complexity:</strong> How many qubits or other
+        working resources are required?</li>
+    </ul>
+
+    A single oracle query may represent a complicated operation.
+    If implementing that oracle is expensive, the total advantage
+    may be smaller than the query count suggests.
+
+    Similarly, real quantum computers experience noise, imperfect
+    gates and measurement errors. The ideal algorithms in this chapter
+    assume operations that behave exactly as specified by quantum
+    mechanics.
+
+    Therefore, query speedups are important theoretical results,
+    but they are not by themselves a guarantee of a practical speedup
+    on existing hardware.
+
+    <h3>5.5.7 Lesson 6: A quantum speedup needs a complete strategy</h3>
+
+    A useful way to understand the structure of these algorithms is
+    to separate the work into four stages:
+
+    <div class="diagram">
+        1. Encode the problem into a quantum state<br>
+        ↓<br>
+        2. Apply an oracle or problem-dependent operation<br>
+        ↓<br>
+        3. Manipulate amplitudes through quantum interference<br>
+        ↓<br>
+        4. Measure and interpret the result
+    </div>
+
+    Each stage matters.
+
+    Preparing a superposition without encoding useful information
+    does not solve the problem. Querying the function without arranging
+    the phases may reveal little. Interference without a meaningful
+    target does not guarantee a useful answer. Measurement without
+    a sound interpretation is just data.
+
+    A successful quantum algorithm combines all four stages into
+    one carefully designed procedure.
+
+    <h3>5.5.8 Lesson 7: Early algorithms established principles, not universal superiority</h3>
+
+    These algorithms helped establish that quantum computers can
+    outperform classical computers for well-defined computational
+    tasks.
+
+    They did not prove that quantum computers are better at every
+    problem. Many tasks have no known quantum speedup, and for some
+    tasks classical computers are already extremely efficient.
+
+    The real research question is not simply whether a problem can
+    be represented on a quantum computer. It is whether quantum
+    mechanics provides a better way to obtain the required answer.
+
+    This question continues to guide research into quantum algorithms,
+    quantum complexity theory and quantum information.
+
+</section>
+
+<section id="summary">
+    <h2>Chapter Summary</h2>
+
+    Let us connect the entire chapter into one line of reasoning.
+
+    A qubit can exist in a superposition of computational basis states.
+    Quantum gates transform the amplitudes of these states, including
+    their relative phases. A quantum oracle can encode information
+    about a function into those phases. Later operations create
+    constructive or destructive interference. Measurement then
+    reveals a result that carries information about the property
+    being investigated.
+
+    The Deutsch algorithm uses this principle to distinguish constant
+    from balanced one-bit functions with one query. Deutsch–Jozsa
+    generalises the same idea to n-bit inputs under a promise.
+    Bernstein–Vazirani uses phase information to recover a hidden
+    binary string. Simon's algorithm converts a hidden XOR symmetry
+    into linear constraints that can be solved classically.
+
+    The common idea is not that a quantum computer gives us every
+    possible answer at once. It is that a quantum algorithm can
+    arrange information so that the right answer, or the right
+    mathematical constraint, becomes visible through measurement.
+
+    That is the foundation on which many later quantum algorithms
+    are built.
+
+    <h3>Questions to check your understanding</h3>
+
+    <ol>
+        <li>What is the difference between a probability and a probability amplitude?</li>
+        <li>Why can we not read all 2ⁿ values from a superposition of 2ⁿ inputs?</li>
+        <li>How does the Hadamard gate help produce interference?</li>
+        <li>Why does the Deutsch algorithm need only one oracle query?</li>
+        <li>What promise is required for the Deutsch–Jozsa algorithm?</li>
+        <li>How does Bernstein–Vazirani encode the hidden string into phases?</li>
+        <li>Why do Simon's measurement outcomes satisfy s · y = 0 modulo 2?</li>
+        <li>What is the difference between a query speedup and a practical runtime speedup?</li>
+    </ol>
+
+    <h3>Further reading</h3>
+
+    <ul>
+        <li>David Deutsch, “Quantum Theory, the Church–Turing Principle and the Universal Quantum Computer” (1985).</li>
+        <li>David Deutsch and Richard Jozsa, “Rapid Solution of Problems by Quantum Computation” (1992).</li>
+        <li>Ethan Bernstein and Umesh Vazirani, “Quantum Complexity Theory” (1997).</li>
+        <li>Daniel Simon, “On the Power of Quantum Computation” (1997).</li>
+        <li>Michael A. Nielsen and Isaac L. Chuang, <em>Quantum Computation and Quantum Information</em>.</li>
+    </ul>
+
+</section>
+
+</main>
+
+<footer>
+    Chapter 5 • Early Quantum Algorithms • Quantum Computing Foundations
+</footer>
+
+</body>
+</html>

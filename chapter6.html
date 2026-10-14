@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: The Quantum Fourier Transform and Phase Estimation</title>
+    <style>
+        :root {
+            --background: #f5f7fb;
+            --paper: #ffffff;
+            --text: #263244;
+            --heading: #142d4e;
+            --accent: #2463a6;
+            --soft-blue: #eaf3ff;
+            --soft-purple: #f1edff;
+            --border: #dce4ee;
+            --muted: #58677b;
+            --code: #172438;
+            --green: #eaf7ef;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        .page {
+            max-width: 960px;
+            margin: 36px auto;
+            padding: 54px 64px;
+            background: var(--paper);
+            box-shadow: 0 8px 35px rgba(22, 42, 68, 0.08);
+            border-radius: 12px;
+        }
+
+        .chapter-label {
+            color: var(--accent);
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        h1, h2, h3 {
+            color: var(--heading);
+            line-height: 1.35;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-top: 12px;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 58px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 30px;
+        }
+
+        p {
+            margin: 16px 0;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--muted);
+            max-width: 740px;
+        }
+
+        .learning-box, .note, .example, .warning {
+            padding: 20px 24px;
+            margin: 25px 0;
+            border-radius: 9px;
+        }
+
+        .learning-box {
+            background: var(--soft-blue);
+            border-left: 5px solid var(--accent);
+        }
+
+        .note {
+            background: var(--soft-purple);
+            border-left: 5px solid #7c60c7;
+        }
+
+        .example {
+            background: var(--green);
+            border-left: 5px solid #39965c;
+        }
+
+        .warning {
+            background: #fff4e7;
+            border-left: 5px solid #d78b2c;
+        }
+
+        .box-title {
+            display: block;
+            margin-bottom: 7px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            color: var(--heading);
+        }
+
+        .math {
+            overflow-x: auto;
+            margin: 20px 0;
+            padding: 20px 14px;
+            text-align: center;
+            background: #f3f6fa;
+            border-radius: 8px;
+            font-family: "Times New Roman", serif;
+            font-size: 1.15rem;
+            line-height: 1.8;
+        }
+
+        .small-math {
+            font-size: 1rem;
+        }
+
+        .circuit {
+            overflow-x: auto;
+            padding: 20px;
+            margin: 20px 0;
+            background: var(--code);
+            color: #f3f6fc;
+            border-radius: 8px;
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre;
+        }
+
+        .contents {
+            padding: 22px 28px;
+            margin: 35px 0;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+        }
+
+        .contents a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .contents a:hover {
+            text-decoration: underline;
+        }
+
+        .contents li {
+            margin: 5px 0;
+        }
+
+        .comparison {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.96rem;
+        }
+
+        .comparison th, .comparison td {
+            padding: 13px 15px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .comparison th {
+            background: var(--soft-blue);
+            color: var(--heading);
+        }
+
+        .comparison tr:nth-child(even) td {
+            background: #fafbfd;
+        }
+
+        .step {
+            margin: 22px 0;
+            padding-left: 20px;
+            border-left: 3px solid var(--border);
+        }
+
+        .step h3 {
+            margin-top: 0;
+        }
+
+        .takeaway {
+            font-weight: bold;
+            color: var(--heading);
+        }
+
+        .references {
+            font-size: 0.94rem;
+            color: var(--muted);
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 700px) {
+            .page {
+                margin: 0;
+                padding: 28px 20px;
+                border-radius: 0;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                margin-top: 42px;
+            }
+
+            body {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="page">
+
+    <header>
+        <div class="chapter-label">Quantum Computing · Chapter 6</div>
+        <h1>The Quantum Fourier Transform and Phase Estimation</h1>
+        <p class="subtitle">
+            How quantum computers discover hidden patterns, extract phase information,
+            and prepare the ground for some of the most important quantum algorithms.
+        </p>
+    </header>
+
+    <section class="learning-box">
+        <span class="box-title">What you will learn in this chapter</span>
+        By the end of this chapter, you should understand what the Quantum Fourier
+        Transform does, how it is built from quantum gates, why Quantum Phase
+        Estimation is important, and how both ideas are used in algorithms such as
+        Shor's factoring algorithm and quantum simulation.
+    </section>
+
+    <nav class="contents">
+        <strong>Chapter contents</strong>
+        <ol>
+            <li><a href="#intro">Why do we need these techniques?</a></li>
+            <li><a href="#qft">6.1 The Quantum Fourier Transform (QFT)</a></li>
+            <li><a href="#circuit">6.2 Circuit implementation and complexity</a></li>
+            <li><a href="#qpe">6.3 Quantum Phase Estimation (QPE)</a></li>
+            <li><a href="#applications">6.4 Applications and error considerations</a></li>
+            <li><a href="#summary">Chapter summary and exercises</a></li>
+        </ol>
+    </nav>
+
+    <section id="intro">
+        <h2>Why do we need these techniques?</h2>
+
+        <p>
+            Imagine listening to a musical recording. You hear a mixture of sounds,
+            but the recording may contain several notes at different frequencies.
+            A Fourier transform helps separate those frequencies so that we can
+            understand which notes are present and how strongly they contribute.
+        </p>
+
+        <p>
+            A similar problem appears in computing. Sometimes, the information we
+            need is not obvious when data is represented in its original form.
+            A useful pattern may become much easier to recognise after changing
+            the way the information is represented.
+        </p>
+
+        <p>
+            The <strong>Fourier Transform</strong> is a mathematical tool for changing
+            representations. It appears in signal processing, image processing,
+            communications and many other areas of classical computing.
+        </p>
+
+        <p>
+            Quantum computing has its own version, called the
+            <strong>Quantum Fourier Transform (QFT)</strong>. It changes the
+            amplitudes of quantum states in a carefully controlled way. This can
+            reveal patterns related to periodicity and phase, provided the quantum
+            algorithm is designed so that the desired information becomes
+            measurable.
+        </p>
+
+        <p>
+            The second major idea in this chapter is <strong>Quantum Phase
+            Estimation (QPE)</strong>. It uses quantum operations and measurements
+            to estimate a phase associated with a quantum operation. QPE uses
+            the QFT as one of its central ingredients.
+        </p>
+
+        <div class="note">
+            <span class="box-title">The connection between the two</span>
+            The QFT is a transformation that helps convert phase patterns into
+            measurement probabilities. QPE uses this transformation to estimate
+            an unknown phase. In short, the QFT provides an important mathematical
+            tool, while QPE uses that tool to solve a particular problem.
+        </div>
+
+        <h3>A small amount of mathematical preparation</h3>
+
+        <p>
+            Before proceeding, recall that a classical bit is either 0 or 1.
+            A qubit can be in a quantum state written as
+        </p>
+
+        <div class="math">
+            |ψ⟩ = α|0⟩ + β|1⟩
+        </div>
+
+        <p>
+            Here, α and β are complex numbers called probability amplitudes.
+            Their squared magnitudes determine the probabilities of measurement:
+        </p>
+
+        <div class="math">
+            P(0) = |α|², &nbsp;&nbsp; P(1) = |β|²
+            <br>
+            |α|² + |β|² = 1
+        </div>
+
+        <p>
+            The amplitudes contain more information than the probabilities alone.
+            In particular, their relative phases affect how quantum states
+            interfere with one another. The QFT takes advantage of this property.
+        </p>
+
+        <p>
+            For multiple qubits, a state can be written as a combination of
+            computational basis states. For example, two qubits have the basis
+            states |00⟩, |01⟩, |10⟩ and |11⟩. A general two-qubit state is
+        </p>
+
+        <div class="math">
+            |ψ⟩ = α₀|00⟩ + α₁|01⟩ + α₂|10⟩ + α₃|11⟩
+        </div>
+
+        <p>
+            The same idea extends to n qubits, which have 2ⁿ computational basis
+            states. The QFT acts on the amplitudes associated with these states.
+        </p>
+    </section>
+
+    <section id="qft">
+        <h2>6.1 The Quantum Fourier Transform (QFT)</h2>
+
+        <h3>6.1.1 Understanding the basic idea</h3>
+
+        <p>
+            Suppose a teacher gives you a long sequence of numbers and asks you
+            to find a repeating pattern. Looking at the numbers directly may not
+            be enough. You might need a different representation to make the
+            pattern visible.
+        </p>
+
+        <p>
+            The Fourier Transform performs this kind of change of representation.
+            In classical mathematics, it can represent a signal in terms of
+            frequency components. The QFT performs a related operation on the
+            amplitudes of a quantum state.
+        </p>
+
+        <p>
+            It is important not to misunderstand this comparison. The QFT does
+            not simply inspect every possible answer and print the result.
+            A quantum computer still produces measurement outcomes according
+            to the probabilities of the final state. The advantage comes from
+            arranging amplitudes so that useful outcomes become more likely.
+        </p>
+
+        <h3>6.1.2 The mathematical definition</h3>
+
+        <p>
+            Let N = 2ⁿ, where n is the number of qubits. The QFT transforms a
+            computational basis state |x⟩ into a superposition of basis states
+            with carefully chosen complex phases.
+        </p>
+
+        <div class="math">
+            QFT<sub>N</sub>|x⟩ =
+            <span style="white-space:nowrap;">(1/√N)</span>
+            ∑<sub>y=0</sub><sup>N−1</sup>
+            e<sup>2πixy/N</sup>|y⟩
+        </div>
+
+        <p>
+            Let us understand each part of this expression rather than trying
+            to memorise it immediately.
+        </p>
+
+        <ul>
+            <li><strong>N:</strong> the number of computational basis states, equal to 2ⁿ for n qubits.</li>
+            <li><strong>x:</strong> the integer represented by the input basis state.</li>
+            <li><strong>y:</strong> the index of each output basis state.</li>
+            <li><strong>1/√N:</strong> the normalisation factor that ensures the total probability is one.</li>
+            <li><strong>e<sup>2πixy/N</sup>:</strong> a complex phase factor that determines the relative phase of each output amplitude.</li>
+        </ul>
+
+        <p>
+            The summation means that the output is a superposition over all N
+            basis states. Each state has the same amplitude magnitude when the
+            input is a basis state, but the phases differ according to x and y.
+        </p>
+
+        <p>
+            This phase pattern is the key. The QFT does not merely spread an input
+            across many basis states. It creates a structured relationship
+            between the input and output amplitudes.
+        </p>
+
+        <h3>6.1.3 A worked example with one qubit</h3>
+
+        <p>
+            For one qubit, N = 2. The QFT transforms the two computational
+            basis states as follows:
+        </p>
+
+        <div class="math">
+            QFT₂|0⟩ = (|0⟩ + |1⟩)/√2
+            <br><br>
+            QFT₂|1⟩ = (|0⟩ − |1⟩)/√2
+        </div>
+
+        <p>
+            The first transformation is familiar. It is exactly the action of
+            the Hadamard gate on |0⟩. The second is also the action of the
+            Hadamard gate, but the relative sign is different.
+        </p>
+
+        <div class="example">
+            <span class="box-title">Why does the minus sign matter?</span>
+            Consider the states
+            (|0⟩ + |1⟩)/√2 and (|0⟩ − |1⟩)/√2.
+            Both give a 50% probability of measuring 0 and a 50% probability
+            of measuring 1 in the computational basis. Yet they are different
+            quantum states. When combined with other quantum operations, their
+            relative phases can produce different interference patterns.
+        </div>
+
+        <p>
+            The Hadamard gate and the one-qubit QFT therefore coincide, but this
+            should not lead us to conclude that the QFT is just a Hadamard gate.
+            For several qubits, the QFT also needs controlled phase rotations.
+        </p>
+
+        <h3>6.1.4 A two-qubit example</h3>
+
+        <p>
+            Two qubits have four basis states, so N = 4. Consider the input |1⟩,
+            represented in binary as |01⟩. Its QFT is
+        </p>
+
+        <div class="math small-math">
+            QFT₄|1⟩ =
+            (1/2)(|0⟩ + i|1⟩ − |2⟩ − i|3⟩)
+        </div>
+
+        <p>
+            In two-qubit notation, the same result is
+        </p>
+
+        <div class="math small-math">
+            QFT₄|01⟩ =
+            (1/2)(|00⟩ + i|01⟩ − |10⟩ − i|11⟩)
+        </div>
+
+        <p>
+            Notice that all four states have an amplitude magnitude of 1/2.
+            Consequently, measuring immediately in the computational basis
+            gives each outcome a probability of 1/4. The phase factors 1, i,
+            −1 and −i do not change these immediate probabilities.
+        </p>
+
+        <p>
+            However, those phases are not useless. A later operation can make
+            the amplitudes interfere, changing the probabilities of measurement.
+            Quantum algorithms are designed to use this interference to make
+            certain answers easier to observe.
+        </p>
+
+        <h3>6.1.5 What happens when the input is a superposition?</h3>
+
+        <p>
+            Quantum operations are linear. This means that if the input is a
+            combination of basis states, the QFT transforms each component and
+            combines the resulting amplitudes.
+        </p>
+
+        <p>
+            For example, suppose
+        </p>
+
+        <div class="math">
+            |ψ⟩ = a|0⟩ + b|1⟩
+        </div>
+
+        <p>
+            Applying the QFT gives
+        </p>
+
+        <div class="math">
+            QFT₂|ψ⟩ =
+            [(a+b)|0⟩ + (a−b)|1⟩]/√2
+        </div>
+
+        <p>
+            This expression shows why phases and amplitudes matter. The output
+            amplitude of |0⟩ depends on a+b, whereas the output amplitude of
+            |1⟩ depends on a−b. Depending on the values of a and b, the
+            components may reinforce or cancel one another.
+        </p>
+
+        <p>
+            This is quantum interference: probability amplitudes are combined
+            before measurement, and their relative phases determine the
+            resulting probabilities.
+        </p>
+
+        <h3>6.1.6 Why is the QFT useful for periodic patterns?</h3>
+
+        <p>
+            A periodic sequence repeats after a particular interval. In quantum
+            algorithms, a computation may create a state whose amplitudes have
+            a repeating structure. The QFT can transform this structure into
+            a distribution concentrated around particular frequencies.
+        </p>
+
+        <p>
+            Imagine a pattern of evenly spaced marks on a circular track.
+            A suitable Fourier transform can reveal the spacing by producing
+            strong responses at related frequencies. In a quantum algorithm,
+            the same general principle applies to structured amplitudes and
+            phases, although the exact output depends on the state being
+            transformed.
+        </p>
+
+        <p>
+            This property is especially important in algorithms that search
+            for periods, including the order-finding procedure used by Shor's
+            factoring algorithm. The QFT helps turn information about a hidden
+            period into measurement outcomes that can be processed classically.
+        </p>
+
+        <div class="note">
+            <span class="box-title">The central lesson of the QFT</span>
+            The QFT is not valuable simply because it creates a superposition.
+            Its importance lies in how it rearranges amplitudes and relative
+            phases. When the input contains useful structure, this transformation
+            can help make that structure visible through measurement.
+        </div>
+    </section>
+
+    <section id="circuit">
+        <h2>6.2 Circuit implementation and complexity</h2>
+
+        <h3>6.2.1 From a mathematical formula to quantum gates</h3>
+
+        <p>
+            The QFT definition describes a transformation mathematically. A
+            quantum computer, however, needs a circuit made of physical or
+            simulated quantum gates to perform it.
+        </p>
+
+        <p>
+            The circuit implementation of the QFT relies mainly on three kinds
+            of operations:
+        </p>
+
+        <ol>
+            <li><strong>Hadamard gates:</strong> create and combine superposition components.</li>
+            <li><strong>Controlled phase rotations:</strong> introduce phase changes depending on the state of another qubit.</li>
+            <li><strong>SWAP gates:</strong> exchange the positions of qubits when required by the chosen circuit convention.</li>
+        </ol>
+
+        <p>
+            The circuit builds the required phase relationships one step at a
+            time. Instead of calculating the entire transformation as one large
+            operation, it uses a sequence of simpler gates.
+        </p>
+
+        <h3>6.2.2 The Hadamard gate</h3>
+
+        <p>
+            The Hadamard gate is one of the basic tools in quantum computing.
+            Its matrix representation is
+        </p>
+
+        <div class="math">
+            H = (1/√2)
+            <span style="white-space:nowrap;">
+                [[1, 1], [1, −1]]
+            </span>
+        </div>
+
+        <p>
+            Its action on the computational basis states is
+        </p>
+
+        <div class="math">
+            H|0⟩ = (|0⟩ + |1⟩)/√2
+            <br><br>
+            H|1⟩ = (|0⟩ − |1⟩)/√2
+        </div>
+
+        <p>
+            Thus, the Hadamard gate changes a basis state into a superposition.
+            It also allows the relative sign of the amplitudes to depend on
+            the input. This makes it a natural building block for the QFT.
+        </p>
+
+        <h3>6.2.3 Controlled phase rotations</h3>
+
+        <p>
+            A phase rotation changes the phase of a quantum amplitude without
+            necessarily changing its magnitude. A controlled phase rotation
+            applies such a change only when the control qubit is in the
+            specified state.
+        </p>
+
+        <p>
+            A common controlled phase gate is written as
+        </p>
+
+        <div class="math">
+            CP(θ) =
+            diag(1, 1, 1, e<sup>iθ</sup>)
+        </div>
+
+        <p>
+            In the computational basis |00⟩, |01⟩, |10⟩ and |11⟩, this gate
+            leaves the first three basis states unchanged and multiplies
+            the amplitude of |11⟩ by e<sup>iθ</sup>.
+        </p>
+
+        <p>
+            The QFT uses controlled rotations with angles that become
+            progressively smaller. A commonly used family of angles is
+        </p>
+
+        <div class="math">
+            θ<sub>k</sub> = 2π/2<sup>k</sup>
+        </div>
+
+        <p>
+            For example, the first few angles are π, π/2 and π/4. The exact
+            gate labels and qubit ordering depend on the circuit convention,
+            but the underlying idea remains the same: the controlled rotations
+            establish the phase relationships needed by the Fourier transform.
+        </p>
+
+        <h3>6.2.4 The general structure of a QFT circuit</h3>
+
+        <p>
+            In a standard n-qubit QFT circuit, each qubit participates in a
+            Hadamard operation and controlled rotations connecting it with
+            other qubits. A final reversal of the qubit order may be needed
+            to match the usual binary representation of the output.
+        </p>
+
+        <div class="circuit">Input qubits
+  q0  ──H────●────●────●──────────────────
+             │    │    │
+  q1  ───────P────H────●────●─────────────
+                  │    │    │
+  q2  ────────────P────H────●─────────────
+                       │    │
+  q3  ─────────────────P────H─────────────
+
+  P = controlled phase rotation
+  H = Hadamard gate
+
+  A complete circuit includes the required rotation angles
+  and may include final SWAP gates to reverse qubit order.</div>
+
+        <p>
+            The diagram is schematic rather than a gate-by-gate circuit for
+            a particular number of qubits. Its purpose is to show the repeated
+            pattern of Hadamard and controlled phase operations.
+        </p>
+
+        <div class="warning">
+            <span class="box-title">A note about qubit ordering</span>
+            Some circuit diagrams place the least significant qubit at the top,
+            while others place it at the bottom. Some implementations also
+            return the output in reversed bit order and leave the SWAP gates out.
+            These conventions change how the circuit is written, not the
+            mathematical transformation it represents.
+        </div>
+
+        <h3>6.2.5 Why does the QFT require so few gates?</h3>
+
+        <p>
+            An n-qubit state has 2ⁿ amplitudes. If we tried to represent the
+            full QFT as a general matrix, that matrix would have 2ⁿ rows and
+            2ⁿ columns. It would contain an enormous number of entries as n
+            increases.
+        </p>
+
+        <p>
+            But the QFT has a special structure. We can exploit that structure
+            to implement it using a sequence of elementary quantum gates.
+        </p>
+
+        <p>
+            A standard exact QFT circuit uses:
+        </p>
+
+        <ul>
+            <li>n Hadamard gates.</li>
+            <li>n(n−1)/2 controlled phase rotations.</li>
+            <li>At most floor(n/2) SWAP gates for reversing the qubit order.</li>
+        </ul>
+
+        <p>
+            Therefore, the number of elementary gates grows quadratically
+            with the number of qubits, giving a gate complexity of O(n²)
+            when controlled rotations are counted individually.
+        </p>
+
+        <div class="math">
+            Number of controlled rotations = n(n−1)/2
+            <br><br>
+            Total standard gate count = O(n²)
+        </div>
+
+        <p>
+            This is much smaller than the O(4ⁿ) number of entries in a
+            general 2ⁿ by 2ⁿ matrix. The comparison is between the circuit
+            gate count and the size of the general matrix representation.
+            It does not mean that every task involving the QFT becomes
+            exponentially faster.
+        </p>
+
+        <h3>6.2.6 Approximate QFT</h3>
+
+        <p>
+            The controlled rotations in a QFT become smaller as their
+            separation between qubits increases. For sufficiently distant
+            qubits, the associated angles can be extremely small.
+        </p>
+
+        <p>
+            In some applications, these small rotations can be omitted to
+            obtain an approximate QFT. The circuit then uses fewer gates,
+            while introducing a controlled approximation error.
+        </p>
+
+        <p>
+            If rotations smaller than a chosen threshold are omitted, the
+            number of retained rotations can be reduced substantially.
+            For common approximate-QFT constructions with a suitable cutoff,
+            the gate count can be brought down to O(n log n), with the
+            approximation accuracy depending on how the cutoff is selected.
+        </p>
+
+        <p>
+            Approximation is useful when the saved gates are more valuable
+            than the small loss in precision. However, it should not be used
+            blindly. A phase-estimation problem may require greater precision
+            than another application, so the circuit must be chosen according
+            to the task.
+        </p>
+
+        <h3>6.2.7 Circuit cost is not the whole story</h3>
+
+        <p>
+            The number of gates is only one measure of efficiency. On actual
+            quantum hardware, we must also consider how reliably each gate
+            works, how long qubits remain coherent, whether two qubits can
+            interact directly, and how expensive it is to move quantum
+            information between different locations.
+        </p>
+
+        <p>
+            A circuit with fewer mathematical operations may still perform
+            poorly if its gates are difficult to execute on the available
+            hardware. This is why practical quantum circuit design involves
+            both mathematics and engineering.
+        </p>
+    </section>
+
+    <section id="qpe">
+        <h2>6.3 Quantum Phase Estimation (QPE)</h2>
+
+        <h3>6.3.1 What is a quantum phase?</h3>
+
+        <p>
+            We have already seen that a quantum state can contain complex
+            amplitudes. These amplitudes may have both magnitude and phase.
+            Phase is particularly important when different parts of a quantum
+            state later interfere.
+        </p>
+
+        <p>
+            Quantum Phase Estimation is a procedure for estimating a phase
+            associated with a unitary operation. A unitary operation is a
+            reversible quantum transformation that preserves the total
+            probability of the state.
+        </p>
+
+        <p>
+            Suppose a unitary operation U acts on a state |u⟩ according to
+        </p>
+
+        <div class="math">
+            U|u⟩ = e<sup>2πiφ</sup>|u⟩
+        </div>
+
+        <p>
+            Here, |u⟩ is an eigenstate of U, and φ is its phase expressed
+            in cycles. We can take 0 ≤ φ &lt; 1, because phases that differ
+            by an integer represent the same complex factor in this expression.
+        </p>
+
+        <p>
+            The goal of QPE is to estimate φ. For example, if φ = 0.375,
+            the procedure attempts to determine a binary representation of
+            that value from quantum measurements.
+        </p>
+
+        <div class="note">
+            <span class="box-title">Why estimate a phase instead of measuring it directly?</span>
+            The phase is not an ordinary label that can simply be read from
+            a quantum state. A global phase multiplying an entire state
+            cannot be observed on its own. QPE works by comparing phase
+            information through controlled operations, converting it into
+            relative phases that affect measurable outcomes.
+        </div>
+
+        <h3>6.3.2 The main ingredients of QPE</h3>
+
+        <p>
+            A standard QPE circuit contains two registers:
+        </p>
+
+        <ol>
+            <li>
+                <strong>The counting register:</strong> a collection of qubits
+                that stores information about the phase. Hadamard gates are
+                applied to place this register into a superposition.
+            </li>
+            <li>
+                <strong>The target register:</strong> a register prepared in
+                the eigenstate |u⟩ of the unitary operation U.
+            </li>
+        </ol>
+
+        <p>
+            The circuit then uses controlled applications of U, U², U⁴ and
+            higher powers. These operations encode increasingly detailed
+            information about the phase into the counting register.
+            Finally, an inverse Quantum Fourier Transform converts the
+            encoded phase pattern into a form that can be measured.
+        </p>
+
+        <p>
+            There are three main stages: prepare a superposition, encode
+            the phase using controlled powers of U, and apply the inverse
+            QFT before measurement.
+        </p>
+
+        <h3>6.3.3 Stage one: prepare the counting register</h3>
+
+        <p>
+            Suppose the counting register contains m qubits. It has
+            M = 2ᵐ possible computational basis states. Initially, we
+            prepare it in the state |0⟩ repeated m times.
+        </p>
+
+        <p>
+            Applying a Hadamard gate to each qubit creates an equal
+            superposition:
+        </p>
+
+        <div class="math">
+            |0⟩<sup>⊗m</sup>
+            → (1/√M) ∑<sub>k=0</sub><sup>M−1</sup> |k⟩
+        </div>
+
+        <p>
+            The counting register now contains amplitudes for every integer
+            from 0 to M−1. This is the starting point for encoding the phase.
+        </p>
+
+        <h3>6.3.4 Stage two: encode the phase</h3>
+
+        <p>
+            Each counting qubit controls a power of U. The qubit associated
+            with the lowest power controls U, the next controls U², the
+            next controls U⁴, and so on.
+        </p>
+
+        <p>
+            Because U|u⟩ = e<sup>2πiφ</sup>|u⟩, repeated applications give
+        </p>
+
+        <div class="math">
+            U<sup>2ʲ</sup>|u⟩ =
+            e<sup>2πi2ʲφ</sup>|u⟩
+        </div>
+
+        <p>
+            Each controlled operation introduces a phase that depends on
+            the corresponding power of two. Taken together, these phases
+            create a structured pattern in the counting register.
+        </p>
+
+        <p>
+            The target register remains in |u⟩, apart from the action of
+            the unitary operation, because |u⟩ is its eigenstate. The
+            useful phase information is encoded in the counting register.
+        </p>
+
+        <h3>6.3.5 Stage three: apply the inverse QFT</h3>
+
+        <p>
+            After the controlled operations, the counting register contains
+            a phase pattern related to φ. The inverse QFT, written as
+            QFT†, transforms this pattern into a distribution over binary
+            outcomes.
+        </p>
+
+        <p>
+            If the phase has an exact m-bit binary representation, the
+            ideal circuit produces the corresponding m-bit result with
+            probability one. If the phase cannot be represented exactly
+            using m bits, the measurement probabilities are spread across
+            nearby outcomes.
+        </p>
+
+        <p>
+            The inverse QFT is used here because the controlled operations
+            prepare a state with the phase pattern of a Fourier transform.
+            Applying the inverse transformation converts that pattern back
+            into a computational basis result that encodes the phase.
+        </p>
+
+        <h3>6.3.6 The complete QPE circuit</h3>
+
+        <div class="circuit">Counting register
+  |0⟩ ──H────●───────────────────────────┐
+             │                           │
+  |0⟩ ──H────┼────●──────────────────────┤
+             │    │                      │
+  |0⟩ ──H────┼────┼────●─────────────────┤
+             │    │    │                 │
+             U    U²   U⁴         QFT† ── Measure
+
+Target register
+  |u⟩ ───────U────U²───U⁴────────────────┘
+
+  The controlled operations are connected to the
+  appropriate counting qubits and act on the target.
+  The drawing is schematic, not a complete wiring diagram.</div>
+
+        <p>
+            The precise circuit order depends on the bit-ordering convention
+            and how the inverse QFT is implemented. The essential structure,
+            however, is the same.
+        </p>
+
+        <h3>6.3.7 A numerical example: estimating φ = 0.375</h3>
+
+        <p>
+            Let us consider a phase that can be represented exactly using
+            three binary digits:
+        </p>
+
+        <div class="math">
+            φ = 0.375 = 3/8 = 0.011₂
+        </div>
+
+        <p>
+            The binary fraction 0.011₂ means
+        </p>
+
+        <div class="math">
+            0 × 1/2 + 1 × 1/4 + 1 × 1/8
+            = 0.375
+        </div>
+
+        <p>
+            We use three counting qubits, giving M = 2³ = 8 possible
+            outcomes. Under ideal conditions, with the correct eigenstate
+            and controlled operations, QPE returns the binary integer
+            011₂, which is 3 in decimal.
+        </p>
+
+        <p>
+            The phase estimate is then obtained by dividing the measured
+            integer by M:
+        </p>
+
+        <div class="math">
+            φ̂ = y/M = 3/8 = 0.375
+        </div>
+
+        <p>
+            This example is especially convenient because the phase is
+            exactly representable using three binary digits. Real problems
+            are not always so convenient.
+        </p>
+
+        <h3>6.3.8 What if the phase cannot be represented exactly?</h3>
+
+        <p>
+            Suppose the true phase is 0.3. With three counting qubits,
+            the possible estimates are multiples of 1/8:
+            0, 1/8, 2/8, 3/8 and so on.
+        </p>
+
+        <p>
+            Since 0.3 is not one of these values, the circuit cannot
+            return it exactly using a single three-bit measurement.
+            Instead, the measurement distribution is concentrated around
+            nearby binary fractions. More counting qubits provide a finer
+            grid of possible estimates.
+        </p>
+
+        <p>
+            Increasing the number of counting qubits improves the available
+            precision, but it also increases the circuit resources needed
+            for the controlled operations and the inverse QFT. On real
+            hardware, additional gates may also introduce additional errors.
+        </p>
+
+        <div class="math">
+            Phase estimate: φ̂ = y/2ᵐ
+            <br><br>
+            Resolution of the binary grid: 1/2ᵐ
+        </div>
+
+        <p>
+            The grid spacing is not, by itself, a guarantee that the estimate
+            will be accurate to within that spacing. The probability of
+            obtaining a particular outcome depends on the true phase and
+            the circuit. More precision requires both adequate resources
+            and a reliable implementation.
+        </p>
+
+        <h3>6.3.9 Why does QPE need an eigenstate?</h3>
+
+        <p>
+            The usual explanation of QPE assumes that the target register
+            starts in an eigenstate |u⟩ of U. This assumption is important
+            because the unitary operation then multiplies the state by a
+            well-defined phase while leaving its eigenstate unchanged.
+        </p>
+
+        <p>
+            If the target is instead a superposition of several eigenstates,
+            each component has its own eigenphase. QPE can then produce
+            measurement outcomes associated with the different phases,
+            with probabilities determined by the weights of those
+            components.
+        </p>
+
+        <p>
+            This is not necessarily a failure. In some applications, the
+            aim is to learn about the eigenvalues present in a quantum
+            state. However, it means that the result must be interpreted
+            differently from the single-eigenstate example.
+        </p>
+
+        <div class="note">
+            <span class="box-title">QFT and QPE are not the same thing</span>
+            The QFT is a quantum transformation. QPE is a larger algorithm
+            that uses controlled unitary operations, a counting register,
+            an inverse QFT and measurement to estimate a phase. The QFT
+            alone does not automatically reveal an unknown eigenphase.
+        </div>
+    </section>
+
+    <section id="applications">
+        <h2>6.4 Applications and error considerations</h2>
+
+        <h3>6.4.1 Application one: order finding and Shor's algorithm</h3>
+
+        <p>
+            One of the best-known applications of the QFT is the order-finding
+            procedure used in Shor's factoring algorithm. The order of a
+            number a modulo N is the smallest positive integer r such that
+        </p>
+
+        <div class="math">
+            aʳ ≡ 1 (mod N)
+        </div>
+
+        <p>
+            Finding this order can help factor a composite integer N, provided
+            the selected values and the resulting order satisfy the conditions
+            needed by the factoring procedure.
+        </p>
+
+        <p>
+            The quantum part of Shor's algorithm creates a state containing
+            information about repeated behaviour in modular arithmetic. The
+            QFT is used to help extract information about the period. A
+            classical algorithm then processes the measurement result to
+            obtain useful candidates for the order.
+        </p>
+
+        <p>
+            This illustrates a recurring pattern in quantum algorithms:
+            the quantum circuit prepares and transforms a state, measurement
+            produces a limited classical result, and classical computation
+            interprets that result.
+        </p>
+
+        <div class="warning">
+            <span class="box-title">Does the QFT factor a number by itself?</span>
+            No. The QFT is one ingredient in a larger algorithm. Shor's
+            factoring algorithm also needs modular arithmetic, carefully
+            chosen inputs, measurements and classical post-processing.
+            The complete procedure is what provides the factoring advantage.
+        </div>
+
+        <h3>6.4.2 Application two: quantum phase estimation</h3>
+
+        <p>
+            QPE is useful whenever the phase of an eigenvalue contains
+            information about a problem. The phase may be related to an
+            energy, a frequency, or a property of a mathematical operation.
+        </p>
+
+        <p>
+            The general approach is to construct a suitable unitary operation,
+            prepare a suitable target state, and use controlled applications
+            of the unitary to encode the phase. The inverse QFT then converts
+            this phase information into measurement outcomes.
+        </p>
+
+        <p>
+            The difficult part is often not the inverse QFT itself. Preparing
+            the right state and implementing the controlled unitary accurately
+            may require substantial resources.
+        </p>
+
+        <h3>6.4.3 Application three: quantum simulation and energy estimation</h3>
+
+        <p>
+            In quantum chemistry and physics, researchers often want to
+            estimate the energies associated with a quantum system. Such
+            problems involve the eigenvalues of an operator called the
+            Hamiltonian, which describes the system's energy.
+        </p>
+
+        <p>
+            Under suitable conditions, a Hamiltonian can be used to construct
+            a unitary time-evolution operation. The eigenphases of this
+            operation are related to the system's energy eigenvalues.
+            Phase estimation can then be used to estimate those energies.
+        </p>
+
+        <p>
+            For example, in an idealised setting, a time-evolution operator
+            can be written as
+        </p>
+
+        <div class="math">
+            U(t) = e<sup>−iHt/ℏ</sup>
+        </div>
+
+        <p>
+            Here, H is the Hamiltonian, t is the evolution time, and ℏ is
+            the reduced Planck constant. If an energy eigenstate has energy
+            E, the corresponding evolution introduces a phase related to E.
+            Estimating that phase can therefore provide information about
+            the energy.
+        </p>
+
+        <p>
+            This is one reason phase estimation is important in quantum
+            simulation. However, useful energy estimation also depends on
+            preparing a state with overlap with the desired energy eigenstate,
+            controlling errors, and choosing suitable evolution times.
+        </p>
+
+        <h3>6.4.4 Application four: period detection</h3>
+
+        <p>
+            Periodic structures occur in many mathematical problems. A
+            function has period r when its values repeat after shifts of
+            size r, under the relevant definition of periodicity.
+        </p>
+
+        <p>
+            Quantum algorithms can sometimes encode information about such
+            a period into amplitudes or phases. A Fourier transform can
+            then produce a measurement distribution that reveals information
+            about the period.
+        </p>
+
+        <p>
+            The connection is not limited to one specific algorithm. It
+            reflects the general usefulness of Fourier methods for detecting
+            regularity and repeated structure. The challenge is to prepare
+            a quantum state whose structure carries the required information.
+        </p>
+
+        <h3>6.4.5 Understanding the main sources of error</h3>
+
+        <p>
+            The mathematical descriptions of QFT and QPE assume ideal
+            operations. Actual quantum computers are imperfect. Their
+            physical qubits interact with their surroundings, gates have
+            limited accuracy, and measurements may return incorrect results.
+        </p>
+
+        <p>
+            These issues are particularly important in QPE because phase
+            information is encoded through controlled operations. Errors
+            can change the phase relationships and distort the final
+            measurement distribution.
+        </p>
+
+        <h3>Error source 1: gate errors</h3>
+
+        <p>
+            A physical gate may not implement the exact mathematical
+            operation specified by the circuit. For instance, a controlled
+            phase rotation intended to introduce a particular angle may
+            introduce a slightly different angle.
+        </p>
+
+        <p>
+            Since a QFT circuit uses many gates, small errors can accumulate.
+            Their exact effect depends on the type of error, the circuit
+            structure and the input state. It is not always correct to
+            assume that all errors simply add together.
+        </p>
+
+        <h3>Error source 2: decoherence</h3>
+
+        <p>
+            Quantum states are fragile. Interaction with the environment
+            can disturb the phase relationships or the populations of the
+            states. This process is broadly called decoherence, although
+            noise models also include other kinds of physical errors.
+        </p>
+
+        <p>
+            If the phase information is lost before the controlled operations
+            and inverse QFT are completed, the final measurement may no
+            longer provide a reliable estimate.
+        </p>
+
+        <h3>Error source 3: measurement errors</h3>
+
+        <p>
+            A measurement device may incorrectly identify whether a qubit
+            is in state 0 or state 1. Since QPE reads the phase estimate
+            from a collection of measured bits, mistakes can change the
+            final binary number.
+        </p>
+
+        <p>
+            Repeating a circuit can help characterise its measurement
+            distribution. However, repetition does not automatically
+            eliminate systematic errors or correct errors that affect
+            every run in a similar way.
+        </p>
+
+        <h3>Error source 4: limited phase precision</h3>
+
+        <p>
+            With m counting qubits, the output estimate is based on
+            multiples of 1/2ᵐ. If the true phase lies between two such
+            values, the circuit may return a nearby estimate rather than
+            the exact phase.
+        </p>
+
+        <p>
+            Adding counting qubits provides finer resolution. Yet greater
+            precision may require more controlled applications of the
+            unitary, which can increase circuit depth and exposure to noise.
+            Precision and physical reliability must therefore be considered
+            together.
+        </p>
+
+        <h3>Error source 5: approximate QFT</h3>
+
+        <p>
+            Omitting small controlled rotations reduces the circuit size,
+            but it changes the transformation. In phase estimation, this
+            approximation can alter the output probabilities.
+        </p>
+
+        <p>
+            An approximate QFT may be a good choice when its error is small
+            enough for the intended task. The correct cutoff depends on the
+            required accuracy and the resources available on the quantum
+            device.
+        </p>
+
+        <h3>6.4.6 Practical methods for reducing errors</h3>
+
+        <ul>
+            <li>
+                <strong>Choose an appropriate circuit:</strong> remove
+                unnecessary gates and use an approximate QFT only when
+                the accuracy is sufficient.
+            </li>
+            <li>
+                <strong>Use hardware-aware compilation:</strong> arrange
+                the circuit to work with the device's available connections
+                and supported gates.
+            </li>
+            <li>
+                <strong>Calibrate and characterise the hardware:</strong>
+                understand the accuracy of gates and measurements before
+                relying on the results.
+            </li>
+            <li>
+                <strong>Repeat measurements where appropriate:</strong>
+                use repeated runs to estimate the output distribution and
+                distinguish likely results from statistical fluctuations.
+            </li>
+            <li>
+                <strong>Use error mitigation when suitable:</strong>
+                apply validated techniques that reduce the effect of known
+                errors, while recognising that mitigation does not guarantee
+                perfect results.
+            </li>
+            <li>
+                <strong>Use quantum error correction when feasible:</strong>
+                encode logical information across physical qubits and use
+                error-correction procedures to protect the computation.
+                This requires additional hardware and resources.
+            </li>
+        </ul>
+
+        <div class="note">
+            <span class="box-title">A useful engineering principle</span>
+            A mathematically efficient circuit is not automatically a
+            practical circuit. The best implementation balances the number
+            of gates, the required phase precision, the hardware's noise
+            characteristics and the cost of running the computation.
+        </div>
+
+        <h3>6.4.7 Exact QFT, approximate QFT and QPE compared</h3>
+
+        <table class="comparison">
+            <thead>
+                <tr>
+                    <th>Technique</th>
+                    <th>Main purpose</th>
+                    <th>Important consideration</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Exact QFT</td>
+                    <td>Performs the precise Fourier transformation on the chosen number of qubits.</td>
+                    <td>Uses a number of gates that grows quadratically with the qubit count in the standard circuit.</td>
+                </tr>
+                <tr>
+                    <td>Approximate QFT</td>
+                    <td>Performs a close approximation using fewer controlled rotations.</td>
+                    <td>Introduces approximation error in exchange for reduced circuit cost.</td>
+                </tr>
+                <tr>
+                    <td>QPE</td>
+                    <td>Estimates an eigenphase using controlled unitary operations and the inverse QFT.</td>
+                    <td>Requires a suitable target state, sufficient precision and reliable operations.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter summary</h2>
+
+        <p>
+            The Quantum Fourier Transform and Quantum Phase Estimation are
+            closely connected, but they serve different purposes. The QFT
+            transforms the amplitudes of a quantum state by introducing
+            carefully structured phase relationships. These relationships
+            can help expose periodic patterns when the input state has the
+            appropriate structure.
+        </p>
+
+        <p>
+            A standard QFT circuit uses Hadamard gates, controlled phase
+            rotations and, depending on the convention, SWAP gates. Its
+            elementary gate count grows as O(n²) for n qubits. Approximate
+            implementations can use fewer gates at the cost of some precision.
+        </p>
+
+        <p>
+            QPE uses controlled powers of a unitary operation to encode
+            its eigenphase into a counting register. The inverse QFT then
+            converts that phase information into measurement outcomes.
+            With a suitable eigenstate and ideal operations, QPE can estimate
+            the phase to the precision supported by the counting register.
+        </p>
+
+        <p>
+            These ideas support important algorithms in period finding,
+            integer factoring and quantum simulation. Their practical
+            success depends not only on mathematical correctness but also
+            on state preparation, circuit complexity, noise and measurement
+            reliability.
+        </p>
+
+        <div class="learning-box">
+            <span class="box-title">Remember these five ideas</span>
+            <ol>
+                <li>The QFT changes the representation of quantum amplitudes and phases.</li>
+                <li>Quantum interference allows phase relationships to influence measurement probabilities.</li>
+                <li>The standard QFT can be implemented using O(n²) elementary gates.</li>
+                <li>QPE uses controlled powers of a unitary and the inverse QFT to estimate an eigenphase.</li>
+                <li>More precision requires suitable resources, and hardware noise can reduce the accuracy of the result.</li>
+            </ol>
+        </div>
+
+        <h2>Check your understanding</h2>
+
+        <h3>Conceptual questions</h3>
+        <ol>
+            <li>What is the main purpose of the Quantum Fourier Transform?</li>
+            <li>Why can two quantum states have identical measurement probabilities but still be different states?</li>
+            <li>What is the role of a controlled phase rotation in a QFT circuit?</li>
+            <li>Why does the standard QFT have a gate complexity of O(n²)?</li>
+            <li>What is the difference between the QFT and Quantum Phase Estimation?</li>
+            <li>Why does QPE use controlled powers U, U², U⁴ and so on?</li>
+            <li>What happens when the true phase cannot be represented exactly with the available number of counting qubits?</li>
+            <li>Why might an approximate QFT be preferred on a noisy quantum computer?</li>
+        </ol>
+
+        <h3>Numerical exercises</h3>
+        <ol>
+            <li>
+                Write 0.625 as a binary fraction using three bits after
+                the binary point.
+            </li>
+            <li>
+                A QPE circuit has four counting qubits and measures
+                y = 5. What phase estimate does it produce?
+            </li>
+            <li>
+                How many controlled phase rotations are used in a standard
+                QFT circuit with six qubits?
+            </li>
+            <li>
+                If a QPE circuit uses five counting qubits, what is the
+                spacing between consecutive values on its phase-estimate grid?
+            </li>
+        </ol>
+
+        <h3>Answers</h3>
+        <ol>
+            <li>0.625 = 0.101₂.</li>
+            <li>φ̂ = 5/16 = 0.3125.</li>
+            <li>6 × 5 / 2 = 15 controlled phase rotations.</li>
+            <li>1/2⁵ = 1/32 = 0.03125.</li>
+        </ol>
+
+        <h2>Further reading</h2>
+
+        <p class="references">
+            1. Michael A. Nielsen and Isaac L. Chuang,
+            <em>Quantum Computation and Quantum Information</em>.
+            Cambridge University Press. A foundational textbook covering
+            quantum circuits, Fourier transforms and phase estimation.
+        </p>
+
+        <p class="references">
+            2. Peter W. Shor, “Algorithms for quantum computation:
+            discrete logarithms and factoring.” Proceedings of the
+            35th Annual Symposium on Foundations of Computer Science, 1994.
+            A foundational paper on quantum algorithms for factoring
+            and discrete logarithms.
+        </p>
+
+        <p class="references">
+            3. Richard Cleve, Artur Ekert, Chiara Macchiavello and
+            Michele Mosca, “Quantum Algorithms Revisited.”
+            Proceedings of the Royal Society A, 1998. A useful source
+            for understanding the structure of early quantum algorithms.
+        </p>
+
+        <p class="references">
+            4. IBM Quantum Learning, educational materials on quantum
+            circuits and phase estimation. Useful for connecting the
+            mathematical ideas in this chapter with circuit implementations.
+        </p>
+    </section>
+
+    <footer>
+        <p>
+            <strong>End of Chapter 6.</strong>
+            The next step is to study how these techniques are used inside
+            complete quantum algorithms, and to practise implementing QFT
+            and QPE circuits in a quantum programming framework.
+        </p>
+    </footer>
+
+</main>
+</body>
+</html>

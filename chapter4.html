@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 4: Qubits and Quantum Gates</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d2230;--mut:#5b6275;--card:#fff;--line:#e3e0d6;--acc:#c2410c;--acc2:#1d4ed8;--code:#f3f1ea;--tip:#fff4e0}
+@media(prefers-color-scheme:dark){:root{--bg:#14171f;--fg:#e8eaf0;--mut:#9aa1b5;--card:#1c2030;--line:#2d3348;--acc:#fb923c;--acc2:#7aa2ff;--code:#12141c;--tip:#2a2418}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.7 Georgia,"Times New Roman",serif}
+header,main,footer{max-width:860px;margin:auto;padding:0 18px}
+header{padding-top:40px}
+h1{font-size:2.1rem;line-height:1.2;margin:.2em 0}
+h2{font-size:1.5rem;margin:0 0 .4em;color:var(--acc)}
+h3{font-size:1.05rem;margin:1.2em 0 .3em;color:var(--acc2)}
+.sub{color:var(--mut)}
+nav{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 18px;margin:18px 0}
+nav a{display:block;color:var(--acc2);text-decoration:none;padding:2px 0;font-family:system-ui,sans-serif;font-size:.95rem}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;margin:20px 0}
+pre,code{font-family:Consolas,Menlo,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:10px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.88em}
+pre code{background:none;padding:0}
+.tip{background:var(--tip);border-left:4px solid var(--acc);padding:10px 14px;border-radius:6px;margin:12px 0;font-size:.95rem}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem;font-family:system-ui,sans-serif}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--code)}
+footer{padding:20px 18px 50px;color:var(--mut);font-size:.9rem}
+</style>
+</head>
+<body>
+<header>
+<p class="sub">Quantum Computing Notes</p>
+<h1>Chapter 4: Qubits and Quantum Gates</h1>
+<p class="sub">Written for a curious 15-year-old. If you know what a light switch and a cricket ball are, you are ready.</p>
+<nav>
+<a href="#s1">4.1 The qubit and the Bloch sphere</a>
+<a href="#s2">4.2 Single-qubit gates</a>
+<a href="#s3">4.3 Multi-qubit systems</a>
+<a href="#s4">4.4 Two-qubit gates</a>
+<a href="#s5">4.5 Universal gate sets</a>
+<a href="#s6">4.6 Quantum circuits and diagrams</a>
+<a href="#s7">4.7 Reversible computing</a>
+<a href="#s8">4.8 Hands-on: Qiskit, Cirq, PennyLane</a>
+</nav>
+</header>
+<main>
+
+<section id="s1">
+<h2>4.1 The qubit and the Bloch sphere</h2>
+<p>A normal computer bit is like a light switch. It is either <b>0</b> (off) or <b>1</b> (on), and that is the end of the story. A <b>qubit</b> is a switch that can also be in a blend of off and on, until you actually look at it.</p>
+<p>Think of a coin lying on a table: heads or tails. Now think of a coin spinning in the air. It is not "heads" or "tails" yet, but it is also not random nonsense. It has a definite spin that decides how likely each result will be when it lands. A qubit is somewhat like that spinning coin. The "landing" is called <b>measurement</b>.</p>
+
+<h3>The maths, kept friendly</h3>
+<p>We write the two basic states as <code>|0⟩</code> and <code>|1⟩</code> (say "ket zero" and "ket one"). Any qubit state is:</p>
+<pre><code>|ψ⟩ = α|0⟩ + β|1⟩        with   |α|² + |β|² = 1</code></pre>
+<p>Here α and β are called <b>amplitudes</b>. They can be complex numbers (numbers of the form a + bi). When you measure:</p>
+<ul>
+<li>you get 0 with probability |α|²</li>
+<li>you get 1 with probability |β|²</li>
+</ul>
+<p>The two probabilities add up to 1 (100%), which is why the condition above is there. After the measurement, the qubit <b>collapses</b>: if you got 0, it is now exactly |0⟩. The blend is gone. This is why you cannot just "copy out" all the hidden information of a qubit; one look gives you only one bit.</p>
+<div class="tip"><b>Common confusion:</b> a qubit is not "0 and 1 at the same time" in the sense of storing two answers you can read. It stores amplitudes. Quantum algorithms are clever ways of arranging these amplitudes so that wrong answers cancel out and the right answer gets a big probability.</div>
+
+<h3>Why amplitudes and not just probabilities?</h3>
+<p>Because amplitudes can be negative or complex, they can <b>cancel</b>, like two water waves meeting crest-to-trough. Ordinary probabilities can never cancel; they only add. This cancelling is called <b>interference</b>, and it is the real source of quantum speed-ups.</p>
+
+<h3>The Bloch sphere: a globe for one qubit</h3>
+<p>Two complex numbers look scary, but a single qubit can be drawn as a <b>point on the surface of a ball</b>, like a globe. This ball is the Bloch sphere. Using two angles, θ (theta) and φ (phi):</p>
+<pre><code>|ψ⟩ = cos(θ/2)|0⟩ + e^(iφ) · sin(θ/2)|1⟩</code></pre>
+<ul>
+<li><b>North pole</b> = |0⟩, <b>South pole</b> = |1⟩.</li>
+<li>θ is like latitude: how far you are from the north pole. It controls the probabilities of 0 and 1.</li>
+<li>φ is like longitude: it is the <b>phase</b>, the angle around the equator. It does not change the 0/1 probabilities, but it matters a lot once gates and interference come in.</li>
+</ul>
+<div class="wrap"><table>
+<tr><th>State</th><th>Where on the sphere</th><th>Measurement gives</th></tr>
+<tr><td>|0⟩</td><td>North pole</td><td>0 always</td></tr>
+<tr><td>|1⟩</td><td>South pole</td><td>1 always</td></tr>
+<tr><td>|+⟩ = (|0⟩+|1⟩)/√2</td><td>Equator, along +x</td><td>50% / 50%</td></tr>
+<tr><td>|−⟩ = (|0⟩−|1⟩)/√2</td><td>Equator, along −x</td><td>50% / 50%</td></tr>
+<tr><td>|i⟩ = (|0⟩+i|1⟩)/√2</td><td>Equator, along +y</td><td>50% / 50%</td></tr>
+</table></div>
+<p>Notice that |+⟩ and |−⟩ give identical measurement results in the 0/1 basis, but they are different states, sitting on opposite sides of the sphere. Only the sign (phase) differs, and the next gates will show you that this difference is very much real.</p>
+<div class="tip"><b>Two small notes.</b> (1) A global phase, like multiplying the whole state by −1, cannot be detected, so it is ignored; that is why one point on the sphere is enough. (2) The Bloch sphere works only for <b>one</b> qubit. For two or more qubits there is no simple globe.</div>
+</section>
+
+<section id="s2">
+<h2>4.2 Single-qubit gates</h2>
+<p>A <b>gate</b> is an operation that changes the state of a qubit. On the Bloch sphere, every single-qubit gate is a <b>rotation of the globe</b>. Mathematically, a gate is a 2×2 matrix that must be <b>unitary</b>, which simply means it preserves total probability (the state stays on the sphere's surface) and can be undone.</p>
+
+<h3>The famous ones</h3>
+<div class="wrap"><table>
+<tr><th>Gate</th><th>Matrix</th><th>What it does</th></tr>
+<tr><td><b>X</b> (NOT)</td><td><code>[[0,1],[1,0]]</code></td><td>Flips |0⟩↔|1⟩. Rotates 180° about the x-axis. Same as the classical NOT.</td></tr>
+<tr><td><b>Y</b></td><td><code>[[0,−i],[i,0]]</code></td><td>Rotates 180° about the y-axis. Flips the bit and also adds a phase.</td></tr>
+<tr><td><b>Z</b></td><td><code>[[1,0],[0,−1]]</code></td><td>Leaves |0⟩ alone, turns |1⟩ into −|1⟩. A pure phase flip: 180° about the z-axis. Turns |+⟩ into |−⟩.</td></tr>
+<tr><td><b>H</b> (Hadamard)</td><td><code>(1/√2)·[[1,1],[1,−1]]</code></td><td>|0⟩→|+⟩, |1⟩→|−⟩. The "make a superposition" gate. It swaps the z-axis and x-axis.</td></tr>
+<tr><td><b>S</b></td><td><code>[[1,0],[0,i]]</code></td><td>Quarter-turn (90°) about z. S·S = Z. So S is the "square root of Z".</td></tr>
+<tr><td><b>T</b></td><td><code>[[1,0],[0,e^(iπ/4)]]</code></td><td>Eighth-turn (45°) about z. T·T = S. The "square root of S".</td></tr>
+</table></div>
+
+<h3>Seeing how they behave</h3>
+<ul>
+<li><b>Applying a gate twice:</b> X·X = I, H·H = I, Z·Z = I. Flip twice and you are back where you started. That is what "reversible" feels like.</li>
+<li><b>H is special:</b> start from |0⟩, apply H, and you get a 50-50 state. Apply H again and you get back |0⟩ <i>with certainty</i>. The two paths to |1⟩ cancel each other. A classical coin flip twice would never do that. This is interference at work.</li>
+<li><b>Z looks useless, but isn't:</b> on |0⟩ or |1⟩ alone it changes nothing you can measure. But sandwiched between two Hadamards it becomes a bit flip: <code>H·Z·H = X</code>. Phase becomes visible once you change basis.</li>
+</ul>
+
+<h3>Rotation gates: any angle you like</h3>
+<p>X, Y, Z are fixed half-turns. The rotation gates let you pick any angle θ:</p>
+<pre><code>Rx(θ) = cos(θ/2)·I − i·sin(θ/2)·X
+Ry(θ) = cos(θ/2)·I − i·sin(θ/2)·Y
+Rz(θ) = cos(θ/2)·I − i·sin(θ/2)·Z</code></pre>
+<p>Check yourself: Rx(π) is X (up to a global phase), Rz(π/2) is S, and Rz(π/4) is T. So S and T are just Rz with particular angles. The reason for θ/2 in the formula is a quirk of how spin-½ systems behave: the matrix angle is always half the angle you see on the Bloch sphere.</p>
+<div class="tip">Every single-qubit gate, however weird, can be written as a combination of three rotations, for example Rz·Ry·Rz. So rotations are really "the whole family" of one-qubit operations.</div>
+</section>
+
+<section id="s3">
+<h2>4.3 Multi-qubit systems</h2>
+<p>One qubit is a toy. The real power starts with many qubits. To describe two qubits, we combine their states using the <b>tensor product</b> (written ⊗). Do not be afraid of the name; it just means "list all the combinations".</p>
+<pre><code>|0⟩⊗|1⟩  is written  |01⟩
+
+Two qubits have 4 basis states: |00⟩, |01⟩, |10⟩, |11⟩
+
+General two-qubit state:
+|ψ⟩ = a|00⟩ + b|01⟩ + c|10⟩ + d|11⟩      with |a|²+|b|²+|c|²+|d|² = 1</code></pre>
+
+<h3>The exponential explosion</h3>
+<p>n qubits need <b>2ⁿ amplitudes</b> to describe them.</p>
+<ul>
+<li>10 qubits → 1,024 numbers</li>
+<li>30 qubits → about a billion numbers</li>
+<li>300 qubits → more numbers than atoms in the observable universe</li>
+</ul>
+<p>This is why a normal laptop struggles to simulate even 40-50 qubits exactly, and why a real quantum device is interesting. (Careful, though: you can read out only n bits at the end, not 2ⁿ. The art lies in using the huge space wisely.)</p>
+
+<h3>Product states vs entangled states</h3>
+<p>If two qubits are independent, the state is a plain product, like (|0⟩+|1⟩)/√2 ⊗ |0⟩. But some states <b>cannot be split</b> into "qubit A's state times qubit B's state". They are <b>entangled</b>. The classic example is the Bell state:</p>
+<pre><code>|Φ+⟩ = (|00⟩ + |11⟩) / √2</code></pre>
+<p>Measure the first qubit: you get 0 or 1, each with 50%. But the moment you know it, you know the second one gives the <i>same</i> answer. Neither qubit alone has a state of its own; only the pair does. Imagine two dice that always show the same number, no matter how far apart they are rolled, even though neither number was fixed beforehand. That is the flavour of entanglement. (It does not let you send messages faster than light, because the individual results still look random.)</p>
+<div class="tip"><b>Watch out for ordering.</b> Textbooks write |q0 q1⟩ with qubit 0 on the left. Qiskit prints bit-strings with qubit 0 on the <b>right</b> (little-endian). Both are fine, but you must know which one you are reading, or your results will look "reversed".</div>
+</section>
+
+<section id="s4">
+<h2>4.4 Two-qubit gates</h2>
+<p>Single-qubit gates alone can never create entanglement. For that you need a gate that makes one qubit's action depend on another. These are <b>controlled gates</b>.</p>
+
+<h3>CNOT (controlled-NOT)</h3>
+<p>Has a <b>control</b> qubit and a <b>target</b> qubit. If the control is 1, flip the target. Otherwise do nothing.</p>
+<pre><code>|00⟩ → |00⟩
+|01⟩ → |01⟩
+|10⟩ → |11⟩
+|11⟩ → |10⟩
+
+Matrix (basis order 00, 01, 10, 11):
+[1 0 0 0]
+[0 1 0 0]
+[0 0 0 1]
+[0 0 1 0]</code></pre>
+<p>It is the classical XOR gate with a memory of the input kept: the target becomes (control XOR target).</p>
+
+<h3>Making a Bell state</h3>
+<p>Start with |00⟩. Apply H on qubit 0: you get (|00⟩+|10⟩)/√2. Now apply CNOT (control 0, target 1): the |10⟩ part becomes |11⟩. Result: (|00⟩+|11⟩)/√2. You just built entanglement with two gates. This is the "Hello World" of quantum computing.</p>
+
+<h3>CZ (controlled-Z)</h3>
+<p>Apply Z to the target if the control is 1. In effect, it flips the sign of only the |11⟩ state. Strange fact: CZ is <b>symmetric</b>, so it does not matter which qubit is called control. And CNOT is just CZ wearing Hadamard "glasses":</p>
+<pre><code>CNOT = (I ⊗ H) · CZ · (I ⊗ H)</code></pre>
+<p>Many real chips, such as superconducting ones, natively implement CZ, and the software converts CNOTs into CZs behind the scenes.</p>
+
+<h3>SWAP</h3>
+<p>Exchanges the states of two qubits: |01⟩↔|10⟩. A neat identity: SWAP = CNOT(a→b) · CNOT(b→a) · CNOT(a→b), three CNOTs back to back. Same trick as swapping two variables with XOR in C programming.</p>
+
+<div class="tip"><b>Phase kickback:</b> if the target of a CNOT is in |−⟩, then the control receives the phase instead and the target stays unchanged. This surprising "backwards" effect is the engine inside algorithms such as Deutsch-Jozsa, Grover's and phase estimation.</div>
+</section>
+
+<section id="s5">
+<h2>4.5 Universal gate sets</h2>
+<p>There are infinitely many possible gates. Do we need to build a chip for each? Thankfully not. A <b>universal gate set</b> is a small collection of gates which can, in combination, build <i>any</i> quantum operation, either exactly or as close as you like.</p>
+<p>Compare this with classical computing: NAND alone is enough to build every digital circuit, from a calculator to a PlayStation.</p>
+
+<h3>Standard universal sets</h3>
+<ul>
+<li><b>All single-qubit gates + CNOT.</b> Exactly universal. Any n-qubit operation can be assembled from these.</li>
+<li><b>{H, T, CNOT}</b> (also written Clifford+T). Finite and tiny, yet universal in the approximate sense.</li>
+</ul>
+
+<h3>Why "approximate"?</h3>
+<p>The set of all possible rotations is a continuous infinity of angles. A finite list of gates can only reach a countable number of them. But the <b>Solovay-Kitaev theorem</b> promises that you can get within any error ε using only about <code>polylog(1/ε)</code> gates, so getting very close is cheap. It is like making any amount of money from just a few coin denominations, except in angles and with "close enough" accuracy.</p>
+
+<h3>Cliffords are not enough</h3>
+<p>The <b>Clifford group</b> (H, S, CNOT) looks powerful: it creates entanglement, Bell states, teleportation, and more. Yet the <b>Gottesman-Knill theorem</b> says a normal computer can simulate Clifford-only circuits efficiently. So there is no quantum advantage. The T gate (the non-Clifford ingredient) is what gives real power. This is also why engineers count <b>T-gates</b> as the main cost in fault-tolerant quantum computing: they are the expensive ones.</p>
+</section>
+
+<section id="s6">
+<h2>4.6 Quantum circuits and circuit diagrams</h2>
+<p>A quantum circuit is a recipe. Each horizontal line is one qubit's "wire" (think of it as time flowing left to right, not a physical wire). Boxes on the line are gates; a vertical line connects control and target for two-qubit gates; a meter symbol at the end is measurement.</p>
+
+<h3>Our Bell-state circuit</h3>
+<pre><code>q0: ──[ H ]──────●──────[Meas]
+                 │
+q1: ─────────────⊕──────[Meas]
+
+● = control      ⊕ = CNOT target</code></pre>
+
+<h3>Reading rules</h3>
+<ul>
+<li>Time runs <b>left → right</b>. Gates in the same column on different qubits happen together.</li>
+<li>All qubits normally start in |0⟩.</li>
+<li>Measurement turns a qubit into an ordinary classical bit (a double line in diagrams).</li>
+<li><b>Circuit depth</b> is the number of columns; it matters because real qubits lose their quantum nature within microseconds to milliseconds (called <b>decoherence</b>). Shorter circuits survive longer.</li>
+</ul>
+
+<h3>The trap in the maths</h3>
+<p>When you write the circuit as matrices, the <b>order flips</b>. If H happens first and CNOT second, the total operation is:</p>
+<pre><code>U = CNOT · (H ⊗ I)      ← first gate is written on the right</code></pre>
+<p>Reason: matrices act on the state vector from the left, like putting on socks first and shoes next, but writing "shoes · socks". Remember: diagram reads left to right, matrix product reads right to left.</p>
+</section>
+
+<section id="s7">
+<h2>4.7 Reversible computing</h2>
+<p>Quantum gates have one strict rule: they must be <b>reversible</b>. From the output you must always be able to recover the input. That comes straight from unitarity (U†U = I).</p>
+
+<h3>The problem with ordinary gates</h3>
+<p>Take AND: inputs (0,0), (0,1) and (1,0) all give output 0. If I tell you the output is 0, you cannot say which input it was. Information has been destroyed. AND, OR, and NAND are all irreversible.</p>
+<p><b>Landauer's principle</b> says that erasing one bit of information must release at least <code>k·T·ln 2</code> of heat. Reversible computing, in theory, can avoid this cost by never erasing anything.</p>
+
+<h3>Reversible versions of classical gates</h3>
+<ul>
+<li><b>NOT</b> is already reversible.</li>
+<li><b>CNOT</b> is reversible (it is its own inverse). It computes XOR while keeping an input.</li>
+<li><b>Toffoli (CCNOT)</b>: two controls, one target. Flip the target only if both controls are 1. Setting the target to 0 gives <code>target = a AND b</code>. Setting it to 1 gives NAND. So Toffoli is <b>universal for reversible classical computing</b>, and it is exactly how we put classical logic inside quantum circuits.</li>
+<li><b>Fredkin (CSWAP)</b>: swaps two qubits if the control is 1. Also universal.</li>
+</ul>
+
+<h3>Ancillas and uncomputation</h3>
+<p>To keep things reversible you often need extra scratch qubits, called <b>ancillas</b>. Once you have copied out your answer, you run the calculation <i>backwards</i> to clean the scratch qubits back to |0⟩. This is <b>uncomputation</b>. It matters in quantum algorithms because leftover "garbage" would stay entangled with your answer and ruin the interference.</p>
+<div class="tip">Fun fact: a Toffoli gate itself can be built from 6 CNOTs, some Hadamards, and 7 T-gates. So a gate that looks "simple" on paper costs a lot on real hardware.</div>
+</section>
+
+<section id="s8">
+<h2>4.8 Hands-on: building circuits in Qiskit, Cirq and PennyLane</h2>
+<p>We will build the same Bell-state circuit in all three libraries. Install first:</p>
+<pre><code>pip install qiskit qiskit-aer cirq pennylane</code></pre>
+
+<h3>Qiskit (IBM)</h3>
+<pre><code>from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+from qiskit_aer import AerSimulator
+
+qc = QuantumCircuit(2)
+qc.h(0)          # Hadamard on qubit 0
+qc.cx(0, 1)      # CNOT: control 0, target 1
+print(qc.draw())
+
+print(Statevector(qc))   # amplitudes: 0.707 for |00> and |11>
+
+qc.measure_all()
+counts = AerSimulator().run(qc, shots=1000).result().get_counts()
+print(counts)    # roughly {'00': ~500, '11': ~500}</code></pre>
+
+<h3>Cirq (Google)</h3>
+<pre><code>import cirq
+
+q0, q1 = cirq.LineQubit.range(2)
+circuit = cirq.Circuit(
+    cirq.H(q0),
+    cirq.CNOT(q0, q1),
+    cirq.measure(q0, q1, key="m"),
+)
+print(circuit)
+
+result = cirq.Simulator().run(circuit, repetitions=1000)
+print(result.histogram(key="m"))   # keys 0 and 3, i.e. 00 and 11</code></pre>
+
+<h3>PennyLane (Xanadu)</h3>
+<pre><code>import pennylane as qml
+
+dev = qml.device("default.qubit", wires=2, shots=1000)
+
+@qml.qnode(dev)
+def bell():
+    qml.Hadamard(wires=0)
+    qml.CNOT(wires=[0, 1])
+    return qml.counts()
+
+print(qml.draw(bell)())
+print(bell())      # {'00': ~500, '11': ~500}</code></pre>
+
+<h3>Which one should you pick?</h3>
+<div class="wrap"><table>
+<tr><th>Library</th><th>Good at</th><th>Style</th></tr>
+<tr><td>Qiskit</td><td>Running on IBM's real quantum hardware, huge community</td><td>Circuit object, methods like <code>qc.h(0)</code></td></tr>
+<tr><td>Cirq</td><td>Hardware-aware design for Google-style chips, precise control of qubit layout</td><td>Moments and operations on named qubits</td></tr>
+<tr><td>PennyLane</td><td>Quantum machine learning, automatic differentiation</td><td>Python function decorated as a QNode</td></tr>
+</table></div>
+
+<h3>Try these yourself</h3>
+<ul>
+<li>Remove the H gate. What do you get? (Only 00, always. No superposition, so no entanglement.)</li>
+<li>Replace the CNOT with CZ. Does the result change? (Yes, but add an H on qubit 1 before and after CZ, and you recover the Bell state.)</li>
+<li>Apply X on qubit 1 after the CNOT. You should now get 01 and 10. That is another Bell state, |Ψ+⟩.</li>
+</ul>
+</section>
+
+</main>
+<footer>
+<p><b>Quick recap:</b> a qubit is a point on a sphere; gates rotate it; many qubits give 2ⁿ amplitudes; CNOT plus single-qubit gates build everything; T gates give the real quantum edge; and every step must be reversible.</p>
+</footer>
+</body>
+</html>

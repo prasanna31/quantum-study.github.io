@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 3: Quantum Mechanics for Computer Scientists</title>
+<style>
+:root{--bg:#fbf8f3;--fg:#222;--mut:#666;--card:#fff;--ac:#c2410c;--ac2:#0f766e;--bd:#e5ded3;--code:#f3ece1;--hl:#fff3d6}
+@media (prefers-color-scheme:dark){:root{--bg:#161412;--fg:#ece7df;--mut:#a8a095;--card:#201d1a;--ac:#fb923c;--ac2:#5eead4;--bd:#3a342d;--code:#2a2621;--hl:#3a2f1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.75 Georgia,'Times New Roman',serif}
+header,main{max-width:840px;margin:auto;padding:0 18px}
+header{padding-top:40px}
+h1{font-size:2rem;line-height:1.25;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 20px}
+nav{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 18px;margin-bottom:14px}
+nav a{display:block;color:var(--ac);text-decoration:none;padding:2px 0}
+section{margin:50px 0}
+h2{font-size:1.55rem;border-bottom:3px solid var(--ac);display:inline-block;padding-bottom:2px;margin-bottom:6px}
+h3{color:var(--ac2);margin:28px 0 4px;font-size:1.15rem}
+.box{background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--ac2);border-radius:10px;padding:10px 16px;margin:16px 0}
+.box.warn{border-left-color:var(--ac)}
+.box.try{border-left-color:#7c3aed}
+.eq{background:var(--code);border-radius:8px;padding:10px 14px;margin:14px 0;overflow-x:auto;font-family:'Cambria Math',Cambria,serif;font-size:1.1rem;text-align:center}
+.ex{background:var(--hl);border-radius:8px;padding:8px 14px;margin:12px 0}
+.m{display:inline-grid;grid-template-columns:repeat(var(--c),auto);gap:2px 14px;padding:0 8px;border-left:2px solid;border-right:2px solid;border-radius:6px;vertical-align:middle;margin:0 4px}
+.m i{font-style:normal;text-align:center}
+summary{cursor:pointer;color:var(--ac);font-weight:bold}
+details{margin:8px 0;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 14px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin:12px 0}
+td,th{border:1px solid var(--bd);padding:6px 10px;text-align:left}
+th{background:var(--code)}
+svg{max-width:100%;height:auto;display:block;margin:10px auto}
+footer{text-align:center;color:var(--mut);padding:30px 0 50px}
+</style>
+</head>
+<body>
+<header>
+<h1>Chapter 3: Quantum Mechanics for Computer Scientists</h1>
+<p class="sub">The rules of the quantum game, explained for someone who writes code, not physics papers. We use only the maths from Chapter 2, nothing more.</p>
+<nav>
+<a href="#s1">3.1 Postulates of quantum mechanics</a>
+<a href="#s2">3.2 Superposition</a>
+<a href="#s3">3.3 Measurement and the Born rule</a>
+<a href="#s4">3.4 Entanglement</a>
+<a href="#s5">3.5 No-cloning theorem</a>
+<a href="#s6">3.6 Decoherence and noise</a>
+<a href="#s7">3.7 Density matrices and mixed states</a>
+<a href="#s8">3.8 Exercises</a>
+</nav>
+
+<h3>What is this chapter about?</h3>
+<p>You do not need to learn all of physics to program a quantum computer, just as you do not need to study semiconductor physics to write Python. A computer scientist needs only the <em>rules</em>: how is information stored, how can it be changed, and how do we read it out? Quantum mechanics answers these three questions in a very compact way, and then adds two surprises (entanglement and the no-cloning rule) that have no classical counterpart. Finally, we look at why real quantum computers are so hard to build (noise), and learn a tool (density matrices) that handles noise honestly.</p>
+<p>A tip: do not hurry to "understand" in the sense of imagining it. Nobody can picture a qubit the way they picture a cricket ball. Instead, learn to <em>calculate</em> with the rules. Intuition comes later, as a side effect of calculating many examples.</p>
+</header>
+
+<main>
+
+<!-- ================= 3.1 ================= -->
+<section id="s1">
+<h2>3.1 Postulates of quantum mechanics</h2>
+
+<h3>What is a postulate?</h3>
+<p>A postulate is a rule we accept without proof, because experiments agree with it again and again. Think of the rules of cricket: nobody "proves" that six runs are given for a ball crossing the boundary on the full. It is the rule, and the game is built on it. Quantum mechanics has a short list of such rules. Books number them differently (some give four, some five), but the content is the same. Here are the four we need, each with its meaning for a programmer.</p>
+
+<h3>Postulate 1: State space (how information is stored)</h3>
+<p>Every isolated quantum system has a vector space attached to it (called a <b>Hilbert space</b>; for us it is just ℂⁿ with an inner product). The <b>state</b> of the system is a <b>unit vector</b> in that space. For one qubit:</p>
+<div class="eq">|ψ⟩ = α|0⟩ + β|1⟩, &nbsp;&nbsp; α, β ∈ ℂ, &nbsp;&nbsp; |α|² + |β|² = 1</div>
+<p>Two small but important remarks. First, α and β are called <b>amplitudes</b>, and they are complex, not probabilities. Second, the vectors |ψ⟩ and e<sup>iθ</sup>|ψ⟩ describe the <em>same</em> physical state. This common factor is the <b>global phase</b>, and no experiment can detect it. (A phase that sits on only one amplitude, a <b>relative phase</b>, is detectable. We will see this soon.)</p>
+
+<h3>Postulate 2: Evolution (how information is changed)</h3>
+<p>If the system is isolated, its state changes only by a <b>unitary</b> operator:</p>
+<div class="eq">|ψ′⟩ = U|ψ⟩, &nbsp;&nbsp; U†U = I</div>
+<p>In physics books you will see this as the Schrödinger equation, iħ d|ψ⟩/dt = H|ψ⟩, whose solution is U = e<sup>−iHt/ħ</sup>. For us the meaning is simple: <b>every quantum gate is a unitary matrix</b>. Unitary matrices preserve length (Chapter 2.3), so the total probability stays 1, and they are reversible. Quantum computation, before measurement, is a reversible process. There is no "delete" and no "overwrite".</p>
+
+<h3>Postulate 3: Measurement (how information is read)</h3>
+<p>Every measurable quantity (an <b>observable</b>) is a Hermitian operator A. Write its spectral form A = Σ λₘ Pₘ, where λₘ are the eigenvalues and Pₘ are projectors onto the eigenspaces. Then:</p>
+<ul>
+<li>The result of the measurement is always one of the eigenvalues λₘ.</li>
+<li>The probability of getting λₘ is <b>P(m) = ⟨ψ|Pₘ|ψ⟩</b>. For a non-degenerate eigenvector |eₘ⟩ this is |⟨eₘ|ψ⟩|², the <b>Born rule</b>.</li>
+<li>Immediately afterwards the state becomes <b>Pₘ|ψ⟩ / √P(m)</b>. This is called <b>collapse</b>.</li>
+</ul>
+<p>Notice that this is the <em>only</em> place where randomness enters, and the <em>only</em> place where the evolution is irreversible. Everything else is clean, deterministic, reversible linear algebra.</p>
+
+<h3>Postulate 4: Composite systems (how to put things together)</h3>
+<p>The state space of a combined system is the <b>tensor product</b> of the individual spaces (Chapter 2.5). Two qubits live in ℂ² ⊗ ℂ² = ℂ⁴, and n qubits live in a space of dimension 2ⁿ. States of this big space that cannot be written as u ⊗ v are <b>entangled</b>.</p>
+
+<h3>The whole thing as a programme</h3>
+<div class="tw"><table>
+<tr><th>Step in a quantum programme</th><th>Postulate</th><th>Classical analogy</th></tr>
+<tr><td>Start with qubits, usually all |0⟩</td><td>1 and 4</td><td>Initialise variables</td></tr>
+<tr><td>Apply a sequence of gates</td><td>2</td><td>Run the instructions</td></tr>
+<tr><td>Measure and read the bits</td><td>3</td><td>Print the output</td></tr>
+</table></div>
+
+<h3>Classical bit versus qubit, side by side</h3>
+<div class="tw"><table>
+<tr><th></th><th>Classical bit</th><th>Qubit</th></tr>
+<tr><td>State</td><td>0 or 1</td><td>Unit vector α|0⟩ + β|1⟩ in ℂ²</td></tr>
+<tr><td>Operations</td><td>Any function, including irreversible (AND, delete)</td><td>Only unitary (reversible) gates</td></tr>
+<tr><td>Reading it</td><td>Look at it, nothing changes</td><td>Measuring changes the state</td></tr>
+<tr><td>n of them</td><td>n numbers describe it</td><td>2ⁿ amplitudes describe it</td></tr>
+<tr><td>Copying</td><td>Always possible</td><td>Impossible for unknown states (3.5)</td></tr>
+</table></div>
+
+<div class="box warn"><b>Common worry:</b> "If we can only get n bits out of n qubits, why bother with 2ⁿ amplitudes?" Good question, and the honest answer is: those amplitudes can interfere. A good algorithm arranges the interference so that wrong answers cancel and the right answer is left with high probability. The amplitudes are not outputs, they are working space.</div>
+</section>
+
+<!-- ================= 3.2 ================= -->
+<section id="s2">
+<h2>3.2 Superposition</h2>
+
+<h3>What it really is</h3>
+<p>You have heard the line "a qubit is 0 and 1 at the same time". It is not wrong, but it is a very poor description, because it makes you imagine a classical coin that is somehow both heads and tails. Here is the precise version. A qubit's state is a vector. The vectors |0⟩ and |1⟩ are two special directions. A superposition is simply <em>any other direction</em>, built as a linear combination of those two. That is all. The state α|0⟩ + β|1⟩ is a perfectly definite state, just as the point (3, 4) on a graph is a perfectly definite point even though it is "partly x and partly y".</p>
+
+<h3>"But it is just my ignorance, right?" No.</h3>
+<p>Suppose your friend flips a coin and covers it with his hand. You can say "50% heads, 50% tails", but in truth the coin <em>is</em> already one of them; you only lack the information. This is a <b>mixture</b>, and it is classical probability.</p>
+<p>A qubit in the state |+⟩ = (|0⟩ + |1⟩)/√2 is different. It is not secretly 0 or secretly 1. We can prove it by an experiment. Apply the Hadamard gate H to it. H|+⟩ = |0⟩, so you get 0 with 100% certainty. If the qubit had been secretly 0 or 1 with 50% chance each, then H would have turned it into |+⟩ or |−⟩ and the final result would be a 50-50 toss. The test result is 100%, so the "secret value" story is false. We will compute this carefully below.</p>
+
+<h3>Interference: amplitudes can cancel</h3>
+<p>H sends |0⟩ to |+⟩ and |1⟩ to |−⟩. So applying H to |+⟩:</p>
+<div class="eq">H|+⟩ = (1/√2)(H|0⟩ + H|1⟩) = ½[(|0⟩ + |1⟩) + (|0⟩ − |1⟩)] = |0⟩</div>
+<p>Look at the |1⟩ part: one contribution is +½ (coming from the |0⟩ half of |+⟩) and the other is −½ (coming from the |1⟩ half). They cancel exactly. For |0⟩ the two contributions are +½ and +½, and they add to 1. This is <b>interference</b>. Probabilities (always positive) can only add up; amplitudes (which can be negative or complex) can also cancel. Every quantum speed-up you will meet later is, at the heart, an exercise in making wrong paths cancel.</p>
+
+<div class="box try"><b>Try it:</b> compute H|−⟩ the same way. You should get |1⟩. So the sequence H, H takes |0⟩ → |+⟩ → |0⟩, and the sequence X-then-H, H takes |0⟩ → |1⟩ → |−⟩ → |1⟩. The relative minus sign in |−⟩ is invisible to a direct 0/1 measurement, but it decides what happens next.</div>
+
+<h3>The Bloch sphere: a map of all single-qubit states</h3>
+<p>A qubit has two complex amplitudes, which is four real numbers. Normalisation removes one, and the global phase removes another, so only <b>two real numbers</b> are really needed. Two numbers are like latitude and longitude, so the states of a qubit can be placed on a sphere. We write</p>
+<div class="eq">|ψ⟩ = cos(θ/2) |0⟩ + e<sup>iφ</sup> sin(θ/2) |1⟩</div>
+<p>with 0 ≤ θ ≤ π (angle from the north pole) and 0 ≤ φ &lt; 2π (angle around the equator). Why θ/2 and not θ? Because |0⟩ and |1⟩ are orthogonal (as far apart as vectors can be), yet on the sphere we place them at opposite poles, which are 180° apart. So all angles on the sphere are doubled compared to angles in the vector space.</p>
+
+<svg viewBox="0 0 340 260" width="340" role="img" aria-label="Bloch sphere with the six standard states">
+<g fill="none" stroke="currentColor" stroke-width="1.5">
+<circle cx="170" cy="130" r="95"/>
+<ellipse cx="170" cy="130" rx="95" ry="28" stroke-dasharray="4 4" opacity=".6"/>
+<line x1="170" y1="25" x2="170" y2="235" opacity=".6"/>
+<line x1="75" y1="130" x2="265" y2="130" opacity=".6"/>
+</g>
+<g fill="currentColor" font-size="13" font-family="Georgia,serif">
+<text x="177" y="22">|0⟩ (north pole, θ = 0)</text>
+<text x="177" y="250">|1⟩ (south pole, θ = π)</text>
+<text x="270" y="134">|+⟩</text>
+<text x="38" y="134">|−⟩</text>
+<text x="215" y="170">|+i⟩</text>
+<text x="108" y="100">|−i⟩</text>
+</g>
+<g fill="currentColor"><circle cx="170" cy="35" r="4"/><circle cx="170" cy="225" r="4"/><circle cx="265" cy="130" r="4"/><circle cx="75" cy="130" r="4"/><circle cx="170" cy="158" r="4"/><circle cx="170" cy="102" r="4"/></g>
+</svg>
+
+<div class="tw"><table>
+<tr><th>State</th><th>Formula</th><th>θ</th><th>φ</th></tr>
+<tr><td>|0⟩</td><td>(1, 0)</td><td>0</td><td>any</td></tr>
+<tr><td>|1⟩</td><td>(0, 1)</td><td>π</td><td>any</td></tr>
+<tr><td>|+⟩</td><td>(|0⟩ + |1⟩)/√2</td><td>π/2</td><td>0</td></tr>
+<tr><td>|−⟩</td><td>(|0⟩ − |1⟩)/√2</td><td>π/2</td><td>π</td></tr>
+<tr><td>|+i⟩</td><td>(|0⟩ + i|1⟩)/√2</td><td>π/2</td><td>π/2</td></tr>
+<tr><td>|−i⟩</td><td>(|0⟩ − i|1⟩)/√2</td><td>π/2</td><td>3π/2</td></tr>
+</table></div>
+<p>Pairs of opposite points are orthogonal states: |0⟩ and |1⟩, |+⟩ and |−⟩, |+i⟩ and |−i⟩. Each pair is a measurement basis (Z, X and Y respectively). Every single-qubit gate is a rotation of this sphere. The Z gate is a half-turn around the vertical axis, X a half-turn around the left-right axis, and H a half-turn around the axis halfway between them, which is why it swaps the poles with the "equator points" |±⟩.</p>
+<p>A warning: the Bloch sphere works only for <em>one</em> qubit. With two or more qubits, entanglement makes such a simple picture impossible.</p>
+
+<h3>Superposition over many qubits</h3>
+<p>Start with n qubits in |00…0⟩ and apply H to each:</p>
+<div class="eq">H<sup>⊗n</sup>|0…0⟩ = (1/√2ⁿ) Σ<sub>x ∈ {0,1}ⁿ</sub> |x⟩</div>
+<p>This is an equal superposition of all 2ⁿ bit-strings. For n = 3 it is (|000⟩ + |001⟩ + … + |111⟩)/√8. This is the standard first step of most algorithms. It looks like "we have all answers at once", and that tempts many beginners to think a quantum computer simply tries every possibility in parallel and picks the right one. That is <b>wrong</b>. When you measure, you get only <em>one</em> random string. The art of quantum algorithm design is to use interference so that the amplitude is concentrated on the string you want before you measure.</p>
+
+<div class="box"><b>Summary in one line:</b> superposition means "the state is a linear combination of basis states"; it is a definite vector, it is different from classical randomness, and its power comes from amplitudes being able to cancel.</div>
+</section>
+
+<!-- ================= 3.3 ================= -->
+<section id="s3">
+<h2>3.3 Measurement and the Born rule</h2>
+
+<h3>The rule</h3>
+<p>Pick an orthonormal basis {|e₁⟩, |e₂⟩, …}. Measuring "in that basis" gives outcome i with probability</p>
+<div class="eq">P(i) = |⟨eᵢ|ψ⟩|²</div>
+<p>This is the <b>Born rule</b>, named after Max Born. In words: the inner product ⟨eᵢ|ψ⟩ is the amplitude (the "overlap") and you square its modulus to get a probability. This is exactly the |z|² = z·z* trick from Chapter 2.1: complex amplitude in, ordinary non-negative number out. The probabilities automatically add to 1, because the state is a unit vector and the basis is orthonormal.</p>
+
+<h3>The four-step recipe</h3>
+<ol>
+<li><b>Choose a basis.</b> (Usually {|0⟩, |1⟩}, called "the computational" or Z basis.)</li>
+<li><b>Compute overlaps</b> ⟨eᵢ|ψ⟩ for each basis vector.</li>
+<li><b>Square the modulus</b> of each to get probabilities. Check that they add to 1.</li>
+<li><b>Collapse:</b> the new state is the basis vector you observed.</li>
+</ol>
+
+<h3>Worked example: same state, two different measurements</h3>
+<p>Let |ψ⟩ = (√3/2)|0⟩ + (1/2)|1⟩.</p>
+<div class="ex"><b>In the Z basis:</b> P(0) = 3/4 and P(1) = 1/4.<br>
+<b>In the X basis</b> (basis |+⟩, |−⟩): ⟨+|ψ⟩ = (1/√2)(√3/2 + 1/2), so P(+) = ½(√3/2 + 1/2)² = ½(1 + √3/2) ≈ <b>0.933</b>, and P(−) ≈ <b>0.067</b>.</div>
+<p>Now change only one thing: let |ψ′⟩ = (√3/2)|0⟩ + (i/2)|1⟩. The Z probabilities are still 3/4 and 1/4, because |i/2|² = 1/4. But in the X basis:</p>
+<div class="ex">⟨+|ψ′⟩ = (1/√2)(√3/2 + i/2), so P(+) = ½(3/4 + 1/4) = <b>0.5</b>, and P(−) = <b>0.5</b>.</div>
+<p>So the two states look identical to a Z measurement, but an X measurement tells them apart: 93% versus 50%. This is the practical meaning of "phase matters". Phase is information that is hidden from one measurement and visible to another.</p>
+
+<h3>Measuring in another basis: the practical trick</h3>
+<p>Real hardware usually measures only in the Z basis. To measure in another basis, first rotate that basis onto Z with a gate, then measure as usual. For the X basis: apply H, then measure Z. (This is exactly what happened in 3.2: H|+⟩ = |0⟩ means "the X measurement gives + for sure".) For the Y basis, apply S† and then H, where S = diag(1, i).</p>
+
+<h3>Collapse and repeatability</h3>
+<p>If you measure and get 1, the qubit is now |1⟩. Measure again straight away and you get 1 again, with probability 1. The earlier superposition is gone. Two consequences:</p>
+<ul>
+<li>One measurement yields at most <b>one classical bit</b> from a qubit, however complicated α and β were. You cannot "read" α and β directly.</li>
+<li>To estimate α and β, you must prepare the same state again and again (each run is a <b>shot</b>) and count frequencies. With N shots the statistical error in an estimated probability p is about √(p(1−p)/N). For p = 0.5 and N = 1000, the error is about 0.016, so you will see roughly 484 to 516 in most runs.</li>
+</ul>
+
+<h3>You cannot know everything at once</h3>
+<p>A state like |0⟩ gives a certain answer to a Z measurement, but a 50-50 answer to an X measurement. The two observables Z and X do not commute (XZ = −ZX, which you computed in Chapter 2). That means there is no state that is certain for both. This is the mathematical core of Heisenberg's uncertainty principle, and it has nothing to do with clumsy instruments. It is a property of the state space itself.</p>
+
+<h3>Measuring only part of a system</h3>
+<p>Suppose two qubits are in</p>
+<div class="eq">|ψ⟩ = (|00⟩ + |01⟩ + |10⟩)/√3</div>
+<p>and you measure just the first qubit in the Z basis. Group the terms by the first qubit: |ψ⟩ = |0⟩(|0⟩ + |1⟩)/√3 + |1⟩|0⟩/√3.</p>
+<ul>
+<li>Result 0: probability = (1/3 + 1/3) = <b>2/3</b>. New state: (|00⟩ + |01⟩)/√2 = |0⟩ ⊗ |+⟩. The second qubit is now in |+⟩.</li>
+<li>Result 1: probability = <b>1/3</b>. New state: |10⟩, so the second qubit is |0⟩.</li>
+</ul>
+<p>General method: add up |amplitude|² of all terms consistent with the result, then keep only those terms and re-normalise. Notice that measuring the first qubit <em>changed what we know about the second</em>. This is the seed of entanglement.</p>
+
+<h3>Expectation values</h3>
+<p>For an observable A, the average result over many shots is</p>
+<div class="eq">⟨A⟩ = ⟨ψ|A|ψ⟩ = Σ P(i) λᵢ</div>
+<p>For Z and |ψ⟩ = α|0⟩ + β|1⟩, ⟨Z⟩ = |α|² − |β|². For the state (√3/2)|0⟩ + (1/2)|1⟩, ⟨Z⟩ = 3/4 − 1/4 = 0.5, which means "leaning towards 0". Many real algorithms (for example, in chemistry) end by estimating such averages.</p>
+
+<div class="box warn"><b>The puzzle nobody has fully solved:</b> evolution (Postulate 2) is reversible and deterministic, but measurement (Postulate 3) is random and irreversible. Why does "measuring" get a special rule? This is called the <em>measurement problem</em>, and physicists still argue about its interpretation. For computing it makes no difference, because every interpretation gives the same predictions. Decoherence (3.6) will give us a good partial explanation of how the classical world emerges.</div>
+</section>
+
+<!-- ================= 3.4 ================= -->
+<section id="s4">
+<h2>3.4 Entanglement</h2>
+
+<h3>Product states first</h3>
+<p>If Alice has a qubit in state u and Bob has one in state v, the joint state is u ⊗ v. Such a state is a <b>product state</b>. Measuring Alice's qubit tells you nothing about Bob's; they are independent, like the results of two different dice.</p>
+
+<h3>The entangled state</h3>
+<p>Consider this state of two qubits:</p>
+<div class="eq">|Φ⁺⟩ = (|00⟩ + |11⟩)/√2</div>
+<p>In Chapter 2 we proved that it cannot be written as u ⊗ v. Neither qubit has a state of its own, yet the pair does. Such a state is <b>entangled</b>. If Alice measures her qubit (in the Z basis), she gets 0 or 1, each with probability ½. But whatever she gets, Bob's qubit will give <em>the same</em> answer when measured. If Alice gets 0, the state collapses to |00⟩; if 1, to |11⟩.</p>
+
+<h3>A quick test for two-qubit states</h3>
+<p>Write a general state as α|00⟩ + β|01⟩ + γ|10⟩ + δ|11⟩. It is a product state exactly when</p>
+<div class="eq">αδ − βγ = 0</div>
+<p>Why? For a product (a, b) ⊗ (c, d) = (ac, ad, bc, bd), we get αδ = ac·bd and βγ = ad·bc, which are equal. Conversely, if they are equal, the state can be factorised. For Φ⁺: α = δ = 1/√2 and β = γ = 0, giving αδ − βγ = ½ ≠ 0. Entangled ✓. The quantity |αδ − βγ| (times 2) is called the <b>concurrence</b>; it goes from 0 (product) to 1 (maximally entangled).</p>
+
+<h3>The four Bell states</h3>
+<div class="eq">
+|Φ⁺⟩ = (|00⟩ + |11⟩)/√2 &nbsp;&nbsp; |Φ⁻⟩ = (|00⟩ − |11⟩)/√2<br>
+|Ψ⁺⟩ = (|01⟩ + |10⟩)/√2 &nbsp;&nbsp; |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2
+</div>
+<p>They are orthonormal and form a basis of ℂ⁴, called the <b>Bell basis</b>. Each is maximally entangled. The first two give <em>equal</em> results when both qubits are measured in Z; the last two give <em>opposite</em> results.</p>
+
+<h3>How to make one: H then CNOT</h3>
+<div class="ex">Start: |00⟩<br>
+Apply H on qubit 1: (|0⟩ + |1⟩)/√2 ⊗ |0⟩ = (|00⟩ + |10⟩)/√2<br>
+Apply CNOT (qubit 1 controls, qubit 2 is flipped): |00⟩ → |00⟩, |10⟩ → |11⟩<br>
+Result: (|00⟩ + |11⟩)/√2 = <b>|Φ⁺⟩</b></div>
+<p>The point to notice: H made a superposition, and CNOT then "copied the decision" into the second qubit, but in a coherent way, without anyone observing. Superposition plus a controlled gate gives entanglement. This two-gate circuit is the "hello world" of quantum computing.</p>
+
+<h3>It works in other bases too</h3>
+<p>This is what separates entanglement from a simple pre-arranged secret. Measure both qubits of Φ⁺ in the X basis and, again, the results are perfectly correlated (both + or both −). You can check it by writing |Φ⁺⟩ = (|++⟩ + |−−⟩)/√2, which is the same state in a different basis. The correlation is present whichever basis you choose, as long as both of you choose the same one.</p>
+
+<h3>The gloves analogy, and where it breaks</h3>
+<p>Imagine a pair of gloves (one left, one right) put into two boxes at random, and the boxes sent to Delhi and Chennai. When you open the Delhi box and see a left glove, you instantly know that Chennai has the right one. Nothing mysterious: the answer was fixed when the boxes were packed. Is entanglement the same? Einstein hoped so; he thought quantum mechanics was incomplete and that hidden "pre-packed answers" existed.</p>
+<p>In 1964, John Bell showed that this can be tested. If the answers were pre-packed, then the correlations between measurements in <em>several different bases</em> would obey certain inequalities. A popular form is the <b>CHSH inequality</b>. Alice chooses between two settings (a, a′), Bob between two (b, b′), and we compute</p>
+<div class="eq">S = E(a,b) − E(a,b′) + E(a′,b) + E(a′,b′)</div>
+<p>where E is the average product of the ±1 results. Any pre-packed-answers theory gives |S| ≤ 2. Quantum mechanics, using Φ⁺ and suitably chosen angles, gives up to 2√2 ≈ 2.83. Experiments, from the 1980s onwards (Alain Aspect and others, and later cleaner ones that closed various loopholes), found values near 2.8. The 2022 Nobel Prize in Physics was awarded to Aspect, John Clauser and Anton Zeilinger for this line of work. Conclusion: the gloves story is false; the answers are not decided in advance.</p>
+
+<h3>Can we use entanglement to send messages faster than light? No.</h3>
+<p>This is the most common misunderstanding. Look at Bob's qubit alone. Whatever Alice does (measure in Z, measure in X, or do nothing), Bob's own results are completely random, 50% each. The correlation shows up only when Alice and Bob <em>compare notes</em>, and comparing notes needs an ordinary message (phone, WhatsApp, anything), which travels at or below the speed of light. In the language of 3.7, Bob's reduced state is I/2 regardless of what Alice does, so he cannot detect anything. Entanglement is a correlation, not a communication channel.</p>
+
+<h3>More than two qubits, and some uses</h3>
+<ul>
+<li><b>GHZ state:</b> (|000⟩ + |111⟩)/√2. Measure all three and you get 000 or 111, each half the time. Remove (measure) any one qubit and the other two lose their entanglement completely, becoming a plain classical mix. Compare that with the W state, (|001⟩ + |010⟩ + |100⟩)/√3, which keeps some entanglement even after one qubit is lost. There are different "kinds" of entanglement.</li>
+<li><b>Monogamy:</b> if two qubits are maximally entangled with each other, neither can be entangled with a third. Entanglement cannot be shared freely. This is what makes quantum key distribution secure: an eavesdropper has to be entangled with the pair and would disturb the correlations.</li>
+<li><b>Quantum teleportation:</b> using one shared Bell pair plus two classical bits, Alice can transfer an unknown qubit state to Bob. The original is destroyed in the process (which is consistent with the next section), and nothing travels faster than light because the two classical bits are essential.</li>
+<li><b>Superdense coding:</b> using one shared Bell pair, Alice can send two classical bits to Bob by transmitting just one qubit.</li>
+</ul>
+
+<div class="box"><b>Summary:</b> an entangled state is a vector in the big space that does not factorise. It produces correlations stronger than any classical pre-agreement can, but it cannot carry a message by itself. Entanglement is a resource, like fuel, that algorithms and protocols consume.</div>
+</section>
+
+<!-- ================= 3.5 ================= -->
+<section id="s5">
+<h2>3.5 No-cloning theorem</h2>
+
+<h3>Why this is shocking to a programmer</h3>
+<p>In classical computing, copying is free. Ctrl+C, Ctrl+V; <code>b = a</code>; backups; RAM caches. A quantum computer cannot do this for arbitrary, unknown states. This theorem (Wootters and Zurek; Dieks, 1982) is not an engineering limitation. It is a mathematical consequence of linearity.</p>
+
+<h3>What exactly is forbidden</h3>
+<p>Suppose there were a machine (a unitary U) such that for <em>every</em> state |ψ⟩ and a blank qubit |0⟩:</p>
+<div class="eq">U(|ψ⟩ ⊗ |0⟩) = |ψ⟩ ⊗ |ψ⟩</div>
+<p>The theorem says no such U exists.</p>
+
+<h3>Proof 1: the linearity argument (the easiest one)</h3>
+<p>The machine must work on |0⟩ and |1⟩: U|00⟩ = |00⟩ and U|10⟩ = |11⟩. Now feed it |+⟩ = (|0⟩ + |1⟩)/√2. Since U is linear:</p>
+<div class="eq">U(|+⟩|0⟩) = (U|00⟩ + U|10⟩)/√2 = (|00⟩ + |11⟩)/√2</div>
+<p>But a true copy of |+⟩ would be</p>
+<div class="eq">|+⟩|+⟩ = ½(|00⟩ + |01⟩ + |10⟩ + |11⟩)</div>
+<p>These are different vectors. (One is entangled, the other is a product state.) So the machine that copies |0⟩ and |1⟩ correctly fails on |+⟩. Contradiction.</p>
+
+<h3>Proof 2: the inner product argument</h3>
+<p>Suppose U clones two states |φ⟩ and |ψ⟩. Take the inner product of the two equations U|φ⟩|0⟩ = |φ⟩|φ⟩ and U|ψ⟩|0⟩ = |ψ⟩|ψ⟩. Unitary maps preserve inner products, so the left side gives ⟨φ|ψ⟩⟨0|0⟩ = ⟨φ|ψ⟩, and the right side gives ⟨φ|ψ⟩². Hence</p>
+<div class="eq">x = x², &nbsp;&nbsp; where x = ⟨φ|ψ⟩ &nbsp;&nbsp; ⟹ &nbsp;&nbsp; x = 0 or x = 1</div>
+<p>So two states can be cloned by the same machine only if they are <b>orthogonal</b> (x = 0) or <b>identical</b> (x = 1). A machine can clone a <em>known list of mutually orthogonal states</em> (like |0⟩ and |1⟩, which is why classical bits can be copied), but never an arbitrary unknown state.</p>
+
+<h3>What CNOT does, and does not, do</h3>
+<p>CNOT with target |0⟩ copies basis states: |0⟩|0⟩ → |00⟩, |1⟩|0⟩ → |11⟩. That is "copying a classical bit". On a superposition it does not copy the state; it <em>entangles</em> the original with the "copy", as Proof 1 shows. Many beginners try CNOT as a copier and are surprised by the result.</p>
+
+<h3>Why the theorem is useful, not just limiting</h3>
+<ul>
+<li><b>Quantum key distribution (BB84):</b> an eavesdropper cannot copy the photons in transit and keep the originals; any attempt to measure them disturbs them, and the two parties notice the errors.</li>
+<li><b>Quantum money:</b> a banknote encoded in unknown quantum states could not be photocopied.</li>
+<li><b>No faster-than-light signalling:</b> if cloning were possible, Bob could clone his half of an entangled pair many times and, by measuring the copies in different bases, work out which basis Alice used. That would be a message sent without any delay. Cloning would break relativity.</li>
+</ul>
+
+<h3>The price: error correction is harder</h3>
+<p>Classical error correction starts with "keep three copies and take the majority vote". Without cloning, how do we protect a qubit? The trick (3.6) is not to copy the state, but to <em>spread it over several qubits</em> by entanglement, in a way that errors can be found without ever learning α and β.</p>
+
+<h3>Things that are allowed</h3>
+<ul>
+<li>Cloning if you <em>know</em> the state: you can simply prepare another one with the same recipe.</li>
+<li>Teleportation: moving a state to another place (the original is destroyed, so no clone).</li>
+<li>Approximate cloning: making imperfect copies with some fidelity (for example, about 83% for a single qubit's universal symmetric cloner).</li>
+<li>There is also a "no-deleting theorem": you cannot erase an unknown state given another copy either. Together they say quantum information is reversible and conserved.</li>
+</ul>
+
+<div class="box"><b>One-line memory:</b> copying is a non-linear operation (it produces squares like α² in the amplitudes), but quantum mechanics is linear, so universal copying is impossible.</div>
+</section>
+
+<!-- ================= 3.6 ================= -->
+<section id="s6">
+<h2>3.6 Decoherence and noise</h2>
+
+<h3>The problem in plain words</h3>
+<p>Everything so far assumed an <b>isolated</b> qubit. Real qubits are not isolated. A superconducting circuit sits in a fridge colder than outer space, but still feels stray electromagnetic fields, vibrations, heat from wires, and cosmic rays. Each of these "touches" the qubit a little, and each touch leaks information about the qubit into the surroundings. Quantum behaviour needs the information to stay private; once the environment has it, interference disappears. This loss is called <b>decoherence</b>.</p>
+<p>Think of two people singing in perfect unison. If one starts drifting off tune, the clean combined sound is lost. The qubit's "coherence" is that agreement between its two parts.</p>
+
+<h3>The mathematics of a leak</h3>
+<p>Take a qubit α|0⟩ + β|1⟩ and an environment in state |E⟩. A typical interaction does this:</p>
+<div class="eq">(α|0⟩ + β|1⟩) ⊗ |E⟩ &nbsp; → &nbsp; α|0⟩ ⊗ |E₀⟩ + β|1⟩ ⊗ |E₁⟩</div>
+<p>The environment has become <em>entangled</em> with the qubit: its state records whether the qubit was 0 or 1. If |E₀⟩ and |E₁⟩ are very different (orthogonal), then the environment effectively "measured" the qubit, and the superposition looks like a plain mixture from the qubit's point of view. We cannot see the environment (it is a huge, uncontrollable mess), so we look only at the qubit. In the density-matrix language of 3.7, the off-diagonal entries get multiplied by ⟨E₁|E₀⟩, which goes to 0. The diagonal entries (the 0/1 probabilities) stay as they were. That is why decoherence destroys the quantum, but not the classical, part of the information. It also gives a natural explanation of why everyday objects never show superposition: a cricket ball interacts with trillions of air molecules and photons every instant, so its coherence vanishes in an unimaginably short time.</p>
+
+<h3>Two clocks: T₁ and T₂</h3>
+<ul>
+<li><b>T₁ (relaxation time):</b> the qubit in |1⟩ (the excited state) loses energy and falls to |0⟩, like a hot cup of chai cooling to room temperature. After time t, the chance of still being in |1⟩ is about e<sup>−t/T₁</sup>.</li>
+<li><b>T₂ (dephasing time):</b> the relative phase between |0⟩ and |1⟩ gets scrambled, even with no energy loss. A state like |+⟩ slowly drifts into an unknown mix of |+⟩, |−⟩, |+i⟩… and the coherence decays like e<sup>−t/T₂</sup>. Always T₂ ≤ 2T₁.</li>
+</ul>
+<p>Rough orders of magnitude (they keep improving, so treat these as ballpark): superconducting qubits keep coherence for something like tens to hundreds of microseconds; trapped-ion qubits for seconds or even much longer. But the gate speeds differ too: superconducting gates take tens of nanoseconds, ion gates take microseconds or more. What matters for a programmer is the ratio, i.e. <em>how many gates fit inside the coherence time</em>.</p>
+
+<h3>Common noise models</h3>
+<p>Noise is modelled as "with probability p, something bad happens".</p>
+<div class="tw"><table>
+<tr><th>Noise</th><th>What happens</th><th>Effect on Bloch sphere</th></tr>
+<tr><td>Bit flip</td><td>With probability p, apply X</td><td>Squeezes the sphere towards the X axis</td></tr>
+<tr><td>Phase flip</td><td>With probability p, apply Z</td><td>Squeezes towards the Z axis (|0⟩ and |1⟩ stay sharp, equator shrinks)</td></tr>
+<tr><td>Depolarising</td><td>With probability p, the qubit is replaced by a random state</td><td>Shrinks the whole sphere uniformly</td></tr>
+<tr><td>Amplitude damping</td><td>|1⟩ decays to |0⟩ (this is T₁)</td><td>Whole sphere sinks towards |0⟩</td></tr>
+</table></div>
+<p>Other errors: imperfect gates (rotating by 89.7° instead of 90°), faulty readout (reporting 0 when the state was 1, often a percent or so), and <b>crosstalk</b> (a gate on one qubit disturbing its neighbour).</p>
+
+<h3>Noise adds up, fast</h3>
+<p>If each gate succeeds with probability 0.999 (error 0.1%), a circuit with 1,000 gates succeeds with about 0.999¹⁰⁰⁰ ≈ 37%. With 10,000 gates, about 0.005%. Useful algorithms, such as factoring a 2048-bit number, need billions of gates. This is why the present era is called <b>NISQ</b> ("noisy intermediate-scale quantum", a term from John Preskill): we have tens to some hundreds or thousands of imperfect qubits, and we try to do something useful before noise wins.</p>
+
+<h3>Fighting back: quantum error correction</h3>
+<p>Recall: no cloning, so we cannot make three copies. Instead, we <em>encode</em> one logical qubit into several physical qubits. The simplest example, the <b>three-qubit bit-flip code</b>:</p>
+<div class="ex"><b>Encode:</b> α|0⟩ + β|1⟩ → α|000⟩ + β|111⟩ (use two CNOTs from the first qubit onto two blank qubits). Note this is <em>not</em> three copies, which would be (α|0⟩+β|1⟩)³; it is an entangled state.<br>
+<b>Error:</b> suppose X hits qubit 2: state becomes α|010⟩ + β|101⟩.<br>
+<b>Detect:</b> measure two <em>parities</em>: (qubit 1 ⊕ qubit 2) and (qubit 2 ⊕ qubit 3), without measuring the qubits themselves. In both terms of the superposition, the result is (1, 1), which says "qubit 2 is the odd one out". We learn <em>where</em> the error is, but nothing about α and β, so the superposition survives.<br>
+<b>Fix:</b> apply X to qubit 2. Back to α|000⟩ + β|111⟩.</div>
+<p>This code fixes only bit flips. A real code (Shor's 9-qubit code, or modern <b>surface codes</b>) fixes both bit and phase errors. The big idea is the <b>threshold theorem</b>: if the error rate of each physical gate is below a certain threshold (roughly 1% for the surface code, under standard assumptions), then by using more and more physical qubits per logical qubit, the logical error can be made as small as you like. The cost is large: practical estimates suggest hundreds to thousands of physical qubits per logical qubit. Building this is the main engineering challenge in the field.</p>
+
+<div class="box warn"><b>Do not confuse:</b> <em>measurement</em> is something we choose to do; <em>decoherence</em> is the environment doing the same thing without our permission. Mathematically they are close cousins, which is exactly why the density-matrix formalism (next section) covers both.</div>
+</section>
+
+<!-- ================= 3.7 ================= -->
+<section id="s7">
+<h2>3.7 Density matrices and mixed states</h2>
+
+<h3>Why do we need another description?</h3>
+<p>Until now, the state was a vector |ψ⟩. That works only when we know the state exactly (a <b>pure state</b>). But real situations are messier:</p>
+<ul>
+<li>A source prepares |0⟩ half of the time and |1⟩ half of the time, and you do not know which one you got.</li>
+<li>A qubit is entangled with something else, and you look only at the qubit.</li>
+<li>Noise has acted on the qubit.</li>
+</ul>
+<p>In all these cases there is no single vector that describes the qubit. The <b>density matrix</b> ρ is a better description that covers pure and mixed cases in one language.</p>
+
+<h3>Definition</h3>
+<p>For a pure state |ψ⟩, the density matrix is the outer product</p>
+<div class="eq">ρ = |ψ⟩⟨ψ|</div>
+<p>For a <b>mixture</b>, where the system is in state |ψᵢ⟩ with probability pᵢ (the pᵢ are ordinary probabilities, adding to 1):</p>
+<div class="eq">ρ = Σᵢ pᵢ |ψᵢ⟩⟨ψᵢ|</div>
+<p>Examples for one qubit:</p>
+<div class="eq">
+|0⟩⟨0| = <span class="m" style="--c:2"><i>1</i><i>0</i><i>0</i><i>0</i></span> &nbsp;&nbsp;
+|+⟩⟨+| = <span class="m" style="--c:2"><i>½</i><i>½</i><i>½</i><i>½</i></span> &nbsp;&nbsp;
+½|0⟩⟨0| + ½|1⟩⟨1| = <span class="m" style="--c:2"><i>½</i><i>0</i><i>0</i><i>½</i></span> = I/2
+</div>
+<p>Read the last one carefully. A 50-50 mixture of |0⟩ and |1⟩ has diagonal entries ½, ½, the same as |+⟩. The difference is the <b>off-diagonal entries</b>: ½ for |+⟩ and 0 for the mixture. The off-diagonal entries are the <b>coherences</b>; they are the quantum part. A diagonal density matrix is basically classical probability.</p>
+
+<h3>Properties every density matrix must have</h3>
+<ul>
+<li><b>Hermitian:</b> ρ† = ρ.</li>
+<li><b>Trace 1:</b> Tr(ρ) = 1 (the diagonal adds to 1; these are the probabilities of basis outcomes).</li>
+<li><b>Positive semidefinite:</b> all eigenvalues ≥ 0 (so no negative probabilities).</li>
+</ul>
+<p>The eigenvalues of ρ are themselves a probability distribution. For any ρ, 1/d ≤ Tr(ρ²) ≤ 1, where d is the dimension.</p>
+
+<h3>Pure or mixed? The purity test</h3>
+<div class="eq">Tr(ρ²) = 1 &nbsp; ⟺ &nbsp; pure, &nbsp;&nbsp;&nbsp; Tr(ρ²) &lt; 1 &nbsp; ⟺ &nbsp; mixed</div>
+<p>For |+⟩⟨+|: ρ² = ρ (the projector property), so Tr(ρ²) = Tr(ρ) = 1, which means pure. For I/2: ρ² = I/4, so Tr(ρ²) = ½, the lowest possible value for a qubit. This is the <b>maximally mixed state</b>: complete ignorance. It is the quantum version of a perfectly fair coin.</p>
+
+<h3>All the rules, rewritten for ρ</h3>
+<div class="tw"><table>
+<tr><th>Concept</th><th>With state vectors</th><th>With density matrices</th></tr>
+<tr><td>State</td><td>|ψ⟩</td><td>ρ</td></tr>
+<tr><td>Evolution</td><td>|ψ⟩ → U|ψ⟩</td><td>ρ → UρU†</td></tr>
+<tr><td>Probability of outcome m (projector Pₘ)</td><td>⟨ψ|Pₘ|ψ⟩</td><td>Tr(Pₘρ)</td></tr>
+<tr><td>State after outcome m</td><td>Pₘ|ψ⟩/√P(m)</td><td>PₘρPₘ / Tr(Pₘρ)</td></tr>
+<tr><td>Average of observable A</td><td>⟨ψ|A|ψ⟩</td><td>Tr(Aρ)</td></tr>
+<tr><td>Joint system</td><td>|ψ⟩ ⊗ |φ⟩</td><td>ρ ⊗ σ</td></tr>
+</table></div>
+<div class="ex"><b>Example.</b> ρ = ¾|0⟩⟨0| + ¼|1⟩⟨1| = diag(0.75, 0.25). Then P(0) = Tr(|0⟩⟨0|ρ) = 0.75. Average of Z: Tr(Zρ) = 0.75 − 0.25 = 0.5. Purity: 0.75² + 0.25² = 0.625 &lt; 1, so mixed.</div>
+
+<h3>The same ρ can come from different recipes</h3>
+<p>Here is something that has no classical analogue:</p>
+<div class="eq">½|0⟩⟨0| + ½|1⟩⟨1| = ½|+⟩⟨+| + ½|−⟩⟨−| = I/2</div>
+<p>(Check: |+⟩⟨+| + |−⟩⟨−| = I, by completeness.) So "50% |0⟩, 50% |1⟩" and "50% |+⟩, 50% |−⟩" are <em>physically the same state</em>. No experiment on this qubit can tell which recipe was used. The density matrix keeps exactly what is physically observable and throws away the rest. That is its great advantage.</p>
+
+<h3>The Bloch ball</h3>
+<p>Every qubit density matrix can be written as</p>
+<div class="eq">ρ = ½(I + r<sub>x</sub>X + r<sub>y</sub>Y + r<sub>z</sub>Z), &nbsp;&nbsp; |r| ≤ 1</div>
+<p>The vector r = (r<sub>x</sub>, r<sub>y</sub>, r<sub>z</sub>) is the <b>Bloch vector</b>. Pure states have |r| = 1 (on the surface of the sphere); mixed states are <em>inside</em> the ball; and I/2 is the centre, r = 0. Noise from 3.6 shrinks the Bloch vector towards the centre, and that is a very clear way to picture decoherence: the state sinks into the sphere.</p>
+
+<h3>Decoherence as a formula</h3>
+<p>Start from |+⟩, ρ = ½[[1, 1],[1, 1]]. Suppose a phase-flip error (Z) happens with probability p. The new state is ρ′ = (1 − p)ρ + p ZρZ. Conjugating by Z flips the sign of the off-diagonal entries, so</p>
+<div class="eq">ρ′ = ½ <span class="m" style="--c:2"><i>1</i><i>1−2p</i><i>1−2p</i><i>1</i></span></div>
+<p>The diagonal is untouched (the 0/1 statistics are unchanged), and the coherence shrinks by the factor (1 − 2p). For p = ½ it is zero and ρ′ = I/2, a completely mixed state. With repeated noise, the factor decays exponentially, which is the T₂ behaviour from 3.6.</p>
+
+<h3>Reduced density matrices: looking at a part of an entangled whole</h3>
+<p>If two qubits A and B are in a joint state ρ<sub>AB</sub>, what is the state of A alone? We take the <b>partial trace</b> over B: "sum over everything B could be". Take |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. Its density matrix has four terms:</p>
+<div class="eq">ρ<sub>AB</sub> = ½( |00⟩⟨00| + |00⟩⟨11| + |11⟩⟨00| + |11⟩⟨11| )</div>
+<p>To trace out B, keep only the terms where B's ket and bra match, since ⟨0|1⟩ = 0 kills the cross terms:</p>
+<div class="eq">ρ<sub>A</sub> = ½( |0⟩⟨0| · ⟨0|0⟩ + |1⟩⟨1| · ⟨1|1⟩ ) = I/2</div>
+<p>So qubit A, on its own, is in the <b>maximally mixed state</b>, even though the pair together is in a pure state! This captures a profound fact: for an entangled pair, the whole is perfectly known, but each part is perfectly unknown. It also settles the earlier question from 3.4: Bob's qubit is I/2 whatever Alice does, so he sees pure noise and receives no message. And it shows that "mixed" can arise not from ignorance of a recipe but from entanglement with something we are not looking at. That is exactly the situation of decoherence in 3.6: the environment is the "B" we cannot track.</p>
+
+<h3>Measure of mixedness: entropy (a quick look)</h3>
+<p>The <b>von Neumann entropy</b> S(ρ) = −Tr(ρ log₂ ρ) = −Σ λᵢ log₂ λᵢ (over eigenvalues of ρ) gives 0 for pure states and 1 bit for I/2. For a pure bipartite state, S(ρ<sub>A</sub>) is the standard measure of how entangled A and B are: 0 for products, 1 ebit for Bell states.</p>
+
+<div class="box"><b>Summary:</b> ρ is the full toolkit. Pure state: ρ = |ψ⟩⟨ψ|. Mixed state: probabilistic blend. Diagonal entries are probabilities, off-diagonal entries are coherence. Noise kills coherence. Parts of entangled systems are mixed.</div>
+</section>
+
+<!-- ================= 3.8 ================= -->
+<section id="s8">
+<h2>3.8 Exercises</h2>
+<p>Attempt each question on paper first, then open the answer. A wrong attempt followed by a correction teaches far more than skipping straight to the solution.</p>
+
+<h3>Postulates and superposition</h3>
+<details><summary>Q1. Which of these are valid single-qubit states? (a) (0.6, 0.8) (b) (1/2, 1/2) (c) (3/5, 4i/5) (d) (1/√2, i/√2)</summary>
+Check |α|² + |β|² = 1. (a) 0.36 + 0.64 = 1 ✓. (b) ¼ + ¼ = ½ ✗ (it would need to be divided by its norm). (c) 9/25 + 16/25 = 1 ✓. (d) ½ + ½ = 1 ✓. So <b>(a), (c), (d)</b> are valid.</details>
+
+<details><summary>Q2. Is M = [[1, 1],[0, 1]] a valid quantum gate?</summary>
+Apply it to |1⟩ = (0, 1): the result is (1, 1), with length √2 ≠ 1. It does not preserve length, so it is not unitary. <b>No</b>; it cannot be a gate (Postulate 2).</details>
+
+<details><summary>Q3. Show that |ψ⟩ and e<sup>iθ</sup>|ψ⟩ give identical measurement statistics, but that |+⟩ and |−⟩ do not behave identically overall.</summary>
+Any amplitude α becomes e<sup>iθ</sup>α, and |e<sup>iθ</sup>α|² = |α|², so every Born-rule probability is unchanged: global phases are invisible. But |−⟩ is not a global phase times |+⟩; it has a minus sign on only the |1⟩ part (a relative phase). Applying H gives |0⟩ for |+⟩ and |1⟩ for |−⟩: completely different outcomes.</details>
+
+<details><summary>Q4. Find the Bloch angles (θ, φ) of |−i⟩ = (|0⟩ − i|1⟩)/√2. Which direction does it point?</summary>
+Compare with cos(θ/2)|0⟩ + e<sup>iφ</sup>sin(θ/2)|1⟩: cos(θ/2) = 1/√2 gives θ = π/2 (the equator). e<sup>iφ</sup> = −i gives φ = 3π/2 (270°). It points along the <b>−y direction</b> of the sphere.</details>
+
+<details><summary>Q5. Compute H<sup>⊗2</sup>|00⟩ and state the probability of each outcome on measurement.</summary>
+H|0⟩ ⊗ H|0⟩ = |+⟩|+⟩ = ½(|00⟩ + |01⟩ + |10⟩ + |11⟩). Each outcome has probability (½)² = <b>¼</b>.</details>
+
+<h3>Measurement</h3>
+<details><summary>Q6. |ψ⟩ = (1/√3)|0⟩ + √(2/3)|1⟩. Find the probabilities of 0 and 1 in the Z basis, and of + and − in the X basis.</summary>
+Z basis: P(0) = <b>1/3</b>, P(1) = <b>2/3</b>. X basis: ⟨+|ψ⟩ = (1/√2)(1/√3 + √2/√3) = (1 + √2)/√6, so P(+) = (3 + 2√2)/6 ≈ <b>0.971</b>. Similarly ⟨−|ψ⟩ = (1 − √2)/√6, so P(−) = (3 − 2√2)/6 ≈ <b>0.029</b>. They add to 1 ✓.</details>
+
+<details><summary>Q7. The state is (√2|00⟩ + |10⟩ + |11⟩)/2. The first qubit is measured in the Z basis. Find the outcome probabilities and the post-measurement states.</summary>
+Norm check: 2/4 + 1/4 + 1/4 = 1 ✓. Outcome 0: only |00⟩ contributes, probability 2/4 = <b>½</b>, new state |00⟩. Outcome 1: |10⟩ and |11⟩ contribute, probability ¼ + ¼ = <b>½</b>, new state (|10⟩ + |11⟩)/√2 = |1⟩ ⊗ |+⟩.</details>
+
+<details><summary>Q8. A qubit is measured in the Z basis, gives 1, and is measured again in the Z basis. What is the second result? What if it is measured in the X basis instead?</summary>
+After the first measurement the state is |1⟩. Second Z measurement: 1 with probability 1. X measurement: |⟨±|1⟩|² = ½ each, so a <b>random 50-50</b> result.</details>
+
+<h3>Entanglement and cloning</h3>
+<details><summary>Q9. Use the test αδ − βγ to decide whether each state is entangled: (a) (|00⟩ + |01⟩ + |10⟩ − |11⟩)/2 (b) (|00⟩ + |01⟩ + |10⟩ + |11⟩)/2 (c) (|00⟩ + |01⟩ + |11⟩)/√3</summary>
+(a) (½)(−½) − (½)(½) = −½ ≠ 0: <b>entangled</b>. (b) ¼ − ¼ = 0: <b>product</b> state (|+⟩|+⟩). (c) (1/√3)(1/√3) − (1/√3)(0) = ⅓ ≠ 0: <b>entangled</b>.</details>
+
+<details><summary>Q10. Design a circuit that starts at |00⟩ and produces |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2.</summary>
+Apply X to both qubits: |11⟩. Apply H to qubit 1: (|0⟩ − |1⟩)/√2 ⊗ |1⟩ = (|01⟩ − |11⟩)/√2. Apply CNOT (qubit 1 controls): |01⟩ → |01⟩, |11⟩ → |10⟩. Result: <b>(|01⟩ − |10⟩)/√2</b> ✓.</details>
+
+<details><summary>Q11. Alice and Bob share Φ⁺. Alice measures in Z and gets 1. What does Bob's qubit become, and what is the chance Bob then gets 1?</summary>
+The joint state collapses to |11⟩, so Bob's qubit is |1⟩, and he gets 1 with probability <b>1</b>. But before comparing notes, Bob sees only random bits; he has no way to know Alice measured at all.</details>
+
+<details><summary>Q12. Apply CNOT to |+⟩|0⟩ and compare the result with |+⟩|+⟩. Explain what this says about cloning.</summary>
+CNOT(|+⟩|0⟩) = (|00⟩ + |11⟩)/√2, which is the Bell state. But |+⟩|+⟩ = ½(|00⟩ + |01⟩ + |10⟩ + |11⟩). They are different vectors. CNOT copies the <em>basis</em> states |0⟩, |1⟩ but entangles instead of copying for superpositions. <b>No universal cloner exists</b>.</details>
+
+<details><summary>Q13. Using x = x², explain in one paragraph why a single machine can clone |0⟩ and |1⟩ but not |0⟩ and |+⟩.</summary>
+A single unitary cloning two states requires x = ⟨φ|ψ⟩ to satisfy x = x², so x = 0 or 1. For |0⟩ and |1⟩, x = 0 (orthogonal), so cloning both is allowed. For |0⟩ and |+⟩, x = 1/√2 ≈ 0.707, which is neither 0 nor 1, so the equation fails: <b>no such machine exists</b>.</details>
+
+<h3>Noise and error correction</h3>
+<details><summary>Q14. A gate has error 0.2% (success probability 0.998). Estimate the success probability of a circuit of 500 gates.</summary>
+0.998<sup>500</sup> = e<sup>500 ln 0.998</sup> ≈ e<sup>−1.0</sup> ≈ <b>0.37</b>, about 37%. Errors accumulate quickly, even when each one is tiny.</details>
+
+<details><summary>Q15. In the 3-qubit bit-flip code, an X error hits qubit 3 of α|000⟩ + β|111⟩. What is the damaged state, what are the two parity results, and how do we fix it?</summary>
+Damaged state: α|001⟩ + β|110⟩. Parity (q1 ⊕ q2): 0 for both terms. Parity (q2 ⊕ q3): 1 for both terms. The pair (0, 1) means "qubit 3 is the odd one out". Fix by applying <b>X to qubit 3</b>. Since both terms give the same parities, the superposition (α, β) is untouched.</details>
+
+<details><summary>Q16. |+⟩ suffers a phase-flip error with probability p = 0.1. Write its new density matrix. What is the purity?</summary>
+Off-diagonals shrink by (1 − 2p) = 0.8, so ρ′ = ½[[1, 0.8],[0.8, 1]] = [[0.5, 0.4],[0.4, 0.5]]. Purity = Tr(ρ′²) = 0.5² + 0.4² + 0.4² + 0.5² = 0.25 + 0.16 + 0.16 + 0.25 = <b>0.82</b>. Less than 1, so mixed.</details>
+
+<h3>Density matrices</h3>
+<details><summary>Q17. Is ρ = ½[[1, 1],[1, 1]] pure or mixed? Is ρ = [[0.5, 0],[0, 0.5]]?</summary>
+First: ρ² = ¼[[2,2],[2,2]] = ρ, so Tr(ρ²) = Tr(ρ) = 1: <b>pure</b> (it is |+⟩⟨+|). Second: ρ² = [[0.25, 0],[0, 0.25]], Tr = 0.5: <b>mixed</b> (maximally).</details>
+
+<details><summary>Q18. A source emits |0⟩ with probability ¾ and |+⟩ with probability ¼. Write ρ, and find P(outcome 0) in the Z basis.</summary>
+ρ = ¾|0⟩⟨0| + ¼|+⟩⟨+| = [[¾, 0],[0, 0]] + [[⅛, ⅛],[⅛, ⅛]] = [[7/8, 1/8],[1/8, 1/8]]. Trace = 1 ✓. P(0) = ρ₀₀ = <b>7/8</b>. (Check: ¾·1 + ¼·½ = 7/8 ✓.)</details>
+
+<details><summary>Q19. Find the reduced state of the first qubit in |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2. What does it tell you about entanglement?</summary>
+ρ<sub>AB</sub> = ½(|01⟩⟨01| + |01⟩⟨10| + |10⟩⟨01| + |10⟩⟨10|). Tracing out B keeps only the terms where the second qubit's ket and bra match: ½(|0⟩⟨0| + |1⟩⟨1|) = <b>I/2</b>. The whole pair is pure, but each half is maximally mixed, which is the mark of a maximally entangled state.</details>
+
+<details><summary>Q20. Show that ½|0⟩⟨0| + ½|1⟩⟨1| and ½|+⟩⟨+| + ½|−⟩⟨−| are the same density matrix.</summary>
+|+⟩⟨+| = ½[[1,1],[1,1]] and |−⟩⟨−| = ½[[1,−1],[−1,1]]. Half of each, added: ½·½[[2,0],[0,2]] = ½·[[1,0],[0,1]] = I/2. The first mixture is ½[[1,0],[0,0]] + ½[[0,0],[0,1]] = I/2 as well. <b>Equal.</b></details>
+
+<h3>Thinking questions</h3>
+<details><summary>Q21. A friend says: "A mixture of 50% |0⟩ and 50% |1⟩ is the same as the superposition |+⟩, since both give 50-50 results." Give a test that proves him wrong.</summary>
+Apply H and then measure in the Z basis. For |+⟩: H|+⟩ = |0⟩, giving 0 with certainty. For the mixture: H|0⟩ = |+⟩ or H|1⟩ = |−⟩, each giving 50-50 on measurement, so the final result is a fair coin toss. Different outcomes, so they are different states. In matrices: the mixture is I/2 (no off-diagonal terms) and |+⟩⟨+| has off-diagonals ½.</details>
+
+<details><summary>Q22. Entanglement is "instant" across any distance. Why can it still not be used to send a message?</summary>
+Bob's own measurement results, viewed alone, are completely random (his reduced state is I/2) whatever Alice chooses to do. The correlation appears only when the two lists of results are compared, and that comparison needs ordinary communication, which is no faster than light. Also, Alice cannot <em>choose</em> her measurement result, since it is random, so she cannot encode a message in it.</details>
+
+<details><summary>Q23. Why do quantum computers need error correction so much more than your phone does, and why is "make three copies" not available?</summary>
+A phone's bits are held by large numbers of electrons, so a stray disturbance rarely flips them; error rates are around 10⁻¹⁵ or lower. Qubits are fragile single quantum objects, with gate error rates of order 10⁻³, and algorithms need huge numbers of gates. Copying an unknown qubit is forbidden by no-cloning, so we instead spread one logical qubit over several entangled physical qubits and measure only parities, which locate the error without revealing the encoded state.</details>
+
+<h3>Mini challenge</h3>
+<details><summary>Q24. Show that if two qubits are in a product state u ⊗ v, then the reduced state of the first qubit is the pure state |u⟩⟨u|. Then explain, in one sentence, how this differs from the Bell state case.</summary>
+ρ<sub>AB</sub> = |u⟩⟨u| ⊗ |v⟩⟨v|. Tracing out B gives |u⟩⟨u| · Tr(|v⟩⟨v|) = |u⟩⟨u| · ⟨v|v⟩ = <b>|u⟩⟨u|</b>, which is pure (purity 1). For a Bell state, the reduced state is I/2 (purity ½): <b>a pure reduced state means no entanglement; a mixed reduced state of a pure whole means entanglement.</b></details>
+</section>
+
+<footer>
+<p><b>Chapter in one breath:</b> a qubit's state is a unit vector (postulate 1); gates are unitary (2); measurement gives eigenvalues with Born-rule probabilities and collapses the state (3); many qubits live in the tensor product, where entanglement appears (4). Unknown states cannot be copied, the environment constantly leaks information (decoherence), and density matrices let us describe mixed and noisy states honestly. Next stop: real quantum gates and circuits.</p>
+</footer>
+
+</main>
+</body>
+</html>
