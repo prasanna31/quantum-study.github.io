@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 24: Learning Theory for Quantum Models</title>
+    <style>
+        :root {
+            --primary: #254b78;
+            --secondary: #3976a8;
+            --accent: #e6f0fa;
+            --background: #f7f9fc;
+            --surface: #ffffff;
+            --text: #243247;
+            --muted: #5d6b7c;
+            --border: #d9e2ec;
+            --highlight: #fff5d9;
+            --green: #e8f5eb;
+            --purple: #f0eafa;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 36px 25px 70px;
+        }
+
+        header {
+            padding: 42px 35px;
+            background: linear-gradient(135deg, #163653, #3976a8);
+            color: white;
+            border-radius: 16px;
+            margin-bottom: 35px;
+        }
+
+        header .chapter {
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        h1, h2, h3, h4 {
+            line-height: 1.35;
+            color: var(--primary);
+        }
+
+        header h1 {
+            color: white;
+            font-size: clamp(30px, 5vw, 43px);
+            margin: 14px 0;
+        }
+
+        header p {
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+
+        h2 {
+            font-size: 29px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            margin-top: 52px;
+        }
+
+        h3 {
+            font-size: 22px;
+            margin-top: 32px;
+        }
+
+        h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 15px 0;
+        }
+
+        .lead {
+            font-size: 19px;
+            color: #344b63;
+        }
+
+        .contents, .concept, .example, .warning, .takeaway, .math {
+            padding: 19px 23px;
+            border-radius: 10px;
+            margin: 23px 0;
+        }
+
+        .contents {
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .concept {
+            background: var(--accent);
+            border-left: 5px solid var(--secondary);
+        }
+
+        .example {
+            background: var(--green);
+            border-left: 5px solid #43865a;
+        }
+
+        .warning {
+            background: var(--highlight);
+            border-left: 5px solid #d7a52a;
+        }
+
+        .takeaway {
+            background: var(--purple);
+            border-left: 5px solid #8564b4;
+        }
+
+        .math {
+            background: #edf1f7;
+            text-align: center;
+            font-size: 19px;
+            overflow-wrap: anywhere;
+        }
+
+        .label {
+            display: block;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        ul, ol {
+            padding-left: 28px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 23px 0;
+            background: white;
+            font-size: 15px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+            background: #edf1f5;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        .diagram {
+            padding: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 25px 0;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .diagram .step {
+            display: inline-block;
+            padding: 12px 15px;
+            border: 1px solid #9bb6d0;
+            background: #eef5fc;
+            border-radius: 8px;
+            margin: 5px;
+        }
+
+        .diagram .arrow {
+            color: var(--secondary);
+            font-weight: bold;
+            padding: 0 4px;
+        }
+
+        .small {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        a {
+            color: var(--secondary);
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+            padding-top: 20px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 650px) {
+            .page {
+                padding: 18px 14px 45px;
+            }
+
+            header {
+                padding: 28px 22px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .diagram .arrow {
+                display: block;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                font-size: 12pt;
+            }
+
+            .page {
+                max-width: none;
+                padding: 0;
+            }
+
+            header {
+                background: white;
+                color: black;
+                border: 2px solid var(--primary);
+            }
+
+            header h1 {
+                color: var(--primary);
+            }
+
+            h2 {
+                break-after: avoid;
+            }
+
+            .concept, .example, .warning, .takeaway, .math {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="page">
+
+    <header>
+        <div class="chapter">Quantum Machine Learning · Chapter 24</div>
+        <h1>Learning Theory for Quantum Models</h1>
+        <p>
+            How can we know that a quantum learning algorithm has genuinely
+            learnt something? How many examples does it need? When does quantum
+            information help, and when is a classical method just as good?
+        </p>
+    </header>
+
+    <section class="contents">
+        <h3>Chapter roadmap</h3>
+        <ol>
+            <li><a href="#intro">What learning theory tells us</a></li>
+            <li><a href="#pac">Quantum PAC learning</a></li>
+            <li><a href="#sample">Sample complexity and generalisation bounds</a></li>
+            <li><a href="#data">Learning from quantum data versus classical data</a></li>
+            <li><a href="#advantage">Provable quantum advantage in learning</a></li>
+            <li><a href="#shadows">Classical shadows and efficient property estimation</a></li>
+            <li><a href="#experiments">Quantum advantage with quantum data and experiments</a></li>
+            <li><a href="#connections">How the ideas fit together</a></li>
+            <li><a href="#revision">Revision questions and key lessons</a></li>
+        </ol>
+    </section>
+
+    <section id="intro">
+        <h2>1. What Does Learning Theory Tell Us?</h2>
+
+        <p class="lead">
+            Building a model that performs well on the examples it has already
+            seen is only the beginning. A good learning algorithm must also
+            perform well on new examples that it has never encountered before.
+            Learning theory studies when this can be expected, how much data is
+            needed, and what computational resources are required.
+        </p>
+
+        <p>
+            Imagine that we want to build a model that identifies whether an
+            image contains a cat. We collect a set of labelled images, train
+            the model and measure its accuracy on those same images. Suppose
+            it gets every training image correct. Does that mean it will
+            identify cats correctly in photographs taken tomorrow?
+        </p>
+
+        <p>
+            Not necessarily. The model might have memorised the training
+            images instead of learning the features that distinguish cats
+            from other animals. This is called <strong>overfitting</strong>.
+            Learning theory gives us mathematical ways to reason about this
+            difference between memorisation and genuine learning.
+        </p>
+
+        <p>
+            The same problem appears in quantum machine learning. A model
+            might use a parameterised quantum circuit, measure its output,
+            and combine the result with a classical prediction rule. It may
+            fit its training data very well, but that alone does not establish
+            that it will generalise to unseen data.
+        </p>
+
+        <p>
+            Learning theory asks us to distinguish three questions that are
+            often confused with one another.
+        </p>
+
+        <ul>
+            <li><strong>Statistical question:</strong> How many examples must the model observe to learn a reliable rule?</li>
+            <li><strong>Computational question:</strong> How much time and memory are needed to learn that rule?</li>
+            <li><strong>Quantum advantage question:</strong> Can a quantum learner solve a learning problem more efficiently than a suitable classical learner?</li>
+        </ul>
+
+        <div class="concept">
+            <span class="label">Central idea</span>
+            Quantum learning theory is not simply about whether quantum circuits
+            can represent complicated functions. It is about whether those
+            functions can be learnt reliably, using a manageable amount of data
+            and computational effort, and whether quantum resources provide a
+            provable benefit.
+        </div>
+
+        <h3>1.1 The learning process</h3>
+
+        <div class="diagram">
+            <div class="step">Data source</div>
+            <span class="arrow">→</span>
+            <div class="step">Training examples</div>
+            <span class="arrow">→</span>
+            <div class="step">Learning algorithm</div>
+            <span class="arrow">→</span>
+            <div class="step">Trained model</div>
+            <span class="arrow">→</span>
+            <div class="step">Unseen examples</div>
+        </div>
+
+        <p>
+            A learning algorithm receives examples from some data-generating
+            process. It uses them to construct a model, and we evaluate the
+            model on fresh examples drawn from the relevant distribution.
+            The objective is not merely to reproduce the past, but to predict
+            or infer something useful about future observations.
+        </p>
+
+        <p>
+            In a quantum setting, the data source might provide ordinary
+            classical records, quantum states, or outcomes from a physical
+            experiment. This distinction becomes especially important when
+            we discuss sample complexity and quantum advantage.
+        </p>
+    </section>
+
+    <section id="pac">
+        <h2>2. Quantum PAC Learning</h2>
+
+        <h3>2.1 First understand PAC learning</h3>
+
+        <p>
+            PAC stands for <strong>Probably Approximately Correct</strong>.
+            It is a mathematical framework for describing whether a learning
+            algorithm can find a sufficiently accurate model with high
+            probability.
+        </p>
+
+        <p>
+            Consider a teacher who knows the correct rule for classifying
+            objects. The teacher supplies examples, such as an object's
+            features and its correct label. A student uses these examples to
+            learn a rule of their own. The student need not reproduce the
+            teacher's rule perfectly on every possible input. Instead, the
+            aim is to make the number of mistakes sufficiently small.
+        </p>
+
+        <p>
+            PAC learning formalises two promises. The learned model should
+            have a small prediction error, and the probability of failing to
+            obtain such a model should also be small.
+        </p>
+
+        <h3>2.2 The two important parameters</h3>
+
+        <p>
+            PAC learning uses two quantities, usually written as
+            \(\epsilon\) and \(\delta\).
+        </p>
+
+        <ul>
+            <li><strong>\(\epsilon\), the error tolerance:</strong> The maximum acceptable probability of making an incorrect prediction on a new example.</li>
+            <li><strong>\(\delta\), the failure probability:</strong> The maximum acceptable probability that the training procedure fails to return a model meeting the error requirement.</li>
+        </ul>
+
+        <p>
+            Suppose we choose \(\epsilon = 0.05\) and \(\delta = 0.01\).
+            These values mean that we want a model whose prediction error is
+            at most 5%, with at least 99% confidence over the randomness in
+            the training process and its sampled training data.
+        </p>
+
+        <div class="math">
+            \[
+            \Pr_{S,\mathcal{A}}\left[
+            L_D(h_S)\leq \epsilon
+            \right]\geq 1-\delta
+            \]
+            <p class="small">
+                Here, S is the training sample, A is the learning algorithm,
+                h is the learned model, and L is its error on distribution D.
+            </p>
+        </div>
+
+        <p>
+            The probability in this statement concerns the randomness of
+            drawing training examples and any randomness used by the learning
+            algorithm. The quantity \(L_D(h)\) is the probability that model
+            \(h\) predicts the wrong label on a fresh example drawn from
+            distribution \(D\).
+        </p>
+
+        <p>
+            Notice the subtle but important point: a 99% success probability
+            does not mean that every prediction is correct 99% of the time
+            automatically. It means that, with probability at least 99%
+            over the learning process, the resulting model satisfies the
+            specified error bound.
+        </p>
+
+        <h3>2.3 What makes PAC learning quantum?</h3>
+
+        <p>
+            In classical PAC learning, the learner typically receives
+            labelled classical examples of the form \((x,y)\), where \(x\)
+            is an input and \(y\) is its correct label. The learning algorithm
+            processes these records and produces a hypothesis \(h\).
+        </p>
+
+        <p>
+            In quantum learning, the learner may instead use quantum states,
+            quantum measurements or a parameterised quantum circuit. The
+            hypothesis might be represented by a quantum circuit whose
+            parameters are adjusted using training information.
+        </p>
+
+        <p>
+            For example, a quantum classifier may encode a feature vector
+            into a quantum state, apply a parameterised circuit, and measure
+            an output qubit. The measurement result is used to predict a
+            label. The training procedure adjusts the circuit parameters to
+            reduce prediction error.
+        </p>
+
+        <p>
+            The PAC idea remains the same: the learner must produce a
+            hypothesis that works on the underlying distribution, not merely
+            on the training set. What changes is the representation of the
+            hypothesis, the kind of information available, and the operations
+            the learner can perform.
+        </p>
+
+        <h3>2.4 Different quantum learning models</h3>
+
+        <p>
+            There is no single definition that covers every possible
+            quantum-learning setting. The precise model matters because
+            different models give the learner different abilities.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Learning setting</th>
+                    <th>What the learner receives</th>
+                    <th>What it allows us to study</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Classical examples</td>
+                    <td>Ordinary inputs and their labels</td>
+                    <td>Whether a quantum model can learn a classical prediction task efficiently</td>
+                </tr>
+                <tr>
+                    <td>Quantum examples</td>
+                    <td>Quantum states carrying information about the target</td>
+                    <td>Whether access to quantum information reduces the learning cost</td>
+                </tr>
+                <tr>
+                    <td>Quantum membership queries</td>
+                    <td>Access to a target function through a quantum oracle</td>
+                    <td>Whether coherent queries provide an advantage over ordinary queries</td>
+                </tr>
+                <tr>
+                    <td>Quantum experiments</td>
+                    <td>Measurement outcomes produced by a physical quantum system</td>
+                    <td>How to infer unknown properties of a real quantum system</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            A quantum oracle is an idealised operation that provides access
+            to a specified function or operation. It is useful in theoretical
+            computer science because it allows researchers to compare query
+            requirements independently of the cost of implementing the oracle.
+            However, a query advantage alone does not prove that a practical
+            device can deliver the same overall advantage.
+        </p>
+
+        <div class="warning">
+            <span class="label">Important distinction</span>
+            A quantum circuit that can express a target function is not
+            automatically an efficiently learnable model. Finding suitable
+            parameters, obtaining informative measurements, collecting enough
+            examples and generalising to new data are separate challenges.
+        </div>
+    </section>
+
+    <section id="sample">
+        <h2>3. Sample Complexity and Generalisation Bounds</h2>
+
+        <h3>3.1 What is sample complexity?</h3>
+
+        <p>
+            Sample complexity is the number of training examples needed to
+            achieve a specified learning guarantee. It answers a practical
+            question: how much data must we collect before we can reasonably
+            trust the model?
+        </p>
+
+        <p>
+            Suppose two learning algorithms are equally accurate. The first
+            needs 100 labelled examples, while the second needs 100,000
+            examples to meet the same mathematical guarantee. If the examples
+            are expensive to obtain, the first algorithm may be much more
+            useful.
+        </p>
+
+        <p>
+            In quantum machine learning, obtaining an example can itself
+            be costly. A quantum state might need to be prepared by a
+            laboratory experiment, and measurements may need to be repeated
+            many times. Therefore, the number of examples is not a minor
+            technical detail; it can determine whether the proposed learning
+            method is practical.
+        </p>
+
+        <h3>3.2 A simple generalisation bound</h3>
+
+        <p>
+            Let us first consider binary classification. Suppose the learner
+            selects its hypothesis from a finite collection containing
+            \(M\) possible hypotheses. Under the standard assumptions of
+            independent, identically distributed examples and a bounded
+            zero-one loss, a familiar PAC bound has the following form.
+        </p>
+
+        <div class="math">
+            \[
+            m \geq \frac{1}{2\epsilon^2}
+            \ln\left(\frac{2M}{\delta}\right)
+            \]
+            <p class="small">
+                This is a sufficient sample bound for a finite hypothesis
+                class in the standard PAC setting, not a universal formula
+                for every quantum learner.
+            </p>
+        </div>
+
+        <p>
+            In this expression, \(m\) is the number of training examples,
+            \(\epsilon\) is the allowed difference between the observed
+            training error and the true error, \(\delta\) is the failure
+            probability, and \(M\) is the number of candidate hypotheses.
+        </p>
+
+        <p>
+            This formula helps us understand three important relationships.
+        </p>
+
+        <ul>
+            <li>Demanding a smaller error tolerance usually requires more examples.</li>
+            <li>Demanding greater confidence, meaning a smaller \(\delta\), also increases the sample requirement.</li>
+            <li>A larger collection of possible hypotheses generally requires more data to identify a reliable one.</li>
+        </ul>
+
+        <p>
+            The formula is a sufficient bound. It says that collecting at
+            least this many examples is enough for the stated guarantee
+            under the assumptions. It does not say that every problem
+            necessarily needs exactly this many examples.
+        </p>
+
+        <h3>3.3 Why model complexity matters</h3>
+
+        <p>
+            A model with many possible behaviours can fit many different
+            training sets. That flexibility is useful when the underlying
+            task is complicated, but it can also make it harder to distinguish
+            a genuinely good model from one that merely matches the observed
+            examples.
+        </p>
+
+        <p>
+            In classical learning theory, one way to measure this flexibility
+            is the Vapnik–Chervonenkis dimension, usually called the
+            <strong>VC dimension</strong>. Roughly speaking, it measures how
+            many data points a hypothesis class can label in every possible
+            way.
+        </p>
+
+        <p>
+            For many standard binary classification settings, sample
+            complexity is controlled by the VC dimension, up to logarithmic
+            factors and depending on the exact learning assumptions.
+            A similar broad principle applies to quantum learning: the
+            structure of the hypothesis family influences how much data is
+            needed.
+        </p>
+
+        <p>
+            Quantum hypothesis classes require care, however. A quantum
+            circuit may have continuous parameters, many possible measurement
+            outcomes, and a large Hilbert space. Its number of parameters
+            alone does not always capture its statistical complexity.
+            Researchers therefore use several tools, including VC-type
+            dimensions, covering numbers, fat-shattering dimensions and
+            bounds based on circuit structure.
+        </p>
+
+        <h3>3.4 Training error versus generalisation error</h3>
+
+        <p>
+            Let the training set contain \(m\) examples. The training error
+            is the fraction of those examples that the model classifies
+            incorrectly. The true error is the probability of misclassification
+            on a fresh example from the data distribution.
+        </p>
+
+        <div class="math">
+            \[
+            L_S(h)=\frac{1}{m}\sum_{i=1}^{m}
+            \mathbf{1}[h(x_i)\neq y_i]
+            \]
+            \[
+            L_D(h)=\Pr_{(x,y)\sim D}[h(x)\neq y]
+            \]
+        </div>
+
+        <p>
+            The first expression measures performance on the observed
+            sample \(S\). The second measures performance over the underlying
+            distribution \(D\). The difference between them is central to
+            generalisation theory.
+        </p>
+
+        <p>
+            A generalisation bound gives us a statement about how far the
+            true error is likely to be from the training error. For example,
+            if a hypothesis class has controlled complexity and the training
+            set is sufficiently large, then with high probability the
+            training performance will provide useful information about
+            performance on unseen data.
+        </p>
+
+        <h3>3.5 A practical example</h3>
+
+        <div class="example">
+            <span class="label">Example: a quantum classifier</span>
+            Imagine training a quantum circuit to classify two kinds of
+            laboratory samples. It makes no mistakes on 40 training examples.
+            That is encouraging, but it is not enough to conclude that the
+            circuit will work reliably on future samples.
+
+            <p>
+                If the hypothesis family is very flexible, 40 examples may
+                be insufficient to establish a strong generalisation
+                guarantee. If the family is suitably restricted and the
+                examples represent the intended population, the same data
+                might provide stronger evidence.
+            </p>
+
+            The important question is not merely, "How accurate was the
+            circuit during training?" It is, "What assumptions and evidence
+            allow us to trust its predictions on new samples?"
+        </div>
+
+        <h3>3.6 Statistical efficiency is not computational efficiency</h3>
+
+        <p>
+            Suppose a quantum learner requires fewer examples than a
+            classical learner. That is a possible sample-efficiency
+            advantage, but it does not automatically mean that the entire
+            learning procedure is faster.
+        </p>
+
+        <p>
+            The quantum learner may need expensive state preparation, many
+            circuit executions, classical optimisation or difficult
+            post-processing. Conversely, a classical learner may process
+            ordinary data using a highly optimised algorithm.
+        </p>
+
+        <p>
+            We should therefore keep separate accounts of the number of
+            examples, quantum queries, circuit executions, gate operations,
+            classical computation and total wall-clock time. A meaningful
+            comparison must include the resources that the chosen learning
+            model actually requires.
+        </p>
+    </section>
+
+    <section id="data">
+        <h2>4. Learning from Quantum Data Versus Classical Data</h2>
+
+        <h3>4.1 The difference begins with the data itself</h3>
+
+        <p>
+            Classical data can be stored as ordinary records: numbers,
+            text, images, measurements or labels. A classical learning
+            algorithm can inspect those records, copy them, and process
+            them repeatedly, subject to ordinary computational constraints.
+        </p>
+
+        <p>
+            Quantum data is different. A quantum system can be prepared
+            in a state such as
+        </p>
+
+        <div class="math">
+            \[
+            |\psi\rangle=\alpha|0\rangle+\beta|1\rangle
+            \]
+            \[
+            |\alpha|^2+|\beta|^2=1
+            \]
+        </div>
+
+        <p>
+            The numbers \(\alpha\) and \(\beta\) are probability amplitudes.
+            When the qubit is measured in the computational basis, the
+            result is 0 with probability \(|\alpha|^2\) and 1 with
+            probability \(|\beta|^2\).
+        </p>
+
+        <p>
+            The state contains more information than a single measurement
+            outcome reveals. Yet that does not mean that we can read out
+            every part of the state from one measurement. Quantum
+            measurement produces limited classical information, and the
+            choice of measurement affects what can be learnt.
+        </p>
+
+        <h3>4.2 Why quantum states cannot simply be copied</h3>
+
+        <p>
+            An arbitrary unknown quantum state cannot be copied perfectly
+            by a universal physical operation. This restriction is known
+            as the <strong>no-cloning theorem</strong>.
+        </p>
+
+        <p>
+            Consider an unknown qubit supplied by a laboratory. A classical
+            record can usually be duplicated without changing its contents.
+            An unknown quantum state, however, cannot generally be turned
+            into two perfect copies of itself while leaving the original
+            unchanged.
+        </p>
+
+        <p>
+            This matters for learning because many classical algorithms
+            assume that data can be stored and revisited whenever required.
+            If the learner receives a quantum state, it may need to decide
+            which measurement to perform before the information available
+            from that copy is lost.
+        </p>
+
+        <p>
+            There is an important qualification: if we know how to prepare
+            the state, we may be able to prepare fresh copies by running
+            the preparation procedure again. The cost and reliability of
+            that process must then be included in the learning model.
+        </p>
+
+        <h3>4.3 Quantum information can contain useful correlations</h3>
+
+        <p>
+            A system of multiple qubits can exhibit entanglement. In an
+            entangled state, the joint system cannot generally be described
+            as a product of independent states for its parts.
+        </p>
+
+        <p>
+            For example, the two-qubit state
+        </p>
+
+        <div class="math">
+            \[
+            |\Phi^+\rangle=
+            \frac{|00\rangle+|11\rangle}{\sqrt{2}}
+            \]
+        </div>
+
+        <p>
+            produces correlated results when both qubits are measured in
+            the computational basis. Each result is individually random,
+            but the two results agree when measured in that basis.
+        </p>
+
+        <p>
+            Such correlations are useful in many quantum information tasks.
+            They can also affect learning because the relevant information
+            may be contained in the joint state rather than in separate
+            descriptions of each qubit.
+        </p>
+
+        <p>
+            However, entanglement by itself does not guarantee a learning
+            advantage. We must still show that the information helps solve
+            the task, that it can be extracted using an allowed procedure,
+            and that the complete procedure improves on an appropriate
+            classical alternative.
+        </p>
+
+        <h3>4.4 Three common learning scenarios</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Example</th>
+                    <th>Main difficulty</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Classical data, classical learner</td>
+                    <td>Training a standard classifier on a table of measurements</td>
+                    <td>Finding a useful model and generalising well</td>
+                </tr>
+                <tr>
+                    <td>Classical data, quantum learner</td>
+                    <td>Encoding numerical features into a circuit and training its parameters</td>
+                    <td>Encoding costs, circuit training and possible classical simulation</td>
+                </tr>
+                <tr>
+                    <td>Quantum data, quantum learner</td>
+                    <td>Learning properties of states produced by a quantum experiment</td>
+                    <td>Measurement limits, state preparation, noise and data requirements</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            A fourth scenario is also important: quantum data may be
+            measured and converted into classical records before a
+            classical learning algorithm processes it. This approach can
+            be practical, but the measurements must preserve enough of
+            the relevant information for the task.
+        </p>
+
+        <h3>4.5 Quantum data does not always require a quantum learner</h3>
+
+        <p>
+            Suppose a laboratory produces quantum states and we want to
+            estimate their average energy. A quantum device can measure
+            suitable observables and produce classical outcomes. A
+            classical computer can then calculate averages and uncertainty
+            estimates.
+        </p>
+
+        <p>
+            In this arrangement, the physical system is quantum, but part
+            of the learning and analysis pipeline is classical. This is
+            common in experimental science.
+        </p>
+
+        <p>
+            The real question is whether a classical record contains enough
+            information to answer the particular question efficiently.
+            Sometimes it does. In other cases, retaining quantum information
+            or choosing measurements carefully may provide a substantial
+            advantage.
+        </p>
+
+        <div class="takeaway">
+            <span class="label">Key lesson</span>
+            The distinction between classical and quantum data is not merely
+            about how the data is stored. It concerns what information is
+            available, which operations are allowed, how many copies can
+            be obtained, and what measurements are needed to learn the
+            target property.
+        </div>
+    </section>
+
+    <section id="advantage">
+        <h2>5. Provable Quantum Advantage in Learning</h2>
+
+        <h3>5.1 What does a provable advantage mean?</h3>
+
+        <p>
+            A quantum algorithm is often described as faster because it
+            performs well on a difficult problem. But a convincing
+            theoretical quantum advantage requires a more precise argument.
+            We need to define the task, state the resources available to
+            each learner, and establish a meaningful separation between
+            quantum and classical performance.
+        </p>
+
+        <p>
+            For a learning problem, the comparison might concern the number
+            of training examples, oracle queries, computational steps or
+            another resource. The quantum learner must meet the same
+            accuracy and confidence requirements as the classical learner.
+        </p>
+
+        <p>
+            If a quantum method uses 100 queries while a classical method
+            requires an exponentially larger number under the stated
+            assumptions, that can establish a query-complexity separation.
+            It does not, by itself, establish an exponential advantage in
+            real running time when implementing a query is expensive.
+        </p>
+
+        <h3>5.2 Four questions every advantage claim must answer</h3>
+
+        <ol>
+            <li><strong>What is the task?</strong> Is the goal to classify data, learn a hidden function, estimate a property or recover a secret?</li>
+            <li><strong>What access is provided?</strong> Does the learner receive classical examples, quantum states, or access to an oracle?</li>
+            <li><strong>What resources are counted?</strong> Are we counting queries, samples, circuit gates, computation or total execution time?</li>
+            <li><strong>What is the classical baseline?</strong> Has the quantum method been compared with the strongest relevant classical approach under the same assumptions?</li>
+        </ol>
+
+        <p>
+            Without these details, the phrase "quantum speedup" is too
+            vague to tell us what has actually been proved.
+        </p>
+
+        <h3>5.3 The discrete logarithm problem</h3>
+
+        <p>
+            The discrete logarithm problem, or DLP, is an important example
+            from computational number theory. It is also relevant to
+            quantum algorithms because Shor's algorithm can solve suitable
+            discrete logarithm instances efficiently on a sufficiently
+            capable fault-tolerant quantum computer.
+        </p>
+
+        <p>
+            Consider a finite cyclic group with generator \(g\). Suppose
+            we know \(g\) and another group element \(y\), where
+        </p>
+
+        <div class="math">
+            \[
+            y=g^x
+            \]
+        </div>
+
+        <p>
+            The discrete logarithm problem is to recover the unknown
+            exponent \(x\), with the exponent interpreted according to
+            the group's order.
+        </p>
+
+        <p>
+            Calculating \(y\) from \(g\) and \(x\) is usually straightforward.
+            Reversing the calculation can be difficult for carefully
+            chosen groups and parameter sizes when using known classical
+            algorithms.
+        </p>
+
+        <div class="example">
+            <span class="label">A tiny illustrative example</span>
+            Work modulo 7, and choose \(g=3\). Since
+            \(3^2=9\equiv2\pmod7\), if we are told that \(y=2\), we can
+            identify \(x=2\) for this example.
+
+            <p>
+                This example is intentionally small. A computer can test
+                the possibilities directly, so it has no cryptographic
+                difficulty. The interesting problem concerns suitable
+                groups and very large parameters.
+            </p>
+        </div>
+
+        <h3>5.4 How does the quantum algorithm help?</h3>
+
+        <p>
+            Shor's algorithm uses quantum interference and the quantum
+            Fourier transform to extract information about periodic
+            structure. For the discrete logarithm problem, an appropriate
+            quantum algorithm constructs states whose measurement statistics
+            reveal relations involving the hidden exponent. Classical
+            post-processing then recovers the answer.
+        </p>
+
+        <p>
+            For standard families of groups used in discrete logarithm
+            cryptography, Shor's algorithm runs in polynomial time in the
+            relevant input size, assuming an appropriate fault-tolerant
+            quantum computer and efficient implementations of the required
+            operations.
+        </p>
+
+        <p>
+            Known classical algorithms for important cryptographic
+            instances generally require much more work, although the
+            precise classical complexity depends on the group family.
+            Therefore, one must specify the group and computational model
+            before making a detailed complexity comparison.
+        </p>
+
+        <h3>5.5 But is solving DLP the same as learning?</h3>
+
+        <p>
+            No. This is an important distinction. The discrete logarithm
+            problem is fundamentally a computational problem, not
+            automatically a PAC-learning problem. Shor's algorithm
+            demonstrates a powerful quantum computational advantage, but
+            that fact alone does not establish a quantum PAC-learning
+            separation.
+        </p>
+
+        <p>
+            DLP can nevertheless motivate learning-theoretic research.
+            Researchers may construct learning tasks involving hidden
+            structures, labelled examples, oracle access or cryptographic
+            assumptions. They then ask whether a quantum learner can
+            identify the target efficiently while classical learners
+            cannot, under clearly stated conditions.
+        </p>
+
+        <p>
+            Such a result needs its own proof. It must specify the
+            distribution of examples, the learning objective, the access
+            model and the computational assumptions. A fast algorithm
+            for a cryptographic problem is not enough on its own.
+        </p>
+
+        <h3>5.6 DLP-based tasks and cryptographic assumptions</h3>
+
+        <p>
+            In computational learning theory, cryptographic assumptions
+            are sometimes used to construct learning tasks that are
+            believed to be difficult for efficient classical algorithms.
+            A DLP-based construction might use a hidden quantity or a
+            function derived from a discrete logarithm instance.
+        </p>
+
+        <p>
+            The reasoning usually follows this pattern:
+        </p>
+
+        <ol>
+            <li>Define a learning problem whose examples or target depend on a hidden mathematical structure.</li>
+            <li>Show that a learner that solves the task would reveal information sufficient to solve a difficult underlying problem.</li>
+            <li>Use the assumed hardness of that problem to argue that an efficient classical learner is unlikely to exist.</li>
+            <li>Separately construct a quantum learner that succeeds within the specified resource limits.</li>
+        </ol>
+
+        <p>
+            This is a proof strategy, not a universal theorem about every
+            DLP-related learning problem. Its strength depends on the
+            exact reduction and on the assumptions used.
+        </p>
+
+        <div class="warning">
+            <span class="label">Read the assumptions carefully</span>
+            If a paper claims that a quantum learner beats a classical
+            learner, check whether the result is unconditional, based on
+            a cryptographic hardness assumption, or proved only in an
+            oracle model. These are different levels of evidence.
+        </div>
+
+        <h3>5.7 Query advantage versus end-to-end advantage</h3>
+
+        <p>
+            Suppose a quantum learner needs fewer calls to an oracle.
+            This may be a strong theoretical result, but the oracle could
+            hide substantial computational work. In a physical
+            implementation, constructing the oracle, preparing the input
+            state, correcting errors and processing the output all have
+            costs.
+        </p>
+
+        <p>
+            Consequently, a complete advantage analysis should distinguish
+            query complexity from total computational complexity. It
+            should also consider whether the classical learner has access
+            to equivalent information and whether the quantum algorithm
+            requires fault tolerance.
+        </p>
+    </section>
+
+    <section id="shadows">
+        <h2>6. Classical Shadows and Efficient Property Estimation</h2>
+
+        <h3>6.1 The problem of understanding a quantum state</h3>
+
+        <p>
+            Suppose a laboratory prepares an unknown quantum state
+            \(\rho\). We may want to know its energy, the expectation
+            value of a particular observable, or whether it satisfies
+            certain physical properties.
+        </p>
+
+        <p>
+            For a system containing \(n\) qubits, a general pure state
+            requires a number of complex amplitudes that grows
+            exponentially with \(n\). A general density matrix has
+            \(2^n\times2^n\) entries. Directly reconstructing the full
+            state can therefore become impractical as the system grows.
+        </p>
+
+        <p>
+            Fortunately, most experiments do not need every detail of
+            the state. A researcher may only want a particular collection
+            of expectation values. This observation motivates
+            <strong>classical shadows</strong>.
+        </p>
+
+        <h3>6.2 The basic idea</h3>
+
+        <p>
+            A classical shadow is a compact classical record constructed
+            from a randomly chosen quantum measurement and a suitable
+            mathematical reconstruction procedure. Repeating this process
+            on fresh copies of the state produces many shadow records.
+        </p>
+
+        <p>
+            These records can then be used to estimate selected properties
+            of the original state without reconstructing the entire
+            density matrix.
+        </p>
+
+        <div class="diagram">
+            <div class="step">Prepare a copy of state ρ</div>
+            <span class="arrow">→</span>
+            <div class="step">Choose a random measurement</div>
+            <span class="arrow">→</span>
+            <div class="step">Record the outcome</div>
+            <span class="arrow">→</span>
+            <div class="step">Construct a shadow</div>
+            <span class="arrow">→</span>
+            <div class="step">Estimate properties</div>
+        </div>
+
+        <p>
+            The word "classical" refers to the classical data stored after
+            measurement. The quantum state itself is not converted into
+            a perfect classical copy. Rather, each measurement gives a
+            limited record, and the collection of records supports
+            statistical estimates.
+        </p>
+
+        <h3>6.3 Why random measurements can be useful</h3>
+
+        <p>
+            Different measurements reveal different aspects of a quantum
+            state. Measuring every copy in the same basis may be suitable
+            for one observable but unhelpful for another.
+        </p>
+
+        <p>
+            Classical-shadow protocols choose measurements according to
+            a defined randomised scheme. A mathematical inverse map is
+            applied to the recorded outcomes to construct an estimator
+            whose average reproduces the state, under the protocol's
+            assumptions.
+        </p>
+
+        <p>
+            One common form of the single-copy estimator is
+        </p>
+
+        <div class="math">
+            \[
+            \hat{\rho}=\mathcal{M}^{-1}(\text{measurement record})
+            \]
+            <p class="small">
+                M describes the measurement channel and the inverse is
+                applied on the relevant operator space when it is well
+                defined. This expression describes the estimator, not
+                a claim that one measurement reveals the full state.
+            </p>
+        </div>
+
+        <p>
+            Averaging suitable estimators over repeated experiments
+            provides estimates of expectation values. For an observable
+            \(O\), the quantity of interest is
+        </p>
+
+        <div class="math">
+            \[
+            \langle O\rangle=\operatorname{Tr}(\rho O)
+            \]
+        </div>
+
+        <p>
+            The trace expression gives the expected measurement value
+            associated with \(O\) and state \(\rho\). A shadow-based
+            estimate approximates this value using the collected
+            classical records.
+        </p>
+
+        <h3>6.4 A simple analogy</h3>
+
+        <p>
+            Imagine that a large machine has thousands of internal
+            settings, but you only need to answer ten specific questions
+            about its behaviour. It would be wasteful to reconstruct
+            every internal detail before answering those questions.
+        </p>
+
+        <p>
+            Classical shadows follow a related principle. Instead of
+            demanding a complete description of the quantum state, we
+            collect measurement records designed to support many useful
+            estimates.
+        </p>
+
+        <p>
+            The analogy has a limit: quantum measurements have
+            mathematical constraints that ordinary inspection of a
+            classical machine does not. The random measurement scheme
+            and its statistical properties are essential to the method.
+        </p>
+
+        <h3>6.5 How many measurements are required?</h3>
+
+        <p>
+            The number of measurements depends on the observables we
+            wish to estimate, the required precision, the desired
+            confidence and the chosen measurement protocol.
+        </p>
+
+        <p>
+            A standard form of the sample-complexity result for classical
+            shadows is that, under suitable assumptions, the number of
+            copies needed to estimate \(K\) specified observables to
+            additive error \(\epsilon\), with failure probability at
+            most \(\delta\), scales roughly as
+        </p>
+
+        <div class="math">
+            \[
+            N =
+            O\left(
+            \frac{\log(K/\delta)}{\epsilon^2}
+            \max_{i=1,\ldots,K}\|O_i\|_{\mathrm{shadow}}^2
+            \right)
+            \]
+            <p class="small">
+                This is a representative classical-shadow sample bound.
+                Constants and precise conditions depend on the protocol.
+                The shadow norm captures how difficult the observables
+                are to estimate with that measurement scheme.
+            </p>
+        </div>
+
+        <p>
+            This expression illustrates an important result. The number
+            of requested properties, \(K\), appears logarithmically in
+            the bound, rather than necessarily appearing as a direct
+            multiplicative factor. That can be very useful when the
+            researcher wants many estimates from the same collection
+            of measurement records.
+        </p>
+
+        <p>
+            However, the logarithmic dependence does not mean that every
+            collection of observables can be estimated cheaply. If the
+            observables are poorly suited to the measurement protocol,
+            the shadow norm may be large. The number of state preparations,
+            the noise level and the accuracy requirement can still make
+            the experiment expensive.
+        </p>
+
+        <h3>6.6 An example from quantum chemistry</h3>
+
+        <p>
+            Suppose a quantum chemistry experiment prepares a state that
+            approximates the electronic state of a molecule. Researchers
+            want to estimate the energy and several other physical
+            quantities.
+        </p>
+
+        <p>
+            The energy may be expressed as a weighted sum of observable
+            terms. A classical-shadow method can collect measurement
+            records that are useful for estimating a suitable collection
+            of these terms, potentially allowing multiple properties to
+            be estimated from shared experimental data.
+        </p>
+
+        <p>
+            Whether this is more efficient than a specialised alternative
+            depends on the observable structure, measurement grouping,
+            variance and experimental constraints. Classical shadows
+            are a powerful framework, not a guarantee that they are
+            always the best measurement strategy.
+        </p>
+
+        <h3>6.7 Classical shadows are not full tomography</h3>
+
+        <p>
+            Quantum state tomography attempts to reconstruct a state
+            description from measurement data. Classical shadows instead
+            focus on efficiently estimating properties of interest.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Full state tomography</th>
+                    <th>Classical shadows</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Main objective</td>
+                    <td>Reconstruct a description of the quantum state</td>
+                    <td>Estimate selected properties from compact measurement records</td>
+                </tr>
+                <tr>
+                    <td>Typical data use</td>
+                    <td>Measurements designed for reconstruction</td>
+                    <td>Randomised measurements and post-processing</td>
+                </tr>
+                <tr>
+                    <td>Scalability</td>
+                    <td>General reconstruction can be expensive for large systems</td>
+                    <td>Can estimate many specified observables without full reconstruction</td>
+                </tr>
+                <tr>
+                    <td>Main limitation</td>
+                    <td>Large reconstruction cost and data requirements</td>
+                    <td>Some observables require many samples under a given protocol</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="takeaway">
+            <span class="label">Key lesson</span>
+            Classical shadows connect quantum experiments with classical
+            statistical learning. They allow researchers to store compact
+            measurement records and reuse them to estimate selected
+            properties, while respecting the fact that quantum measurements
+            reveal only limited information about a state.
+        </div>
+    </section>
+
+    <section id="experiments">
+        <h2>7. Quantum Advantage with Quantum Data and Experiments</h2>
+
+        <h3>7.1 Why the source of the data matters</h3>
+
+        <p>
+            Many quantum machine-learning proposals begin with classical
+            inputs, such as images or numerical feature vectors. Those
+            inputs must somehow be encoded into a quantum state before
+            a circuit can process them.
+        </p>
+
+        <p>
+            This raises a basic question: if the information begins as
+            ordinary classical data, what is the quantum device contributing?
+            The circuit may offer useful representations or a computational
+            advantage, but this must be demonstrated for the task and
+            encoding method in question.
+        </p>
+
+        <p>
+            A different situation arises when the data is produced by a
+            quantum system itself. Examples include states generated by
+            a quantum processor, molecular systems, quantum materials
+            and controlled quantum experiments. In such settings, quantum
+            information is naturally present at the source.
+        </p>
+
+        <p>
+            A classical computer may still be able to analyse the data
+            efficiently, but extracting a useful description from quantum
+            measurements can be difficult. A quantum learner may have
+            access to operations that make certain tasks easier.
+        </p>
+
+        <h3>7.2 What could quantum advantage look like?</h3>
+
+        <p>
+            Several kinds of advantage are possible, and they should not
+            be treated as interchangeable.
+        </p>
+
+        <ul>
+            <li><strong>Sample advantage:</strong> A quantum learner needs fewer copies of the relevant data to meet the same accuracy guarantee.</li>
+            <li><strong>Query advantage:</strong> It needs fewer calls to a specified oracle or target system.</li>
+            <li><strong>Computational advantage:</strong> It completes the learning task using substantially less computational work.</li>
+            <li><strong>Measurement advantage:</strong> It estimates a specified set of properties with fewer experimental measurements.</li>
+            <li><strong>Practical advantage:</strong> It delivers a useful result more effectively after the full cost of preparation, execution and analysis is counted.</li>
+        </ul>
+
+        <p>
+            A result can establish one type of advantage without establishing
+            the others. For example, a method may reduce the number of
+            oracle queries but require expensive state preparation.
+            Another method may use fewer measurements but still require
+            substantial classical post-processing.
+        </p>
+
+        <h3>7.3 Learning a quantum state from experiments</h3>
+
+        <p>
+            Consider a researcher who can repeatedly prepare a quantum
+            system in an unknown state. The goal is to predict the
+            outcomes of certain future measurements or estimate selected
+            observables.
+        </p>
+
+        <p>
+            The learner chooses measurements, observes their outcomes,
+            updates estimates and eventually produces a description that
+            is accurate enough for the intended task. The learning
+            procedure must balance the information obtained from each
+            measurement against the number of copies consumed.
+        </p>
+
+        <p>
+            The task becomes more demanding when the state is large,
+            when measurements are noisy, or when the researcher wants
+            to predict many properties simultaneously. Learning theory
+            provides the framework for stating how much experimental
+            data is needed to achieve the desired accuracy.
+        </p>
+
+        <h3>7.4 The importance of access models</h3>
+
+        <p>
+            The phrase "the learner has quantum data" can describe
+            several different experimental arrangements. The learner
+            might receive individual copies of a state, have access to
+            a device that prepares the state on demand, or control a
+            coherent operation that encodes the relevant information.
+        </p>
+
+        <p>
+            These arrangements do not provide the same capabilities.
+            A state-preparation device might be expensive to operate,
+            while coherent access to an operation may allow a learner
+            to perform transformations that are impossible using only
+            measured classical records.
+        </p>
+
+        <p>
+            Therefore, theoretical papers specify the access model
+            before deriving a complexity result. Without that specification,
+            it is impossible to tell whether two learning algorithms
+            are being compared fairly.
+        </p>
+
+        <h3>7.5 Noise and imperfect experiments</h3>
+
+        <p>
+            Real quantum devices are affected by noise, control errors,
+            imperfect state preparation and measurement errors. A
+            learning method that succeeds in an ideal mathematical
+            model may require additional resources on physical hardware.
+        </p>
+
+        <p>
+            Noise can affect both the quality of the information received
+            and the number of experiments required. Some forms of noise
+            can be characterised and mitigated, but mitigation itself
+            may introduce extra sampling costs or uncertainty.
+        </p>
+
+        <p>
+            A practical evaluation should therefore consider the full
+            experimental pipeline: preparation, circuit execution,
+            measurement, calibration, post-processing and validation
+            on independent data.
+        </p>
+
+        <h3>7.6 What counts as evidence of a real advantage?</h3>
+
+        <p>
+            Strong evidence begins with a clearly defined task and a
+            fair comparison. A useful study should explain the relevant
+            assumptions, state how the quantum data is prepared, specify
+            the number of measurements or queries, and account for
+            the computational costs that matter to the application.
+        </p>
+
+        <p>
+            It should also compare the quantum approach against relevant
+            classical methods. If the quantum method is designed for
+            a special input distribution, the classical baseline should
+            be evaluated on the same distribution. If the quantum
+            method receives a powerful oracle, the source of that oracle
+            and its cost must be made clear.
+        </p>
+
+        <p>
+            Finally, a theoretical separation and an experimental
+            demonstration are different achievements. A theorem can
+            establish an advantage under precise mathematical assumptions.
+            An experiment can demonstrate performance on a real device
+            for a particular scale and noise level. Both are valuable,
+            but one should not be presented as if it automatically
+            proves the other.
+        </p>
+
+        <div class="warning">
+            <span class="label">A useful rule</span>
+            Quantum data does not automatically mean quantum advantage.
+            The advantage must come from a task-specific result about
+            information, measurements or computation, rather than from
+            the mere fact that the underlying system is quantum.
+        </div>
+    </section>
+
+    <section id="connections">
+        <h2>8. How All Six Topics Fit Together</h2>
+
+        <p>
+            The six topics in this chapter form a connected line of reasoning.
+            We begin by asking what it means to learn successfully, and then
+            ask how much data is needed to support that claim. We next
+            examine how the answer changes when the examples themselves
+            are quantum states rather than classical records.
+        </p>
+
+        <div class="diagram">
+            <div class="step">PAC learning</div>
+            <span class="arrow">→</span>
+            <div class="step">Sample complexity</div>
+            <span class="arrow">→</span>
+            <div class="step">Type of data</div>
+            <span class="arrow">→</span>
+            <div class="step">Quantum advantage</div>
+            <span class="arrow">→</span>
+            <div class="step">Experimental evidence</div>
+        </div>
+
+        <p>
+            PAC learning supplies the success criterion. Sample complexity
+            tells us how many examples may be required to meet it.
+            The data-access model determines what information the learner
+            can obtain. Complexity results then establish whether quantum
+            resources offer an advantage under those conditions.
+        </p>
+
+        <p>
+            Classical shadows provide a concrete example of how measurement
+            and statistical estimation work together. They show that we
+            do not always need to reconstruct a complete quantum state to
+            learn useful facts about it. By selecting a measurement protocol
+            and analysing its outcomes, we can estimate many properties
+            from a shared collection of records.
+        </p>
+
+        <p>
+            Finally, provable quantum advantage and experimental quantum
+            advantage must be evaluated using the correct resource model.
+            Theoretical results tell us what is possible under stated
+            assumptions. Experiments tell us how well a method performs
+            on available devices and data. Understanding both is essential
+            for judging claims about quantum machine learning.
+        </p>
+
+        <h3>8.1 A comparison of the main concepts</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Central question</th>
+                    <th>Main lesson</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Quantum PAC learning</td>
+                    <td>Can the learner produce a reliable hypothesis?</td>
+                    <td>Accuracy and confidence must be defined mathematically.</td>
+                </tr>
+                <tr>
+                    <td>Sample complexity</td>
+                    <td>How many examples are required?</td>
+                    <td>Data requirements depend on accuracy, confidence and model complexity.</td>
+                </tr>
+                <tr>
+                    <td>Quantum versus classical data</td>
+                    <td>What information can the learner access?</td>
+                    <td>Quantum states, measurements and classical records have different constraints.</td>
+                </tr>
+                <tr>
+                    <td>Provable quantum advantage</td>
+                    <td>Can quantum resources outperform classical resources?</td>
+                    <td>The separation must be proved for a clearly specified task and model.</td>
+                </tr>
+                <tr>
+                    <td>Classical shadows</td>
+                    <td>Can many properties be estimated without full tomography?</td>
+                    <td>Carefully chosen measurements can support efficient statistical estimation.</td>
+                </tr>
+                <tr>
+                    <td>Quantum experiments</td>
+                    <td>Does the advantage survive real-world costs and noise?</td>
+                    <td>Practical performance requires accounting for the complete experimental pipeline.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="revision">
+        <h2>9. Revision Questions and Key Lessons</h2>
+
+        <h3>9.1 Questions to test your understanding</h3>
+
+        <ol>
+            <li>What do the words "probably" and "approximately correct" mean in PAC learning?</li>
+            <li>Why does a model with zero training error not necessarily generalise well?</li>
+            <li>What is sample complexity, and how is it different from running time?</li>
+            <li>Why does the complexity of a hypothesis class affect the number of examples required?</li>
+            <li>What is the no-cloning theorem, and why does it matter when learning from quantum states?</li>
+            <li>What is the discrete logarithm problem? Why is Shor's algorithm relevant to it?</li>
+            <li>Why does a quantum speedup for DLP not automatically prove a quantum PAC-learning advantage?</li>
+            <li>What is the difference between query complexity and end-to-end computational cost?</li>
+            <li>How do classical shadows estimate quantum-state properties without reconstructing the full state?</li>
+            <li>Why must experimental noise and state-preparation costs be included when assessing practical quantum advantage?</li>
+        </ol>
+
+        <h3>9.2 Answers in brief</h3>
+
+        <div class="concept">
+            <p>
+                <strong>1.</strong> The learner should achieve an error below
+                a specified tolerance with high probability over the training
+                process.
+            </p>
+            <p>
+                <strong>2.</strong> The model may have memorised the training
+                examples rather than learnt a pattern that applies to new data.
+            </p>
+            <p>
+                <strong>3.</strong> Sample complexity counts the examples
+                needed for a learning guarantee; running time measures the
+                computational effort required.
+            </p>
+            <p>
+                <strong>4.</strong> A more flexible hypothesis class can fit
+                more possible labellings, making reliable generalisation
+                harder to establish from limited data.
+            </p>
+            <p>
+                <strong>5.</strong> An arbitrary unknown quantum state cannot
+                be copied perfectly by a universal operation, so the learner
+                must work within the limits of available copies and measurements.
+            </p>
+            <p>
+                <strong>6.</strong> DLP asks us to recover an exponent from
+                a group relation. Shor's algorithm can solve suitable
+                instances efficiently on a sufficiently capable quantum
+                computer.
+            </p>
+            <p>
+                <strong>7.</strong> DLP is a computational problem. A
+                learning advantage requires a separate, precisely defined
+                learning task and proof.
+            </p>
+            <p>
+                <strong>8.</strong> Query complexity counts calls to an
+                oracle, while end-to-end cost also includes implementing
+                access, computation and other required operations.
+            </p>
+            <p>
+                <strong>9.</strong> Classical shadows use randomised
+                measurements and statistical estimators to predict
+                selected expectation values from classical records.
+            </p>
+            <p>
+                <strong>10.</strong> Real experiments consume time and
+                resources, and noise can increase the measurements needed
+                or reduce accuracy.
+            </p>
+        </div>
+
+        <h3>9.3 The final picture</h3>
+
+        <p>
+            Quantum learning theory asks us to move beyond impressive
+            circuit designs and ask what a learner can actually establish.
+            A reliable result requires a defined target, an explicit
+            data-access model, enough information to learn the target,
+            and a procedure that meets the required accuracy and confidence.
+        </p>
+
+        <p>
+            Quantum information can make some tasks easier, especially
+            when the data or underlying operation is naturally quantum.
+            But that benefit is task-dependent. It must be demonstrated
+            through mathematical analysis or careful experiments, with
+            a fair account of the resources involved.
+        </p>
+
+        <div class="takeaway">
+            <span class="label">The chapter in one idea</span>
+            A quantum model is useful not merely because it uses qubits,
+            but because it can learn a meaningful property reliably and
+            efficiently. PAC guarantees explain what reliable learning
+            means; sample complexity explains how much data is needed;
+            classical shadows demonstrate efficient property estimation;
+            and quantum-advantage proofs determine when quantum resources
+            genuinely improve the task.
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            <strong>Further reading</strong>
+        </p>
+        <ul>
+            <li>Mohri, Rostamizadeh and Talwalkar, <em>Foundations of Machine Learning</em> — classical learning theory and generalisation.</li>
+            <li>Shalev-Shwartz and Ben-David, <em>Understanding Machine Learning: From Theory to Algorithms</em> — PAC learning and sample complexity.</li>
+            <li>Shor, "Algorithms for Quantum Computation: Discrete Logarithms and Factoring" (1994) — foundational quantum algorithms for discrete logarithms and factoring.</li>
+            <li>Huang, Kueng and Preskill, "Predicting Many Properties of a Quantum System from Very Few Measurements" (2020) — classical shadows and property estimation.</li>
+            <li>Arunachalam and de Wolf, "Guest Column: A Survey of Quantum Learning Theory" (2017) — an overview of quantum learning models and complexity.</li>
+        </ul>
+        <p class="small">
+            The bounds and examples in this chapter illustrate standard
+            learning-theoretic ideas. Exact guarantees depend on the
+            hypothesis class, data distribution, access model, measurement
+            protocol and computational assumptions used in a particular
+            result.
+        </p>
+    </footer>
+
+</main>
+</body>
+</html>

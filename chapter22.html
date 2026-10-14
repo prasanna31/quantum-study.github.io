@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 22: Quantum Reinforcement Learning</title>
+    <style>
+        :root {
+            --primary: #173b67;
+            --secondary: #2867a5;
+            --accent: #087f8c;
+            --background: #f5f7fa;
+            --surface: #ffffff;
+            --text: #263445;
+            --muted: #5c6b7a;
+            --border: #dce4ed;
+            --highlight: #eaf3fc;
+            --warm: #fff5df;
+            --green: #e8f6ef;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        header {
+            padding: 58px 24px 48px;
+            background: linear-gradient(135deg, #102d50, #205b83, #087f8c);
+            color: white;
+        }
+
+        .header-inner, main, footer {
+            max-width: 960px;
+            margin: auto;
+        }
+
+        header .eyebrow {
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: bold;
+            opacity: 0.85;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.35;
+        }
+
+        h1 {
+            max-width: 760px;
+            margin: 14px 0;
+            font-size: clamp(34px, 6vw, 49px);
+        }
+
+        header p {
+            max-width: 760px;
+            font-size: 19px;
+            color: #e8f3fb;
+        }
+
+        main {
+            padding: 30px 22px 65px;
+        }
+
+        section {
+            margin: 32px 0;
+            padding: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: var(--secondary);
+            font-size: 21px;
+        }
+
+        h4 {
+            color: var(--accent);
+            font-size: 17px;
+        }
+
+        p {
+            margin: 14px 0;
+        }
+
+        ul, ol {
+            padding-left: 27px;
+        }
+
+        li {
+            margin: 7px 0;
+        }
+
+        .lead {
+            font-size: 19px;
+            color: #334b62;
+        }
+
+        .callout, .example, .warning, .takeaway {
+            margin: 22px 0;
+            padding: 17px 20px;
+            border-radius: 7px;
+            border-left: 4px solid var(--secondary);
+            background: var(--highlight);
+        }
+
+        .example {
+            border-left-color: var(--accent);
+            background: #edf8f8;
+        }
+
+        .warning {
+            border-left-color: #d49a27;
+            background: var(--warm);
+        }
+
+        .takeaway {
+            border-left-color: #28835b;
+            background: var(--green);
+        }
+
+        .equation {
+            margin: 20px 0;
+            padding: 20px 12px;
+            overflow-x: auto;
+            background: #f1f4f8;
+            border-radius: 8px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+            line-height: 1.9;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf1f8;
+            color: var(--primary);
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            padding: 22px;
+            margin: 28px 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        nav h2 {
+            font-size: 21px;
+        }
+
+        nav a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+            background: #edf1f5;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.91em;
+        }
+
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding: 8px 0 8px 48px;
+            min-height: 48px;
+        }
+
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 8px;
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 25px 22px 45px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+
+            section {
+                padding: 19px;
+            }
+
+            main {
+                padding: 15px 12px 40px;
+            }
+
+            header {
+                padding: 38px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="eyebrow">Quantum Computing · Chapter 22</div>
+        <h1>Quantum Reinforcement Learning</h1>
+        <p>
+            How can an intelligent system learn to make better decisions through
+            experience, and where might quantum computing help it learn?
+        </p>
+        <p>
+            This chapter builds the idea from ordinary reinforcement learning
+            to quantum policies, value functions, exploration and real-world
+            control problems.
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <nav>
+        <h2>Chapter contents</h2>
+        <ol>
+            <li><a href="#intro">The central idea</a></li>
+            <li><a href="#primer">22.1 — Reinforcement learning primer</a></li>
+            <li><a href="#quantum-approximators">22.2 — Quantum policy and value function approximators</a></li>
+            <li><a href="#exploration">22.3 — Quantum-enhanced exploration</a></li>
+            <li><a href="#variational">22.4 — Variational quantum reinforcement learning</a></li>
+            <li><a href="#applications">22.5 — Applications in control and decision-making</a></li>
+            <li><a href="#limitations">Limitations and practical challenges</a></li>
+            <li><a href="#summary">Chapter summary and review questions</a></li>
+        </ol>
+    </nav>
+
+    <section id="intro">
+        <h2>The central idea: learning by making decisions</h2>
+
+        <p class="lead">
+            Reinforcement learning is a way of teaching a computer to make
+            decisions by allowing it to interact with an environment and learn
+            from the consequences of its actions.
+        </p>
+
+        <p>
+            Think about learning to ride a bicycle. Nobody gives you a complete
+            mathematical description of how to balance your body, turn the
+            handlebar and control your speed. You try, observe what happens,
+            make mistakes and gradually improve. You learn which actions help
+            and which actions cause problems.
+        </p>
+
+        <p>
+            Reinforcement learning follows a similar principle. An agent takes
+            an action, receives feedback and uses that experience to improve
+            its future decisions. The feedback is called a <strong>reward</strong>.
+            The goal is not simply to obtain a reward immediately. It is to
+            learn a strategy that produces good results over time.
+        </p>
+
+        <p>
+            Quantum reinforcement learning combines this learning framework
+            with quantum computing. A quantum circuit may represent a policy,
+            estimate the value of a state, or help solve a subproblem involved
+            in choosing actions.
+        </p>
+
+        <div class="callout">
+            <strong>One important distinction:</strong> reinforcement learning
+            describes how an agent learns to make decisions. Quantum computing
+            describes a way of processing information using quantum systems.
+            Combining them does not automatically make the learning process
+            faster or better. That advantage must be demonstrated for the
+            particular problem.
+        </div>
+
+        <h3>What makes quantum reinforcement learning interesting?</h3>
+
+        <p>
+            Quantum states can contain superpositions, and quantum operations
+            can create entanglement and interfere with one another. These
+            properties allow quantum circuits to represent and process certain
+            kinds of information differently from ordinary circuits.
+        </p>
+
+        <p>
+            Researchers investigate whether these properties can improve
+            policy representation, sampling, optimisation or exploration.
+            However, an agent still needs useful rewards, a suitable learning
+            algorithm and reliable interaction with its environment.
+        </p>
+
+        <div class="example">
+            <strong>Example:</strong> Imagine a robot that must move a box
+            through a warehouse without hitting people or other objects.
+            Classical reinforcement learning can learn a navigation strategy.
+            A quantum reinforcement learning system might use a parameterised
+            quantum circuit to represent its action probabilities. Both systems
+            must still obey the physical rules of the warehouse.
+        </div>
+    </section>
+
+    <section id="primer">
+        <h2>22.1 — Reinforcement learning primer</h2>
+
+        <h3>1. The four main ingredients</h3>
+
+        <p>
+            Every reinforcement learning problem contains an agent, an
+            environment, actions and rewards. The agent is the decision-maker.
+            The environment is the world with which it interacts.
+        </p>
+
+        <ul>
+            <li><strong>Agent:</strong> the system that learns what to do.</li>
+            <li><strong>Environment:</strong> the world or process being controlled.</li>
+            <li><strong>Action:</strong> a choice made by the agent.</li>
+            <li><strong>Reward:</strong> numerical feedback indicating how desirable an outcome is.</li>
+        </ul>
+
+        <p>
+            The environment also has a state, which describes the situation
+            at a particular moment. For a warehouse robot, the state could
+            include its location, speed, nearby obstacles and the position
+            of the box.
+        </p>
+
+        <p>
+            The basic interaction is a repeated cycle: observe the situation,
+            choose an action, receive a reward and observe the new situation.
+            This cycle continues until the task ends or the agent reaches a
+            predefined stopping condition.
+        </p>
+
+        <h3>2. States, actions and transitions</h3>
+
+        <p>
+            Let the state at time step t be written as s<sub>t</sub>, and let
+            the action be a<sub>t</sub>. After the agent acts, the environment
+            moves to a new state, s<sub>t+1</sub>, and returns a reward,
+            r<sub>t+1</sub>.
+        </p>
+
+        <div class="equation">
+            s<sub>t</sub>
+            &nbsp;→&nbsp;
+            a<sub>t</sub>
+            &nbsp;→&nbsp;
+            (r<sub>t+1</sub>, s<sub>t+1</sub>)
+        </div>
+
+        <p>
+            This transition captures the essential feedback loop. The same
+            action may produce different outcomes when the environment is
+            uncertain. A robot moving forward might make progress on an empty
+            path but collide with an obstacle if the path is blocked.
+        </p>
+
+        <p>
+            In a fully observable Markov decision process, or MDP, the state
+            contains the information needed to model the distribution of
+            future states and rewards given the current state and action.
+            Formally, the next-state distribution does not need the entire
+            history once the current state and action are known.
+        </p>
+
+        <div class="equation">
+            P(s<sub>t+1</sub> | s<sub>t</sub>, a<sub>t</sub>, history)
+            =
+            P(s<sub>t+1</sub> | s<sub>t</sub>, a<sub>t</sub>)
+        </div>
+
+        <p>
+            This is the Markov property. It is a modelling assumption, not a
+            rule that every real-world system automatically satisfies.
+        </p>
+
+        <h3>3. The policy: deciding what to do</h3>
+
+        <p>
+            A policy is the agent's decision-making strategy. It tells the
+            agent which action to choose in a given state. A policy can be
+            deterministic or stochastic.
+        </p>
+
+        <p>
+            A deterministic policy chooses one action for each state:
+            <code>a = π(s)</code>. A stochastic policy assigns a probability
+            to each possible action:
+            <code>π(a | s)</code>.
+        </p>
+
+        <p>
+            Suppose a robot has three choices: move left, move straight or
+            move right. Its policy might assign probabilities of 0.2, 0.6
+            and 0.2, respectively. These probabilities sum to one. The robot
+            can sample an action from this distribution rather than always
+            selecting the same action.
+        </p>
+
+        <div class="example">
+            <strong>Why use probabilities?</strong> A robot that always
+            chooses the same action may fail to discover a better route.
+            Stochastic policies allow controlled variation in decisions,
+            which can be useful during learning.
+        </div>
+
+        <h3>4. Rewards are not the same as long-term success</h3>
+
+        <p>
+            A reward measures the immediate feedback received from the
+            environment. However, the best immediate reward may not lead to
+            the best overall outcome.
+        </p>
+
+        <p>
+            Consider a delivery robot. Taking a shortcut might save a few
+            seconds now but create a high risk of collision. A sensible
+            learning objective must account for future consequences, not
+            just immediate progress.
+        </p>
+
+        <p>
+            The discounted return from time t is commonly defined as:
+        </p>
+
+        <div class="equation">
+            G<sub>t</sub> =
+            r<sub>t+1</sub> +
+            γr<sub>t+2</sub> +
+            γ²r<sub>t+3</sub> + ...
+        </div>
+
+        <p>
+            Here, γ is the discount factor, normally between zero and one
+            for the standard discounted formulation. A small γ gives more
+            importance to immediate rewards. A value closer to one gives
+            greater importance to future rewards.
+        </p>
+
+        <p>
+            For example, with γ = 0.9, a reward received two steps later
+            contributes with a factor of 0.81. This does not mean the reward
+            itself becomes smaller in the environment. Discounting expresses
+            how the learning objective weighs future outcomes.
+        </p>
+
+        <h3>5. Value functions: estimating future rewards</h3>
+
+        <p>
+            A value function estimates how useful a state is when the agent
+            follows a particular policy. It answers a question such as:
+            "If I find myself in this situation, how much reward can I
+            reasonably expect to collect in the future?"
+        </p>
+
+        <p>The state-value function is:</p>
+
+        <div class="equation">
+            V<sup>π</sup>(s) =
+            E<sub>π</sub>[G<sub>t</sub> | s<sub>t</sub> = s]
+        </div>
+
+        <p>
+            The expectation averages over possible future outcomes when the
+            agent follows policy π. A high value indicates a state from which
+            the policy expects to achieve a high return.
+        </p>
+
+        <p>
+            An action-value function, also called a Q-function, evaluates a
+            particular action in a particular state:
+        </p>
+
+        <div class="equation">
+            Q<sup>π</sup>(s,a) =
+            E<sub>π</sub>[G<sub>t</sub> | s<sub>t</sub> = s, a<sub>t</sub> = a]
+        </div>
+
+        <p>
+            The difference is important. V(s) evaluates the state, whereas
+            Q(s,a) evaluates what happens when a specific action is selected
+            in that state and the policy is followed afterwards.
+        </p>
+
+        <h3>6. The Bellman equation: connecting now to later</h3>
+
+        <p>
+            The central idea behind many reinforcement learning algorithms is
+            that long-term value can be expressed using immediate reward and
+            the value of the next state.
+        </p>
+
+        <div class="equation">
+            V<sup>π</sup>(s) =
+            E<sub>π</sub>[r + γV<sup>π</sup>(s')]
+        </div>
+
+        <p>
+            This is the Bellman expectation equation. The reward r represents
+            the immediate outcome, and V(s') represents the future value.
+            The expectation accounts for uncertainty in actions and state
+            transitions.
+        </p>
+
+        <p>
+            The corresponding optimal action-value equation is:
+        </p>
+
+        <div class="equation">
+            Q*(s,a) =
+            E[r + γ max<sub>a'</sub> Q*(s',a')]
+        </div>
+
+        <p>
+            It states that the best long-term value of an action depends on
+            its immediate reward and the best achievable future value.
+            Algorithms such as Q-learning use this relationship to improve
+            estimates of action quality.
+        </p>
+
+        <h3>7. Exploration versus exploitation</h3>
+
+        <p>
+            The agent faces a basic dilemma. Should it exploit what it has
+            already learnt, or explore an unfamiliar action that might turn
+            out to be better?
+        </p>
+
+        <ul>
+            <li><strong>Exploitation:</strong> choose an action currently believed to be good.</li>
+            <li><strong>Exploration:</strong> try actions to gain information about their outcomes.</li>
+        </ul>
+
+        <p>
+            An agent that only exploits may become stuck with a poor strategy.
+            An agent that explores forever may never make sufficient use of
+            what it has learnt.
+        </p>
+
+        <p>
+            A common method is epsilon-greedy exploration. With probability
+            ε, the agent chooses a random action; otherwise, it chooses an
+            action with the highest current Q-value. This is a classical
+            exploration strategy, and it provides a useful starting point
+            for understanding what quantum methods might change.
+        </p>
+
+        <h3>8. What exactly does the agent learn?</h3>
+
+        <p>
+            Different reinforcement learning methods learn different objects.
+            Some learn a policy directly. Others learn a value function and
+            derive actions from it. Actor-critic methods learn both.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>What it learns</th>
+                        <th>How actions are chosen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Policy-based</td>
+                        <td>A mapping from states to action probabilities</td>
+                        <td>Sample from the learned policy</td>
+                    </tr>
+                    <tr>
+                        <td>Value-based</td>
+                        <td>Values of states or state-action pairs</td>
+                        <td>Usually select the action with the highest estimated value</td>
+                    </tr>
+                    <tr>
+                        <td>Actor-critic</td>
+                        <td>An actor policy and a critic value estimate</td>
+                        <td>The actor chooses; the critic helps evaluate decisions</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            Quantum reinforcement learning can use these same learning
+            structures. The key change is that one or more components may be
+            represented by a quantum circuit rather than only a classical
+            neural network or table.
+        </p>
+    </section>
+
+    <section id="quantum-approximators">
+        <h2>22.2 — Quantum policy and value function approximators</h2>
+
+        <h3>1. Why do we need function approximators?</h3>
+
+        <p>
+            Imagine a game with only ten possible states. We could maintain a
+            table containing the best action for every state. But what if the
+            environment contains millions of states, or the state consists of
+            camera images, sensor readings and several continuous variables?
+        </p>
+
+        <p>
+            A table would become too large, and many states might never have
+            been encountered during training. Instead, we use a function
+            approximator to generalise from the states we have observed to
+            states we have not encountered yet.
+        </p>
+
+        <p>
+            A classical neural network is one possible approximator. A
+            parameterised quantum circuit is another candidate. In quantum
+            reinforcement learning, the circuit may learn a policy, a value
+            function, or a feature representation used by another model.
+        </p>
+
+        <h3>2. The anatomy of a quantum approximator</h3>
+
+        <p>
+            A parameterised quantum circuit, often abbreviated as PQC, contains
+            quantum gates whose behaviour depends on adjustable parameters.
+            The parameters are learnt using an optimisation procedure.
+        </p>
+
+        <p>
+            A typical quantum model has three stages:
+        </p>
+
+        <ol class="steps">
+            <li>
+                <strong>Encode the state.</strong> Convert the relevant
+                classical state information into a quantum state using
+                operations called quantum feature maps or state preparation.
+            </li>
+            <li>
+                <strong>Process the encoded information.</strong> Apply
+                parameterised gates that transform the quantum state. These
+                gates may include rotations and entangling operations.
+            </li>
+            <li>
+                <strong>Measure the circuit.</strong> Measure one or more
+                observables and use the resulting statistics to estimate
+                the model's output.
+            </li>
+        </ol>
+
+        <p>
+            The circuit does not simply reveal its entire quantum state.
+            Measurement produces classical outcomes. Repeating the circuit
+            allows the system to estimate probabilities or expectation values.
+        </p>
+
+        <div class="equation">
+            |ψ(x, θ)⟩ = U(θ) |φ(x)⟩
+            <br>
+            f(x, θ) = ⟨ψ(x, θ)| O |ψ(x, θ)⟩
+        </div>
+
+        <p>
+            Here, x represents the encoded input, θ represents trainable
+            parameters, U(θ) is the parameterised quantum circuit, and O is
+            an observable that can be measured. The output f(x,θ) is an
+            expectation value.
+        </p>
+
+        <p>
+            The expectation value is not generally obtained from a single
+            measurement. It is estimated by running the circuit repeatedly.
+            This repeated execution is called sampling or taking shots.
+        </p>
+
+        <h3>3. Quantum policy approximators</h3>
+
+        <p>
+            A policy tells an agent how likely it is to choose each action.
+            A quantum policy approximator uses a quantum circuit to produce
+            information from which these action probabilities are calculated.
+        </p>
+
+        <p>
+            Consider a simple robot with two available actions: move forward
+            and turn left. The circuit may produce an expectation value
+            z between -1 and 1. A classical output layer can convert this
+            value into a probability:
+        </p>
+
+        <div class="equation">
+            p(forward | s) = (1 + z) / 2
+            <br>
+            p(left | s) = 1 - p(forward | s)
+        </div>
+
+        <p>
+            This is a simple illustrative mapping, not a universal rule for
+            quantum policies. More complicated policies can use multiple
+            measured outputs and a classical softmax layer.
+        </p>
+
+        <p>
+            The agent samples an action from the resulting distribution,
+            performs the action in the environment, observes the reward and
+            uses that experience to update the circuit parameters.
+        </p>
+
+        <div class="example">
+            <strong>Worked intuition:</strong> Suppose the measured value is
+            z = 0.6. The illustrative mapping gives a forward probability of
+            0.8 and a left-turn probability of 0.2. If the forward action
+            repeatedly produces good outcomes in a particular state, training
+            may adjust the circuit so that forward becomes more likely there.
+        </div>
+
+        <h3>4. Quantum value function approximators</h3>
+
+        <p>
+            A quantum value function approximator estimates the expected
+            return associated with a state or state-action pair. It can be
+            used in a value-based algorithm or as the critic in an actor-critic
+            architecture.
+        </p>
+
+        <p>
+            For a state-value model, the circuit may return an estimate of
+            V(s). For an action-value model, it may estimate Q(s,a) for a
+            given state and action. Another design produces several outputs,
+            one for each possible action.
+        </p>
+
+        <p>
+            Because a simple expectation value lies between -1 and 1, it
+            cannot directly represent every possible return. The output can
+            be scaled, shifted or passed through a classical layer when
+            the task requires a different numerical range.
+        </p>
+
+        <div class="callout">
+            <strong>Important distinction:</strong> a quantum value
+            approximator does not directly calculate the exact future reward
+            merely because the circuit is quantum. It learns an estimate from
+            experience, and the estimate can be inaccurate.
+        </div>
+
+        <h3>5. How do the parameters learn?</h3>
+
+        <p>
+            Suppose the model has parameters θ. The training algorithm
+            defines a loss or objective that measures how well the model
+            performs according to the selected reinforcement learning method.
+            It then updates θ to improve that objective.
+        </p>
+
+        <p>
+            In policy-gradient learning, one common objective is to maximise
+            expected return:
+        </p>
+
+        <div class="equation">
+            J(θ) = E<sub>trajectories sampled from πθ</sub>[G]
+        </div>
+
+        <p>
+            The gradient indicates how a small change in the parameters is
+            expected to change the objective. For a stochastic policy, a
+            standard policy-gradient expression is:
+        </p>
+
+        <div class="equation">
+            ∇<sub>θ</sub> J(θ) =
+            E[ G<sub>t</sub> ∇<sub>θ</sub> log π<sub>θ</sub>(a<sub>t</sub>|s<sub>t</sub>) ]
+        </div>
+
+        <p>
+            This expression gives the basic idea of REINFORCE-style learning.
+            Practical methods often use baselines, advantage estimates and
+            other variance-reduction techniques. The exact update depends
+            on the algorithm.
+        </p>
+
+        <p>
+            A quantum circuit can be incorporated into this process if its
+            output defines the policy. Its derivatives can sometimes be
+            estimated using the parameter-shift rule, which evaluates a
+            parameterised circuit at shifted parameter values. The classical
+            optimiser then updates the parameters.
+        </p>
+
+        <h3>6. Hybrid quantum-classical architectures</h3>
+
+        <p>
+            Most practical near-term designs are hybrid. The classical
+            computer manages the environment, stores transitions, calculates
+            rewards and runs the optimiser. The quantum processor evaluates
+            the parameterised circuit when needed.
+        </p>
+
+        <div class="callout">
+            <strong>Typical division of work</strong>
+            <ul>
+                <li>Classical computer: state preparation, replay buffers, reward processing and optimisation.</li>
+                <li>Quantum processor: circuit execution and measurement.</li>
+                <li>Classical computer: converts measurement results into action probabilities or value estimates.</li>
+                <li>Environment: supplies the next state and reward.</li>
+            </ul>
+        </div>
+
+        <p>
+            This arrangement is useful because reinforcement learning already
+            involves substantial classical computation. There is no need to
+            make every part of the system quantum. A quantum circuit is worth
+            including only if its contribution is useful enough to justify
+            its execution and integration costs.
+        </p>
+
+        <h3>7. When might a quantum approximator help?</h3>
+
+        <p>
+            A quantum model may be interesting when the representation of
+            information or the structure of the decision problem connects
+            naturally to quantum states and operations. Quantum feature maps
+            can define distinctive similarity measures, and quantum circuits
+            can implement functions that may be difficult to reproduce
+            efficiently under certain computational assumptions.
+        </p>
+
+        <p>
+            Nevertheless, a circuit with many parameters is not automatically
+            more expressive in a useful sense. A large model may be difficult
+            to train, expensive to measure or less accurate than a small
+            classical network.
+        </p>
+
+        <div class="takeaway">
+            The main question is not whether a quantum circuit can represent
+            a policy. It can. The important question is whether the resulting
+            policy learns more effectively, generalises better or solves the
+            task more efficiently than a fair classical alternative.
+        </div>
+    </section>
+
+    <section id="exploration">
+        <h2>22.3 — Quantum-enhanced exploration</h2>
+
+        <h3>1. Why exploration is difficult</h3>
+
+        <p>
+            An agent cannot know which action is best before it has collected
+            enough information about the possible outcomes. Unfortunately,
+            obtaining that information may be expensive or risky.
+        </p>
+
+        <p>
+            Imagine a robot searching a large building for an object. It has
+            already discovered one room containing a small reward. A distant
+            room may contain a much larger reward, but the robot does not know
+            that yet. If it keeps returning to the familiar room, it may never
+            discover the better option.
+        </p>
+
+        <p>
+            This problem becomes more difficult when the environment has a
+            huge number of states, actions are expensive, and rewards are
+            sparse. In a sparse-reward environment, an agent may receive
+            little or no feedback until it completes a long sequence of
+            decisions.
+        </p>
+
+        <h3>2. Quantum superposition is not the same as exploration</h3>
+
+        <p>
+            A quantum state can be a superposition of basis states. For
+            example, a single qubit can be prepared as:
+        </p>
+
+        <div class="equation">
+            |ψ⟩ = α|0⟩ + β|1⟩
+            <br>
+            |α|² + |β|² = 1
+        </div>
+
+        <p>
+            When measured in the computational basis, the qubit produces
+            outcome 0 with probability |α|² and outcome 1 with probability
+            |β|².
+        </p>
+
+        <p>
+            This is a quantum probability distribution, but it does not mean
+            the agent has tried both actions in the environment. A physical
+            action still needs to be selected and executed. If a robot can
+            either move left or right, preparing a superposition does not
+            cause the robot to move in both directions.
+        </p>
+
+        <div class="warning">
+            <strong>A common misconception:</strong> quantum superposition
+            does not automatically let a reinforcement learning agent explore
+            every possible action at once and learn the reward of every
+            outcome. Measuring a circuit produces an outcome, and the
+            environment usually responds to the action that is actually taken.
+        </div>
+
+        <h3>3. Interference and the design of action distributions</h3>
+
+        <p>
+            Quantum amplitudes can interfere. Depending on the circuit,
+            amplitudes associated with different computational paths may
+            reinforce or cancel one another. This can change the probability
+            distribution obtained when the circuit is measured.
+        </p>
+
+        <p>
+            A trainable quantum policy can use these effects to produce a
+            structured distribution over actions. The learning algorithm
+            can then adjust the circuit to increase the probability of
+            useful actions and decrease the probability of poor ones.
+        </p>
+
+        <p>
+            However, interference alone does not identify the best action.
+            The circuit still needs a learning signal, and its parameters
+            must be trained using information about rewards or performance.
+        </p>
+
+        <h3>4. Quantum amplitude amplification</h3>
+
+        <p>
+            One of the most widely studied quantum techniques related to
+            searching is amplitude amplification. Grover's search algorithm
+            is a famous example.
+        </p>
+
+        <p>
+            Suppose a search problem has N possible candidates and a way to
+            recognise a desired candidate. Classical unstructured search
+            requires O(N) candidate checks in the worst case. Under the
+            appropriate quantum oracle model, Grover-style search can find
+            a marked candidate using O(√N) oracle queries, with suitable
+            assumptions about the number of marked candidates.
+        </p>
+
+        <p>
+            The intuition is that a sequence of quantum operations increases
+            the amplitudes of marked states and decreases those of unmarked
+            states. Measurement then has a higher probability of returning
+            a marked state.
+        </p>
+
+        <p>
+            In reinforcement learning, similar ideas may be relevant when
+            the problem can be formulated as searching for a desirable
+            action, trajectory or solution and the required oracle is
+            available efficiently.
+        </p>
+
+        <p>
+            But a quantum oracle is not free. Constructing it may require
+            expensive calculations or access to information that is difficult
+            to load into a quantum processor. The theoretical query advantage
+            does not automatically become a wall-clock speed advantage.
+        </p>
+
+        <h3>5. Quantum methods for multi-armed bandits</h3>
+
+        <p>
+            A multi-armed bandit is a simplified decision problem in which
+            the agent repeatedly chooses among actions, often called arms.
+            Each arm produces a reward drawn from an unknown distribution.
+            The agent must balance trying uncertain arms against selecting
+            arms that already appear profitable.
+        </p>
+
+        <p>
+            Bandit problems are useful for studying exploration because
+            they remove much of the complexity of state transitions. They
+            also allow researchers to examine whether quantum procedures
+            can reduce the number of queries needed to identify a good
+            action under particular assumptions.
+        </p>
+
+        <p>
+            Quantum algorithms may provide advantages for some structured
+            search or estimation tasks associated with bandits. Such
+            advantages depend on the access model, reward assumptions,
+            oracle cost and exact learning objective. There is no general
+            result stating that a quantum bandit algorithm always learns
+            faster than its classical counterpart.
+        </p>
+
+        <h3>6. Quantum-enhanced sampling and uncertainty</h3>
+
+        <p>
+            Sampling is a fundamental part of both reinforcement learning
+            and quantum computing. A quantum circuit produces measurement
+            outcomes according to its probability distribution. Repeated
+            executions estimate the distribution or the expectation values
+            required by the learning algorithm.
+        </p>
+
+        <p>
+            In principle, researchers can investigate quantum circuits for
+            representing complex distributions or quantum algorithms for
+            estimating certain quantities. Such methods might be useful
+            when uncertainty estimation is an important part of a decision
+            problem.
+        </p>
+
+        <p>
+            However, the statistical uncertainty of measurement results
+            matters. For independent shots of a bounded observable, the
+            standard error of a sample mean generally decreases in proportion
+            to 1/√M, where M is the number of shots. Reducing the estimation
+            error by a factor of ten can therefore require about one hundred
+            times as many shots under the same conditions.
+        </p>
+
+        <div class="equation">
+            Standard error ∝ 1 / √M
+        </div>
+
+        <p>
+            This creates a practical trade-off. A quantum circuit might
+            represent a useful distribution, but measuring it accurately
+            enough for training can require many executions.
+        </p>
+
+        <h3>7. Quantum exploration compared with classical exploration</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Approach</th>
+                        <th>Main idea</th>
+                        <th>Important limitation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Epsilon-greedy</td>
+                        <td>Randomly try an action sometimes</td>
+                        <td>Random choices may waste many attempts</td>
+                    </tr>
+                    <tr>
+                        <td>Upper confidence bound</td>
+                        <td>Account for both estimated reward and uncertainty</td>
+                        <td>Requires suitable uncertainty estimates</td>
+                    </tr>
+                    <tr>
+                        <td>Thompson sampling</td>
+                        <td>Sample a plausible model or reward parameter</td>
+                        <td>Depends on the statistical model and its assumptions</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum amplitude amplification</td>
+                        <td>Increase the measurement probability of marked candidates</td>
+                        <td>Needs an appropriate oracle and coherent quantum operations</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum policy circuit</td>
+                        <td>Learn a probability distribution over actions</td>
+                        <td>Training and measurement may be costly</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="takeaway">
+            Quantum-enhanced exploration is best understood as a collection
+            of possible techniques for search, sampling and decision-making.
+            It is not a special ability that removes the need for experience,
+            rewards or careful experimental evaluation.
+        </div>
+    </section>
+
+    <section id="variational">
+        <h2>22.4 — Variational quantum reinforcement learning</h2>
+
+        <h3>1. What does variational mean?</h3>
+
+        <p>
+            A variational method uses a model with adjustable parameters.
+            It changes those parameters repeatedly to improve an objective.
+            In a variational quantum circuit, the adjustable parameters
+            control quantum gates.
+        </p>
+
+        <p>
+            This approach is attractive for near-term quantum processors
+            because it does not always require the long, highly specialised
+            circuits used by some fault-tolerant quantum algorithms.
+            Nevertheless, today's quantum hardware can still suffer from
+            noise, limited circuit depth and measurement costs.
+        </p>
+
+        <p>
+            A variational quantum reinforcement learning system places a
+            parameterised quantum model inside a reinforcement learning
+            loop. The environment supplies experience, the circuit produces
+            policy or value estimates, and an optimiser adjusts the circuit.
+        </p>
+
+        <h3>2. The complete learning loop</h3>
+
+        <ol class="steps">
+            <li>
+                <strong>Initialise the circuit.</strong> Choose the circuit
+                structure and starting values for its parameters.
+            </li>
+            <li>
+                <strong>Observe the state.</strong> Receive the current
+                state or observation from the environment.
+            </li>
+            <li>
+                <strong>Encode the state.</strong> Prepare a quantum state
+                that represents the input information.
+            </li>
+            <li>
+                <strong>Run the circuit.</strong> Apply the trainable gates
+                and measure the relevant observables.
+            </li>
+            <li>
+                <strong>Select an action.</strong> Convert the circuit output
+                into action probabilities or action-value estimates.
+            </li>
+            <li>
+                <strong>Collect experience.</strong> Execute the action and
+                observe the reward and next state.
+            </li>
+            <li>
+                <strong>Update the parameters.</strong> Use the selected
+                learning algorithm to calculate an update and improve the
+                policy or value estimate.
+            </li>
+            <li>
+                <strong>Repeat and evaluate.</strong> Continue learning,
+                then test the trained agent on separate episodes or
+                evaluation scenarios.
+            </li>
+        </ol>
+
+        <p>
+            This loop is similar to ordinary reinforcement learning. The
+            quantum-specific work lies mainly in encoding information,
+            executing the circuit, measuring it and calculating gradients
+            or other update quantities.
+        </p>
+
+        <h3>3. A simple mathematical model</h3>
+
+        <p>
+            Let the quantum policy be written as π<sub>θ</sub>(a|s), where
+            θ contains the trainable circuit parameters. The objective is
+            to maximise expected return:
+        </p>
+
+        <div class="equation">
+            J(θ) = E<sub>πθ</sub>[G]
+        </div>
+
+        <p>
+            The optimisation process seeks parameter values that increase
+            J(θ). A gradient-based method updates the parameters according
+            to:
+        </p>
+
+        <div class="equation">
+            θ<sub>new</sub> = θ<sub>old</sub> + η ∇<sub>θ</sub>J(θ)
+        </div>
+
+        <p>
+            Here, η is the learning rate. It controls the size of the update.
+            This equation illustrates gradient ascent for maximising expected
+            return. Other algorithms may minimise a loss instead, or use
+            trust regions, adaptive optimisers or natural-gradient methods.
+        </p>
+
+        <p>
+            The gradient may be estimated from sampled trajectories and
+            quantum circuit measurements. Since the gradient itself is
+            estimated, it can be noisy. An excessively large learning rate
+            may destabilise training, while a very small one may make
+            learning painfully slow.
+        </p>
+
+        <h3>4. The parameter-shift rule</h3>
+
+        <p>
+            Quantum circuits require a method for estimating how their
+            outputs change when a gate parameter changes. For gates with
+            the appropriate generator and spectrum, the parameter-shift
+            rule expresses a derivative using circuit evaluations at
+            shifted parameter values.
+        </p>
+
+        <p>
+            A common form for a gate generated by a Pauli operator with
+            the usual half-angle convention is:
+        </p>
+
+        <div class="equation">
+            ∂f(θ)/∂θ =
+            [f(θ + π/2) - f(θ - π/2)] / 2
+        </div>
+
+        <p>
+            The exact shift and prefactor depend on the gate parameterisation
+            and generator spectrum. The expression above is not a universal
+            derivative rule for every possible circuit parameter.
+        </p>
+
+        <p>
+            The main intuition is simple: instead of relying only on a
+            numerical finite difference, we can estimate certain quantum
+            circuit derivatives using carefully chosen shifted circuits.
+            Each shifted evaluation still requires measurements, so
+            calculating gradients can be expensive.
+        </p>
+
+        <h3>5. Policy-gradient training with a quantum circuit</h3>
+
+        <p>
+            A policy-gradient algorithm increases the probability of actions
+            that contribute to better returns, while reducing the probability
+            of actions that perform poorly relative to the learning signal.
+        </p>
+
+        <p>
+            If a quantum circuit produces the action distribution, its
+            parameters can be trained using policy-gradient estimates.
+            The procedure is not fundamentally different from a classical
+            policy-gradient algorithm at the level of the objective; the
+            circuit changes how the policy is represented and evaluated.
+        </p>
+
+        <p>
+            Training can become difficult when the circuit output changes
+            only slightly with its parameters. This may lead to weak or
+            noisy gradients. Barren plateaus, measurement uncertainty and
+            hardware noise are therefore relevant concerns in variational
+            quantum reinforcement learning.
+        </p>
+
+        <h3>6. Quantum actor-critic systems</h3>
+
+        <p>
+            Actor-critic learning separates action selection from value
+            estimation. The actor chooses actions, while the critic estimates
+            how useful states or actions are. The critic provides a learning
+            signal that can reduce the variance of policy updates.
+        </p>
+
+        <p>
+            A hybrid actor-critic system may use a quantum circuit for the
+            actor and a classical neural network for the critic. The reverse
+            arrangement is also possible. Researchers can even use quantum
+            circuits for both, although doing so increases the number of
+            quantum computations required.
+        </p>
+
+        <p>
+            One common critic-based quantity is the temporal-difference
+            error:
+        </p>
+
+        <div class="equation">
+            δ<sub>t</sub> =
+            r<sub>t+1</sub> +
+            γV(s<sub>t+1</sub>) -
+            V(s<sub>t</sub>)
+        </div>
+
+        <p>
+            The error compares the current value estimate with a target
+            based on the immediate reward and the next state's estimated
+            value. It helps the critic learn. In many actor-critic methods,
+            a related estimate of the advantage is used to guide the actor.
+        </p>
+
+        <h3>7. An illustrative example: a quantum-controlled maze agent</h3>
+
+        <p>
+            Consider a small maze with four possible actions: up, down,
+            left and right. The agent receives a positive reward for reaching
+            the destination and a penalty for hitting a wall.
+        </p>
+
+        <ol>
+            <li>The current location is represented by a compact state vector.</li>
+            <li>The state vector is encoded into a small quantum circuit.</li>
+            <li>The circuit produces measured values that are converted into four action probabilities.</li>
+            <li>The agent samples an action and moves through the maze.</li>
+            <li>The environment returns the reward and the new location.</li>
+            <li>The training algorithm updates the policy parameters.</li>
+        </ol>
+
+        <p>
+            Early in training, the agent may choose poor actions. After many
+            episodes, the policy may learn to favour routes that reach the
+            destination while avoiding walls.
+        </p>
+
+        <p>
+            This example demonstrates the architecture, not a proven quantum
+            advantage. A classical neural network or even a simple tabular
+            method could solve a small maze much more easily. A meaningful
+            experiment would need a problem where the quantum representation
+            has a justified role.
+        </p>
+
+        <h3>8. What should be measured during training?</h3>
+
+        <p>
+            Reward alone is not enough to determine whether a quantum agent
+            is useful. Researchers should track average return, success
+            rate, training stability, the number of environment interactions,
+            quantum circuit executions, wall-clock training time and
+            generalisation to unseen conditions.
+        </p>
+
+        <p>
+            The evaluation should also compare the quantum system against
+            well-tuned classical baselines. The models should receive
+            comparable training budgets and access to the same environment
+            information. Otherwise, an apparent advantage may come from
+            experimental differences rather than the quantum circuit.
+        </p>
+    </section>
+
+    <section id="applications">
+        <h2>22.5 — Applications in control and decision-making</h2>
+
+        <h3>1. What is a control problem?</h3>
+
+        <p>
+            A control system repeatedly observes a physical process and
+            chooses actions to keep it operating as desired. Examples
+            include balancing a robot, regulating temperature, steering
+            a vehicle or controlling the speed of a motor.
+        </p>
+
+        <p>
+            Traditional control methods often rely on mathematical models
+            of the system. Reinforcement learning can instead learn a
+            policy from interaction, which is particularly interesting
+            when the dynamics are difficult to model accurately.
+        </p>
+
+        <p>
+            Quantum reinforcement learning asks whether quantum models or
+            quantum algorithms can help with some part of this learning
+            and control process.
+        </p>
+
+        <h3>2. Robotics and motion control</h3>
+
+        <p>
+            A robot may need to choose movements based on sensor readings,
+            its current position and the location of obstacles. A learned
+            policy maps these observations to motor commands.
+        </p>
+
+        <p>
+            A quantum policy approximator could be investigated for a
+            reduced observation space or a small discrete action space.
+            The quantum circuit would output action probabilities or
+            values, while the robot's conventional controller would
+            execute the selected command.
+        </p>
+
+        <p>
+            The main difficulty is the gap between a small experimental
+            circuit and a real robot with high-dimensional sensor inputs,
+            continuous motor commands and strict safety requirements.
+            State encoding and repeated circuit execution may make a
+            direct implementation impractical.
+        </p>
+
+        <div class="warning">
+            A robot cannot wait indefinitely for a quantum circuit to finish.
+            Real-time control imposes strict latency and reliability
+            requirements. In many applications, classical controllers
+            remain the more practical choice.
+        </div>
+
+        <h3>3. Industrial process control</h3>
+
+        <p>
+            Factories contain processes that must balance productivity,
+            energy consumption, equipment wear and product quality.
+            A controller may adjust temperature, pressure, flow rate
+            or machine settings to maintain the desired operating point.
+        </p>
+
+        <p>
+            Reinforcement learning can be used to optimise control policies
+            when an environment or simulator can provide feedback. Quantum
+            models might be studied as policy or value approximators for
+            simplified process-control tasks.
+        </p>
+
+        <p>
+            Before deploying a learned controller, engineers must test it
+            under disturbances, unexpected states and sensor failures.
+            Safety constraints may need to be enforced separately from
+            the learned reward objective. A reward function alone is not
+            a reliable safety guarantee.
+        </p>
+
+        <h3>4. Energy management and smart grids</h3>
+
+        <p>
+            An energy management system may decide when to charge batteries,
+            use stored energy or draw power from the grid. Its decisions
+            depend on demand, electricity prices, renewable generation
+            and storage limits.
+        </p>
+
+        <p>
+            Reinforcement learning can model such decisions as a sequence
+            of actions with long-term consequences. A good policy must
+            balance immediate cost against future demand and battery
+            availability.
+        </p>
+
+        <p>
+            Quantum reinforcement learning could be investigated for
+            particular optimisation or policy-learning components. However,
+            the full system also needs forecasts, physical constraints,
+            market data and dependable control logic. Quantum hardware
+            does not remove those requirements.
+        </p>
+
+        <h3>5. Scheduling and resource allocation</h3>
+
+        <p>
+            Many decision problems involve allocating limited resources
+            over time. A computing cluster, for example, must decide
+            where to run jobs while considering capacity, deadlines,
+            energy usage and service requirements.
+        </p>
+
+        <p>
+            Such problems may be represented as sequential decision-making
+            tasks. An agent can receive rewards for completing jobs on
+            time and penalties for violating constraints.
+        </p>
+
+        <p>
+            Quantum reinforcement learning may be explored when a policy
+            representation or a related quantum optimisation subroutine
+            offers a plausible advantage. Still, it is important not
+            to confuse quantum optimisation with quantum reinforcement
+            learning: an optimisation algorithm can solve a static
+            decision problem without learning a policy through repeated
+            environmental interaction.
+        </p>
+
+        <h3>6. Network and computing-system management</h3>
+
+        <p>
+            A network controller may decide how to route traffic, allocate
+            bandwidth or respond to changing congestion. A computing
+            platform may choose how to allocate machines or schedule
+            workloads as demand changes.
+        </p>
+
+        <p>
+            These environments contain delayed rewards and changing
+            conditions. An action that improves performance now may
+            increase congestion later. Reinforcement learning is suitable
+            for studying these long-term trade-offs.
+        </p>
+
+        <p>
+            Quantum models might be evaluated for a carefully selected
+            policy or subproblem, particularly in controlled simulations.
+            Before using them in a production backend or network, engineers
+            would need to establish that circuit latency, reliability and
+            total cost meet operational requirements.
+        </p>
+
+        <h3>7. Financial decision-making</h3>
+
+        <p>
+            Financial decision-making can also be expressed as a sequential
+            problem. An agent may allocate a portfolio, manage inventory
+            risk or choose among actions based on changing market conditions.
+            Rewards might depend on returns, transaction costs and risk.
+        </p>
+
+        <p>
+            Researchers may explore quantum policies or quantum optimisation
+            components for simplified financial environments. However,
+            financial data are noisy, markets change over time, and a
+            simulated advantage may disappear when transaction costs and
+            real-world constraints are included.
+        </p>
+
+        <p>
+            A high reward in historical data is not proof that a strategy
+            will perform well in the future. Evaluation must account for
+            uncertainty, risk and the possibility of overfitting.
+        </p>
+
+        <h3>8. Comparing application areas</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Application</th>
+                        <th>Decision to be learnt</th>
+                        <th>Potential research direction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Robotics</td>
+                        <td>Which movement should be made next?</td>
+                        <td>Quantum policies for simplified control tasks</td>
+                    </tr>
+                    <tr>
+                        <td>Industrial control</td>
+                        <td>How should operating conditions be adjusted?</td>
+                        <td>Hybrid quantum-classical policy learning</td>
+                    </tr>
+                    <tr>
+                        <td>Energy systems</td>
+                        <td>When should energy be stored or consumed?</td>
+                        <td>Policy learning and related optimisation subroutines</td>
+                    </tr>
+                    <tr>
+                        <td>Scheduling</td>
+                        <td>Which job or resource should be selected?</td>
+                        <td>Structured action selection and search</td>
+                    </tr>
+                    <tr>
+                        <td>Networks</td>
+                        <td>How should traffic or computing resources be allocated?</td>
+                        <td>Learning policies in simplified dynamic environments</td>
+                    </tr>
+                    <tr>
+                        <td>Finance</td>
+                        <td>How should decisions adapt to changing conditions?</td>
+                        <td>Risk-aware policies and quantum-assisted subproblems</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>9. What would a convincing application look like?</h3>
+
+        <p>
+            A convincing quantum reinforcement learning experiment starts
+            with a clearly defined decision problem, not with the assumption
+            that a quantum circuit must be useful.
+        </p>
+
+        <p>
+            Researchers first establish a reliable classical baseline,
+            specify the state, action and reward definitions, and decide
+            what resource they want to reduce. It could be the number of
+            environment interactions, the time required to learn a useful
+            policy, or the cost of a particular computation.
+        </p>
+
+        <p>
+            They then implement a quantum model and compare the results
+            under fair conditions. Repeated runs are needed because
+            reinforcement learning is stochastic and quantum measurements
+            introduce additional statistical variation.
+        </p>
+
+        <div class="takeaway">
+            The most valuable outcome may be a clear understanding of when
+            quantum methods help and when classical methods remain better.
+            A scientifically useful result does not need to demonstrate
+            quantum superiority in every setting.
+        </div>
+    </section>
+
+    <section id="limitations">
+        <h2>Limitations and practical challenges</h2>
+
+        <p>
+            Quantum reinforcement learning is a research area, and many
+            proposed architectures are still being evaluated. Several
+            difficulties must be understood before expecting a practical
+            advantage.
+        </p>
+
+        <h3>1. Data encoding</h3>
+
+        <p>
+            Reinforcement learning often receives classical information,
+            such as sensor readings or numerical state vectors. Preparing
+            a quantum state from that information requires gates and
+            execution time. Loading a large classical input can remove
+            an advantage that appears to exist at the algorithmic level.
+        </p>
+
+        <h3>2. Measurement cost</h3>
+
+        <p>
+            Quantum outputs are obtained statistically. A training step
+            may require many circuit executions to estimate the policy,
+            value function or gradient with sufficient accuracy.
+        </p>
+
+        <h3>3. Hardware noise</h3>
+
+        <p>
+            Current quantum devices are imperfect. Gate errors, readout
+            errors and limited coherence can distort the circuit outputs.
+            These errors may make policy learning unstable or prevent
+            the model from representing the intended function accurately.
+        </p>
+
+        <h3>4. Barren plateaus and difficult optimisation</h3>
+
+        <p>
+            Some parameterised quantum circuits have regions where the
+            gradient becomes extremely small as the circuit or system
+            grows. Such regions are called barren plateaus. When gradients
+            are too small relative to measurement noise, the optimiser
+            may struggle to identify a useful direction for improvement.
+        </p>
+
+        <p>
+            The problem depends on the circuit, cost function, initialisation
+            and other design choices. It is not correct to say that every
+            quantum circuit suffers from barren plateaus, but trainability
+            must be checked.
+        </p>
+
+        <h3>5. Delayed rewards and unstable learning</h3>
+
+        <p>
+            Reinforcement learning can be difficult even with classical
+            models. Rewards may arrive late, useful actions may be rare,
+            and the environment may change as the policy improves.
+            Measurement noise and imperfect quantum gradients can add
+            further difficulty.
+        </p>
+
+        <h3>6. A fair classical comparison</h3>
+
+        <p>
+            A small quantum model should not be compared only with an
+            unnecessarily weak classical model. Researchers should
+            compare it with suitable classical methods, use reasonable
+            hyperparameter tuning and report the complete computational
+            cost.
+        </p>
+
+        <h3>7. The end-to-end advantage test</h3>
+
+        <p>
+            Suppose a quantum circuit requires a fraction of the evaluations
+            needed by a classical method, but every circuit evaluation
+            is much slower. The quantum method may still take longer
+            overall.
+        </p>
+
+        <p>
+            A practical comparison should therefore include data loading,
+            circuit execution, measurement repetitions, optimisation,
+            communication overhead and environment interaction.
+        </p>
+
+        <div class="equation">
+            Total training cost =
+            data preparation + circuit execution + measurements
+            + optimisation + environment interaction
+        </div>
+
+        <p>
+            This is a conceptual accounting identity, not a universal
+            complexity formula. Each term depends on the implementation.
+            The important point is to measure the complete workflow rather
+            than one isolated component.
+        </p>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter summary</h2>
+
+        <p>
+            Quantum reinforcement learning joins two ideas. Reinforcement
+            learning provides the framework for learning from actions and
+            rewards. Quantum computing provides a different way to represent
+            and process information through quantum states, gates and
+            measurements.
+        </p>
+
+        <p>
+            A quantum policy approximator uses a quantum circuit to help
+            determine which action should be selected. A quantum value
+            approximator estimates the expected usefulness of a state or
+            action. Quantum-enhanced exploration investigates whether
+            quantum techniques can improve search, sampling or particular
+            forms of decision-making. Variational quantum reinforcement
+            learning trains parameterised circuits using feedback from
+            the environment.
+        </p>
+
+        <p>
+            These methods can be studied in control, robotics, scheduling,
+            energy management and other sequential decision problems.
+            However, their practical value depends on the problem, the
+            hardware, the training procedure and a fair comparison with
+            classical approaches.
+        </p>
+
+        <div class="takeaway">
+            <strong>The central lesson:</strong> a quantum agent still needs
+            to learn from experience. Quantum mechanics changes the tools
+            available to build the agent; it does not remove the need for
+            a good reward function, effective learning, reliable evaluation
+            or evidence of an advantage.
+        </div>
+
+        <h3>Review questions</h3>
+
+        <ol>
+            <li>What are the agent, environment, state, action and reward in reinforcement learning?</li>
+            <li>Why does maximising immediate reward not always maximise long-term return?</li>
+            <li>What is the difference between a policy and a value function?</li>
+            <li>What does a quantum policy approximator learn?</li>
+            <li>How does a parameterised quantum circuit convert an input state into a classical output?</li>
+            <li>Why is quantum superposition not equivalent to trying every action in the environment?</li>
+            <li>Under what assumptions can amplitude amplification reduce the number of search queries?</li>
+            <li>What roles do the quantum circuit and classical optimiser play in variational quantum reinforcement learning?</li>
+            <li>What is the parameter-shift rule, and why can gradient estimation be expensive?</li>
+            <li>How does an actor-critic method use a value estimate to improve a policy?</li>
+            <li>What are barren plateaus, and why can they make training difficult?</li>
+            <li>Which costs must be included when comparing quantum and classical reinforcement learning systems?</li>
+        </ol>
+
+        <h3>Further reading</h3>
+
+        <ul>
+            <li>
+                Richard S. Sutton and Andrew G. Barto,
+                <em>Reinforcement Learning: An Introduction</em>.
+                A foundational textbook for policies, value functions,
+                Bellman equations and learning from interaction.
+            </li>
+            <li>
+                John Preskill, <em>Quantum Computing in the NISQ era and beyond</em>
+                (2018). A useful discussion of near-term quantum hardware,
+                noise and the challenges facing practical quantum algorithms.
+            </li>
+            <li>
+                Maria Schuld and Francesco Petruccione,
+                <em>Machine Learning with Quantum Computers</em>.
+                A broad introduction to quantum machine learning methods
+                and their mathematical foundations.
+            </li>
+            <li>
+                Jerbi and colleagues, research on quantum policy-gradient
+                methods and quantum reinforcement learning. Useful for
+                understanding how variational circuits can be integrated
+                with classical policy optimisation.
+            </li>
+            <li>
+                Research literature on quantum-enhanced reinforcement
+                learning, quantum bandits and amplitude amplification.
+                These areas should be studied with attention to the
+                assumptions behind claimed query or computational advantages.
+            </li>
+        </ul>
+
+        <p class="small">
+            Note: The equations and examples in this chapter introduce
+            the main ideas. Specific algorithms can use different
+            objectives, circuit architectures and gradient estimators.
+            Quantum reinforcement learning remains an active research
+            area, so proposed advantages should be checked against the
+            latest evidence and suitable classical baselines.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>Quantum Computing — Chapter 22: Quantum Reinforcement Learning</p>
+    <p>From learning through rewards to trainable quantum decision-making models.</p>
+</footer>
+
+</body>
+</html>

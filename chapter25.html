@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 25: Classical Simulability and Dequantization</title>
+    <style>
+        :root {
+            --primary: #173b68;
+            --secondary: #286b8c;
+            --accent: #d9edf7;
+            --background: #f5f7fa;
+            --surface: #ffffff;
+            --text: #243142;
+            --muted: #586777;
+            --border: #dce3eb;
+            --success: #e7f5ec;
+            --warning: #fff4d9;
+            --code: #edf1f5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 38px 28px 70px;
+            background: var(--surface);
+        }
+
+        header {
+            padding: 35px 32px;
+            background: #edf4fb;
+            border-left: 6px solid var(--primary);
+            margin-bottom: 35px;
+        }
+
+        .chapter-label {
+            font-family: Arial, sans-serif;
+            color: var(--secondary);
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary);
+            line-height: 1.35;
+        }
+
+        h1 {
+            font-size: 38px;
+            margin: 12px 0;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-top: 48px;
+            padding-bottom: 9px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 22px;
+            margin-top: 32px;
+        }
+
+        h4 {
+            font-size: 18px;
+            margin-top: 24px;
+        }
+
+        p {
+            margin: 15px 0;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 19px;
+            margin-bottom: 0;
+        }
+
+        .toc {
+            padding: 24px 28px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            margin: 28px 0;
+        }
+
+        .toc h2 {
+            font-size: 22px;
+            margin-top: 0;
+            border: none;
+        }
+
+        .toc ol {
+            padding-left: 24px;
+            margin-bottom: 0;
+        }
+
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .definition, .intuition, .warning, .takeaway, .example {
+            padding: 18px 22px;
+            margin: 22px 0;
+            border-radius: 5px;
+        }
+
+        .definition {
+            background: #edf4fb;
+            border-left: 4px solid var(--primary);
+        }
+
+        .intuition {
+            background: #eef7fa;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .warning {
+            background: var(--warning);
+            border-left: 4px solid #c58a19;
+        }
+
+        .takeaway {
+            background: var(--success);
+            border-left: 4px solid #38865b;
+        }
+
+        .example {
+            background: #f7f5fc;
+            border-left: 4px solid #7761a8;
+        }
+
+        .formula {
+            overflow-x: auto;
+            text-align: center;
+            padding: 17px;
+            margin: 22px 0;
+            background: #f4f6f8;
+            border: 1px solid var(--border);
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .small-note {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 24px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf1f8;
+            color: var(--primary);
+        }
+
+        ul, ol {
+            padding-left: 27px;
+        }
+
+        li {
+            margin: 7px 0;
+        }
+
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px 8px;
+            margin: 20px 0;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+        }
+
+        .flow-item {
+            background: #e8f0f8;
+            border: 1px solid #c9d8e8;
+            border-radius: 5px;
+            padding: 12px 15px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .arrow {
+            color: var(--secondary);
+            font-family: Arial, sans-serif;
+            font-size: 22px;
+        }
+
+        .checklist li {
+            margin-bottom: 12px;
+        }
+
+        footer {
+            margin-top: 55px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+
+            .page {
+                padding: 18px 16px 45px;
+            }
+
+            header {
+                padding: 24px 20px;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="page">
+
+    <header>
+        <div class="chapter-label">Chapter 25 · Quantum Machine Learning</div>
+        <h1>Classical Simulability and Dequantization</h1>
+        <p class="subtitle">
+            Understanding when quantum computers offer a genuine computational
+            advantage, when classical computers can reproduce their results,
+            and how to compare both fairly.
+        </p>
+    </header>
+
+    <section>
+        <h2>Introduction: Does using a quantum computer automatically make a task faster?</h2>
+
+        <p>
+            Imagine that two students are asked to solve the same difficult
+            mathematical problem. One student uses a powerful computer based
+            on quantum physics, while the other uses an ordinary computer.
+            If the first student finishes earlier, we might conclude that
+            quantum computing is better for the problem.
+        </p>
+
+        <p>
+            However, there is an important question we must ask first:
+            <strong>Did the classical student have access to the best possible
+            classical algorithm?</strong>
+        </p>
+
+        <p>
+            Perhaps the quantum student used a clever method, while the
+            classical student used an unnecessarily slow one. If we improve
+            the classical algorithm, both students might finish in nearly
+            the same amount of time.
+        </p>
+
+        <p>
+            This is the central problem studied in classical simulability
+            and dequantization. We want to understand whether a quantum
+            algorithm provides a real computational advantage or whether
+            an ordinary computer can reproduce its important results
+            efficiently.
+        </p>
+
+        <div class="definition">
+            <strong>Classical simulability</strong> asks whether an ordinary
+            classical computer can reproduce the behaviour or relevant
+            outputs of a quantum computation without performing the same
+            quantum computation on quantum hardware.
+        </div>
+
+        <div class="definition">
+            <strong>Dequantization</strong> refers to finding a classical
+            algorithm that reproduces the useful computational result of
+            a quantum algorithm, often removing the apparent quantum
+            advantage under specified assumptions.
+        </div>
+
+        <p>
+            These ideas are especially important in quantum machine learning
+            (QML). A proposed QML algorithm might claim to classify data,
+            estimate a property, solve a linear system or train a model
+            much faster than classical machine learning. Before accepting
+            that claim, researchers must investigate whether a classical
+            algorithm can achieve the same result just as efficiently.
+        </p>
+
+        <div class="toc">
+            <h2>Chapter contents</h2>
+            <ol>
+                <li><a href="#sec251">When can classical computers efficiently simulate quantum circuits?</a></li>
+                <li><a href="#sec252">Tensor networks and Clifford simulation</a></li>
+                <li><a href="#sec253">Dequantization of QML algorithms</a></li>
+                <li><a href="#sec254">Implications for claims of advantage</a></li>
+                <li><a href="#sec255">How to benchmark QML fairly against classical baselines</a></li>
+                <li><a href="#summary">Putting the ideas together</a></li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="sec251">
+        <h2>25.1 When can classical computers efficiently simulate quantum circuits?</h2>
+
+        <h3>25.1.1 What does it mean to simulate a quantum circuit?</h3>
+
+        <p>
+            A quantum circuit is a sequence of operations applied to qubits.
+            A qubit is a quantum system that can be in a superposition of
+            the states represented by 0 and 1. Quantum gates change the
+            state of these qubits, and measurements produce classical
+            outcomes.
+        </p>
+
+        <p>
+            Consider a quantum circuit containing three qubits. The state
+            of the system can be written as
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = α₀₀₀|000⟩ + α₀₀₁|001⟩ + ... + α₁₁₁|111⟩
+        </div>
+
+        <p>
+            There are eight computational basis states for three qubits.
+            Each coefficient, such as α₀₀₀, is a complex number describing
+            the amplitude associated with one basis state. The squared
+            magnitude of an amplitude gives the probability of observing
+            that basis state when measured in the computational basis.
+        </p>
+
+        <p>
+            For n qubits, the number of basis states is 2<sup>n</sup>.
+            Therefore, a general pure quantum state requires 2<sup>n</sup>
+            complex amplitudes to represent it explicitly.
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = Σ<sub>x ∈ {0,1}<sup>n</sup></sub> α<sub>x</sub>|x⟩
+            <br>
+            Σ<sub>x</sub> |α<sub>x</sub>|² = 1
+        </div>
+
+        <p>
+            The second expression is the normalisation condition. It
+            ensures that the probabilities of all possible measurement
+            outcomes add up to one.
+        </p>
+
+        <p>
+            A straightforward classical simulator can store the amplitudes
+            and update them after every gate. For a small circuit, this
+            approach works well. For a large circuit, however, storing
+            every amplitude can become impractical.
+        </p>
+
+        <p>
+            The key point is that the number of amplitudes grows
+            exponentially with the number of qubits. Increasing the system
+            from 30 to 60 qubits multiplies the number of amplitudes by
+            2<sup>30</sup>, which is more than one billion.
+        </p>
+
+        <div class="intuition">
+            <strong>Important distinction:</strong> a quantum computer does
+            not give us a readable list of all its amplitudes simply
+            because those amplitudes exist. Measurement provides sampled
+            classical outcomes. The difficulty of classical simulation
+            depends on what information we want to reproduce and on the
+            structure of the circuit.
+        </div>
+
+        <h3>25.1.2 What does efficient simulation mean?</h3>
+
+        <p>
+            In computer science, an algorithm is commonly called
+            efficient when its resource requirements grow polynomially
+            with the size of the input. For example, a running time such
+            as n² or n³ is polynomial.
+        </p>
+
+        <div class="formula">
+            Polynomial time: O(n²), O(n³), O(n<sup>k</sup>)
+            <br>
+            Exponential time: O(2<sup>n</sup>)
+        </div>
+
+        <p>
+            These expressions describe how the required work grows as
+            the input becomes larger. They do not directly tell us the
+            exact number of seconds on a particular machine.
+        </p>
+
+        <p>
+            Suppose the number of qubits is n. If a classical simulator
+            requires a number of operations proportional to 2<sup>n</sup>,
+            it may become infeasible as n increases. If it requires only
+            polynomially many operations in n and achieves the required
+            accuracy, it may remain practical for much larger instances.
+        </p>
+
+        <p>
+            Strictly speaking, efficient simulation also depends on the
+            desired output. Computing one amplitude, estimating an
+            expectation value, sampling measurement outcomes and
+            reproducing an entire output distribution are different tasks.
+            An algorithm may solve one of these tasks efficiently without
+            solving the others efficiently.
+        </p>
+
+        <h3>25.1.3 Four different meanings of simulation</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Simulation task</th>
+                        <th>What the classical computer must do</th>
+                        <th>Why it matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>State simulation</td>
+                        <td>Represent or calculate the quantum state.</td>
+                        <td>A full state vector may require exponentially many amplitudes.</td>
+                    </tr>
+                    <tr>
+                        <td>Amplitude calculation</td>
+                        <td>Calculate the amplitude associated with a specified outcome.</td>
+                        <td>Some circuits permit efficient calculation of selected amplitudes even when full-state simulation is difficult.</td>
+                    </tr>
+                    <tr>
+                        <td>Sampling</td>
+                        <td>Generate outcomes with approximately the same probabilities as quantum measurements.</td>
+                        <td>A model can sometimes be sampled efficiently without explicitly storing its full state.</td>
+                    </tr>
+                    <tr>
+                        <td>Observable estimation</td>
+                        <td>Estimate a specified property, such as an average measurement value.</td>
+                        <td>The desired property may be much easier to estimate than the complete quantum state is to reconstruct.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            This distinction is crucial in QML. A model might use thousands
+            of parameters in a quantum circuit, but its final prediction
+            could depend on only a few expectation values. If those
+            expectation values can be calculated classically without
+            simulating the entire circuit, the claimed quantum advantage
+            may disappear for that task.
+        </p>
+
+        <h3>25.1.4 Why some quantum circuits are easy to simulate</h3>
+
+        <p>
+            The size of a circuit is not the only factor that matters.
+            Its structure can be even more important.
+        </p>
+
+        <p>
+            A circuit containing many qubits may still be easy to simulate
+            if its gates preserve a mathematical structure that a
+            classical algorithm can exploit. Conversely, a circuit with
+            fewer qubits may be difficult to simulate if its operations
+            generate complicated entanglement and do not admit a useful
+            compact representation.
+        </p>
+
+        <p>
+            Consider two circuits with the same number of qubits.
+            The first contains mostly independent operations on individual
+            qubits. The second repeatedly entangles many qubits and spreads
+            correlations across the system. The second circuit may be
+            significantly harder for a classical simulator, even though
+            both circuits have the same number of qubits.
+        </p>
+
+        <p>
+            This leads to an important lesson: counting qubits alone is
+            not enough to determine whether a quantum circuit is difficult
+            to simulate classically.
+        </p>
+
+        <h3>25.1.5 Classical simulability does not mean quantum computers are useless</h3>
+
+        <p>
+            Suppose researchers discover an efficient classical algorithm
+            for a particular family of quantum circuits. This result
+            does not imply that every quantum circuit can be simulated
+            efficiently. It also does not imply that quantum computers
+            provide no advantage for other tasks.
+        </p>
+
+        <p>
+            The conclusion applies to the circuit family, computational
+            task and assumptions covered by the classical algorithm.
+            A different circuit family may have different properties.
+        </p>
+
+        <div class="takeaway">
+            <strong>Section takeaway:</strong> Classical simulation is not
+            simply a question of whether the number of qubits is large.
+            It is a question of whether the required output can be
+            calculated with acceptable time, memory and accuracy by
+            exploiting the structure of the computation.
+        </div>
+    </section>
+
+    <section id="sec252">
+        <h2>25.2 Tensor networks and Clifford simulation</h2>
+
+        <p>
+            Two important examples of classical simulation techniques are
+            tensor networks and stabiliser-based simulation of Clifford
+            circuits. They exploit different mathematical structures, but
+            they share the same idea: do not represent or calculate more
+            information than the computation actually requires.
+        </p>
+
+        <h3>25.2.1 Understanding tensor networks</h3>
+
+        <p>
+            A tensor is a mathematical object that generalises familiar
+            objects such as numbers, vectors and matrices. A number has
+            no indices, a vector has one index, a matrix has two indices,
+            and a higher-order tensor can have three or more indices.
+        </p>
+
+        <p>
+            For example, a vector might contain the values
+            (2, 4, 6), while a matrix might contain
+            several rows and columns of values. A tensor can be used
+            to represent relationships among several indices at once.
+        </p>
+
+        <p>
+            Quantum circuits can be represented as collections of tensors.
+            Each quantum gate is converted into a tensor, and the
+            connections between gates describe how their indices are
+            combined. The resulting calculation is called a tensor
+            network contraction.
+        </p>
+
+        <div class="example">
+            <strong>A simple analogy</strong>
+
+            <p>
+                Imagine a large jigsaw puzzle. Solving the entire puzzle
+                at once may be difficult. However, if it can be divided
+                into small connected sections, we can solve those sections
+                and combine their results.
+            </p>
+
+            <p>
+                A tensor network works in a somewhat similar way. It
+                breaks a large mathematical expression into smaller
+                components and combines them in a carefully chosen order.
+                The analogy is not exact, because tensor contraction is
+                a numerical operation rather than a puzzle-solving
+                process.
+            </p>
+        </div>
+
+        <h3>25.2.2 Why the contraction order matters</h3>
+
+        <p>
+            Suppose a calculation contains many connected tensors.
+            We can combine the first two tensors, then combine their
+            result with a third tensor. Alternatively, we can combine
+            another pair first.
+        </p>
+
+        <p>
+            These choices may produce the same final mathematical result,
+            but their intermediate calculations can have very different
+            sizes. One order may create a small intermediate tensor,
+            while another may create an enormous one.
+        </p>
+
+        <p>
+            The computational cost depends heavily on the sizes of the
+            intermediate tensors. In a quantum circuit, these sizes are
+            closely related to the network structure and the amount of
+            correlation represented across its connections.
+        </p>
+
+        <p>
+            One useful structural quantity is the treewidth of an
+            associated graph. Informally, treewidth measures how closely
+            a graph can be decomposed into small, tree-like connected
+            pieces. For suitable tensor-network representations, low
+            treewidth can enable efficient contraction.
+        </p>
+
+        <p>
+            A related quantity is bond dimension, which measures the
+            number of values carried by a connection between tensor
+            components. Large bond dimensions can increase memory and
+            computational requirements.
+        </p>
+
+        <div class="formula">
+            Larger intermediate tensors → more memory and computation
+            <br>
+            Suitable low-complexity structure → potentially efficient simulation
+        </div>
+
+        <p>
+            The word "potentially" is important. Low treewidth, modest
+            bond dimensions and suitable contraction strategies can
+            make simulation efficient, but the precise cost also depends
+            on the network, the requested output and the required
+            numerical accuracy.
+        </p>
+
+        <h3>25.2.3 Matrix product states</h3>
+
+        <p>
+            One well-known tensor-network representation is the matrix
+            product state (MPS). It expresses a quantum state using a
+            sequence of smaller tensors rather than one enormous
+            state vector.
+        </p>
+
+        <p>
+            For a system of n qubits, the MPS representation connects
+            tensors associated with the individual qubits. The dimensions
+            of the internal connections are called bond dimensions.
+            If these dimensions remain small, the state can often be
+            stored and manipulated efficiently.
+        </p>
+
+        <p>
+            MPS methods are particularly useful for certain one-dimensional
+            systems and circuits whose entanglement remains limited across
+            suitable partitions of the qubits.
+        </p>
+
+        <p>
+            Entanglement is a quantum relationship in which the state of
+            a combined system cannot be described as a simple product of
+            independent states of its parts. Strong entanglement across
+            a partition can require larger bond dimensions for an accurate
+            MPS representation.
+        </p>
+
+        <p>
+            Therefore, an MPS simulator may work extremely well for one
+            circuit and poorly for another. A large number of qubits does
+            not automatically make the first circuit difficult, and a
+            smaller number does not guarantee that the second will be easy.
+        </p>
+
+        <h3>25.2.4 Exact simulation versus approximate simulation</h3>
+
+        <p>
+            Tensor-network methods can sometimes calculate results exactly,
+            up to numerical precision, but they are also often used for
+            approximate simulation.
+        </p>
+
+        <p>
+            An approximate simulator may discard small contributions,
+            limit bond dimensions or truncate intermediate calculations.
+            This reduces the cost, but it introduces an approximation
+            error that must be measured.
+        </p>
+
+        <p>
+            If the approximation error is small for the particular
+            observable or prediction being studied, the simulator may
+            still be useful. If the discarded information strongly
+            affects the result, the approximation may be unreliable.
+        </p>
+
+        <div class="warning">
+            <strong>Important:</strong> An approximate classical simulation
+            should not be described as an exact reproduction of the
+            quantum circuit. Researchers must report the approximation
+            method, its accuracy and the conditions under which it works.
+        </div>
+
+        <h3>25.2.5 What are Clifford gates?</h3>
+
+        <p>
+            Clifford gates form a special family of quantum gates that
+            transform Pauli operators into other Pauli operators under
+            conjugation.
+        </p>
+
+        <p>
+            To understand this statement, we first need to know about
+            Pauli operators. The three familiar single-qubit Pauli
+            matrices are X, Y and Z. The X operator exchanges the
+            computational basis states, while Z changes the relative
+            phase of the state |1⟩. The Y operator combines related
+            changes in amplitude and phase.
+        </p>
+
+        <p>
+            These operators, together with identity operations and
+            appropriate phase factors, form the Pauli group. Clifford
+            gates preserve the structure of this group under conjugation.
+        </p>
+
+        <p>
+            Common Clifford gates include the Hadamard gate H, the
+            phase gate S and the controlled-NOT gate CNOT.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gate</th>
+                        <th>Main action</th>
+                        <th>Why it is useful</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hadamard (H)</td>
+                        <td>Interchanges the computational and phase-related descriptions of a qubit.</td>
+                        <td>Creates superpositions and changes measurement basis.</td>
+                    </tr>
+                    <tr>
+                        <td>Phase (S)</td>
+                        <td>Applies a relative phase to the |1⟩ component.</td>
+                        <td>Provides a basic phase operation within the Clifford family.</td>
+                    </tr>
+                    <tr>
+                        <td>CNOT</td>
+                        <td>Flips a target qubit when the control qubit is 1.</td>
+                        <td>Creates entanglement and enables multi-qubit Clifford operations.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>25.2.6 Why Clifford circuits can be simulated efficiently</h3>
+
+        <p>
+            The key result is the Gottesman–Knill theorem. It establishes
+            that circuits built from Clifford operations, stabiliser
+            states and computational-basis measurements can be simulated
+            efficiently on a classical computer under the standard
+            circuit model.
+        </p>
+
+        <p>
+            This is surprising because Clifford circuits can create
+            superposition and entanglement. Entanglement alone, therefore,
+            is not enough to guarantee that a circuit is difficult to
+            simulate classically.
+        </p>
+
+        <p>
+            Instead of storing every amplitude, a stabiliser simulator
+            tracks a compact description of the state through a set
+            of stabiliser generators. These generators provide enough
+            information to update the state under Clifford operations
+            and calculate measurement statistics efficiently.
+        </p>
+
+        <p>
+            This illustrates a broader principle: a quantum state may
+            have an exponentially large state-vector representation
+            while still possessing a compact mathematical description.
+        </p>
+
+        <h3>25.2.7 Why non-Clifford gates matter</h3>
+
+        <p>
+            Clifford gates alone do not provide the full computational
+            power associated with universal quantum computation.
+            Universal gate sets require additional operations, commonly
+            including a non-Clifford gate such as the T gate.
+        </p>
+
+        <p>
+            Adding non-Clifford gates can make classical simulation
+            more difficult, but it does not automatically make every
+            circuit hard to simulate. The cost may depend on how many
+            non-Clifford operations are present and how they are arranged.
+        </p>
+
+        <p>
+            Specialised algorithms can simulate some circuits containing
+            non-Clifford gates efficiently, while other methods become
+            more expensive as the non-Clifford resources increase.
+            Consequently, a circuit with many Clifford gates and a small
+            number of non-Clifford gates may remain amenable to useful
+            classical simulation.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Structure it exploits</th>
+                        <th>Main limitation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>State-vector simulation</td>
+                        <td>Direct numerical representation of the complete pure state.</td>
+                        <td>Memory grows exponentially with qubit count.</td>
+                    </tr>
+                    <tr>
+                        <td>Tensor networks</td>
+                        <td>Connectivity, contraction order and limited complexity across partitions.</td>
+                        <td>Large intermediate tensors or bond dimensions can become expensive.</td>
+                    </tr>
+                    <tr>
+                        <td>Stabiliser simulation</td>
+                        <td>Clifford operations and stabiliser-state structure.</td>
+                        <td>General non-Clifford circuits are not covered by the basic efficient-simulation result.</td>
+                    </tr>
+                    <tr>
+                        <td>Hybrid specialised simulation</td>
+                        <td>Combinations of exploitable circuit properties.</td>
+                        <td>Efficiency depends on the particular circuit and output task.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="takeaway">
+            <strong>Section takeaway:</strong> Tensor networks exploit the
+            structure of a quantum state and circuit. Clifford simulation
+            exploits algebraic structure in a special family of quantum
+            operations. Both demonstrate why quantum circuits must be
+            examined individually rather than judged by qubit count alone.
+        </div>
+    </section>
+
+    <section id="sec253">
+        <h2>25.3 Dequantization of QML algorithms</h2>
+
+        <h3>25.3.1 What problem does dequantization solve?</h3>
+
+        <p>
+            A QML algorithm uses quantum operations as part of a machine
+            learning task. It might encode classical data into quantum
+            states, apply a parameterised circuit, measure an observable
+            and use the result to make a prediction.
+        </p>
+
+        <p>
+            Researchers may argue that this procedure is faster than
+            a classical machine learning method. Dequantization asks
+            whether the same useful result can be obtained by a classical
+            algorithm using a more careful representation or a better
+            mathematical method.
+        </p>
+
+        <p>
+            A dequantized algorithm does not need to copy every physical
+            step of the quantum computation. It needs to reproduce the
+            relevant computational outcome under comparable assumptions.
+        </p>
+
+        <div class="flow">
+            <div class="flow-item">Quantum algorithm</div>
+            <span class="arrow">→</span>
+            <div class="flow-item">Identify the useful output</div>
+            <span class="arrow">→</span>
+            <div class="flow-item">Find exploitable structure</div>
+            <span class="arrow">→</span>
+            <div class="flow-item">Construct a classical method</div>
+        </div>
+
+        <p>
+            The important question is not whether the classical algorithm
+            looks like the quantum algorithm. The important question is
+            whether it solves the same problem with comparable accuracy
+            and resource requirements.
+        </p>
+
+        <h3>25.3.2 The role of data loading</h3>
+
+        <p>
+            Many QML proposals begin with a classical dataset. Suppose
+            a dataset contains a vector of numerical features. A quantum
+            algorithm may encode those features into the amplitudes of
+            a quantum state.
+        </p>
+
+        <p>
+            For a normalised vector x, amplitude encoding has the form
+        </p>
+
+        <div class="formula">
+            |x⟩ = Σ<sub>i=0</sub><sup>N−1</sup> x<sub>i</sub>|i⟩
+            <br>
+            Σ<sub>i</sub> |x<sub>i</sub>|² = 1
+        </div>
+
+        <p>
+            Since N basis states can be represented using approximately
+            log₂(N) qubits, amplitude encoding appears very compact.
+            However, preparing that state from arbitrary classical data
+            may itself require substantial work.
+        </p>
+
+        <p>
+            The existence of a compact quantum representation does not
+            guarantee that the representation can be prepared efficiently.
+            If the input must be loaded repeatedly, state preparation
+            costs may dominate the total running time.
+        </p>
+
+        <p>
+            Some proposed speedups assume a special data-loading
+            mechanism, such as quantum random access memory (QRAM),
+            or assume that the required quantum states are already
+            available. Such assumptions must be stated explicitly.
+        </p>
+
+        <div class="warning">
+            <strong>Common mistake:</strong> Counting only the operations
+            performed after data loading can make a QML algorithm appear
+            faster than it really is. A fair comparison includes the
+            cost of obtaining and preparing the input in both approaches.
+        </div>
+
+        <h3>25.3.3 Example: quantum linear algebra for machine learning</h3>
+
+        <p>
+            Linear algebra is central to machine learning. Linear
+            regression, least-squares fitting, optimisation and several
+            dimensionality-reduction methods all involve matrices and
+            vectors.
+        </p>
+
+        <p>
+            Consider a linear system
+        </p>
+
+        <div class="formula">
+            A x = b
+        </div>
+
+        <p>
+            Here, A is a matrix, b is a known vector and x is the unknown
+            solution. A quantum linear-system algorithm aims to prepare
+            a quantum state related to the solution x, rather than
+            necessarily printing every entry of x.
+        </p>
+
+        <p>
+            Under suitable assumptions, quantum linear-system methods
+            can offer advantages for particular tasks. The assumptions
+            can include favourable matrix conditioning, efficient
+            state preparation, suitable access to the matrix and a
+            requirement to estimate only selected properties of the
+            solution.
+        </p>
+
+        <p>
+            The final point is especially important. If a user needs
+            every component of x as an ordinary list, the output itself
+            may contain N values. Writing down all those values already
+            requires work proportional to N.
+        </p>
+
+        <p>
+            A quantum algorithm may instead be useful when the goal is
+            to estimate a particular quantity related to x, and that
+            quantity can be extracted without reconstructing the full
+            vector.
+        </p>
+
+        <h3>25.3.4 How classical sampling can reproduce quantum-inspired results</h3>
+
+        <p>
+            A common feature of some quantum algorithms is their use of
+            sampling. A quantum device prepares a state and measurements
+            provide samples from a probability distribution.
+        </p>
+
+        <p>
+            Classical algorithms also use sampling. If the relevant
+            distribution has exploitable structure, a classical method
+            may sample from it without constructing the complete quantum
+            state.
+        </p>
+
+        <p>
+            For example, consider a learning task that depends on
+            estimating a collection of inner products or matrix-related
+            quantities. A quantum algorithm may access those quantities
+            through carefully prepared states and measurements.
+            A classical algorithm may instead use random sampling,
+            low-rank approximations or specialised data structures.
+        </p>
+
+        <p>
+            Whether this works depends on the problem. Sampling does
+            not automatically remove quantum advantage. It provides
+            a possible route for discovering a more efficient classical
+            algorithm.
+        </p>
+
+        <h3>25.3.5 Dequantization and low-rank structure</h3>
+
+        <p>
+            Many datasets contain redundancy. For example, thousands
+            of features might be strongly related to a much smaller
+            number of underlying patterns. In such cases, a matrix
+            can sometimes be approximated by a low-rank matrix.
+        </p>
+
+        <p>
+            A low-rank approximation represents the important information
+            in a large matrix using a smaller number of components.
+            If the approximation is accurate enough for the task,
+            the classical algorithm may avoid processing every matrix
+            entry in the same way.
+        </p>
+
+        <p>
+            This is relevant to dequantization because some quantum
+            linear-algebra algorithms exploit efficient access to
+            quantum states or particular forms of matrix access.
+            Researchers have shown that, for certain algorithms and
+            input assumptions, classical sampling methods can reproduce
+            similar computational results.
+        </p>
+
+        <p>
+            Such work is often called quantum-inspired classical
+            algorithms. They are inspired by the mathematical structure
+            of quantum algorithms but run on ordinary computers.
+        </p>
+
+        <div class="example">
+            <strong>Example: finding the important features</strong>
+
+            <p>
+                Imagine a dataset containing 10,000 measurements per
+                example. A quantum algorithm may attempt to process a
+                compressed representation of these measurements.
+                A classical algorithm might discover that most of the
+                useful variation can be represented by a small number
+                of components.
+            </p>
+
+            <p>
+                If both algorithms can predict the target accurately,
+                and the classical method uses fewer resources, then
+                the proposed quantum advantage has not been demonstrated
+                for that particular dataset and task.
+            </p>
+
+            <p>
+                This does not mean the quantum algorithm is always
+                inferior. The result depends on whether the low-rank
+                structure exists, how the data is accessed and what
+                accuracy the application requires.
+            </p>
+        </div>
+
+        <h3>25.3.6 Classical data access is part of the problem</h3>
+
+        <p>
+            Two algorithms cannot be compared fairly if they receive
+            fundamentally different forms of access to their inputs.
+            One algorithm might receive a complete matrix in ordinary
+            memory, while another receives a quantum state prepared
+            from that matrix. Alternatively, one method may assume
+            specialised sampling access that the other does not have.
+        </p>
+
+        <p>
+            Researchers must therefore specify the input model. Is the
+            data stored explicitly? Is it available through queries?
+            Must a quantum state be prepared? Is there an oracle that
+            answers particular questions efficiently?
+        </p>
+
+        <p>
+            An oracle is an abstract computational resource that provides
+            specified information when queried. An algorithm's complexity
+            may look impressive if oracle calls are counted but the
+            cost of constructing or implementing the oracle is ignored.
+        </p>
+
+        <h3>25.3.7 A practical test for dequantization</h3>
+
+        <p>
+            When examining a proposed QML algorithm, ask the following
+            questions:
+        </p>
+
+        <ol>
+            <li>What exact mathematical quantity or prediction does the algorithm produce?</li>
+            <li>Does it need to reconstruct an entire quantum state, or only estimate a particular property?</li>
+            <li>Can the output be calculated using classical sampling or approximation methods?</li>
+            <li>Does the classical method exploit low-rank structure, sparsity, symmetry or another useful property?</li>
+            <li>Are both methods given comparable access to the input data?</li>
+            <li>Do both methods achieve the same accuracy and success probability?</li>
+            <li>Does the proposed advantage remain after including data loading, preprocessing and output costs?</li>
+        </ol>
+
+        <div class="takeaway">
+            <strong>Section takeaway:</strong> Dequantization tests the
+            complete computational claim, not merely the quantum circuit.
+            A quantum representation can be compact, but input preparation,
+            output extraction and classical structure may determine whether
+            the overall method is actually faster.
+        </div>
+    </section>
+
+    <section id="sec254">
+        <h2>25.4 Implications for claims of advantage</h2>
+
+        <h3>25.4.1 What is quantum advantage?</h3>
+
+        <p>
+            Quantum advantage means that a quantum computer performs a
+            specified computational task better than the best relevant
+            classical methods, according to a clearly defined measure.
+            That measure might be running time, memory, query complexity,
+            accuracy for a fixed budget or another resource.
+        </p>
+
+        <p>
+            There is no single definition that covers every application.
+            A quantum algorithm may offer a theoretical asymptotic
+            speedup but provide no practical benefit on currently
+            available hardware. Another algorithm may achieve a useful
+            practical improvement on a specialised problem without
+            establishing a general complexity-theoretic separation.
+        </p>
+
+        <p>
+            Therefore, researchers should state exactly what kind of
+            advantage they claim.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type of advantage</th>
+                        <th>Meaning</th>
+                        <th>Question to ask</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Theoretical advantage</td>
+                        <td>A mathematical analysis predicts better scaling under stated assumptions.</td>
+                        <td>Are the assumptions realistic, and are all relevant resources included?</td>
+                    </tr>
+                    <tr>
+                        <td>Practical advantage</td>
+                        <td>A quantum method performs better in an actual application or experiment.</td>
+                        <td>Does it outperform strong classical methods at a useful scale?</td>
+                    </tr>
+                    <tr>
+                        <td>Sampling advantage</td>
+                        <td>A quantum device samples from a specified distribution more efficiently than known classical approaches under a defined model.</td>
+                        <td>How strong is the evidence that classical sampling cannot match it efficiently?</td>
+                    </tr>
+                    <tr>
+                        <td>Learning advantage</td>
+                        <td>A quantum learning procedure achieves better learning performance or resource scaling.</td>
+                        <td>Does the improvement remain for comparable data access, accuracy and generalisation?</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>25.4.2 Be careful with the word "exponential"</h3>
+
+        <p>
+            A paper may state that a quantum algorithm uses exponentially
+            fewer operations than a particular classical algorithm.
+            This statement is meaningful only if the classical algorithm
+            used for comparison is sufficiently strong and both algorithms
+            solve the same problem under comparable assumptions.
+        </p>
+
+        <p>
+            Suppose a quantum method has a running-time bound that grows
+            like a polynomial in log N, while an initial classical method
+            grows like N. It may appear that the quantum method has an
+            exponential advantage.
+        </p>
+
+        <p>
+            However, another classical algorithm might exploit sparsity,
+            low-rank structure, fast matrix operations or a specialised
+            data representation. If that improved method also has
+            favourable scaling, the original comparison no longer
+            establishes the claimed advantage.
+        </p>
+
+        <p>
+            A quantum algorithm may still be superior, but that conclusion
+            requires a stronger argument than comparing it against one
+            weak baseline.
+        </p>
+
+        <h3>25.4.3 The output problem</h3>
+
+        <p>
+            One of the most important issues in quantum computing is
+            the distinction between preparing a useful quantum state
+            and extracting a large amount of classical information from it.
+        </p>
+
+        <p>
+            Consider a system with N numerical outputs. A quantum
+            algorithm may prepare a state that encodes information about
+            all N values. Yet measuring that state does not reveal every
+            encoded value in one operation.
+        </p>
+
+        <p>
+            If the application needs all N values, reading the complete
+            output can erase much of the expected speedup. If the
+            application needs only a particular summary statistic,
+            a quantum approach may have a better chance of providing
+            an advantage.
+        </p>
+
+        <div class="example">
+            <strong>Example: a recommendation system</strong>
+
+            <p>
+                Suppose a model scores one million products. One task
+                is to print every score. Another task is to identify
+                a small number of suitable products or estimate a
+                particular statistic about the scores.
+            </p>
+
+            <p>
+                These tasks have different output requirements. An
+                algorithm that helps with the second task does not
+                automatically offer the same advantage for the first.
+                The comparison must use the actual output required
+                by the application.
+            </p>
+        </div>
+
+        <h3>25.4.4 Complexity theory and what it can establish</h3>
+
+        <p>
+            Computational complexity theory studies how the resources
+            required to solve problems grow with input size. It helps
+            researchers distinguish a rigorous speedup result from
+            an empirical observation.
+        </p>
+
+        <p>
+            Some quantum advantages are established for specific
+            computational models or restricted problem families.
+            Other claims rely on assumptions about the difficulty
+            of classical simulation. These assumptions may be
+            reasonable and well motivated, but they must still be
+            stated clearly.
+        </p>
+
+        <p>
+            Demonstrating that no efficient classical algorithm exists
+            is often much harder than finding a fast quantum algorithm.
+            In many cases, researchers do not have an unconditional
+            proof that every possible classical method must be slow.
+        </p>
+
+        <p>
+            Consequently, a paper may establish that a quantum algorithm
+            beats known classical methods or that a separation follows
+            from a particular complexity assumption. These are useful
+            results, but they should not be described as a proof of
+            universal quantum superiority.
+        </p>
+
+        <h3>25.4.5 Why dequantization is scientifically valuable</h3>
+
+        <p>
+            Discovering a classical algorithm that matches a quantum
+            method is not a failure. It improves our understanding
+            of the problem.
+        </p>
+
+        <p>
+            First, it identifies the mathematical structure that makes
+            the task easier than expected. Second, it helps researchers
+            design better classical algorithms. Third, it narrows the
+            conditions under which a quantum computer might provide
+            a genuine advantage.
+        </p>
+
+        <p>
+            Dequantization can also reveal that a proposed QML benefit
+            comes from a good modelling idea rather than from uniquely
+            quantum computation. That is a useful discovery because
+            the modelling idea may then be deployed on widely available
+            classical hardware.
+        </p>
+
+        <div class="takeaway">
+            <strong>Section takeaway:</strong> A quantum advantage claim
+            is only as strong as its problem definition, assumptions,
+            output requirements and classical comparison. Dequantization
+            makes these claims more precise rather than making quantum
+            computing less important.
+        </div>
+    </section>
+
+    <section id="sec255">
+        <h2>25.5 How to benchmark QML fairly against classical baselines</h2>
+
+        <h3>25.5.1 Why benchmarking is difficult</h3>
+
+        <p>
+            Benchmarking means measuring the performance of different
+            methods on a well-defined task. In QML, it is not enough
+            to run a quantum model and a classical model on a dataset
+            and compare their final accuracy.
+        </p>
+
+        <p>
+            The two methods might use different amounts of training
+            data, different preprocessing, different optimisation
+            budgets or different access to the input. They may also
+            be measured using different definitions of running time.
+        </p>
+
+        <p>
+            A fair benchmark must control these differences or report
+            them clearly. Otherwise, the experiment may measure the
+            advantages of the experimental setup rather than the
+            advantages of the algorithm.
+        </p>
+
+        <h3>25.5.2 Start by defining the exact task</h3>
+
+        <p>
+            Before selecting models, write down what the system must
+            accomplish. For a classification task, this may mean
+            predicting a label from a feature vector. For regression,
+            it may mean estimating a numerical value. For a generative
+            model, it may mean sampling from a distribution with
+            particular statistical properties.
+        </p>
+
+        <p>
+            Both methods must solve the same task. If the quantum
+            model predicts a small summary of the data while the
+            classical model must generate a much larger output, their
+            performance numbers cannot be interpreted as a direct
+            comparison.
+        </p>
+
+        <h3>25.5.3 Use strong classical baselines</h3>
+
+        <p>
+            A baseline is a method used as a reference point. In a
+            scientific comparison, a baseline should be appropriate
+            for the task and reasonably well tuned.
+        </p>
+
+        <p>
+            For a small tabular dataset, a logistic regression model,
+            a support-vector machine, a tree-based model or a
+            well-tuned neural network may be useful baselines,
+            depending on the task. For a linear-algebra problem,
+            optimised classical numerical algorithms may be more
+            relevant than a generic neural network.
+        </p>
+
+        <p>
+            Researchers should not select a deliberately weak classical
+            method simply because it makes the quantum model look
+            better. Nor should they compare against a poorly tuned
+            model and treat the result as a general conclusion about
+            classical machine learning.
+        </p>
+
+        <h3>25.5.4 Compare equal conditions, not just equal model sizes</h3>
+
+        <p>
+            A quantum circuit with 100 trainable parameters and a
+            classical network with 100 trainable parameters are not
+            necessarily equally expensive. Each parameter may have
+            a different computational cost, and the quantum model
+            may require many repeated measurements to estimate its
+            predictions.
+        </p>
+
+        <p>
+            Likewise, giving both models the same number of training
+            epochs does not guarantee a fair comparison. One epoch
+            may involve very different amounts of computation.
+        </p>
+
+        <p>
+            Researchers should report multiple resource measures
+            wherever possible, including wall-clock time, total
+            training cost, memory, energy if available, inference
+            cost and hardware usage.
+        </p>
+
+        <h3>25.5.5 Include the complete quantum workflow</h3>
+
+        <p>
+            The total cost of a QML method can include several stages.
+            Some are shared with classical methods, while others are
+            specific to quantum hardware.
+        </p>
+
+        <div class="flow">
+            <div class="flow-item">Data preparation</div>
+            <span class="arrow">→</span>
+            <div class="flow-item">Quantum state preparation</div>
+            <span class="arrow">→</span>
+            <div class="flow-item">Circuit execution</div>
+            <span class="arrow">→</span>
+            <div class="flow-item">Repeated measurements</div>
+            <span class="arrow">→</span>
+            <div class="flow-item">Classical post-processing</div>
+        </div>
+
+        <p>
+            The end-to-end cost includes the stages required to obtain
+            the final answer, not only the time spent executing the
+            quantum gates.
+        </p>
+
+        <p>
+            For example, a variational quantum model may require
+            repeated circuit executions for each training step.
+            If its cost function is estimated using many measurement
+            shots, the number of shots can substantially affect
+            total training time.
+        </p>
+
+        <p>
+            Hardware queue times, calibration, communication with
+            the device and classical optimisation may also matter
+            in practical settings. Researchers should report these
+            separately when they depend on the experimental
+            environment, rather than presenting one misleading
+            timing number.
+        </p>
+
+        <h3>25.5.6 Account for data loading and output extraction</h3>
+
+        <p>
+            Classical datasets normally begin as classical information.
+            Converting them into quantum states can be costly.
+            If a new quantum state must be prepared for every
+            training example or every model evaluation, this cost
+            can be substantial.
+        </p>
+
+        <p>
+            On the other hand, a particular application might already
+            have quantum data produced by a physical experiment.
+            In that setting, the data-loading comparison is different:
+            the input may naturally arrive as a quantum state rather
+            than as a list of classical numbers.
+        </p>
+
+        <p>
+            Therefore, the benchmark must describe the origin of the
+            data. A QML algorithm trained on naturally available
+            quantum data should not be evaluated using exactly the
+            same assumptions as an algorithm that must encode a
+            large classical dataset into quantum states.
+        </p>
+
+        <p>
+            The output cost is equally important. If the quantum
+            algorithm estimates one expectation value, compare it
+            against a classical method estimating the same value.
+            If it is supposed to return an entire vector, include
+            the cost of producing that vector.
+        </p>
+
+        <h3>25.5.7 Compare accuracy and statistical uncertainty</h3>
+
+        <p>
+            Quantum measurements are probabilistic. A measured
+            expectation value is estimated from repeated samples,
+            so the result has statistical uncertainty.
+        </p>
+
+        <p>
+            Suppose an observable has outcomes between -1 and 1.
+            Repeated independent measurements can be used to estimate
+            its expectation value. In the usual bounded-outcome
+            setting, the number of samples required for a fixed
+            additive accuracy generally scales inversely with the
+            square of the target error, with additional dependence
+            on the desired confidence.
+        </p>
+
+        <div class="formula">
+            Typical sampling dependence:
+            <br>
+            Number of samples ∝ 1 / ε²
+            <br>
+            for fixed confidence and bounded measurement outcomes
+        </div>
+
+        <p>
+            Here, ε represents the target additive estimation error.
+            This relationship is a general sampling guideline, not
+            a universal cost formula for every quantum observable
+            or measurement strategy.
+        </p>
+
+        <p>
+            The practical lesson is that demanding higher accuracy
+            can require many more measurements. A benchmark that
+            ignores measurement uncertainty may overstate the
+            quality or speed of a quantum prediction.
+        </p>
+
+        <p>
+            For learning tasks, report appropriate measures such as
+            accuracy, precision, recall, F1 score or regression error.
+            For probabilistic and generative tasks, use metrics suited
+            to the distribution being learned. Include uncertainty
+            estimates where possible and evaluate on held-out data.
+        </p>
+
+        <h3>25.5.8 Separate training time from inference time</h3>
+
+        <p>
+            Training and inference are different stages. Training
+            adjusts model parameters using data, while inference
+            uses the trained model to produce predictions.
+        </p>
+
+        <p>
+            A quantum model might take a long time to train but
+            require relatively little work for a particular
+            prediction. Alternatively, it might require many
+            measurements for each prediction.
+        </p>
+
+        <p>
+            Classical models also have different training and
+            inference costs. For a fair benchmark, researchers
+            should report these stages separately and explain the
+            intended deployment pattern.
+        </p>
+
+        <p>
+            If a model will make millions of predictions after one
+            training run, inference efficiency may be especially
+            important. If the model must be retrained frequently,
+            training cost may dominate.
+        </p>
+
+        <h3>25.5.9 Test generalisation rather than memorisation</h3>
+
+        <p>
+            A model can perform well on its training examples without
+            learning patterns that transfer to new examples. This
+            is called overfitting.
+        </p>
+
+        <p>
+            Both quantum and classical models must be evaluated on
+            unseen test data. The same data splits, leakage controls
+            and evaluation rules should be used for both.
+        </p>
+
+        <p>
+            For a small dataset, results can vary substantially
+            depending on the split. Repeating experiments across
+            several random seeds or using a suitable cross-validation
+            procedure can help reveal whether a reported improvement
+            is stable.
+        </p>
+
+        <p>
+            Hyperparameter tuning also consumes resources. Researchers
+            should account for the tuning budget rather than reporting
+            only the final training run of one model while charging
+            the competing method for extensive experimentation.
+        </p>
+
+        <h3>25.5.10 Account for hardware differences</h3>
+
+        <p>
+            A classical algorithm may run on a modern GPU, while
+            the quantum method runs on a remote quantum processor.
+            Comparing the two can still be useful, but the hardware
+            conditions must be described.
+        </p>
+
+        <p>
+            Current quantum devices may be affected by gate errors,
+            limited connectivity, noise and device-specific execution
+            overheads. A simulator running on a classical computer
+            can help study a circuit, but it does not demonstrate
+            that the circuit has a practical advantage on quantum
+            hardware.
+        </p>
+
+        <p>
+            Similarly, an experimental quantum result that beats
+            one particular classical implementation does not
+            automatically establish that it beats all possible
+            classical implementations.
+        </p>
+
+        <h3>25.5.11 A practical benchmarking checklist</h3>
+
+        <ul class="checklist">
+            <li>Define the exact problem and the output that both algorithms must produce.</li>
+            <li>Use the same dataset, data splits and evaluation criteria.</li>
+            <li>Include strong, task-appropriate classical baselines.</li>
+            <li>Give each method a reasonable and transparently reported tuning budget.</li>
+            <li>Report training and inference costs separately.</li>
+            <li>Include state preparation, data loading, measurements and post-processing where relevant.</li>
+            <li>Report accuracy, statistical uncertainty and the cost of reaching the required accuracy.</li>
+            <li>Use the same assumptions about input access and output requirements.</li>
+            <li>State the hardware, software, circuit depth and other relevant implementation details.</li>
+            <li>Test on unseen data and repeat experiments where appropriate.</li>
+            <li>Distinguish theoretical complexity claims from measured hardware performance.</li>
+            <li>Release code, configurations and experimental details where possible so that others can reproduce the result.</li>
+        </ul>
+
+        <div class="takeaway">
+            <strong>Section takeaway:</strong> A fair QML benchmark measures
+            the cost of solving the whole problem at comparable accuracy.
+            It does not compare only gate counts, parameter counts or
+            isolated execution times.
+        </div>
+    </section>
+
+    <section id="summary">
+        <h2>Putting the ideas together</h2>
+
+        <p>
+            Classical simulability, dequantization and benchmarking
+            are three connected parts of the same scientific question:
+            what can a quantum computer do that a classical computer
+            cannot do as efficiently under clearly stated conditions?
+        </p>
+
+        <p>
+            Classical simulability begins by asking whether the behaviour
+            of a quantum circuit can be reproduced using an ordinary
+            computer. Tensor networks and stabiliser methods demonstrate
+            that special circuit structures can make this possible,
+            even when a direct state-vector calculation would be
+            prohibitively expensive.
+        </p>
+
+        <p>
+            Dequantization extends this investigation to quantum
+            algorithms for machine learning. It asks whether the useful
+            output of a QML method can be calculated by a classical
+            algorithm using techniques such as sampling, low-rank
+            approximation or efficient data structures.
+        </p>
+
+        <p>
+            Benchmarking then checks the practical claim. Both approaches
+            must solve the same task, receive comparable input access,
+            meet the same accuracy requirements and account for the
+            resources needed to produce the final answer.
+        </p>
+
+        <div class="flow">
+            <div class="flow-item">
+                <strong>Classical simulability</strong>
+                <br>
+                Can we reproduce the circuit?
+            </div>
+            <span class="arrow">→</span>
+            <div class="flow-item">
+                <strong>Dequantization</strong>
+                <br>
+                Can we reproduce the useful algorithmic result?
+            </div>
+            <span class="arrow">→</span>
+            <div class="flow-item">
+                <strong>Fair benchmarking</strong>
+                <br>
+                Is there a measurable advantage?
+            </div>
+        </div>
+
+        <h3>The five central lessons</h3>
+
+        <ol>
+            <li>
+                <strong>More qubits do not automatically mean a hard simulation.</strong>
+                Circuit structure, entanglement, algebraic properties and
+                the required output all affect simulation difficulty.
+            </li>
+            <li>
+                <strong>A compact quantum representation is not the same as
+                a cheap computation.</strong> Preparing the state and
+                extracting the desired information can be expensive.
+            </li>
+            <li>
+                <strong>Quantum-inspired classical algorithms deserve serious
+                consideration.</strong> They can reveal that a problem
+                thought to require quantum computation has a more efficient
+                classical solution under certain assumptions.
+            </li>
+            <li>
+                <strong>A dequantized algorithm does not disprove all quantum
+                advantage.</strong> It addresses a particular problem,
+                algorithm family and input model.
+            </li>
+            <li>
+                <strong>Quantum advantage must be demonstrated through a fair
+                comparison.</strong> Strong baselines, complete resource
+                accounting, equivalent accuracy and reproducible experiments
+                are essential.
+            </li>
+        </ol>
+
+        <h3>Questions for revision</h3>
+
+        <ol>
+            <li>Why does direct state-vector simulation become expensive as the number of qubits increases?</li>
+            <li>Why can a highly entangled Clifford circuit still be efficiently simulable?</li>
+            <li>How does tensor-network contraction order influence simulation cost?</li>
+            <li>What is the difference between classical simulation and dequantization?</li>
+            <li>Why can amplitude encoding require substantial data-loading work?</li>
+            <li>How can low-rank structure help a classical algorithm reproduce a result associated with a quantum algorithm?</li>
+            <li>Why is estimating one property different from reconstructing an entire quantum state?</li>
+            <li>What assumptions should researchers state when claiming an exponential speedup?</li>
+            <li>Why must repeated quantum measurements be included in a QML benchmark?</li>
+            <li>What makes a classical baseline fair and scientifically convincing?</li>
+        </ol>
+
+        <h3>Further reading</h3>
+
+        <p>
+            The following foundational works provide useful starting
+            points for deeper study.
+        </p>
+
+        <ol>
+            <li>
+                Gottesman, D. (1998). <em>The Heisenberg Representation of Quantum Computers.</em>
+                A foundational treatment of stabiliser methods and the
+                structure underlying efficient Clifford-circuit simulation.
+            </li>
+            <li>
+                Aaronson, S. and Gottesman, D. (2004).
+                <em>Improved Simulation of Stabilizer Circuits.</em>
+                Physical Review A, 70, 052328.
+                A detailed study of efficient classical simulation of
+                stabiliser circuits.
+            </li>
+            <li>
+                Markov, I. L. and Shi, Y. (2008).
+                <em>Simulating Quantum Computation by Contracting Tensor Networks.</em>
+                SIAM Journal on Computing, 38(3), 963–981.
+                A key reference on tensor-network simulation and its
+                relationship with graph structure.
+            </li>
+            <li>
+                Tang, E. (2019).
+                <em>A Quantum-Inspired Classical Algorithm for Recommendation Systems.</em>
+                Proceedings of the 51st Annual ACM SIGACT Symposium on Theory of Computing (STOC).
+                An influential example of a classical algorithm inspired
+                by a quantum recommendation-system approach.
+            </li>
+            <li>
+                Tang, E. (2019).
+                <em>Quantum-Inspired Classical Algorithms for Principal Component Analysis and
+                Supervised Clustering.</em>
+                Proceedings of the 51st Annual ACM SIGACT Symposium on Theory of Computing (STOC).
+                A useful starting point for understanding dequantization
+                in quantum-inspired machine learning.
+            </li>
+        </ol>
+
+        <div class="takeaway">
+            <strong>Final perspective:</strong> Quantum computing is not
+            about assuming that every quantum algorithm must be better
+            than its classical counterpart. It is about discovering
+            where quantum mechanics enables a real computational benefit.
+            Classical simulation, dequantization and fair benchmarking
+            help researchers identify that boundary with mathematical
+            care and experimental honesty.
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            End of Chapter 25: Classical Simulability and Dequantization.
+            This chapter connects quantum circuit simulation, quantum-inspired
+            algorithms and rigorous evaluation of quantum machine learning.
+        </p>
+    </footer>
+
+</main>
+</body>
+</html>

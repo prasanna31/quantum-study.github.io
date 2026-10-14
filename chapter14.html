@@ -1,0 +1,2683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 14: Machine Learning Essentials</title>
+    <style>
+        :root {
+            --primary: #174a7e;
+            --secondary: #2878b5;
+            --accent: #e8f2fb;
+            --text: #263445;
+            --muted: #5e6b78;
+            --border: #d8e1eb;
+            --background: #f5f8fc;
+            --white: #ffffff;
+            --green: #e8f6ed;
+            --orange: #fff3df;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behaviour: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--background);
+        }
+
+        header {
+            padding: 55px 22px;
+            color: white;
+            background: linear-gradient(135deg, #102d50, #2878b5);
+        }
+
+        header .container {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
+
+        header p {
+            max-width: 820px;
+            font-size: 1.1rem;
+            color: #e3effb;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        nav, main section, .learning-box, .chapter-map {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        nav h2, h2, h3 {
+            color: var(--primary);
+        }
+
+        nav ol {
+            padding-left: 24px;
+            columns: 2;
+        }
+
+        nav li {
+            padding: 3px 0;
+            break-inside: avoid;
+        }
+
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 0;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            font-size: 1.3rem;
+        }
+
+        h4 {
+            color: #344c65;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 13px 0;
+        }
+
+        .equation {
+            padding: 16px;
+            margin: 18px 0;
+            border-left: 4px solid var(--secondary);
+            background: var(--accent);
+            border-radius: 5px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 1.04rem;
+            overflow-wrap: anywhere;
+        }
+
+        .example {
+            background: #f0f6ff;
+            border-left: 4px solid #5a91d0;
+            padding: 15px 18px;
+            margin: 18px 0;
+            border-radius: 5px;
+        }
+
+        .important {
+            background: var(--orange);
+            border-left: 4px solid #e6a23c;
+            padding: 15px 18px;
+            margin: 18px 0;
+            border-radius: 5px;
+        }
+
+        .takeaway {
+            background: var(--green);
+            border-left: 4px solid #3a9860;
+            padding: 15px 18px;
+            margin: 18px 0;
+            border-radius: 5px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 18px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+            background: #edf1f6;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: #16283b;
+            color: #e8f2fb;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        pre code {
+            color: inherit;
+            background: transparent;
+            padding: 0;
+        }
+
+        .step {
+            padding: 12px 16px;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .step strong {
+            color: var(--primary);
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 0.94rem;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            padding: 30px 15px;
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                padding: 14px;
+            }
+
+            nav, main section, .learning-box, .chapter-map {
+                padding: 18px;
+            }
+
+            nav ol {
+                columns: 1;
+            }
+
+            header {
+                padding: 38px 18px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            nav, main section, .learning-box, .chapter-map {
+                break-inside: avoid;
+                box-shadow: none;
+            }
+
+            a {
+                color: inherit;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <p>QUANTUM COMPUTING BOOK · FOUNDATIONS</p>
+        <h1>Chapter 14: Machine Learning Essentials</h1>
+        <p>
+            Before studying quantum machine learning, we must understand how
+            ordinary machine learning works. This chapter builds that foundation
+            step by step, from learning patterns in data to training neural
+            networks and evaluating generative models.
+        </p>
+        <p>
+            The central question throughout this chapter is simple:
+            <strong>How can a computer learn useful patterns from examples
+            instead of being explicitly programmed with every rule?</strong>
+        </p>
+    </div>
+</header>
+
+<div class="container">
+
+    <nav>
+        <h2>Chapter Contents</h2>
+        <ol>
+            <li><a href="#introduction">Introduction to Machine Learning</a></li>
+            <li><a href="#learning-types">14.1 Learning Paradigms</a></li>
+            <li><a href="#loss">14.2 Loss Functions and Optimisation</a></li>
+            <li><a href="#gradients">14.3 Gradient Descent and Backpropagation</a></li>
+            <li><a href="#generalisation">14.4 Overfitting and Generalisation</a></li>
+            <li><a href="#kernels">14.5 Kernel Methods and SVMs</a></li>
+            <li><a href="#neural-networks">14.6 Neural Networks and Deep Learning</a></li>
+            <li><a href="#generative">14.7 Generative Models</a></li>
+            <li><a href="#evaluation">14.8 Evaluation and Benchmarking</a></li>
+            <li><a href="#workflow">The Complete Machine Learning Workflow</a></li>
+            <li><a href="#quantum-connection">Connection to Quantum Machine Learning</a></li>
+            <li><a href="#summary">Chapter Summary</a></li>
+            <li><a href="#questions">Review Questions</a></li>
+        </ol>
+    </nav>
+
+    <main>
+
+        <section id="introduction">
+            <h2>Introduction: What Does It Mean for a Machine to Learn?</h2>
+
+            <p>
+                Imagine that we want to build a program that identifies whether
+                an email is spam. One approach is to write hundreds of rules:
+                mark an email as suspicious if it contains certain words, too
+                many links, unusual formatting, or a suspicious sender address.
+                Such rules can work, but spammers constantly change their
+                methods. Maintaining all the rules becomes difficult.
+            </p>
+
+            <p>
+                Machine learning offers another approach. Instead of telling
+                the computer every rule, we provide examples of spam and
+                genuine emails. A learning algorithm examines these examples
+                and builds a model that can recognise patterns. When a new
+                email arrives, the model uses what it has learnt to predict
+                whether the email is spam.
+            </p>
+
+            <p>
+                The word <em>model</em> refers to the mathematical object that
+                makes predictions. The <em>algorithm</em> is the procedure
+                used to construct or improve that model. The <em>data</em>
+                supplies the evidence from which learning takes place.
+            </p>
+
+            <div class="example">
+                <strong>A familiar example:</strong> Suppose a child sees
+                photographs of many cats and dogs. Over time, the child learns
+                to notice useful differences, such as facial shape, ears and
+                body structure. A machine learning system attempts something
+                similar using numerical representations of images and a
+                mathematical learning process.
+            </div>
+
+            <h3>14.0.1 The Basic Mathematical Idea</h3>
+
+            <p>
+                A dataset contains examples. Each example has an input, often
+                represented by a vector of numbers, and may have a desired
+                output. We write an input as x and its target output as y.
+                The model, with adjustable parameters represented by θ, makes
+                a prediction.
+            </p>
+
+            <div class="equation">
+                Prediction: ŷ = f<sub>θ</sub>(x)
+            </div>
+
+            <p>
+                Here, f represents the model, θ represents its adjustable
+                parameters, x represents the input and ŷ represents the
+                predicted output. The goal is to choose useful parameter values
+                so that the predictions are accurate on data the model has
+                not seen before.
+            </p>
+
+            <p>
+                This process creates a pattern that connects nearly every topic
+                in this chapter:
+            </p>
+
+            <div class="step"><strong>Step 1 — Data:</strong> Collect examples that describe the problem.</div>
+            <div class="step"><strong>Step 2 — Model:</strong> Choose a mathematical structure capable of making predictions.</div>
+            <div class="step"><strong>Step 3 — Loss:</strong> Measure how far the predictions are from the desired results.</div>
+            <div class="step"><strong>Step 4 — Optimisation:</strong> Adjust the model parameters to reduce the loss.</div>
+            <div class="step"><strong>Step 5 — Evaluation:</strong> Check whether the model works on new examples.</div>
+
+            <p>
+                These steps form the foundation of supervised learning and
+                many modern neural network systems. Other learning paradigms
+                change how feedback is obtained, while retaining several of
+                the same ideas.
+            </p>
+        </section>
+
+        <section id="learning-types">
+            <h2>14.1 Supervised, Unsupervised, and Reinforcement Learning</h2>
+
+            <p>
+                Machine learning problems differ partly in the kind of
+                information available during learning. Sometimes we know the
+                correct answer for every training example. Sometimes we only
+                have raw data and must discover its structure. In other cases,
+                an agent takes actions and receives rewards or penalties.
+            </p>
+
+            <h3>14.1.1 Supervised Learning</h3>
+
+            <p>
+                In supervised learning, the training dataset contains inputs
+                and their corresponding target outputs. The model learns a
+                relationship between them.
+            </p>
+
+            <p>
+                A training dataset can be represented as a collection of
+                input-output pairs:
+            </p>
+
+            <div class="equation">
+                D = {(x₁, y₁), (x₂, y₂), ..., (xₙ, yₙ)}
+            </div>
+
+            <p>
+                The model predicts an output for each input, compares the
+                prediction with the target and uses the difference to improve
+                its parameters.
+            </p>
+
+            <p>
+                Supervised learning is commonly divided into two major types:
+                classification and regression.
+            </p>
+
+            <h4>Classification</h4>
+
+            <p>
+                Classification predicts a category. The answer might be spam
+                or not spam, cat or dog, fraudulent or genuine, or one of
+                several possible medical image categories.
+            </p>
+
+            <p>
+                A binary classifier predicts one of two classes. A
+                multiclass classifier predicts one class from three or more
+                possibilities. Some applications require multilabel
+                classification, in which one example can belong to several
+                categories simultaneously.
+            </p>
+
+            <div class="example">
+                <strong>Example:</strong> A model receives the numerical
+                features of a bank transaction and predicts whether the
+                transaction is fraudulent. The output might be a probability
+                such as 0.92 for the fraud class. A decision threshold is
+                then used to convert that probability into an operational
+                decision.
+            </div>
+
+            <h4>Regression</h4>
+
+            <p>
+                Regression predicts a numerical quantity rather than a
+                category. Examples include predicting house prices,
+                electricity demand, delivery time or tomorrow's temperature.
+            </p>
+
+            <p>
+                A regression model might learn that house prices depend on
+                location, area, age and other features. Its output is a
+                numerical estimate, such as ₹65 lakh.
+            </p>
+
+            <div class="takeaway">
+                <strong>Remember:</strong> Classification predicts a class;
+                regression predicts a numerical value. Both can be learnt
+                from labelled examples.
+            </div>
+
+            <h3>14.1.2 Unsupervised Learning</h3>
+
+            <p>
+                In unsupervised learning, we usually have inputs without
+                target labels. The algorithm tries to discover useful
+                structure in the data instead of learning from a supplied
+                correct answer for every example.
+            </p>
+
+            <h4>Clustering</h4>
+
+            <p>
+                Clustering groups examples according to their similarities.
+                A company might group customers by purchasing behaviour
+                without having predefined customer categories.
+            </p>
+
+            <p>
+                K-means is a popular clustering algorithm. It starts with
+                a chosen number of cluster centres, assigns each example
+                to a nearby centre, recalculates the centres and repeats
+                these steps until the assignments or centres stabilise.
+            </p>
+
+            <p>
+                Its objective is to minimise the total squared distance
+                between each data point and the centre of its assigned
+                cluster.
+            </p>
+
+            <div class="equation">
+                J = Σᵢ ||xᵢ − μ<sub>cᵢ</sub>||²
+            </div>
+
+            <p>
+                Here, xᵢ is a data point, cᵢ is its assigned cluster and
+                μ<sub>cᵢ</sub> is that cluster's centre. The number of
+                clusters must generally be chosen or estimated beforehand.
+            </p>
+
+            <h4>Dimensionality Reduction</h4>
+
+            <p>
+                A dataset may contain hundreds or thousands of features.
+                Some features may be redundant, correlated or less useful
+                for the task. Dimensionality reduction represents the data
+                using fewer variables while attempting to preserve important
+                information.
+            </p>
+
+            <p>
+                Principal Component Analysis (PCA) finds directions that
+                capture large amounts of variation in numerical data. It
+                is useful for exploration, compression and visualisation,
+                although directions with high variance are not necessarily
+                the directions most useful for prediction.
+            </p>
+
+            <h4>Representation Learning</h4>
+
+            <p>
+                Some unsupervised and self-supervised methods learn
+                representations that capture meaningful structure in data.
+                For example, a model might learn that different photographs
+                of the same object share important visual features even
+                when their backgrounds are different.
+            </p>
+
+            <p>
+                These representations can later be used for classification,
+                search, recommendation or other downstream tasks.
+            </p>
+
+            <h3>14.1.3 Reinforcement Learning</h3>
+
+            <p>
+                Reinforcement learning studies how an agent learns to make
+                decisions by interacting with an environment. Instead of
+                receiving the correct action for every situation, the agent
+                receives feedback in the form of rewards or penalties.
+            </p>
+
+            <p>
+                Consider a game-playing agent. It observes the current
+                situation, chooses a move, receives a reward or penalty
+                and observes the new situation. Across many interactions,
+                it attempts to learn a strategy that produces high total
+                reward.
+            </p>
+
+            <p>The main components are:</p>
+
+            <ul>
+                <li><strong>Agent:</strong> The decision-making system.</li>
+                <li><strong>Environment:</strong> The world in which the agent acts.</li>
+                <li><strong>State:</strong> The information describing the current situation.</li>
+                <li><strong>Action:</strong> A choice available to the agent.</li>
+                <li><strong>Reward:</strong> Numerical feedback describing the immediate outcome.</li>
+                <li><strong>Policy:</strong> The strategy used to choose actions.</li>
+            </ul>
+
+            <p>
+                The objective is often to maximise expected discounted return:
+            </p>
+
+            <div class="equation">
+                Gₜ = Rₜ₊₁ + γRₜ₊₂ + γ²Rₜ₊₃ + ...
+            </div>
+
+            <p>
+                Here, R represents future rewards, and γ is the discount
+                factor between zero and one. A smaller γ places relatively
+                more importance on immediate rewards, while a value closer
+                to one gives more weight to distant rewards.
+            </p>
+
+            <p>
+                The agent must often balance <em>exploration</em>, which
+                means trying unfamiliar actions to learn about them, and
+                <em>exploitation</em>, which means choosing actions already
+                believed to be good.
+            </p>
+
+            <h3>14.1.4 Comparing the Three Paradigms</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Learning type</th>
+                            <th>Feedback available</th>
+                            <th>Main goal</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Supervised</td>
+                            <td>Target labels or values</td>
+                            <td>Predict the correct output</td>
+                            <td>Spam detection</td>
+                        </tr>
+                        <tr>
+                            <td>Unsupervised</td>
+                            <td>No supplied target labels in the basic setting</td>
+                            <td>Discover structure</td>
+                            <td>Customer clustering</td>
+                        </tr>
+                        <tr>
+                            <td>Reinforcement</td>
+                            <td>Rewards from actions and outcomes</td>
+                            <td>Learn a good decision-making policy</td>
+                            <td>Game-playing agent</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                These categories are not exhaustive or completely separate.
+                Self-supervised learning creates training targets from the
+                data itself, while semi-supervised learning combines labelled
+                and unlabelled examples. Modern systems may combine several
+                learning approaches in one pipeline.
+            </p>
+        </section>
+
+        <section id="loss">
+            <h2>14.2 Loss Functions and Optimisation</h2>
+
+            <p>
+                Once we choose a model, we need a way to determine whether
+                it is making good predictions. This is the job of a
+                <strong>loss function</strong>. It converts a prediction
+                error into a numerical value that the training process can
+                attempt to reduce.
+            </p>
+
+            <p>
+                Imagine that a model predicts the price of a house as
+                ₹50 lakh when the actual price is ₹60 lakh. The prediction
+                is wrong by ₹10 lakh. A loss function gives us a numerical
+                measure of that mistake.
+            </p>
+
+            <p>
+                Different problems require different loss functions because
+                different mistakes have different meanings.
+            </p>
+
+            <h3>14.2.1 Mean Squared Error</h3>
+
+            <p>
+                Mean Squared Error (MSE) is commonly used in regression.
+                It calculates the average squared difference between
+                predicted values and actual values.
+            </p>
+
+            <div class="equation">
+                MSE = (1/n) Σᵢ (yᵢ − ŷᵢ)²
+            </div>
+
+            <p>
+                Here, yᵢ is the actual value, ŷᵢ is the predicted value
+                and n is the number of examples.
+            </p>
+
+            <p>
+                Squaring ensures that positive and negative errors do not
+                cancel each other out. It also penalises large errors more
+                heavily than small ones.
+            </p>
+
+            <div class="example">
+                <strong>Example:</strong> Suppose the actual values are
+                10 and 20, while the predictions are 12 and 17. The squared
+                errors are 4 and 9. The MSE is (4 + 9) / 2 = 6.5.
+            </div>
+
+            <p>
+                MSE is useful when large errors deserve extra attention.
+                However, a single extreme outlier can dominate the loss.
+                Mean Absolute Error, or MAE, instead averages the absolute
+                errors and is less sensitive to extreme errors.
+            </p>
+
+            <div class="equation">
+                MAE = (1/n) Σᵢ |yᵢ − ŷᵢ|
+            </div>
+
+            <h3>14.2.2 Binary Cross-Entropy</h3>
+
+            <p>
+                For binary classification, a model often predicts the
+                probability that an example belongs to the positive class.
+                If the target is either zero or one, binary cross-entropy
+                measures how well the predicted probability agrees with
+                that target.
+            </p>
+
+            <div class="equation">
+                L = −[y log(p) + (1 − y) log(1 − p)]
+            </div>
+
+            <p>
+                Here, y is the true label and p is the predicted probability
+                of the positive class. When the true label is one, predicting
+                a probability close to one gives a small loss. Predicting
+                a probability close to zero gives a very large loss.
+                The reverse applies when the true label is zero.
+            </p>
+
+            <p>
+                This makes cross-entropy useful for teaching a classifier
+                not only to choose the right class, but also to assign
+                sensible probabilities to its predictions.
+            </p>
+
+            <h3>14.2.3 Multiclass Cross-Entropy</h3>
+
+            <p>
+                For a problem with several mutually exclusive classes, a
+                model may produce one probability for each class. A softmax
+                function is commonly used to turn a set of scores, called
+                logits, into probabilities.
+            </p>
+
+            <div class="equation">
+                P(y = k | x) = eᶻᵏ / Σⱼ eᶻʲ
+            </div>
+
+            <p>
+                Here, zₖ is the score for class k. The denominator sums
+                the exponentials of the scores for all classes, so the
+                resulting probabilities add up to one.
+            </p>
+
+            <p>
+                Multiclass cross-entropy then penalises the model when it
+                assigns a low probability to the correct class.
+            </p>
+
+            <h3>14.2.4 The Difference Between Loss and Evaluation Metrics</h3>
+
+            <p>
+                A loss function is usually selected to support training.
+                An evaluation metric describes performance in terms that
+                are useful for understanding the actual task. The two
+                may be related, but they do not have to be the same.
+            </p>
+
+            <p>
+                For example, a spam classifier may be trained using
+                cross-entropy but evaluated using precision, recall and
+                the F1-score. These metrics help explain how many spam
+                emails were detected and how many genuine emails were
+                mistakenly marked as spam.
+            </p>
+
+            <h3>14.2.5 What Is Optimisation?</h3>
+
+            <p>
+                A model has parameters that affect its predictions.
+                Optimisation is the process of finding parameter values
+                that minimise an objective function, often the average
+                training loss plus any regularisation terms.
+            </p>
+
+            <div class="equation">
+                θ* = arg min<sub>θ</sub> L(θ)
+            </div>
+
+            <p>
+                This notation means that we seek parameter values θ*
+                that make the loss L as small as possible.
+            </p>
+
+            <p>
+                A simple model may have only a few parameters. A large
+                neural network may have millions or billions. Finding
+                good parameters in such a large space is a major
+                computational challenge.
+            </p>
+
+            <div class="takeaway">
+                <strong>Key idea:</strong> The loss function tells the
+                learning algorithm what it should improve. Optimisation
+                determines how the model parameters are changed to achieve
+                that improvement.
+            </div>
+        </section>
+
+        <section id="gradients">
+            <h2>14.3 Gradient Descent and Backpropagation</h2>
+
+            <p>
+                Suppose we are standing on a hill covered in fog and want
+                to reach a low point. We cannot see the whole landscape,
+                but we can estimate which direction slopes downward near
+                our current position. We take a small step downhill,
+                examine the new position and repeat.
+            </p>
+
+            <p>
+                Gradient descent follows a similar idea. The hill represents
+                the loss function, and our position represents the current
+                model parameters. We repeatedly update the parameters in a
+                direction that is expected to reduce the loss.
+            </p>
+
+            <h3>14.3.1 Understanding the Gradient</h3>
+
+            <p>
+                A derivative describes how a function changes when its
+                input changes. If a small increase in a parameter causes
+                the loss to increase, the derivative is positive. If it
+                causes the loss to decrease, the derivative is negative.
+            </p>
+
+            <p>
+                For a model with many parameters, we collect the partial
+                derivatives into a gradient vector. It describes how the
+                loss changes with respect to each parameter.
+            </p>
+
+            <div class="equation">
+                ∇L(θ) = [∂L/∂θ₁, ∂L/∂θ₂, ..., ∂L/∂θₘ]
+            </div>
+
+            <p>
+                The gradient points in the direction of the steepest local
+                increase in a differentiable function. To reduce the loss,
+                gradient descent moves in the opposite direction.
+            </p>
+
+            <h3>14.3.2 The Gradient Descent Update Rule</h3>
+
+            <div class="equation">
+                θ<sub>t+1</sub> = θ<sub>t</sub> − η∇L(θ<sub>t</sub>)
+            </div>
+
+            <p>
+                The parameter θ at step t is updated using the gradient
+                of the loss. The symbol η, called the learning rate,
+                controls the size of the update.
+            </p>
+
+            <ul>
+                <li>A very small learning rate may make training extremely slow.</li>
+                <li>A very large learning rate may cause the loss to jump around or diverge.</li>
+                <li>A suitable learning rate can make training faster and more stable.</li>
+            </ul>
+
+            <p>
+                Consider a simple example in which the loss is L(w) = w².
+                Its derivative is 2w. If the current parameter is w = 4
+                and the learning rate is 0.1, the next value is:
+            </p>
+
+            <div class="equation">
+                w<sub>new</sub> = 4 − 0.1(2 × 4) = 3.2
+            </div>
+
+            <p>
+                The parameter has moved closer to zero, where this
+                particular loss reaches its minimum. Real machine learning
+                problems are usually much more complicated, but the
+                underlying update principle is similar.
+            </p>
+
+            <h3>14.3.3 Batch, Stochastic and Mini-Batch Gradient Descent</h3>
+
+            <p>
+                A training dataset may contain millions of examples.
+                Calculating the gradient using every example for every
+                update can be expensive. There are several ways to decide
+                which examples contribute to an update.
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Examples used per update</th>
+                            <th>Characteristics</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Batch gradient descent</td>
+                            <td>The entire training dataset</td>
+                            <td>Uses the full dataset gradient, but each update can be expensive.</td>
+                        </tr>
+                        <tr>
+                            <td>Stochastic gradient descent</td>
+                            <td>One example</td>
+                            <td>Frequent, noisy updates with low per-update cost.</td>
+                        </tr>
+                        <tr>
+                            <td>Mini-batch gradient descent</td>
+                            <td>A small group of examples</td>
+                            <td>Balances computational efficiency and gradient stability.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                Mini-batch training is widely used for neural networks.
+                A batch of examples is processed together, and its average
+                loss is used to calculate an approximate gradient.
+                Modern hardware can process batches efficiently in parallel.
+            </p>
+
+            <h3>14.3.4 What Is Backpropagation?</h3>
+
+            <p>
+                Gradient descent explains how parameters are updated.
+                However, a neural network may contain millions of parameters
+                arranged across many connected layers. We need an efficient
+                way to calculate the gradient of the loss with respect to
+                all these parameters.
+            </p>
+
+            <p>
+                Backpropagation is the algorithm that efficiently computes
+                these gradients by applying the chain rule of calculus
+                through the network, starting from the loss and moving
+                backwards through the computations.
+            </p>
+
+            <p>
+                A neural network first performs a forward pass. It takes
+                the input, calculates the output and measures the loss.
+                During backpropagation, it works backwards to determine
+                how each intermediate value and parameter contributed
+                to that loss.
+            </p>
+
+            <div class="step">
+                <strong>Forward pass:</strong> Input → layers → prediction → loss.
+            </div>
+            <div class="step">
+                <strong>Backward pass:</strong> Loss gradient → output layer
+                → earlier layers → parameter gradients.
+            </div>
+            <div class="step">
+                <strong>Parameter update:</strong> An optimiser uses the
+                calculated gradients to change the weights and biases.
+            </div>
+
+            <h3>14.3.5 The Chain Rule</h3>
+
+            <p>
+                The chain rule explains how the derivative of a composition
+                of functions can be calculated from the derivatives of
+                its parts. If one quantity depends on another, which in
+                turn depends on a third, their derivatives can be combined
+                to calculate the overall rate of change.
+            </p>
+
+            <div class="equation">
+                If z = f(y) and y = g(x), then dz/dx = (dz/dy)(dy/dx)
+            </div>
+
+            <p>
+                A neural network is a composition of many functions.
+                Applying the chain rule repeatedly allows the loss gradient
+                to travel backwards through the layers.
+            </p>
+
+            <p>
+                For a simple neuron, let z = wx + b and let the activation
+                be a = σ(z). If the loss is L(a), the chain rule gives:
+            </p>
+
+            <div class="equation">
+                ∂L/∂w = (∂L/∂a)(∂a/∂z)(∂z/∂w)
+            </div>
+
+            <p>
+                Since ∂z/∂w = x, the gradient with respect to the weight
+                depends on the input, the activation's derivative and
+                the loss gradient at the output.
+            </p>
+
+            <h3>14.3.6 Backpropagation Is Not the Same as Gradient Descent</h3>
+
+            <p>
+                These two concepts are often mentioned together, but they
+                have different jobs. Backpropagation calculates gradients.
+                Gradient descent uses those gradients to update parameters.
+                They form two parts of the training process.
+            </p>
+
+            <p>
+                The optimiser need not be basic gradient descent. Adam,
+                RMSProp and momentum-based methods use additional information
+                from current or previous gradients to influence updates.
+                Adam, for example, maintains moving estimates of the
+                gradients and their squared values.
+            </p>
+
+            <div class="important">
+                <strong>Important distinction:</strong> Backpropagation
+                does not independently teach the network or choose its
+                final parameters. It calculates how the loss changes
+                with the parameters. Learning emerges from repeatedly
+                combining gradient calculation, parameter updates and
+                feedback from training examples.
+            </div>
+        </section>
+
+        <section id="generalisation">
+            <h2>14.4 Overfitting, Regularisation and Generalisation</h2>
+
+            <p>
+                A model can perform extremely well on its training data
+                and still fail when presented with new examples. This is
+                one of the most important problems in machine learning.
+                To understand why it happens, we must distinguish between
+                memorising examples and learning useful patterns.
+            </p>
+
+            <h3>14.4.1 Training, Validation and Test Data</h3>
+
+            <p>
+                A dataset is commonly divided into separate portions for
+                different purposes.
+            </p>
+
+            <ul>
+                <li><strong>Training set:</strong> Used to fit the model parameters.</li>
+                <li><strong>Validation set:</strong> Used to compare models, tune hyperparameters and decide when to stop training.</li>
+                <li><strong>Test set:</strong> Used for a final, relatively unbiased assessment after the development decisions are complete.</li>
+            </ul>
+
+            <p>
+                A hyperparameter is a setting chosen outside the ordinary
+                parameter-learning process. Examples include learning
+                rate, tree depth, batch size, number of layers and
+                regularisation strength.
+            </p>
+
+            <p>
+                The test set should not be repeatedly used to make design
+                decisions. If we keep adjusting the model based on its
+                test results, we gradually adapt to the test set itself,
+                weakening its role as an independent assessment.
+            </p>
+
+            <h3>14.4.2 Underfitting</h3>
+
+            <p>
+                Underfitting occurs when a model is too limited, is not
+                trained sufficiently or otherwise fails to capture the
+                important patterns in the data. It usually performs
+                poorly on both training data and unseen data.
+            </p>
+
+            <p>
+                For example, a straight line may be unable to describe a
+                strongly curved relationship between a house's size and
+                its price. The problem is not necessarily a lack of data;
+                the model may simply be too restrictive.
+            </p>
+
+            <h3>14.4.3 Overfitting</h3>
+
+            <p>
+                Overfitting occurs when a model learns details of the
+                training examples that do not reliably carry over to
+                new examples. These details may include noise, accidental
+                correlations and unusual cases.
+            </p>
+
+            <p>
+                Imagine a student who memorises the answers to a set of
+                practice questions without understanding the underlying
+                concepts. The student may score full marks on those exact
+                questions but struggle when the examiner changes their
+                wording. An overfitted model behaves in a similar way.
+            </p>
+
+            <div class="example">
+                <strong>Example:</strong> A model trained on photographs
+                of dogs may accidentally learn to associate grass with
+                the dog class because most training photographs contain
+                grass. When it sees a dog indoors, it may make a mistake.
+                It has learnt a misleading shortcut rather than a robust
+                representation of dogs.
+            </div>
+
+            <h3>14.4.4 Generalisation</h3>
+
+            <p>
+                Generalisation is the ability of a trained model to perform
+                well on examples drawn from the intended population that
+                were not used to fit the model. Good generalisation is
+                the real objective of most predictive machine learning.
+            </p>
+
+            <p>
+                A model that generalises well has learnt patterns that
+                remain useful beyond the exact examples it saw during
+                training. This does not mean it must perform perfectly
+                on every new input. Its performance depends on the
+                data distribution, model design, training procedure and
+                evaluation conditions.
+            </p>
+
+            <h3>14.4.5 The Bias-Variance Trade-off</h3>
+
+            <p>
+                Bias and variance describe two different sources of
+                prediction error in many statistical learning settings.
+                High bias is associated with models that are too restrictive
+                to capture the real pattern. High variance is associated
+                with models whose learned behaviour changes substantially
+                when the training data changes.
+            </p>
+
+            <p>
+                A very simple model may have high bias. A very flexible
+                model trained on limited or noisy data may have high
+                variance. Model selection often involves balancing these
+                tendencies.
+            </p>
+
+            <p>
+                Under the assumptions of the classical squared-error
+                decomposition, expected prediction error can be expressed
+                in terms of squared bias, variance and irreducible noise.
+                The exact decomposition depends on the setting and the
+                evaluation point.
+            </p>
+
+            <div class="equation">
+                Expected squared error = Bias² + Variance + Irreducible noise
+            </div>
+
+            <h3>14.4.6 Regularisation</h3>
+
+            <p>
+                Regularisation discourages models from becoming unnecessarily
+                complex or from relying too heavily on certain parameters.
+                It adds constraints or penalties to the learning process.
+            </p>
+
+            <h4>L2 Regularisation</h4>
+
+            <p>
+                L2 regularisation adds a penalty proportional to the sum
+                of squared parameter values. In many settings, this
+                encourages smaller weights and smoother behaviour.
+            </p>
+
+            <div class="equation">
+                L<sub>total</sub> = L<sub>data</sub> + λΣᵢ θᵢ²
+            </div>
+
+            <p>
+                The coefficient λ controls the strength of the penalty.
+                If it is too small, it may have little effect. If it
+                is too large, the model may become too restricted and
+                underfit the data.
+            </p>
+
+            <h4>L1 Regularisation</h4>
+
+            <p>
+                L1 regularisation penalises the sum of the absolute
+                parameter values. It can encourage some weights to become
+                exactly zero, which may produce sparse models.
+            </p>
+
+            <div class="equation">
+                L<sub>total</sub> = L<sub>data</sub> + λΣᵢ |θᵢ|
+            </div>
+
+            <h4>Other Ways to Reduce Overfitting</h4>
+
+            <ul>
+                <li><strong>More representative data:</strong> Helps the model encounter a wider range of genuine situations.</li>
+                <li><strong>Data augmentation:</strong> Creates valid variations of training examples, such as cropping images or changing their orientation where appropriate.</li>
+                <li><strong>Dropout:</strong> Randomly disables selected neural network activations during training to discourage excessive dependence on particular pathways.</li>
+                <li><strong>Early stopping:</strong> Stops training when validation performance no longer improves as expected.</li>
+                <li><strong>Model simplification:</strong> Reduces the model's capacity when the existing model is unnecessarily complex.</li>
+                <li><strong>Cross-validation:</strong> Repeats training and validation across different data splits to assess how sensitive performance is to the split.</li>
+            </ul>
+
+            <div class="important">
+                <strong>Data leakage warning:</strong> Information from
+                validation or test data must not accidentally enter training
+                in a way that makes evaluation unrealistically easy.
+                For example, normalising all the data before splitting it
+                can leak information about the test distribution. Fit
+                preprocessing steps on the training data, then apply the
+                fitted transformations to validation and test data.
+            </div>
+
+            <h3>14.4.7 Distribution Shift</h3>
+
+            <p>
+                A model may generalise well to a test set but perform
+                poorly after deployment because the real-world data
+                distribution has changed. This is known as distribution
+                shift. Examples include changing customer behaviour,
+                new types of fraud, changes in camera quality or a
+                population whose characteristics differ from the training
+                population.
+            </p>
+
+            <p>
+                Therefore, generalisation is not guaranteed merely because
+                a model scores well on one test set. Reliable deployment
+                also requires representative evaluation, monitoring and
+                periodic reassessment.
+            </p>
+        </section>
+
+        <section id="kernels">
+            <h2>14.5 Kernel Methods and Support Vector Machines</h2>
+
+            <p>
+                Not every useful machine learning model needs to be a
+                neural network. Kernel methods and support vector machines
+                provide powerful ways to learn patterns, particularly
+                when the data has a suitable structure and the dataset
+                is not too large for the chosen method.
+            </p>
+
+            <h3>14.5.1 The Challenge of Non-Linear Data</h3>
+
+            <p>
+                Suppose we plot two classes of points on a graph. A linear
+                classifier attempts to separate the classes using a straight
+                line in two dimensions, or a hyperplane in higher dimensions.
+                If the classes cannot be separated well by a straight
+                boundary, a linear model may perform poorly.
+            </p>
+
+            <p>
+                A more flexible decision boundary may be needed. One
+                possibility is to transform the input features so that
+                a linear boundary in the transformed space corresponds
+                to a non-linear boundary in the original space.
+            </p>
+
+            <h3>14.5.2 Feature Maps</h3>
+
+            <p>
+                A feature map, written as φ(x), transforms an input x
+                into a representation containing features that may be
+                more useful for separating classes.
+            </p>
+
+            <p>
+                Consider a two-dimensional input x = (x₁, x₂). We could
+                add a feature based on the squared distance from the
+                origin, such as x₁² + x₂². This extra feature can make
+                circular patterns easier to separate using a linear
+                boundary in the transformed feature space.
+            </p>
+
+            <p>
+                The difficulty is that an explicit feature map may produce
+                an enormous number of features, or even an infinite-dimensional
+                representation. Kernel methods provide a way to work with
+                certain feature-space relationships without explicitly
+                calculating every transformed feature.
+            </p>
+
+            <h3>14.5.3 The Kernel Trick</h3>
+
+            <p>
+                A kernel function calculates an inner product between
+                feature representations directly from the original inputs.
+                In a suitable feature space, a kernel can be written as:
+            </p>
+
+            <div class="equation">
+                K(x, z) = φ(x) · φ(z)
+            </div>
+
+            <p>
+                Instead of constructing φ(x) and φ(z) explicitly, the
+                algorithm calculates K(x, z). This can make certain
+                non-linear learning problems computationally practical.
+            </p>
+
+            <h4>Common Kernel Functions</h4>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kernel</th>
+                            <th>Expression</th>
+                            <th>General behaviour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Linear</td>
+                            <td>K(x, z) = x · z</td>
+                            <td>Uses the original linear feature relationship.</td>
+                        </tr>
+                        <tr>
+                            <td>Polynomial</td>
+                            <td>K(x, z) = (γx · z + r)<sup>d</sup></td>
+                            <td>Represents interactions up to a degree controlled by d, under the relevant parameter settings.</td>
+                        </tr>
+                        <tr>
+                            <td>RBF / Gaussian</td>
+                            <td>K(x, z) = exp(−γ||x − z||²)</td>
+                            <td>Measures similarity that decreases with squared distance.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                In these expressions, γ and r are parameters, and d is
+                the polynomial degree. For the RBF kernel, larger γ makes
+                the similarity fall off more quickly with distance.
+                Feature scaling and hyperparameter selection can strongly
+                affect performance.
+            </p>
+
+            <h3>14.5.4 Support Vector Machines</h3>
+
+            <p>
+                A Support Vector Machine (SVM) is a supervised learning
+                method often used for classification and, in a related
+                formulation, regression. The basic SVM classifier attempts
+                to find a decision boundary that separates the classes
+                with a large margin.
+            </p>
+
+            <p>
+                The margin is the distance between the boundary and the
+                closest training points from either class. These closest
+                points are called <em>support vectors</em>. They play
+                a central role in determining the decision boundary.
+            </p>
+
+            <p>
+                For a linearly separable dataset, a hard-margin SVM seeks
+                a hyperplane that separates all training examples while
+                maximising the margin. Real datasets often contain noise
+                or overlapping classes, so a soft-margin SVM allows some
+                violations of the margin constraints.
+            </p>
+
+            <div class="equation">
+                Minimise: (1/2)||w||² + CΣᵢ ξᵢ
+            </div>
+
+            <p>
+                This is a simplified expression of the soft-margin
+                objective, with constraints omitted for readability.
+                The vector w defines the separating hyperplane, ξᵢ
+                measures margin violations and C controls the trade-off
+                between a wide margin and training violations.
+            </p>
+
+            <p>
+                A small C permits more violations in exchange for a
+                potentially wider margin. A large C penalises violations
+                more strongly. The appropriate setting depends on the data.
+            </p>
+
+            <h3>14.5.5 When Are Kernel Methods Useful?</h3>
+
+            <ul>
+                <li>When the dataset is small or medium-sized and a strong traditional baseline is needed.</li>
+                <li>When the relationship between features and labels is non-linear.</li>
+                <li>When the number of features is high but the training set remains manageable.</li>
+                <li>When a well-understood mathematical objective and a controlled model are useful.</li>
+            </ul>
+
+            <p>
+                Kernel methods can become expensive for large datasets
+                because many algorithms require calculations involving
+                pairs of training examples. Neural networks are often
+                preferred for very large image, audio and text tasks,
+                where learned representations can be extremely useful.
+                The best choice depends on the problem, data and
+                computational budget.
+            </p>
+        </section>
+
+        <section id="neural-networks">
+            <h2>14.6 Neural Networks and Deep Learning</h2>
+
+            <p>
+                Neural networks are flexible models built from connected
+                computational units. They are loosely inspired by some
+                ideas about biological nervous systems, but artificial
+                neurons are mathematical operations rather than realistic
+                models of biological neurons.
+            </p>
+
+            <p>
+                Their strength comes from combining many simple operations
+                into a system that can learn complicated relationships
+                from data. A network can begin with raw or lightly
+                processed inputs and gradually construct representations
+                that are useful for its task.
+            </p>
+
+            <h3>14.6.1 The Artificial Neuron</h3>
+
+            <p>
+                An artificial neuron receives input values, multiplies
+                them by weights, adds a bias and passes the result through
+                an activation function.
+            </p>
+
+            <div class="equation">
+                z = w₁x₁ + w₂x₂ + ... + wₙxₙ + b
+            </div>
+
+            <div class="equation">
+                a = σ(z)
+            </div>
+
+            <p>
+                The inputs x represent features. The weights w determine
+                how strongly those features influence the neuron, while
+                the bias b shifts its response. The activation function
+                σ introduces non-linearity in many neural network designs.
+            </p>
+
+            <h3>14.6.2 Why Do We Need Activation Functions?</h3>
+
+            <p>
+                Suppose we stack many linear layers without any non-linear
+                activation between them. The combined transformation
+                is still equivalent to a single linear transformation.
+                Merely adding more such layers would not provide the
+                expressive power expected from a deep network.
+            </p>
+
+            <p>
+                Non-linear activation functions allow neural networks
+                to represent much more complicated relationships.
+            </p>
+
+            <h4>ReLU</h4>
+
+            <div class="equation">
+                ReLU(x) = max(0, x)
+            </div>
+
+            <p>
+                ReLU returns zero for negative inputs and returns the
+                input itself for positive inputs. It is simple and widely
+                used in hidden layers, though it can cause some neurons
+                to stop responding to typical inputs during training.
+            </p>
+
+            <h4>Sigmoid</h4>
+
+            <div class="equation">
+                σ(x) = 1 / (1 + e<sup>−x</sup>)
+            </div>
+
+            <p>
+                Sigmoid maps real numbers to values between zero and one.
+                It is useful when an output needs to represent a binary
+                probability, although it is less commonly used in the
+                hidden layers of modern deep networks.
+            </p>
+
+            <h4>Tanh</h4>
+
+            <div class="equation">
+                tanh(x) = (eˣ − e<sup>−x</sup>) / (eˣ + e<sup>−x</sup>)
+            </div>
+
+            <p>
+                Tanh maps inputs to values between negative one and one.
+                It is zero-centred, but like sigmoid it can suffer from
+                small gradients for very large positive or negative inputs.
+            </p>
+
+            <h3>14.6.3 Layers and Network Architecture</h3>
+
+            <p>
+                A basic feedforward neural network contains an input
+                layer, one or more hidden layers and an output layer.
+                Information passes forward through the network to produce
+                a prediction.
+            </p>
+
+            <ul>
+                <li><strong>Input layer:</strong> Receives the representation of the example.</li>
+                <li><strong>Hidden layers:</strong> Transform the representation into increasingly useful features.</li>
+                <li><strong>Output layer:</strong> Produces a prediction in the form required by the task.</li>
+            </ul>
+
+            <p>
+                A hidden layer can be described mathematically as:
+            </p>
+
+            <div class="equation">
+                h = σ(Wx + b)
+            </div>
+
+            <p>
+                W is a matrix of weights, b is a bias vector and σ
+                is applied to the layer's pre-activation values. Stacking
+                such transformations creates a deep neural network.
+            </p>
+
+            <h3>14.6.4 What Makes Deep Learning Different?</h3>
+
+            <p>
+                Deep learning uses neural networks with multiple layers
+                to learn representations at different levels of abstraction.
+                The precise representations depend on the architecture
+                and training objective, but a useful intuition comes
+                from image recognition.
+            </p>
+
+            <p>
+                Early layers may respond to simple visual patterns such
+                as edges and colour changes. Intermediate layers may
+                combine these patterns into shapes or textures. Later
+                layers may represent more complex object parts and
+                combinations of features.
+            </p>
+
+            <p>
+                This is an illustration rather than a strict rule for
+                every network. What matters is that the network can
+                learn useful features from examples instead of requiring
+                a human to design every feature manually.
+            </p>
+
+            <h3>14.6.5 Convolutional Neural Networks</h3>
+
+            <p>
+                Convolutional Neural Networks (CNNs) are designed to
+                exploit spatial structure, especially in images. Instead
+                of connecting every input pixel independently to every
+                neuron in a large layer, convolutional layers apply
+                small learned filters across local regions of an image.
+            </p>
+
+            <p>
+                The same filter is reused across different positions.
+                This weight sharing reduces the number of parameters
+                compared with many fully connected alternatives and
+                allows the network to detect patterns in different
+                parts of the image.
+            </p>
+
+            <p>
+                Pooling or strided convolutions can reduce the spatial
+                dimensions of feature maps. Modern CNN designs use
+                different combinations of convolutions, normalisation,
+                activation functions and residual connections.
+            </p>
+
+            <h3>14.6.6 Recurrent Neural Networks</h3>
+
+            <p>
+                Recurrent Neural Networks (RNNs) process sequences by
+                maintaining a hidden state that carries information
+                from earlier steps. This makes them suitable for
+                sequential data such as text, sensor readings and
+                time series.
+            </p>
+
+            <p>
+                Traditional RNNs can struggle to preserve information
+                over long sequences because gradients may vanish or
+                grow excessively during backpropagation through time.
+                Long Short-Term Memory networks (LSTMs) and Gated
+                Recurrent Units (GRUs) introduce gates to control
+                how information is retained and updated.
+            </p>
+
+            <h3>14.6.7 Transformers</h3>
+
+            <p>
+                Transformers process sequences using attention mechanisms
+                that allow elements to exchange information based on
+                their relevance to one another. Unlike a traditional
+                recurrent network, a standard transformer can process
+                many sequence positions in parallel during training,
+                although attention computation has its own cost.
+            </p>
+
+            <p>
+                Consider the sentence, "The child placed the book on the
+                table because it was heavy." To interpret the word
+                "it", a model needs to consider the surrounding context.
+                Attention provides a way for a token's representation
+                to incorporate information from other tokens.
+            </p>
+
+            <p>
+                In scaled dot-product attention, queries, keys and values
+                are learned projections of the input representations.
+                Queries are compared with keys to calculate attention
+                weights, and those weights determine how values are
+                combined.
+            </p>
+
+            <div class="equation">
+                Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V
+            </div>
+
+            <p>
+                Here, Q contains queries, K contains keys, V contains
+                values and dₖ is the dimension of each key vector.
+                Dividing by the square root of dₖ helps control the
+                scale of the attention scores before softmax is applied.
+            </p>
+
+            <p>
+                Transformers commonly combine attention, feedforward
+                networks, residual connections and normalisation.
+                Positional information is also needed so that the model
+                can represent sequence order.
+            </p>
+
+            <h3>14.6.8 The Complete Neural Network Training Cycle</h3>
+
+            <div class="step">
+                <strong>1. Initialise:</strong> Set initial weights and biases, commonly using a suitable random initialisation scheme.
+            </div>
+            <div class="step">
+                <strong>2. Forward pass:</strong> Calculate predictions from the current parameters.
+            </div>
+            <div class="step">
+                <strong>3. Calculate loss:</strong> Compare the predictions with the training targets.
+            </div>
+            <div class="step">
+                <strong>4. Backpropagate:</strong> Calculate gradients of the loss with respect to the parameters.
+            </div>
+            <div class="step">
+                <strong>5. Optimise:</strong> Update the parameters using an optimiser such as SGD or Adam.
+            </div>
+            <div class="step">
+                <strong>6. Repeat:</strong> Process further mini-batches over multiple epochs.
+            </div>
+            <div class="step">
+                <strong>7. Validate:</strong> Monitor performance on separate validation data and adjust the training strategy where needed.
+            </div>
+
+            <p>
+                One epoch means that the training process has gone through
+                the entire training dataset once, assuming the training
+                procedure processes all of it. Several epochs may be
+                required before the model learns useful patterns.
+            </p>
+
+            <p>
+                Deep learning has become powerful because of the combination
+                of large datasets, efficient hardware, improved optimisation
+                methods, suitable architectures and years of research.
+                It is not simply a matter of making a network deeper.
+            </p>
+        </section>
+
+        <section id="generative">
+            <h2>14.7 Generative Models: GANs, VAEs, Diffusion and Transformers</h2>
+
+            <p>
+                Many machine learning models are designed to predict a
+                label or a numerical value. Generative models have a
+                different goal: they learn patterns in data well enough
+                to produce new examples that resemble the data on which
+                they were trained.
+            </p>
+
+            <p>
+                A generative model might produce a photograph, a paragraph,
+                a piece of music, a molecular structure or a synthetic
+                dataset. The output is newly generated, but its statistical
+                structure is influenced by the patterns learnt from the
+                training data and the model's objective.
+            </p>
+
+            <h3>14.7.1 What Does It Mean to Learn a Distribution?</h3>
+
+            <p>
+                A probability distribution describes how likely different
+                possible outcomes are. A generative model attempts to
+                capture useful aspects of the distribution of training
+                data and then generate samples from its learned model.
+            </p>
+
+            <p>
+                For example, a model trained on handwritten digits learns
+                statistical patterns of digit shapes. When asked to
+                generate a new digit, it produces an image that resembles
+                a digit without necessarily copying any single training
+                image.
+            </p>
+
+            <p>
+                A conditional generative model can also use extra
+                information, such as a text prompt, a class label or
+                an input image, to guide the generated output.
+            </p>
+
+            <h3>14.7.2 Generative Adversarial Networks (GANs)</h3>
+
+            <p>
+                A Generative Adversarial Network contains two neural
+                networks with competing objectives: a generator and
+                a discriminator.
+            </p>
+
+            <h4>The Generator</h4>
+
+            <p>
+                The generator takes a random latent vector, often sampled
+                from a simple distribution, and transforms it into a
+                synthetic example. For an image GAN, the output is an
+                image intended to resemble the training images.
+            </p>
+
+            <h4>The Discriminator</h4>
+
+            <p>
+                The discriminator receives real and generated examples
+                and learns to distinguish between them. It provides
+                feedback that helps the generator improve its outputs.
+            </p>
+
+            <p>
+                The generator tries to create convincing examples, while
+                the discriminator tries to detect generated examples.
+                Training is adversarial because the two networks have
+                competing objectives.
+            </p>
+
+            <div class="equation">
+                min<sub>G</sub> max<sub>D</sub> V(D,G) =
+                E<sub>x∼p data</sub>[log D(x)] +
+                E<sub>z∼p z</sub>[log(1 − D(G(z)))]
+            </div>
+
+            <p>
+                This is the original minimax objective for a basic GAN.
+                D(x) is the discriminator's estimate that x is real,
+                G(z) is a generated sample and the expectations average
+                over real examples and latent inputs.
+            </p>
+
+            <p>
+                In practice, GAN training can be difficult. The generator
+                and discriminator must improve in a reasonably balanced
+                manner. One failure mode, called mode collapse, occurs
+                when the generator produces only a limited variety of
+                outputs instead of representing the diversity of the
+                training distribution.
+            </p>
+
+            <h3>14.7.3 Variational Autoencoders (VAEs)</h3>
+
+            <p>
+                A Variational Autoencoder learns to represent data in a
+                latent space and then reconstruct or generate examples
+                from that space. It consists of an encoder and a decoder.
+            </p>
+
+            <p>
+                The encoder maps an input to a probability distribution
+                over latent representations. In a common VAE, the encoder
+                predicts the mean and variance of a Gaussian distribution.
+                A latent vector is sampled from this distribution and
+                passed to the decoder.
+            </p>
+
+            <p>
+                The decoder uses the latent vector to reconstruct the
+                input or generate a new example. The model is trained
+                using an objective that balances reconstruction quality
+                with a regularisation term.
+            </p>
+
+            <div class="equation">
+                L<sub>VAE</sub> = Reconstruction loss + β KL(q(z|x) || p(z))
+            </div>
+
+            <p>
+                The reconstruction loss measures how well the output
+                represents the input. The Kullback-Leibler divergence,
+                written KL, measures how different the encoder's latent
+                distribution is from a chosen prior distribution p(z).
+                The coefficient β controls the strength of this term
+                in this common form of the objective.
+            </p>
+
+            <p>
+                The prior encourages latent representations to have a
+                useful structure from which new samples can be generated.
+                VAEs are often associated with smooth latent spaces,
+                though the quality and properties of generated samples
+                depend on the architecture and training objective.
+            </p>
+
+            <h3>14.7.4 Diffusion Models</h3>
+
+            <p>
+                Diffusion models generate data by learning to reverse a
+                gradual corruption process. The training process begins
+                with real data and progressively adds noise. A neural
+                network learns to predict or remove that noise at
+                different noise levels.
+            </p>
+
+            <p>
+                During generation, the process starts from random noise
+                and repeatedly applies learned denoising steps. After
+                many steps, the result can become an image or another
+                type of sample with meaningful structure.
+            </p>
+
+            <div class="step">
+                <strong>Forward process:</strong> Start with a training
+                image and gradually add noise until much of its original
+                structure is obscured.
+            </div>
+            <div class="step">
+                <strong>Training:</strong> Teach the model to predict
+                the noise or an equivalent quantity from noisy examples
+                at different steps.
+            </div>
+            <div class="step">
+                <strong>Reverse process:</strong> Begin with random noise
+                and use the trained model repeatedly to produce a
+                structured sample.
+            </div>
+
+            <p>
+                A common mathematical description of the forward process is:
+            </p>
+
+            <div class="equation">
+                xₜ = √α̅ₜ x₀ + √(1 − α̅ₜ) ε
+            </div>
+
+            <p>
+                Here, x₀ is the original sample, ε is Gaussian noise,
+                and α̅ₜ describes how much of the original signal remains
+                at step t under a chosen noise schedule. As the process
+                advances, the signal contribution generally decreases
+                and the noise contribution increases.
+            </p>
+
+            <p>
+                Text-to-image diffusion systems can use a text encoder
+                or other conditioning mechanism to guide denoising towards
+                an image that matches a prompt. Diffusion models are
+                powerful, but generation may require multiple network
+                evaluations, making speed and computational cost important
+                engineering considerations.
+            </p>
+
+            <h3>14.7.5 Transformers as Generative Models</h3>
+
+            <p>
+                Transformers are an architecture, not a single learning
+                objective. They can be used for classification, translation,
+                representation learning and many other tasks. Autoregressive
+                transformers are especially important for text generation.
+            </p>
+
+            <p>
+                An autoregressive model predicts the next token using
+                the tokens that came before it. A token may be a whole
+                word, part of a word, punctuation or another unit
+                determined by the tokenizer.
+            </p>
+
+            <div class="equation">
+                P(x₁, ..., xₙ) = Πᵢ P(xᵢ | x₁, ..., xᵢ₋₁)
+            </div>
+
+            <p>
+                This equation expresses a sequence probability as a
+                product of conditional next-token probabilities. The
+                model predicts one token, adds it to the context and
+                predicts the next token. Repeating the process produces
+                a sequence.
+            </p>
+
+            <p>
+                During training, the model is commonly shown sequences
+                and trained to predict their next tokens. During inference,
+                it uses its learned probability distribution to generate
+                tokens one after another. Sampling methods or selection
+                rules influence which token is chosen at each step.
+            </p>
+
+            <p>
+                Modern language models may be trained through multiple
+                stages. Pretraining learns broad statistical patterns
+                from large datasets. Additional fine-tuning or alignment
+                procedures may encourage useful responses, instruction
+                following or task-specific behaviour.
+            </p>
+
+            <h3>14.7.6 Comparing the Generative Approaches</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model family</th>
+                            <th>Core idea</th>
+                            <th>Strengths</th>
+                            <th>Challenges</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>GAN</td>
+                            <td>Generator competes with discriminator</td>
+                            <td>Can produce sharp, realistic samples</td>
+                            <td>Training instability and mode collapse</td>
+                        </tr>
+                        <tr>
+                            <td>VAE</td>
+                            <td>Learn a latent distribution and reconstruct data</td>
+                            <td>Structured latent representations and principled probabilistic training</td>
+                            <td>Some variants produce less sharp samples</td>
+                        </tr>
+                        <tr>
+                            <td>Diffusion</td>
+                            <td>Learn to reverse gradual corruption</td>
+                            <td>High-quality and diverse generation in many domains</td>
+                            <td>Generation can require many iterative steps</td>
+                        </tr>
+                        <tr>
+                            <td>Autoregressive transformer</td>
+                            <td>Predict the next token or sequence element</td>
+                            <td>Strong sequence modelling and flexible conditioning</td>
+                            <td>Sequential generation cost and context limitations</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                These categories are not mutually exclusive. Transformers
+                can be components of diffusion systems, and generative
+                models can combine ideas from several families. The
+                important difference is the learning and generation
+                procedure, not simply the kind of output produced.
+            </p>
+
+            <h3>14.7.7 Generative Models and Their Limitations</h3>
+
+            <p>
+                A convincing generated sample is not necessarily factually
+                correct, safe or useful. A language model can produce
+                a fluent but false statement. An image model can generate
+                plausible visual details that do not correspond to reality.
+                Generated data may also reflect biases or unwanted
+                patterns present in training data.
+            </p>
+
+            <p>
+                Generative models therefore require evaluation suited to
+                their use case. Image quality, text usefulness, factual
+                accuracy, diversity, privacy, safety and computational
+                cost may all matter. No single metric captures every
+                aspect of quality.
+            </p>
+        </section>
+
+        <section id="evaluation">
+            <h2>14.8 Evaluation Metrics and Benchmarking</h2>
+
+            <p>
+                Training loss alone cannot tell us whether a model is
+                useful. We need evaluation methods that measure performance
+                on data that was not used to fit the model, and the
+                metrics must reflect the problem we are trying to solve.
+            </p>
+
+            <h3>14.8.1 Accuracy</h3>
+
+            <p>
+                Accuracy is the fraction of predictions that are correct.
+                If a classifier makes 90 correct predictions out of
+                100 examples, its accuracy is 90%.
+            </p>
+
+            <div class="equation">
+                Accuracy = Correct predictions / Total predictions
+            </div>
+
+            <p>
+                Accuracy is easy to understand, but it can be misleading
+                when the classes are imbalanced.
+            </p>
+
+            <div class="example">
+                <strong>Example:</strong> Suppose only 1% of transactions
+                are fraudulent. A model that labels every transaction
+                as genuine achieves 99% accuracy, yet detects no fraud.
+                The accuracy looks impressive, but the model fails at
+                the most important part of the task.
+            </div>
+
+            <h3>14.8.2 Confusion Matrix</h3>
+
+            <p>
+                For binary classification, a confusion matrix compares
+                predicted classes with actual classes.
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Actual / Predicted</th>
+                            <th>Predicted positive</th>
+                            <th>Predicted negative</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Actually positive</th>
+                            <td>True Positive (TP)</td>
+                            <td>False Negative (FN)</td>
+                        </tr>
+                        <tr>
+                            <th>Actually negative</th>
+                            <td>False Positive (FP)</td>
+                            <td>True Negative (TN)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                A true positive is a positive example correctly detected.
+                A false positive is a negative example incorrectly
+                labelled positive. A false negative is a positive example
+                missed by the model, and a true negative is a negative
+                example correctly identified.
+            </p>
+
+            <h3>14.8.3 Precision and Recall</h3>
+
+            <p>
+                Precision answers: among the examples predicted to be
+                positive, how many were actually positive?
+            </p>
+
+            <div class="equation">
+                Precision = TP / (TP + FP)
+            </div>
+
+            <p>
+                Recall answers: among all actual positive examples,
+                how many did the model successfully identify?
+            </p>
+
+            <div class="equation">
+                Recall = TP / (TP + FN)
+            </div>
+
+            <p>
+                Precision matters when false alarms are costly. Recall
+                matters when missing positive cases is costly. Fraud
+                detection, disease screening and spam filtering may
+                require different balances between these two measures.
+            </p>
+
+            <h3>14.8.4 F1-Score</h3>
+
+            <p>
+                The F1-score is the harmonic mean of precision and recall.
+                It becomes high only when both measures are reasonably high.
+            </p>
+
+            <div class="equation">
+                F1 = 2 × (Precision × Recall) / (Precision + Recall)
+            </div>
+
+            <p>
+                F1 is useful when both false positives and false negatives
+                matter, but it does not include true negatives in its
+                formula. It also treats precision and recall symmetrically.
+                Other measures or explicit cost calculations may be more
+                appropriate when one type of error is substantially more
+                expensive than the other.
+            </p>
+
+            <h3>14.8.5 ROC-AUC and Precision-Recall Curves</h3>
+
+            <p>
+                A classifier that produces probabilities or scores can
+                be evaluated at different decision thresholds. Raising
+                the threshold generally reduces positive predictions,
+                while lowering it generally increases them.
+            </p>
+
+            <p>
+                A Receiver Operating Characteristic (ROC) curve plots
+                the true positive rate against the false positive rate
+                at different thresholds. ROC-AUC measures the area under
+                this curve. Under the usual score interpretation, it
+                reflects how well the model ranks positive examples
+                above negative examples.
+            </p>
+
+            <p>
+                Precision-recall curves plot precision against recall
+                across thresholds. They are often particularly informative
+                when positive examples are rare, although the baseline
+                and interpretation depend on class prevalence.
+            </p>
+
+            <p>
+                Neither ROC-AUC nor PR-AUC automatically tells us which
+                threshold should be deployed. The operational decision
+                depends on the cost of errors, available resources and
+                the required level of detection.
+            </p>
+
+            <h3>14.8.6 Regression Metrics</h3>
+
+            <p>
+                Regression models require metrics that measure numerical
+                prediction errors.
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Meaning</th>
+                            <th>Important consideration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>MAE</td>
+                            <td>Average absolute prediction error</td>
+                            <td>Expressed in the same units as the target.</td>
+                        </tr>
+                        <tr>
+                            <td>MSE</td>
+                            <td>Average squared prediction error</td>
+                            <td>Penalises large errors strongly and has squared units.</td>
+                        </tr>
+                        <tr>
+                            <td>RMSE</td>
+                            <td>Square root of MSE</td>
+                            <td>Returns to the target's units but remains sensitive to large errors.</td>
+                        </tr>
+                        <tr>
+                            <td>R²</td>
+                            <td>Compares the model with a mean-based baseline under the usual definition</td>
+                            <td>Can be negative on test data; a high value does not guarantee small errors in every practical sense.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                The coefficient of determination, R², is commonly written:
+            </p>
+
+            <div class="equation">
+                R² = 1 − SS<sub>res</sub> / SS<sub>tot</sub>
+            </div>
+
+            <p>
+                SS<sub>res</sub> is the sum of squared residuals, and
+                SS<sub>tot</sub> is the total sum of squared deviations
+                from the target mean. For a test set, R² can be negative
+                when the model performs worse than the mean-prediction
+                baseline according to this metric.
+            </p>
+
+            <h3>14.8.7 Evaluating Generative Models</h3>
+
+            <p>
+                Generative models are harder to evaluate because there
+                may be no single correct output for a prompt. Several
+                generated images or paragraphs may all be acceptable
+                while differing considerably.
+            </p>
+
+            <ul>
+                <li><strong>Image generation:</strong> Metrics such as Fréchet Inception Distance (FID) compare statistical features of generated and real images. The result depends on the feature extractor and evaluation setup.</li>
+                <li><strong>Text generation:</strong> Perplexity measures how well a language model predicts held-out tokens. It does not directly measure factuality, usefulness or safety.</li>
+                <li><strong>Machine translation:</strong> BLEU compares generated translations with reference translations using matching n-grams, but it may not fully capture meaning or fluency.</li>
+                <li><strong>Question answering:</strong> Exact match, token-level F1, factual checks or expert judgement may be used depending on the task.</li>
+                <li><strong>Human evaluation:</strong> People assess qualities such as relevance, readability, image realism and usefulness under a defined protocol.</li>
+            </ul>
+
+            <p>
+                For large language models, evaluation may include reasoning,
+                coding, knowledge, instruction following, robustness,
+                safety and tool use. Benchmark results can vary with
+                prompts, data contamination, sampling settings and
+                evaluation procedures. Scores should therefore be
+                interpreted with their methodology in mind.
+            </p>
+
+            <h3>14.8.8 What Is Benchmarking?</h3>
+
+            <p>
+                Benchmarking means evaluating systems on a defined set
+                of tasks, datasets, metrics and procedures so that their
+                performance can be compared. A good benchmark should
+                represent the intended application and allow results
+                to be reproduced as far as practical.
+            </p>
+
+            <p>
+                A fair comparison requires more than putting two scores
+                beside each other. Models should be evaluated using
+                comparable data splits, preprocessing, metrics and
+                computational conditions. When relevant, the comparison
+                should also report training cost, inference latency,
+                memory consumption and energy requirements.
+            </p>
+
+            <p>
+                Benchmark performance is not a complete measure of real-world
+                value. A model that performs well on a public dataset may
+                fail on unfamiliar data, and a tiny improvement in accuracy
+                may not justify a major increase in computational cost.
+            </p>
+
+            <div class="takeaway">
+                <strong>Evaluation principle:</strong> Choose the metric
+                according to the cost and meaning of mistakes in the
+                actual problem. Never select a model using a metric merely
+                because it produces an impressive-looking number.
+            </div>
+        </section>
+
+        <section id="workflow">
+            <h2>The Complete Machine Learning Workflow</h2>
+
+            <p>
+                The topics in this chapter are parts of one connected
+                process. In a real project, machine learning involves
+                much more than selecting an algorithm and calling a
+                training function.
+            </p>
+
+            <h3>Step 1: Define the Problem</h3>
+
+            <p>
+                First, decide what the system should predict or generate.
+                Determine what a successful outcome means, who will use
+                the result and what the cost of a wrong prediction would be.
+                This decision influences the data, model and evaluation
+                metrics.
+            </p>
+
+            <h3>Step 2: Collect and Understand the Data</h3>
+
+            <p>
+                Inspect the data for missing values, inconsistent formats,
+                incorrect labels, duplicates and unusual distributions.
+                Check whether the dataset represents the situations the
+                deployed model will encounter.
+            </p>
+
+            <h3>Step 3: Split the Data</h3>
+
+            <p>
+                Create training, validation and test sets using a strategy
+                appropriate to the problem. For time-series prediction,
+                for example, a chronological split may be necessary to
+                avoid training on future information when predicting the past.
+                For related records from the same person or organisation,
+                group-based splitting may be needed to prevent leakage.
+            </p>
+
+            <h3>Step 4: Prepare the Features</h3>
+
+            <p>
+                Transform the data into a form suitable for the model.
+                This may include normalising numerical values, encoding
+                categories, tokenising text or resizing images. Fit
+                data-dependent transformations on the training set and
+                apply the same fitted transformations to validation and
+                test data.
+            </p>
+
+            <h3>Step 5: Establish a Baseline</h3>
+
+            <p>
+                Begin with a simple model or a straightforward rule.
+                A baseline shows whether a more complex approach is
+                actually providing value. For a numerical prediction
+                problem, predicting the training target mean can be a
+                useful basic baseline. For classification, a majority-class
+                predictor can reveal whether an accuracy score is misleading.
+            </p>
+
+            <h3>Step 6: Train the Model</h3>
+
+            <p>
+                Select a suitable learning algorithm and loss function.
+                For differentiable neural networks, calculate predictions,
+                compute the loss, backpropagate gradients and update
+                parameters using an optimiser.
+            </p>
+
+            <h3>Step 7: Tune and Validate</h3>
+
+            <p>
+                Compare model architectures, hyperparameters and
+                regularisation choices using validation data. Investigate
+                both training and validation performance to understand
+                whether the model is underfitting or overfitting.
+            </p>
+
+            <h3>Step 8: Evaluate the Final Model</h3>
+
+            <p>
+                Once model selection is complete, evaluate the chosen
+                model on the test set. Report the relevant metrics and
+                investigate important failure cases. If the model will
+                affect people, examine subgroup performance and potential
+                fairness concerns where appropriate.
+            </p>
+
+            <h3>Step 9: Deploy and Monitor</h3>
+
+            <p>
+                A deployed model receives real inputs, consumes computing
+                resources and influences decisions. Monitor data quality,
+                latency, failure rates and predictive performance where
+                labels become available. Detect distribution shifts and
+                decide when retraining or replacement is needed.
+            </p>
+
+            <div class="important">
+                <strong>A production lesson:</strong> A model with slightly
+                lower offline accuracy may be preferable if it is much
+                faster, cheaper, easier to maintain or more reliable under
+                real operating conditions. Machine learning is both a
+                statistical discipline and an engineering discipline.
+            </div>
+        </section>
+
+        <section id="quantum-connection">
+            <h2>Connecting Classical Machine Learning to Quantum Machine Learning</h2>
+
+            <p>
+                This book studies quantum computing, so an important
+                question remains: why learn classical machine learning
+                before studying quantum machine learning?
+            </p>
+
+            <p>
+                Quantum machine learning explores how quantum systems
+                and quantum algorithms may help with learning tasks.
+                To understand a proposed quantum method, we must first
+                understand the classical problem it attempts to solve.
+                Otherwise, it is difficult to decide whether the quantum
+                approach offers a genuine advantage.
+            </p>
+
+            <h3>14.9.1 Classical Data and Quantum States</h3>
+
+            <p>
+                A classical machine learning model usually receives data
+                represented by ordinary numbers, vectors, matrices or
+                structured objects. A quantum algorithm operates on
+                quantum states, which are prepared, transformed by
+                quantum operations and measured.
+            </p>
+
+            <p>
+                One approach to quantum machine learning is to encode
+                classical features into a quantum state. A parameterised
+                quantum circuit then transforms that state, and
+                measurements produce classical values that can be used
+                in a learning objective.
+            </p>
+
+            <p>
+                The encoding process is important because a quantum
+                computer does not automatically provide a cheap way to
+                load an arbitrarily large classical dataset into a
+                quantum state. State preparation, circuit execution and
+                measurement can all contribute to the total cost.
+            </p>
+
+            <h3>14.9.2 Parameterised Quantum Circuits</h3>
+
+            <p>
+                A parameterised quantum circuit contains quantum gates
+                whose operations depend on adjustable parameters.
+                These parameters play a role similar to weights in
+                a classical model, although the underlying computation
+                is different.
+            </p>
+
+            <p>
+                Suppose a circuit depends on parameters θ and the
+                measured observable has an expectation value:
+            </p>
+
+            <div class="equation">
+                f(θ, x) = ⟨ψ(θ, x)| O |ψ(θ, x)⟩
+            </div>
+
+            <p>
+                Here, x represents the input encoding, θ represents
+                the circuit parameters, |ψ⟩ is the resulting quantum
+                state and O is an observable that is measured. The
+                expectation value is a numerical quantity associated
+                with the measurement outcomes.
+            </p>
+
+            <p>
+                That output can be compared with a target using a
+                classical loss function. An optimisation method then
+                updates the circuit parameters. This produces a
+                hybrid quantum-classical learning loop.
+            </p>
+
+            <div class="step">
+                <strong>1. Encode:</strong> Prepare a quantum state using
+                the classical input.
+            </div>
+            <div class="step">
+                <strong>2. Process:</strong> Apply a parameterised quantum
+                circuit.
+            </div>
+            <div class="step">
+                <strong>3. Measure:</strong> Estimate one or more classical
+                outputs from measurement results.
+            </div>
+            <div class="step">
+                <strong>4. Calculate loss:</strong> Compare the output with
+                the target using a classical objective.
+            </div>
+            <div class="step">
+                <strong>5. Update:</strong> Use an optimiser to choose new
+                circuit parameters, then repeat.
+            </div>
+
+            <h3>14.9.3 How the Concepts in This Chapter Transfer</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Classical machine learning</th>
+                            <th>Quantum machine learning connection</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Input features</td>
+                            <td>Classical data may be encoded into quantum states or used in a hybrid model.</td>
+                        </tr>
+                        <tr>
+                            <td>Model parameters</td>
+                            <td>Quantum circuit rotation angles and other adjustable gate parameters.</td>
+                        </tr>
+                        <tr>
+                            <td>Forward pass</td>
+                            <td>Prepare a state, apply quantum gates and estimate measurement outputs.</td>
+                        </tr>
+                        <tr>
+                            <td>Loss function</td>
+                            <td>Compare measured predictions with targets using a suitable objective.</td>
+                        </tr>
+                        <tr>
+                            <td>Gradient calculation</td>
+                            <td>Use suitable gradient estimators, such as parameter-shift methods for supported gates, or other optimisation strategies.</td>
+                        </tr>
+                        <tr>
+                            <td>Optimiser</td>
+                            <td>A classical optimiser often updates the quantum circuit parameters.</td>
+                        </tr>
+                        <tr>
+                            <td>Generalisation</td>
+                            <td>Test whether the learned quantum or hybrid model works on unseen examples.</td>
+                        </tr>
+                        <tr>
+                            <td>Benchmarking</td>
+                            <td>Compare against strong classical baselines and include state preparation, measurement, runtime and hardware costs.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>14.9.4 Does Quantum Machine Learning Always Outperform Classical Learning?</h3>
+
+            <p>
+                No. Quantum computers use quantum states and operations,
+                but this does not mean that every learning task becomes
+                faster or more accurate. A useful quantum advantage must
+                be demonstrated for a clearly defined problem and under
+                a fair comparison.
+            </p>
+
+            <p>
+                A convincing comparison should consider the classical
+                algorithm's performance, the quantum data-encoding cost,
+                the number of circuit executions, measurement noise,
+                hardware limitations and the quality of the final answer.
+                A theoretical advantage under special assumptions may
+                not automatically translate into a practical advantage
+                on today's hardware.
+            </p>
+
+            <p>
+                Classical machine learning provides the tools needed to
+                design experiments, choose losses, train models and
+                evaluate results. These same principles help us ask
+                meaningful questions about quantum models.
+            </p>
+
+            <div class="takeaway">
+                <strong>The connection:</strong> Quantum machine learning
+                changes parts of the computational machinery. It does
+                not remove the need for good data, a meaningful objective,
+                reliable optimisation, careful evaluation or evidence
+                that the model is useful.
+            </div>
+        </section>
+
+        <section id="summary">
+            <h2>Chapter Summary</h2>
+
+            <p>
+                Machine learning is the study of algorithms that learn
+                patterns from data and use those patterns to make
+                predictions, discover structure or generate new examples.
+                Its methods differ, but the same fundamental questions
+                repeatedly appear: what is being learnt, what feedback
+                is available, how is improvement measured and how do
+                we know the result will work on new data?
+            </p>
+
+            <ul>
+                <li><strong>Supervised learning</strong> learns from labelled examples and is commonly used for classification and regression.</li>
+                <li><strong>Unsupervised learning</strong> discovers patterns or representations without supplied target labels in the basic setting.</li>
+                <li><strong>Reinforcement learning</strong> learns decision-making strategies from rewards and interactions with an environment.</li>
+                <li><strong>Loss functions</strong> quantify prediction errors, while optimisation searches for parameters that reduce the objective.</li>
+                <li><strong>Gradient descent</strong> updates parameters using gradients, while <strong>backpropagation</strong> efficiently calculates neural network gradients.</li>
+                <li><strong>Generalisation</strong> is the ability to perform well on unseen examples. Overfitting occurs when training performance does not transfer reliably.</li>
+                <li><strong>Regularisation</strong>, representative data, careful validation and suitable model complexity can help reduce overfitting.</li>
+                <li><strong>Kernel methods and SVMs</strong> provide principled approaches to classification and other learning problems, including non-linear ones.</li>
+                <li><strong>Neural networks</strong> combine layers of mathematical operations to learn useful representations, while deep learning uses networks with multiple layers.</li>
+                <li><strong>Generative models</strong>, including GANs, VAEs, diffusion models and autoregressive transformers, learn to produce new samples using different training and generation mechanisms.</li>
+                <li><strong>Evaluation metrics</strong> must match the task. Accuracy, precision, recall, F1, regression errors and generative quality measures describe different aspects of performance.</li>
+                <li><strong>Benchmarking</strong> requires fair experimental conditions, appropriate baselines and awareness of computational cost and real-world limitations.</li>
+            </ul>
+
+            <p>
+                The most important lesson is that training a model is
+                not the same as proving that it is useful. A model must
+                learn meaningful patterns, generalise beyond its training
+                data and meet the requirements of the task for which
+                it was built.
+            </p>
+        </section>
+
+        <section id="questions">
+            <h2>Review Questions</h2>
+
+            <p>
+                Use these questions to check whether you understand the
+                ideas well enough to explain them in your own words.
+            </p>
+
+            <h3>Conceptual Questions</h3>
+            <ol>
+                <li>What is the difference between a machine learning model and a learning algorithm?</li>
+                <li>How does supervised learning differ from unsupervised learning and reinforcement learning?</li>
+                <li>What is the difference between classification and regression? Give one example of each.</li>
+                <li>Why does a machine learning model need a loss function?</li>
+                <li>Why does mean squared error penalise large errors more strongly than mean absolute error?</li>
+                <li>What is the difference between gradient descent and backpropagation?</li>
+                <li>What might happen if the learning rate is too large or too small?</li>
+                <li>Why can a model achieve excellent training accuracy but poor test accuracy?</li>
+                <li>What is the difference between a validation set and a test set?</li>
+                <li>How does L2 regularisation change the training objective?</li>
+            </ol>
+
+            <h3>Model-Based Questions</h3>
+            <ol start="11">
+                <li>Why can a kernel method classify data that cannot be separated by a straight line in the original feature space?</li>
+                <li>What are support vectors, and why are they important in an SVM?</li>
+                <li>Why do neural networks use non-linear activation functions?</li>
+                <li>What role do weights and biases play in an artificial neuron?</li>
+                <li>How does attention help a transformer process a sequence?</li>
+                <li>What is the difference between a GAN and a VAE?</li>
+                <li>How does a diffusion model generate an image from noise?</li>
+                <li>How does an autoregressive transformer generate a sequence?</li>
+            </ol>
+
+            <h3>Evaluation and Application Questions</h3>
+            <ol start="19">
+                <li>Why can accuracy be misleading when a dataset is highly imbalanced?</li>
+                <li>Explain precision and recall using a fraud detection example.</li>
+                <li>Why might a precision-recall curve be useful for a rare positive class?</li>
+                <li>Why is a benchmark score not a complete measure of a model's real-world value?</li>
+                <li>What costs should be included when comparing a quantum machine learning model with a classical baseline?</li>
+            </ol>
+
+            <h3>Small Numerical Exercise</h3>
+
+            <p>
+                A binary classifier processes 100 examples. It produces
+                30 true positives, 10 false positives, 5 false negatives
+                and 55 true negatives.
+            </p>
+
+            <ol>
+                <li>Calculate the accuracy.</li>
+                <li>Calculate the precision.</li>
+                <li>Calculate the recall.</li>
+                <li>Calculate the F1-score.</li>
+                <li>Explain whether accuracy alone gives a complete picture of its performance.</li>
+            </ol>
+
+            <details>
+                <summary><strong>Show the numerical exercise answers</strong></summary>
+
+                <p><strong>Accuracy:</strong></p>
+                <div class="equation">
+                    (TP + TN) / Total = (30 + 55) / 100 = 85%
+                </div>
+
+                <p><strong>Precision:</strong></p>
+                <div class="equation">
+                    TP / (TP + FP) = 30 / (30 + 10) = 75%
+                </div>
+
+                <p><strong>Recall:</strong></p>
+                <div class="equation">
+                    TP / (TP + FN) = 30 / (30 + 5) ≈ 85.71%
+                </div>
+
+                <p><strong>F1-score:</strong></p>
+                <div class="equation">
+                    2 × 30 / (2 × 30 + 10 + 5) = 60 / 75 = 80%
+                </div>
+
+                <p>
+                    The classifier has 85% accuracy, but it still misses
+                    5 of the 35 actual positive examples and produces
+                    10 false alarms. Whether that is acceptable depends
+                    on the cost of missed cases and false alarms in the
+                    application.
+                </p>
+            </details>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Chapter 14 — Machine Learning Essentials</p>
+        <p>From learning patterns in classical data to understanding the foundations of quantum machine learning.</p>
+    </footer>
+
+</div>
+
+</body>
+</html>

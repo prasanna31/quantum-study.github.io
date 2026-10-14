@@ -1,0 +1,1770 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 23: Quantum Algorithms for Classical ML Subroutines</title>
+  <style>
+    :root {
+      --ink: #202b3c;
+      --muted: #58677d;
+      --paper: #ffffff;
+      --background: #f2f5fa;
+      --accent: #4259a8;
+      --accent-light: #e9edff;
+      --border: #dce3ed;
+      --green: #176c50;
+      --green-light: #e7f5ee;
+      --orange: #86501b;
+      --orange-light: #fff2df;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    header {
+      background: #182642;
+      color: white;
+      padding: 55px 24px 45px;
+      border-bottom: 5px solid #8297f4;
+    }
+
+    header .eyebrow {
+      color: #bdcaff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    header h1 {
+      max-width: 900px;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.2;
+      margin: 16px 0;
+    }
+
+    header p {
+      max-width: 780px;
+      color: #e0e7f8;
+      font-size: 17px;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 32px auto;
+      padding: 0 20px 60px;
+    }
+
+    section, .intro-card {
+      background: var(--paper);
+      padding: clamp(20px, 4vw, 38px);
+      margin-bottom: 25px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      box-shadow: 0 5px 18px rgba(24, 38, 66, 0.04);
+    }
+
+    h2 {
+      color: #243b70;
+      font-size: 28px;
+      line-height: 1.35;
+      margin-top: 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 13px;
+    }
+
+    h3 {
+      color: #344d83;
+      font-size: 21px;
+      margin-top: 28px;
+    }
+
+    h4 { color: #33445f; margin-bottom: 5px; }
+
+    p { margin: 12px 0; }
+
+    li { margin: 7px 0; }
+
+    a { color: var(--accent); }
+
+    .subtitle { color: var(--muted); }
+
+    .equation {
+      background: #f0f3fb;
+      border-left: 4px solid var(--accent);
+      padding: 16px 20px;
+      margin: 18px 0;
+      overflow-wrap: anywhere;
+      font-family: "Courier New", monospace;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    .note, .warning, .takeaway {
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-radius: 9px;
+    }
+
+    .note {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+    }
+
+    .warning {
+      background: var(--orange-light);
+      border-left: 4px solid #c27c2b;
+    }
+
+    .takeaway {
+      background: var(--green-light);
+      border-left: 4px solid var(--green);
+    }
+
+    .toc {
+      columns: 2;
+      padding-left: 22px;
+    }
+
+    .toc li { break-inside: avoid; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { background: #edf1fa; }
+
+    code {
+      background: #edf0f6;
+      padding: 2px 5px;
+      border-radius: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .flow {
+      display: flex;
+      align-items: stretch;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .flow div {
+      flex: 1 1 150px;
+      padding: 13px;
+      text-align: center;
+      border: 1px solid #cbd5ed;
+      background: #f2f5ff;
+      border-radius: 9px;
+    }
+
+    .small { font-size: 14px; color: var(--muted); }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .toc { columns: 1; }
+      header { padding-top: 35px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px; }
+    }
+
+    @media print {
+      body { background: white; }
+      section, .intro-card { box-shadow: none; break-inside: avoid; }
+      header { background: white; color: black; border-bottom: 2px solid black; }
+      header p, header .eyebrow { color: #333; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="eyebrow">Quantum Computing and Machine Learning</div>
+  <h1>Chapter 23: Quantum Algorithms for Classical ML Subroutines</h1>
+  <p>
+    How quantum computers might accelerate the mathematical operations
+    behind machine learning, why the proposed speedups are interesting,
+    and what must be true before those speedups become useful in practice.
+  </p>
+</header>
+
+<main>
+  <div class="intro-card">
+    <h2>Chapter Overview</h2>
+    <p>
+      Machine learning is often described as a process in which a computer
+      learns patterns from data. Behind this simple description are many
+      mathematical operations: multiplying matrices, solving equations,
+      finding similarities, reducing dimensions, sampling probability
+      distributions and improving model parameters.
+    </p>
+    <p>
+      A classical computer performs these operations using ordinary bits
+      and numerical calculations. A quantum computer uses qubits, quantum
+      gates and measurements. Under certain conditions, quantum algorithms
+      may perform particular parts of an ML workflow more efficiently.
+    </p>
+    <p>
+      The aim is not to replace every classical ML algorithm with a
+      quantum circuit. It is to identify specific computational tasks
+      where quantum mechanics provides a genuine advantage.
+    </p>
+
+    <h3>What you will learn</h3>
+    <ol class="toc">
+      <li><a href="#pca">Quantum PCA</a></li>
+      <li><a href="#linear">Quantum linear regression and least squares</a></li>
+      <li><a href="#clustering">Quantum clustering</a></li>
+      <li><a href="#recommendation">Quantum recommendation systems and dequantization</a></li>
+      <li><a href="#boltzmann">Quantum Boltzmann sampling</a></li>
+      <li><a href="#optimization">Quantum speedups in ML optimisation</a></li>
+      <li><a href="#gradient">Quantum-enhanced gradient descent</a></li>
+    </ol>
+  </div>
+
+  <section id="foundations">
+    <h2>Before We Begin: What Does a Quantum Speedup Mean?</h2>
+
+    <p>
+      Imagine that an ML application needs to analyse a million records.
+      Some of the work may involve finding correlations between variables,
+      solving a system of equations or repeatedly evaluating a loss
+      function. If one of these operations becomes expensive, improving it
+      can improve the overall workflow.
+    </p>
+
+    <p>
+      This is where quantum algorithms enter the picture. Instead of
+      directly storing every numerical value in a conventional array,
+      some quantum algorithms encode information into the amplitudes of
+      a quantum state. Quantum gates transform that state, and a
+      measurement extracts a classical result.
+    </p>
+
+    <div class="flow">
+      <div><strong>Classical data</strong><br>Features and labels</div>
+      <div><strong>Encoding</strong><br>Prepare a quantum state</div>
+      <div><strong>Quantum processing</strong><br>Apply a circuit</div>
+      <div><strong>Measurement</strong><br>Extract useful information</div>
+    </div>
+
+    <p>
+      The difficult part is that preparing the state and reading the answer
+      also cost time. A quantum state containing many amplitudes does not
+      mean that we can simply read all those amplitudes at once.
+      Measurement gives limited information from each circuit execution.
+    </p>
+
+    <h3>Big-O notation and speedup</h3>
+    <p>
+      Big-O notation describes how an algorithm's resource requirements
+      grow with the size of its input. Let N represent the number of
+      records in a dataset.
+    </p>
+
+    <div class="equation">
+      Classical cost: O(N)<br>
+      Possible quantum cost: O(log N)
+    </div>
+
+    <p>
+      This comparison is only illustrative. It does not mean that every
+      operation requiring O(N) classical time has a quantum equivalent
+      requiring O(log N) time. A quantum algorithm may achieve such a
+      dependence for a carefully defined task, but only under specific
+      assumptions about data access, conditioning, precision and the
+      type of output required.
+    </p>
+
+    <div class="warning">
+      <strong>Important distinction:</strong> a fast quantum subroutine
+      does not automatically make the complete ML application faster.
+      Loading data, repeating measurements, processing outputs and
+      communicating with classical systems can dominate the total cost.
+    </div>
+
+    <h3>The two questions to ask about every quantum ML algorithm</h3>
+    <ol>
+      <li>
+        <strong>Computational question:</strong> Which operation does the
+        quantum algorithm perform more efficiently, and under which
+        assumptions?
+      </li>
+      <li>
+        <strong>Practical question:</strong> Can we prepare the input and
+        obtain the answer cheaply enough to preserve the advantage?
+      </li>
+    </ol>
+  </section>
+
+  <section id="pca">
+    <h2>23.1 Quantum Principal Component Analysis (Quantum PCA)</h2>
+
+    <h3>23.1.1 Why do we need PCA?</h3>
+    <p>
+      Suppose a company collects information about customers: age,
+      purchase frequency, average spending, preferred teams, location,
+      membership duration and many more features. A model may receive
+      hundreds or thousands of features for each customer.
+    </p>
+    <p>
+      However, many features may carry similar information. Customers
+      who spend frequently may also have high annual spending. Some
+      measurements may be strongly correlated. PCA helps identify a
+      smaller collection of directions that capture much of the variation
+      in the data.
+    </p>
+
+    <p>
+      These directions are called <strong>principal components</strong>.
+      They are new combinations of the original features, not simply a
+      selection of the most important original columns.
+    </p>
+
+    <h3>23.1.2 The classical PCA procedure</h3>
+    <p>
+      Consider a dataset represented by a matrix X with N rows and d
+      columns. Each row represents one observation, and each column
+      represents one feature.
+    </p>
+
+    <p>The usual procedure is:</p>
+    <ol>
+      <li>Centre each feature by subtracting its mean.</li>
+      <li>Calculate the covariance matrix.</li>
+      <li>Find the eigenvalues and eigenvectors of that matrix.</li>
+      <li>Rank the eigenvectors by their eigenvalues.</li>
+      <li>Project the original observations onto the leading components.</li>
+    </ol>
+
+    <p>
+      The covariance matrix describes how pairs of features vary
+      together. An eigenvector identifies a direction in feature space,
+      while its eigenvalue measures the variance along that direction.
+    </p>
+
+    <div class="equation">
+      C = XᵀX / (N - 1)<br><br>
+      C vᵢ = λᵢ vᵢ
+    </div>
+
+    <p>
+      Here, X is assumed to be centred, C is the covariance matrix,
+      vᵢ is an eigenvector and λᵢ is its corresponding eigenvalue.
+      In PCA, eigenvectors with large eigenvalues represent directions
+      along which the observations vary substantially.
+    </p>
+
+    <h3>23.1.3 The intuition behind quantum PCA</h3>
+    <p>
+      The quantum approach aims to extract information about the dominant
+      eigenvectors of a suitable matrix using quantum states and quantum
+      operations. One influential approach uses a quantum version of
+      phase estimation to reveal eigenvalue information, together with
+      a density matrix that represents the data-related operator.
+    </p>
+
+    <p>
+      A density matrix is a mathematical object used to describe a
+      quantum state, including a statistical mixture of possible states.
+      In a simplified quantum PCA setting, the state may encode a
+      normalised covariance-like matrix or a related positive
+      semidefinite matrix.
+    </p>
+
+    <p>
+      If the relevant matrix is represented by a density operator
+      ρ, its spectral decomposition is:
+    </p>
+
+    <div class="equation">
+      ρ = Σᵢ λᵢ |vᵢ⟩⟨vᵢ|
+    </div>
+
+    <p>
+      The vectors |vᵢ⟩ are eigenvectors, and the λᵢ values are
+      non-negative eigenvalues that sum to one. The quantum algorithm
+      attempts to obtain information about the important eigenvalues
+      and corresponding eigenvectors without necessarily constructing
+      the entire matrix as a classical array.
+    </p>
+
+    <h3>23.1.4 How phase estimation helps</h3>
+    <p>
+      Suppose a quantum operation can be constructed from the matrix
+      of interest. Quantum phase estimation can estimate the phase
+      associated with an eigenstate of that operation. With an
+      appropriate construction, this phase can reveal information
+      about an eigenvalue.
+    </p>
+
+    <p>
+      The broad process is as follows:
+    </p>
+    <ol>
+      <li>Prepare a quantum state containing components along relevant eigenvectors.</li>
+      <li>Apply controlled operations that encode eigenvalue information into phases.</li>
+      <li>Use phase estimation to obtain estimates of those eigenvalues.</li>
+      <li>Measure and process the output to infer the dominant components.</li>
+    </ol>
+
+    <p>
+      The algorithm does not magically print every eigenvector. The
+      useful information obtained depends on the state preparation,
+      the eigenvalue distribution, the measurement strategy and the
+      requested output.
+    </p>
+
+    <h3>23.1.5 A simple example</h3>
+    <p>
+      Imagine that two customer features are average monthly spending
+      and annual spending. If they are strongly correlated, much of
+      their variation may lie along one dominant direction.
+    </p>
+    <p>
+      PCA identifies that direction. A downstream model may then use
+      one transformed feature instead of both original features.
+      Quantum PCA explores whether dominant spectral information can
+      be extracted efficiently when the data and matrix operations
+      satisfy suitable quantum-access assumptions.
+    </p>
+
+    <h3>23.1.6 Where is the possible speedup?</h3>
+    <p>
+      Some theoretical quantum PCA algorithms can have favourable
+      dependence on the matrix dimension when the input is available
+      through suitable quantum states or efficient quantum access
+      procedures. Their complexity may instead depend on quantities
+      such as the inverse eigenvalue gap, precision, state preparation
+      cost and the number of copies of the state.
+    </p>
+
+    <div class="warning">
+      <strong>Practical limitation:</strong> if the original dataset is
+      stored in an ordinary database and every element must first be
+      loaded into a quantum state, that cost can remove the theoretical
+      advantage. Likewise, returning a complete list of classical
+      principal-component vectors can require substantial output work.
+    </div>
+
+    <div class="takeaway">
+      <strong>Remember:</strong> classical PCA is a general-purpose
+      dimensionality-reduction method. Quantum PCA is a family of
+      quantum approaches for extracting spectral information under
+      particular input and output assumptions. It is not a universal
+      replacement for standard PCA libraries.
+    </div>
+  </section>
+
+  <section id="linear">
+    <h2>23.2 Quantum Linear Regression and Least Squares</h2>
+
+    <h3>23.2.1 Why does machine learning solve equations?</h3>
+    <p>
+      Many ML models estimate parameters from observed data. In linear
+      regression, the model predicts a numerical output using a weighted
+      sum of input features.
+    </p>
+
+    <p>For a model with d features, the prediction is:</p>
+
+    <div class="equation">
+      ŷ = w₁x₁ + w₂x₂ + ... + wᵈxᵈ + b
+    </div>
+
+    <p>
+      The weights determine how the features affect the prediction,
+      while b is the bias term. Training estimates these parameters
+      from examples for which the actual outputs are known.
+    </p>
+
+    <h3>23.2.2 Least squares</h3>
+    <p>
+      Let X contain the training features, y contain the target values,
+      and w contain the unknown weights. The predicted values are Xw.
+      Least squares chooses weights that minimise the sum of squared
+      prediction errors.
+    </p>
+
+    <div class="equation">
+      Minimise: ||Xw - y||₂²
+    </div>
+
+    <p>
+      If the relevant inverse exists, the solution can be expressed
+      through the normal equations:
+    </p>
+
+    <div class="equation">
+      XᵀXw = Xᵀy<br><br>
+      w = (XᵀX)⁻¹Xᵀy
+    </div>
+
+    <p>
+      The second expression requires XᵀX to be invertible. In practice,
+      a matrix may be singular or poorly conditioned, so algorithms
+      such as QR decomposition, singular value decomposition and
+      regularised least squares are often preferable to explicitly
+      computing the inverse.
+    </p>
+
+    <h3>23.2.3 What is a quantum linear-system algorithm?</h3>
+    <p>
+      A quantum linear-system algorithm attempts to solve a system
+      represented by:
+    </p>
+
+    <div class="equation">
+      A x = b
+    </div>
+
+    <p>
+      Here A is a matrix, b is the input vector and x is the unknown
+      solution. Algorithms in the Harrow–Hassidim–Lloyd (HHL) family
+      aim to prepare a quantum state proportional to the solution:
+    </p>
+
+    <div class="equation">
+      |x⟩ = A⁻¹|b⟩ / ||A⁻¹b||
+    </div>
+
+    <p>
+      This notation assumes that the system has an appropriate
+      solution and that the inverse operation is well-defined on
+      the relevant subspace. The state |b⟩ encodes the input vector,
+      while |x⟩ represents the normalised solution.
+    </p>
+
+    <h3>23.2.4 How can the algorithm find the solution?</h3>
+    <p>
+      The main idea is to use quantum phase estimation to learn
+      information about the eigenvalues of A, then apply a controlled
+      transformation that behaves like taking the reciprocal of
+      those eigenvalues.
+    </p>
+
+    <ol>
+      <li>Prepare the quantum state representing b.</li>
+      <li>Use suitable quantum operations to encode information about A's eigenvalues.</li>
+      <li>Apply a reciprocal-like transformation to the eigenvalue information.</li>
+      <li>Uncompute temporary registers and obtain a state related to the solution x.</li>
+      <li>Measure the output to estimate a property of x or use the state in a later quantum computation.</li>
+    </ol>
+
+    <p>
+      The fourth step is not guaranteed to succeed on every execution.
+      Some versions use an ancilla measurement and may require
+      amplitude amplification or repeated trials to improve the
+      success probability.
+    </p>
+
+    <h3>23.2.5 Why conditioning matters</h3>
+    <p>
+      A matrix is poorly conditioned when small changes in its input
+      can cause large changes in the solution. The condition number
+      measures the ratio between its largest and smallest relevant
+      singular values.
+    </p>
+
+    <div class="equation">
+      κ(A) = σmax(A) / σmin(A)
+    </div>
+
+    <p>
+      A large condition number can make both classical and quantum
+      linear-system algorithms more difficult. In important HHL-style
+      settings, the complexity depends on the condition number,
+      precision and sparsity or other structural properties of the
+      matrix. Later algorithms can improve particular dependencies,
+      but no single complexity expression applies to every version.
+    </p>
+
+    <h3>23.2.6 Connecting linear systems to regression</h3>
+    <p>
+      Ordinary least squares can be written as a linear system using
+      A = XᵀX and b = Xᵀy. However, forming the normal equations can
+      square the condition number in the full-rank case, which may
+      worsen numerical stability.
+    </p>
+
+    <p>
+      Quantum least-squares methods therefore need careful choices
+      about the matrix representation, regularisation and desired
+      output. Some approaches target a quantum state representing
+      the regression weights; others estimate predictions or
+      particular observables directly.
+    </p>
+
+    <div class="note">
+      <strong>A crucial distinction:</strong> preparing a quantum state
+      proportional to the regression weights is not the same as
+      returning every weight as a readable classical number. If an
+      application needs all d weights explicitly, the readout cost
+      may be substantial.
+    </div>
+
+    <h3>23.2.7 Example: predicting house prices</h3>
+    <p>
+      Suppose a model uses floor area, number of bedrooms and distance
+      from the city centre to predict a house price. The training
+      process estimates three weights and a bias.
+    </p>
+    <p>
+      A quantum linear-system method might be relevant if the training
+      problem has a suitable matrix representation, the inputs can
+      be prepared efficiently and the application can use the
+      quantum-form solution without demanding an expensive full
+      classical readout.
+    </p>
+
+    <div class="takeaway">
+      <strong>Remember:</strong> quantum linear-system algorithms are
+      most compelling when the required answer is a compact property
+      of the solution or a quantum state that feeds into further
+      quantum processing, rather than a huge list of classical numbers.
+    </div>
+  </section>
+
+  <section id="clustering">
+    <h2>23.3 Quantum Clustering: k-means and k-medians</h2>
+
+    <h3>23.3.1 What is clustering?</h3>
+    <p>
+      Clustering groups observations that are similar to one another.
+      Unlike supervised learning, it does not require a known label
+      for every observation.
+    </p>
+    <p>
+      For example, an online retailer may want to discover groups of
+      customers based on their spending patterns. One group may
+      purchase regularly, another may buy only during major events,
+      and another may prefer discounted products.
+    </p>
+
+    <h3>23.3.2 Classical k-means</h3>
+    <p>
+      k-means divides N observations into k clusters. Each cluster
+      is represented by its centroid, which is the mean of the
+      points assigned to it.
+    </p>
+
+    <p>The usual iterative procedure is:</p>
+    <ol>
+      <li>Choose k initial centroids.</li>
+      <li>Assign each point to its nearest centroid.</li>
+      <li>Recalculate each centroid as the mean of its assigned points.</li>
+      <li>Repeat the assignment and update steps until the algorithm stops.</li>
+    </ol>
+
+    <div class="equation">
+      Minimise: Σᵢ₌₁ᵏ Σₓ∈Cᵢ ||x - μᵢ||₂²
+    </div>
+
+    <p>
+      Here Cᵢ is the set of points in cluster i, and μᵢ is its
+      centroid. The objective is the total squared distance from
+      each point to its assigned centroid.
+    </p>
+
+    <p>
+      The objective can have several local minima. Consequently,
+      the final clusters can depend on the initial centroids.
+      Classical implementations often use careful initialisation,
+      multiple restarts or approximation techniques.
+    </p>
+
+    <h3>23.3.3 What changes in quantum clustering?</h3>
+    <p>
+      A quantum clustering algorithm may use quantum routines to
+      estimate distances, compare similarity scores or search for
+      candidate points more efficiently under particular assumptions.
+      The aim is to reduce the cost of a computationally expensive
+      subroutine inside the larger clustering algorithm.
+    </p>
+
+    <p>
+      There is no single algorithm that should be called the
+      quantum version of k-means. Different proposals use different
+      data encodings, similarity measures, state-preparation methods
+      and measurement procedures.
+    </p>
+
+    <h3>23.3.4 Quantum distance estimation</h3>
+    <p>
+      Consider two vectors x and y. Their squared Euclidean distance is:
+    </p>
+
+    <div class="equation">
+      ||x - y||₂² = ||x||₂² + ||y||₂² - 2xᵀy
+    </div>
+
+    <p>
+      If normalised vectors can be prepared as quantum states,
+      an overlap-related measurement may provide information about
+      their inner product. In some settings, this can help estimate
+      a similarity or distance measure.
+    </p>
+
+    <p>
+      However, an inner-product measurement generally requires
+      repeated circuit executions to estimate a result to a
+      specified accuracy. Preparing the states can also be costly.
+      A quantum distance routine is therefore not automatically
+      faster than a classical distance calculation.
+    </p>
+
+    <h3>23.3.5 Quantum k-means workflow</h3>
+    <div class="flow">
+      <div>Prepare encoded data and centroid states</div>
+      <div>Estimate relevant similarities or distances</div>
+      <div>Assign points to clusters</div>
+      <div>Update centroids and repeat</div>
+    </div>
+
+    <p>
+      The centroid-update step is especially important. Computing
+      the mean of a cluster requires information about its assigned
+      points. If the algorithm must reconstruct every centroid as
+      a classical vector after every iteration, the output and
+      data-access costs may remove any benefit from faster quantum
+      distance estimation.
+    </p>
+
+    <h3>23.3.6 What about k-medians?</h3>
+    <p>
+      k-medians follows a similar assignment-and-update pattern, but
+      it uses a coordinate-wise median rather than a mean to represent
+      each cluster. A common objective uses the Manhattan distance.
+    </p>
+
+    <div class="equation">
+      Manhattan distance: ||x - y||₁ = Σⱼ |xⱼ - yⱼ|
+    </div>
+
+    <p>
+      Because medians are determined by the ordering of coordinate
+      values, updating a median can require a different computational
+      procedure from updating a mean. Quantum distance estimation
+      alone does not automatically accelerate this update.
+    </p>
+
+    <p>
+      A proposed quantum k-medians algorithm must therefore explain
+      how it performs both assignment and representative updates,
+      and account for the cost of obtaining the information required
+      for those operations.
+    </p>
+
+    <h3>23.3.7 Where could quantum clustering help?</h3>
+    <ul>
+      <li>Similarity-based analysis of high-dimensional data.</li>
+      <li>Clustering workflows where a suitable quantum data representation already exists.</li>
+      <li>Hybrid algorithms where a quantum subroutine estimates a small number of useful quantities.</li>
+    </ul>
+
+    <div class="warning">
+      <strong>Practical caution:</strong> high dimensionality alone does
+      not establish a quantum advantage. A meaningful comparison must
+      include the number of data points, state preparation, number of
+      measurements, number of clustering iterations and the cost of
+      obtaining the final labels or centroids.
+    </div>
+  </section>
+
+  <section id="recommendation">
+    <h2>23.4 Quantum Recommendation Systems and Dequantization</h2>
+
+    <h3>23.4.1 How do recommendation systems work?</h3>
+    <p>
+      When a streaming platform recommends a film or a retailer
+      recommends a product, it is trying to estimate what a person
+      may prefer. One classical approach is collaborative filtering.
+      It uses patterns in the interactions between users and items.
+    </p>
+
+    <p>
+      These interactions can be represented by a matrix R:
+    </p>
+
+    <div class="equation">
+      R[u, i] = rating or interaction of user u with item i
+    </div>
+
+    <p>
+      Most real-world interaction matrices are sparse. A person has
+      interacted with only a tiny fraction of all available items.
+      Recommendation algorithms attempt to infer useful structure
+      from these incomplete observations.
+    </p>
+
+    <h3>23.4.2 Matrix factorisation</h3>
+    <p>
+      A common approach approximates R using two lower-dimensional
+      matrices:
+    </p>
+
+    <div class="equation">
+      R ≈ U Vᵀ
+    </div>
+
+    <p>
+      The row of U associated with a user describes that user's
+      latent preferences. The row of V associated with an item
+      describes its latent characteristics. A predicted score is
+      obtained by taking the inner product of the corresponding
+      user and item vectors.
+    </p>
+
+    <p>
+      The goal is not to memorise every missing rating. It is to
+      learn a compact representation that captures patterns such
+      as preferred genres, price ranges or product categories.
+    </p>
+
+    <h3>23.4.3 The quantum idea</h3>
+    <p>
+      Some quantum recommendation proposals use quantum linear-system
+      algorithms or related quantum matrix-processing methods to
+      manipulate low-rank structures and prepare states related to
+      useful latent representations.
+    </p>
+
+    <p>
+      A vector v can, under suitable normalisation, be encoded as:
+    </p>
+
+    <div class="equation">
+      |v⟩ = Σᵢ vᵢ |i⟩ / ||v||₂
+    </div>
+
+    <p>
+      The amplitudes of the quantum state contain information about
+      the vector's components. Some operations on such states may
+      depend on the number of qubits rather than on the full
+      dimension of the vector.
+    </p>
+
+    <p>
+      Nevertheless, the amplitudes are not directly available as a
+      complete classical array. Quantum recommendation algorithms
+      often target particular predictions, probability distributions
+      or compact summaries rather than returning every matrix entry.
+    </p>
+
+    <h3>23.4.4 What is dequantization?</h3>
+    <p>
+      Dequantization is the process of finding a classical algorithm
+      that matches or approaches the performance of a proposed
+      quantum algorithm, often under comparable input-access
+      assumptions.
+    </p>
+
+    <p>
+      It does not mean converting a quantum computer into a classical
+      computer. Instead, it asks whether the claimed advantage
+      remains when the classical algorithm is allowed a similarly
+      powerful way of accessing the input.
+    </p>
+
+    <p>
+      This question became important for quantum-inspired machine
+      learning. Certain quantum linear-algebra algorithms rely on
+      efficient access to entries or samples from data according
+      to carefully defined distributions. Researchers showed that
+      classical algorithms with analogous sampling access could
+      solve some related low-rank problems efficiently as well.
+    </p>
+
+    <h3>23.4.5 Why the comparison matters</h3>
+    <p>
+      Suppose a quantum algorithm assumes that a state proportional
+      to a data vector can be prepared efficiently. If a classical
+      comparison algorithm is forced to read every element one at
+      a time, the comparison may be unfair.
+    </p>
+
+    <p>
+      A fair analysis asks what input access each algorithm receives.
+      If both are given powerful access to the data, does the
+      quantum algorithm still have an advantage? If the quantum
+      system needs an expensive state-preparation procedure, does
+      the benefit survive when that cost is included?
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Why it matters</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>How is the input accessed?</td>
+          <td>Data-loading assumptions can dominate total runtime.</td>
+        </tr>
+        <tr>
+          <td>What answer is required?</td>
+          <td>One recommendation is different from an entire score matrix.</td>
+        </tr>
+        <tr>
+          <td>How much structure exists?</td>
+          <td>Low rank, sparsity and sampling access can help both classical and quantum methods.</td>
+        </tr>
+        <tr>
+          <td>Is the classical baseline strong?</td>
+          <td>A speedup over a weak baseline may disappear against modern algorithms.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>23.4.6 A recommendation example</h3>
+    <p>
+      Imagine a platform with ten million users and one million products.
+      The full interaction matrix would be enormous, and most entries
+      would be missing.
+    </p>
+    <p>
+      A quantum algorithm might aim to estimate the score of a
+      particular user-item pair or sample a promising recommendation.
+      Such a result is useful only if the user representation,
+      candidate selection, data preparation and final ranking can
+      all be completed efficiently.
+    </p>
+
+    <div class="takeaway">
+      <strong>Remember:</strong> dequantization is a necessary part of
+      careful quantum ML research. A useful quantum advantage must
+      survive comparison with the best appropriate classical
+      algorithms under clearly stated access assumptions.
+    </div>
+  </section>
+
+  <section id="boltzmann">
+    <h2>23.5 Quantum Boltzmann Sampling</h2>
+
+    <h3>23.5.1 Why does ML need sampling?</h3>
+    <p>
+      Many ML methods use probability distributions to represent
+      uncertainty or learn the structure of data. Generative models,
+      for instance, aim to learn a distribution from which realistic
+      samples can be drawn.
+    </p>
+
+    <p>
+      A Boltzmann distribution assigns probabilities to configurations
+      according to their energy. Lower-energy configurations receive
+      greater probability, while higher-energy configurations receive
+      less.
+    </p>
+
+    <div class="equation">
+      p(s) = exp(-βE(s)) / Z<br><br>
+      Z = Σₛ exp(-βE(s))
+    </div>
+
+    <p>
+      Here s represents a configuration, E(s) is its energy, β is an
+      inverse-temperature parameter and Z is the partition function.
+      The partition function normalises the probabilities so that
+      they sum to one.
+    </p>
+
+    <h3>23.5.2 What is a Boltzmann machine?</h3>
+    <p>
+      A Boltzmann machine is a probabilistic model with variables
+      connected through interactions. In a common binary formulation,
+      each variable takes a value of either -1 or +1. The energy
+      depends on individual biases and interactions between pairs
+      of variables.
+    </p>
+
+    <div class="equation">
+      E(s) = -Σᵢ hᵢsᵢ - Σᵢ&lt;ⱼ Jᵢⱼsᵢsⱼ
+    </div>
+
+    <p>
+      The values hᵢ represent biases, while Jᵢⱼ represent pairwise
+      interactions. The model learns these parameters so that its
+      probability distribution captures useful patterns in the
+      training data.
+    </p>
+
+    <h3>23.5.3 Why is sampling difficult?</h3>
+    <p>
+      With n binary variables, there are 2ⁿ possible configurations.
+      Even a moderately large model can therefore have an enormous
+      state space.
+    </p>
+    <p>
+      Calculating the partition function exactly may require summing
+      over all configurations. Training also requires estimating
+      expectations under model distributions, which can be difficult
+      when the variables interact strongly.
+    </p>
+
+    <h3>23.5.4 The quantum approach</h3>
+    <p>
+      Quantum systems naturally have many possible measurement
+      outcomes, and their energy levels are governed by a Hamiltonian.
+      A Hamiltonian is the quantum-mechanical operator that describes
+      the energy of a system.
+    </p>
+
+    <p>
+      In quantum Boltzmann approaches, a model may use a Hamiltonian
+      H and a quantum thermal state:
+    </p>
+
+    <div class="equation">
+      ρ = exp(-βH) / Z<br><br>
+      Z = Tr(exp(-βH))
+    </div>
+
+    <p>
+      The trace, written Tr, is the sum of the diagonal elements
+      of an operator. Measuring the thermal state in a suitable
+      basis produces outcomes according to probabilities determined
+      by the state.
+    </p>
+
+    <p>
+      If H is diagonal in the measurement basis, the probabilities
+      can correspond directly to a classical energy-based model.
+      If H contains non-commuting terms, the model can exhibit
+      quantum effects that do not have the same simple classical
+      interpretation.
+    </p>
+
+    <h3>23.5.5 How might the samples be generated?</h3>
+    <p>
+      There are several approaches, and they should not be treated
+      as one identical algorithm:
+    </p>
+
+    <ul>
+      <li>
+        <strong>Quantum thermal-state preparation:</strong> prepare
+        a state approximating the desired Gibbs distribution and
+        measure it.
+      </li>
+      <li>
+        <strong>Quantum circuits as samplers:</strong> train a
+        parameterised circuit so that its measurement distribution
+        matches a target distribution.
+      </li>
+      <li>
+        <strong>Quantum-assisted sampling:</strong> use a quantum
+        device for a difficult sampling subroutine inside a hybrid
+        training pipeline.
+      </li>
+    </ul>
+
+    <p>
+      Preparing an accurate thermal state is itself a challenging
+      problem. It may require deep circuits, controlled interactions,
+      special preparation methods or repeated operations. The
+      existence of a quantum state with a desired distribution
+      does not guarantee an efficient method for preparing it.
+    </p>
+
+    <h3>23.5.6 Connection to generative modelling</h3>
+    <p>
+      A trained energy-based model assigns scores to configurations
+      and uses those scores to define probabilities. Sampling from
+      the learned distribution can generate new configurations
+      that resemble the training data.
+    </p>
+
+    <p>
+      For example, a model might learn relationships among binary
+      features describing simple patterns. Sampling from it produces
+      new feature combinations according to the learned distribution.
+      More complicated models can represent richer patterns.
+    </p>
+
+    <p>
+      A quantum model may use quantum interactions or circuit
+      measurements to represent its distribution. Whether that
+      distribution is more expressive or harder for a classical
+      sampler to reproduce depends on the chosen model and its
+      measurable properties.
+    </p>
+
+    <h3>23.5.7 What would establish an advantage?</h3>
+    <p>
+      A convincing result must compare sampling quality and cost.
+      Relevant measurements include preparation time, circuit depth,
+      number of shots, mixing or convergence behaviour where
+      applicable, and the computational resources required by the
+      best classical sampler.
+    </p>
+
+    <div class="warning">
+      Quantum sampling is not automatically useful merely because
+      the classical state space is large. A practical advantage
+      requires a distribution that can be sampled efficiently by
+      the quantum method and is meaningfully difficult for the
+      relevant classical alternatives.
+    </div>
+
+    <div class="takeaway">
+      <strong>Remember:</strong> quantum Boltzmann sampling connects
+      quantum statistical mechanics with probabilistic machine
+      learning. The central problem is not only defining a useful
+      quantum distribution, but also preparing it, sampling it
+      accurately and using the samples to train a model.
+    </div>
+  </section>
+
+  <section id="optimization">
+    <h2>23.6 Quantum Speedups in Optimisation for ML</h2>
+
+    <h3>23.6.1 What does optimisation mean in ML?</h3>
+    <p>
+      Training a machine learning model usually involves choosing
+      parameters that minimise a loss function. The loss measures
+      how far the model's predictions are from the desired results
+      or how well the model satisfies a chosen objective.
+    </p>
+
+    <div class="equation">
+      θ* = arg minθ L(θ)
+    </div>
+
+    <p>
+      Here θ represents the trainable parameters, L is the loss
+      function, and θ* denotes a parameter setting that minimises
+      that loss. In real applications, finding a global minimum
+      may be difficult, so training algorithms often seek a good
+      solution within an acceptable amount of time.
+    </p>
+
+    <h3>23.6.2 Why can optimisation be expensive?</h3>
+    <p>
+      The difficulty depends on the structure of the objective.
+      Some problems have smooth, well-behaved loss functions.
+      Others contain many local minima, flat regions, constraints
+      or discrete choices.
+    </p>
+
+    <p>
+      Examples of optimisation tasks in ML include:
+    </p>
+    <ul>
+      <li>Learning weights in a neural network.</li>
+      <li>Selecting features under a computational or storage budget.</li>
+      <li>Choosing a subset of training examples.</li>
+      <li>Optimising model architecture or hyperparameters.</li>
+      <li>Solving combinatorial scheduling or resource-allocation problems.</li>
+    </ul>
+
+    <h3>23.6.3 Quantum optimisation approaches</h3>
+    <p>
+      Quantum optimisation includes several distinct families of
+      algorithms. Two commonly discussed examples are quantum
+      approximate optimisation and quantum annealing.
+    </p>
+
+    <p>
+      The Quantum Approximate Optimisation Algorithm (QAOA) uses
+      a parameterised quantum circuit designed around an objective
+      expressed as a cost Hamiltonian. It alternates between
+      operations related to the cost and operations that mix
+      candidate configurations.
+    </p>
+
+    <div class="equation">
+      |ψ(γ, β)⟩ =
+      Uᴮ(βₚ)Uᶜ(γₚ) ... Uᴮ(β₁)Uᶜ(γ₁)|+⟩
+    </div>
+
+    <p>
+      In this expression, Uᶜ represents a cost-related operation,
+      Uᴮ represents a mixing operation, and p is the number of
+      alternating layers. The parameters γ and β are adjusted
+      classically to improve the expected objective value.
+    </p>
+
+    <p>
+      Quantum annealing instead uses an evolving physical system
+      intended to reach low-energy configurations of a problem
+      Hamiltonian. Its performance depends on the problem
+      encoding, device properties, noise, embedding overhead and
+      the time required to obtain reliable solutions.
+    </p>
+
+    <h3>23.6.4 How a hybrid optimisation loop works</h3>
+    <div class="flow">
+      <div>Classical optimiser proposes parameters</div>
+      <div>Quantum circuit evaluates the candidate</div>
+      <div>Measurements estimate the objective</div>
+      <div>Classical optimiser updates parameters</div>
+    </div>
+
+    <p>
+      This loop is central to many variational quantum algorithms.
+      The quantum device evaluates an objective or a related
+      measurement, while a classical optimiser decides how the
+      parameters should change.
+    </p>
+
+    <p>
+      The process is repeated until the stopping condition is met.
+      However, every objective estimate can require multiple
+      circuit executions, and noisy estimates can make the
+      classical optimisation loop harder to control.
+    </p>
+
+    <h3>23.6.5 Quantum search and optimisation</h3>
+    <p>
+      Grover's search algorithm provides a quadratic query advantage
+      for unstructured search under its standard assumptions.
+      If there are N possible candidates and one can efficiently
+      test whether a candidate is acceptable, the number of
+      oracle queries can scale as O(√N), rather than O(N).
+    </p>
+
+    <p>
+      This is a genuine theoretical result, but it is not a
+      universal quadratic speedup for ML optimisation. Applying
+      it to an optimisation problem requires a suitable search
+      procedure, an efficient test and a careful accounting of
+      how the objective is evaluated.
+    </p>
+
+    <h3>23.6.6 Why there is no universal quantum optimiser</h3>
+    <p>
+      Optimisation problems have different mathematical structures.
+      A method designed for discrete binary decisions may not be
+      suitable for training a large neural network with millions
+      of continuous parameters.
+    </p>
+
+    <p>
+      Similarly, a quantum circuit that improves a small benchmark
+      does not establish that it will improve a production model.
+      The result must be compared with strong classical optimisation
+      methods, including well-tuned heuristics and specialised
+      solvers.
+    </p>
+
+    <h3>23.6.7 How should speedup be measured?</h3>
+    <p>
+      A useful comparison includes more than the time spent inside
+      a quantum circuit. The total cost may include circuit
+      compilation, state preparation, device communication,
+      measurement repetitions, classical optimisation and
+      post-processing.
+    </p>
+
+    <div class="equation">
+      Total runtime = input preparation + computation
+      + measurement + post-processing
+    </div>
+
+    <p>
+      The equation is a conceptual accounting identity rather than
+      a complexity bound. In a complete experiment, each term
+      should be measured or estimated consistently for the
+      classical and quantum implementations.
+    </p>
+
+    <div class="takeaway">
+      <strong>Remember:</strong> quantum optimisation is a collection
+      of approaches, not one algorithm that makes every training
+      problem faster. Its value depends on the objective, encoding,
+      available hardware and the strength of the classical baseline.
+    </div>
+  </section>
+
+  <section id="gradient">
+    <h2>23.7 Quantum-Enhanced Gradient Descent</h2>
+
+    <h3>23.7.1 What is gradient descent?</h3>
+    <p>
+      Gradient descent is one of the most widely used optimisation
+      methods in machine learning. It improves model parameters by
+      moving them in a direction that reduces the loss.
+    </p>
+
+    <p>
+      The gradient contains the partial derivatives of the loss
+      with respect to the parameters. Each derivative tells us
+      how the loss changes when one parameter changes slightly,
+      while the other parameters are held fixed.
+    </p>
+
+    <div class="equation">
+      θₜ₊₁ = θₜ - η ∇L(θₜ)
+    </div>
+
+    <p>
+      Here θₜ is the current parameter vector, η is the learning
+      rate, and ∇L(θₜ) is the gradient. The minus sign means that
+      the update moves against the gradient when the aim is to
+      minimise the loss.
+    </p>
+
+    <h3>23.7.2 A simple example</h3>
+    <p>
+      Suppose the loss for one parameter is:
+    </p>
+
+    <div class="equation">
+      L(θ) = (θ - 3)²<br><br>
+      dL/dθ = 2(θ - 3)
+    </div>
+
+    <p>
+      The loss is smallest when θ equals 3. If the current value
+      is θ = 1, the derivative is -4. With a learning rate of
+      0.1, the update becomes:
+    </p>
+
+    <div class="equation">
+      θnew = 1 - 0.1(-4) = 1.4
+    </div>
+
+    <p>
+      The parameter moves from 1 towards 3. Repeating the process
+      can move it closer to the minimum, provided the learning
+      rate and optimisation conditions are suitable.
+    </p>
+
+    <h3>23.7.3 Where does quantum computing enter?</h3>
+    <p>
+      In quantum-enhanced gradient methods, a quantum circuit
+      evaluates a parameter-dependent quantity. Measurements
+      estimate an expectation value, and the classical optimiser
+      uses those estimates to update parameters.
+    </p>
+
+    <p>
+      This is especially natural in variational quantum circuits,
+      where trainable gate parameters define a quantum model.
+      A quantum circuit can also be part of a hybrid model that
+      accepts classical features and returns a prediction.
+    </p>
+
+    <p>
+      For example, let a circuit produce an expectation value:
+    </p>
+
+    <div class="equation">
+      f(θ) = ⟨ψ(θ)| O |ψ(θ)⟩
+    </div>
+
+    <p>
+      The state |ψ(θ)⟩ depends on trainable parameters, and O is
+      an observable whose measurement produces an expectation
+      value. If this output contributes to the loss, training
+      requires estimating how the expectation changes with θ.
+    </p>
+
+    <h3>23.7.4 The parameter-shift rule</h3>
+    <p>
+      For certain parameterised quantum gates, the derivative
+      can be calculated using two shifted circuit evaluations.
+      For a common rotation-gate convention, the rule is:
+    </p>
+
+    <div class="equation">
+      df/dθ = [f(θ + π/2) - f(θ - π/2)] / 2
+    </div>
+
+    <p>
+      This exact expression applies to suitable gates and
+      parameter conventions; it is not a universal derivative
+      formula for every quantum circuit. More general gates
+      or parameterisations may require a different shift rule
+      or a sum of several shifted evaluations.
+    </p>
+
+    <p>
+      The key idea is that quantum derivatives can sometimes
+      be obtained by evaluating the same circuit at carefully
+      chosen parameter values. The quantum hardware does not
+      need to expose a classical description of every
+      intermediate amplitude.
+    </p>
+
+    <h3>23.7.5 What does a gradient estimate cost?</h3>
+    <p>
+      Although the parameter-shift rule is exact at the
+      expectation-value level, a real quantum device estimates
+      each expectation using a finite number of measurements,
+      often called shots.
+    </p>
+
+    <p>
+      For a circuit with many parameters, evaluating the gradient
+      may require many shifted circuit settings. The measurement
+      cost can therefore grow with the number of trainable
+      parameters, the precision required and the noise level.
+    </p>
+
+    <p>
+      More shots generally reduce statistical uncertainty, but
+      they also increase runtime. A noisy gradient can point
+      in a less useful direction, causing slower convergence
+      or unstable updates.
+    </p>
+
+    <h3>23.7.6 Can a quantum computer speed up classical gradient descent?</h3>
+    <p>
+      This question needs a careful distinction. There is a
+      difference between training a model that contains a
+      quantum circuit and using a quantum algorithm to speed
+      up optimisation of an ordinary classical model.
+    </p>
+
+    <p>
+      In a hybrid quantum neural network, the quantum circuit
+      is part of the model itself. Quantum gradient estimation
+      helps train that circuit, but it does not automatically
+      make the training of an ordinary classical neural network
+      faster.
+    </p>
+
+    <p>
+      For a classical objective, a quantum method would need to
+      show how it obtains useful gradient information more
+      efficiently than classical alternatives. It must also
+      account for input access, gradient accuracy and the cost
+      of converting quantum results into classical parameter
+      updates.
+    </p>
+
+    <h3>23.7.7 Connection to stochastic gradient descent</h3>
+    <p>
+      Classical stochastic gradient descent estimates gradients
+      using a subset, or mini-batch, of the training examples.
+      This reduces the work required for each update and
+      introduces statistical noise into the optimisation.
+    </p>
+
+    <p>
+      Quantum gradient estimation introduces another possible
+      source of uncertainty: finite-shot measurement noise.
+      In a hybrid training system, the total gradient estimate
+      may therefore contain both data-sampling noise and
+      quantum measurement noise.
+    </p>
+
+    <p>
+      An effective training method must balance batch size,
+      number of measurement shots, learning rate and total
+      circuit evaluations. More accurate gradients are not
+      always worth their additional cost, especially early
+      in training when approximate updates may be sufficient.
+    </p>
+
+    <div class="takeaway">
+      <strong>Remember:</strong> quantum gradient methods provide
+      techniques for differentiating parameterised quantum
+      computations. Whether they improve an ML training
+      pipeline depends on gradient cost, statistical noise,
+      hardware limitations and the quality of the final model.
+    </div>
+  </section>
+
+  <section id="comparison">
+    <h2>Connecting All Seven Topics</h2>
+
+    <p>
+      The seven topics may appear unrelated at first. In reality,
+      they are connected by a common idea: each quantum algorithm
+      targets a mathematical operation that appears inside a
+      larger ML workflow.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Topic</th>
+          <th>Underlying task</th>
+          <th>What the quantum method seeks to improve</th>
+          <th>Main challenge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Quantum PCA</td>
+          <td>Eigenvalue and eigenvector analysis</td>
+          <td>Extracting dominant spectral information</td>
+          <td>State preparation and spectral precision</td>
+        </tr>
+        <tr>
+          <td>Quantum linear regression</td>
+          <td>Solving linear systems</td>
+          <td>Preparing a state related to the solution</td>
+          <td>Conditioning and classical readout</td>
+        </tr>
+        <tr>
+          <td>Quantum clustering</td>
+          <td>Distance and similarity calculations</td>
+          <td>Estimating selected similarities</td>
+          <td>Data access and centroid updates</td>
+        </tr>
+        <tr>
+          <td>Quantum recommendations</td>
+          <td>Low-rank matrix processing</td>
+          <td>Selected predictions or compact summaries</td>
+          <td>Fair classical comparison and output cost</td>
+        </tr>
+        <tr>
+          <td>Quantum Boltzmann sampling</td>
+          <td>Sampling from energy-based distributions</td>
+          <td>Generating samples from useful quantum states</td>
+          <td>State preparation and classical simulability</td>
+        </tr>
+        <tr>
+          <td>Quantum optimisation</td>
+          <td>Finding low-cost solutions</td>
+          <td>Searching or exploring particular solution spaces</td>
+          <td>Noise and strong classical baselines</td>
+        </tr>
+        <tr>
+          <td>Quantum gradient descent</td>
+          <td>Estimating derivatives</td>
+          <td>Training parameterised quantum computations</td>
+          <td>Shot cost and gradient variance</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>A useful way to classify quantum ML algorithms</h3>
+
+    <p>
+      One useful distinction is whether the quantum computer
+      returns a classical answer or prepares a quantum state
+      that another operation can use.
+    </p>
+
+    <p>
+      <strong>Classical-output algorithms</strong> aim to return
+      ordinary values, such as a predicted score or a set of
+      labels. These values are easy to use in conventional
+      software, but obtaining many of them may require
+      substantial measurement and post-processing.
+    </p>
+
+    <p>
+      <strong>Quantum-state-output algorithms</strong> prepare
+      states that encode a solution or distribution. These
+      can be valuable when the next step is also quantum.
+      If the next step requires the entire answer as a
+      classical array, readout can become the bottleneck.
+    </p>
+
+    <p>
+      This distinction connects quantum PCA, linear-system
+      algorithms and quantum recommendation systems particularly
+      closely. It also explains why a theoretical speedup for
+      an internal operation may not translate directly into a
+      faster end-to-end ML application.
+    </p>
+  </section>
+
+  <section id="evaluation">
+    <h2>How to Evaluate a Quantum ML Speedup Properly</h2>
+
+    <p>
+      A strong research claim should answer the following
+      questions before concluding that a quantum method is
+      superior.
+    </p>
+
+    <ol>
+      <li>
+        <strong>What exactly is being computed?</strong>
+        Define the input, the output and the accuracy required.
+      </li>
+      <li>
+        <strong>How is the data accessed?</strong>
+        Include the cost of preparing quantum states or querying
+        a data structure.
+      </li>
+      <li>
+        <strong>What assumptions are needed?</strong>
+        State the conditions involving sparsity, rank,
+        conditioning, spectral gaps or sampling access.
+      </li>
+      <li>
+        <strong>What is the full resource cost?</strong>
+        Include circuit depth, measurements, repetitions,
+        communication and classical processing.
+      </li>
+      <li>
+        <strong>What is the best classical baseline?</strong>
+        Compare against suitable optimised classical algorithms,
+        not just a deliberately slow implementation.
+      </li>
+      <li>
+        <strong>Does the result matter to the ML task?</strong>
+        A faster mathematical subroutine is useful only if
+        it improves a meaningful end-to-end objective.
+      </li>
+    </ol>
+
+    <div class="note">
+      <strong>Research principle:</strong> a quantum speedup is a
+      mathematical claim under stated assumptions. A practical
+      quantum advantage is an experimental or application-level
+      claim that also accounts for real hardware, input preparation,
+      accuracy, total cost and competitive classical methods.
+      These are related, but they are not the same claim.
+    </div>
+  </section>
+
+  <section id="summary">
+    <h2>Chapter Summary</h2>
+
+    <p>
+      Quantum algorithms for classical ML subroutines explore
+      whether quantum computing can improve the mathematical
+      building blocks used by machine learning. Quantum PCA
+      targets spectral information. Quantum linear-system
+      methods target solution states for equations. Quantum
+      clustering explores faster similarity estimation.
+      Recommendation algorithms investigate low-rank structures,
+      while dequantization checks whether comparable classical
+      methods can achieve the same result.
+    </p>
+
+    <p>
+      Quantum Boltzmann sampling connects quantum statistical
+      mechanics with probabilistic models. Quantum optimisation
+      investigates the search for good solutions, and
+      quantum-enhanced gradient methods study the derivatives
+      required to train parameterised computations.
+    </p>
+
+    <p>
+      Across all these areas, the same practical issues return:
+      how data enters the quantum system, how much information
+      measurement reveals, how errors affect the answer, and
+      whether the complete algorithm beats a strong classical
+      alternative.
+    </p>
+
+    <div class="takeaway">
+      <strong>The central lesson:</strong> quantum computing is
+      not automatically faster because a problem has many
+      variables or because a quantum state has many amplitudes.
+      Its promise lies in finding a carefully defined task
+      whose structure can be exploited by quantum mechanics,
+      while keeping input, output and implementation costs
+      under control.
+    </div>
+  </section>
+
+  <section id="questions">
+    <h2>Review Questions</h2>
+    <ol>
+      <li>Why does PCA reduce the number of features, and what do eigenvalues tell us?</li>
+      <li>Why is preparing a quantum state related to a solution different from printing every element of that solution?</li>
+      <li>How does a quantum distance estimate fit into the assignment step of k-means?</li>
+      <li>What does dequantization reveal about the assumptions behind a proposed quantum speedup?</li>
+      <li>What is the role of the partition function in a Boltzmann distribution?</li>
+      <li>Why does a quantum optimisation method still need a fair classical baseline?</li>
+      <li>How does the parameter-shift rule estimate a derivative, and why do finite measurement shots matter?</li>
+      <li>What is the difference between a theoretical quantum speedup and practical quantum advantage?</li>
+    </ol>
+
+    <h3>Suggested learning order</h3>
+    <p>
+      Study classical PCA, linear regression, clustering,
+      matrix factorisation, probability distributions and
+      gradient descent first. Then study quantum state
+      preparation, quantum phase estimation, linear-system
+      algorithms, quantum measurement and variational circuits.
+      This order makes the purpose and limitations of each
+      quantum algorithm much easier to understand.
+    </p>
+  </section>
+
+  <section id="references">
+    <h2>Further Reading</h2>
+    <ol>
+      <li>
+        Lloyd, Mohseni and Rebentrost, <em>Quantum principal
+        component analysis</em>, Nature Physics (2014).
+        <a href="https://doi.org/10.1038/nphys3029">Read the paper</a>.
+      </li>
+      <li>
+        Harrow, Hassidim and Lloyd, <em>Quantum algorithm for
+        solving linear systems of equations</em>, Physical Review
+        Letters (2009).
+        <a href="https://doi.org/10.1103/PhysRevLett.103.150502">Read the paper</a>.
+      </li>
+      <li>
+        Kerenidis and Prakash, <em>Quantum Recommendation Systems</em>,
+        proceedings of the relevant quantum information and
+        theoretical computer science research literature.
+        <a href="https://arxiv.org/abs/1603.08675">Read the paper</a>.
+      </li>
+      <li>
+        Tang, <em>A quantum-inspired classical algorithm for
+        recommendation systems</em>, Proceedings of the ACM
+        Symposium on Theory of Computing (2019).
+        <a href="https://arxiv.org/abs/1807.04271">Read the paper</a>.
+      </li>
+      <li>
+        Farhi, Goldstone and Gutmann, <em>A Quantum Approximate
+        Optimization Algorithm</em>.
+        <a href="https://arxiv.org/abs/1411.4028">Read the paper</a>.
+      </li>
+      <li>
+        Schuld, Bergholm, Gogolin, Izaac and Killoran,
+        <em>Evaluating analytic gradients on quantum hardware</em>,
+        Physical Review A (2019).
+        <a href="https://doi.org/10.1103/PhysRevA.99.032331">Read the paper</a>.
+      </li>
+      <li>
+        Biamonte et al., <em>Quantum machine learning</em>,
+        Nature (2017).
+        <a href="https://doi.org/10.1038/nature23474">Read the review</a>.
+      </li>
+    </ol>
+    <p class="small">
+      These references provide entry points into the research.
+      Each paper's assumptions and complexity results should be
+      read in context; they do not establish a universal quantum
+      advantage for practical machine learning.
+    </p>
+  </section>
+</main>
+
+<footer>
+  Quantum Computing and Machine Learning · Chapter 23
+</footer>
+</body>
+</html>

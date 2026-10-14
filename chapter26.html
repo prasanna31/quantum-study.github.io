@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 26: Advanced Topics and Emerging Directions in Quantum Machine Learning</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            line-height: 1.8;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 24px;
+            color: #242424;
+            background: #ffffff;
+        }
+
+        h1, h2, h3 {
+            line-height: 1.35;
+            color: #17365d;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 3px solid #17365d;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            margin-top: 50px;
+            border-bottom: 1px solid #ccd6e0;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            margin-top: 28px;
+            color: #28527a;
+        }
+
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            padding-left: 28px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .chapter-intro {
+            font-size: 1.12em;
+            color: #414b56;
+        }
+
+        .concept {
+            background: #f3f6fa;
+            border-left: 4px solid #416b96;
+            padding: 15px 20px;
+            margin: 22px 0;
+        }
+
+        .example {
+            background: #f8f5ed;
+            border-left: 4px solid #b28b42;
+            padding: 15px 20px;
+            margin: 22px 0;
+        }
+
+        .warning {
+            background: #fff3f0;
+            border-left: 4px solid #bd6254;
+            padding: 15px 20px;
+            margin: 22px 0;
+        }
+
+        .equation {
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 1.05em;
+            padding: 15px;
+            margin: 20px 0;
+            background: #f5f5f5;
+            overflow-wrap: anywhere;
+        }
+
+        .summary {
+            border: 1px solid #ccd6e0;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .toc a {
+            color: #28527a;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 15px;
+            border-top: 1px solid #ccd6e0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @media print {
+            body {
+                max-width: none;
+                padding: 10px;
+            }
+
+            h2 {
+                break-after: avoid;
+            }
+
+            .concept, .example, .warning {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Chapter 26: Advanced Topics and Emerging Directions</h1>
+
+    <p class="chapter-intro">
+        Quantum machine learning brings together three important fields:
+        quantum physics, computer science and machine learning. The earlier
+        chapters introduced the basic ideas behind quantum data, quantum
+        circuits, variational algorithms, quantum neural networks and quantum
+        learning theory. In this chapter, we move towards the questions that
+        researchers are exploring today: Can quantum computers help us
+        understand molecules? Can ideas from modern AI be adapted to quantum
+        systems? How will machine learning change when quantum computers
+        become more reliable? Can quantum methods support privacy, optimisation
+        and cryptography?
+    </p>
+
+    <p>
+        These questions do not all have the same answer. Some applications
+        already have useful mathematical foundations, while others remain
+        experimental research directions. Understanding the difference is
+        essential. Quantum computing is not automatically better than
+        classical computing; its value depends on the problem, the algorithm,
+        the hardware and the resources required to obtain a useful answer.
+    </p>
+</header>
+
+<nav class="toc">
+    <h2>Chapter Contents</h2>
+    <ol>
+        <li><a href="#physics-chemistry">26.1 Quantum Machine Learning for Physics and Chemistry</a></li>
+        <li><a href="#transformers">26.2 Quantum Transformers and Large-Model Ideas</a></li>
+        <li><a href="#equivariant">26.3 Equivariant and Geometric Quantum Machine Learning</a></li>
+        <li><a href="#error-correction">26.4 Quantum Machine Learning on Error-Corrected Hardware</a></li>
+        <li><a href="#optimisation">26.5 Quantum-Enhanced Optimisation for AI Training</a></li>
+        <li><a href="#federated">26.6 Federated and Privacy-Preserving Quantum Learning</a></li>
+        <li><a href="#cryptography">26.7 Quantum AI and Cryptographic Aspects</a></li>
+    </ol>
+</nav>
+
+<main>
+
+<section id="physics-chemistry">
+    <h2>26.1 Quantum Machine Learning for Physics and Chemistry</h2>
+
+    <h3>26.1.1 Why physics and chemistry are natural areas for quantum computing</h3>
+
+    <p>
+        Everything around us is made of matter, and matter behaves according
+        to the laws of physics. Electrons occupy atomic orbitals, atoms form
+        chemical bonds, and molecules change their behaviour depending on
+        their structure and environment. At very small scales, these
+        phenomena are governed by quantum mechanics.
+    </p>
+
+    <p>
+        A classical computer can calculate many properties of molecules with
+        impressive accuracy. However, accurately representing the full quantum
+        state of a large interacting system can become difficult. The
+        challenge comes partly from the fact that quantum systems can exhibit
+        superposition and entanglement, which create correlations that are
+        difficult to represent compactly using ordinary classical data
+        structures.
+    </p>
+
+    <p>
+        Quantum computers offer a different way to represent and manipulate
+        such states. Rather than always trying to imitate a quantum system
+        using classical calculations, a quantum computer can use quantum
+        states and quantum operations directly.
+    </p>
+
+    <div class="concept">
+        <strong>Central idea:</strong> Quantum computers are especially
+        interesting for studying quantum systems because the mathematical
+        language used to describe the computer is closely related to the
+        language used to describe the physical system being studied.
+    </div>
+
+    <p>
+        This does not mean that every chemistry problem requires a quantum
+        computer. Many chemical calculations can be handled effectively by
+        classical methods. The opportunity is to find problems where quantum
+        methods can provide more accurate results, reduce computational
+        costs or make calculations possible that would otherwise be
+        impractical.
+    </p>
+
+    <h3>26.1.2 The role of machine learning</h3>
+
+    <p>
+        A quantum simulation may produce valuable results, but running a
+        detailed simulation for every possible molecule, atomic arrangement
+        or experimental condition can be expensive. Machine learning offers
+        a way to learn patterns from previously calculated or measured
+        examples.
+    </p>
+
+    <p>
+        Suppose researchers calculate the energies of thousands of molecular
+        structures. They can use those results to train a model that predicts
+        the energy of a new structure. Once trained, the model may make
+        predictions much faster than repeating the original expensive
+        calculation every time.
+    </p>
+
+    <p>
+        The same general idea can be used with data produced by quantum
+        experiments. A quantum device can prepare states, perform
+        measurements and generate results. A classical or quantum learning
+        model can then learn relationships between experimental settings
+        and observed outcomes.
+    </p>
+
+    <p>
+        This gives rise to several different approaches:
+    </p>
+
+    <ul>
+        <li>
+            <strong>Classical machine learning for quantum science:</strong>
+            A classical model predicts molecular properties or helps analyse
+            physical experiments.
+        </li>
+        <li>
+            <strong>Quantum machine learning for scientific data:</strong>
+            A quantum circuit or quantum learning model processes information
+            obtained from a scientific problem.
+        </li>
+        <li>
+            <strong>Quantum-assisted machine learning:</strong>
+            A quantum computer performs a selected calculation while a
+            classical computer handles data preparation, optimisation and
+            interpretation.
+        </li>
+    </ul>
+
+    <p>
+        These approaches are related, but they are not interchangeable.
+        A machine-learning model used in chemistry does not automatically
+        become a quantum machine-learning model merely because it predicts
+        quantum-mechanical properties.
+    </p>
+
+    <h3>26.1.3 Variational quantum eigensolvers and molecular energy</h3>
+
+    <p>
+        One important application is estimating the lowest energy of a
+        molecule. In quantum mechanics, the energy levels of a system are
+        associated with its Hamiltonian, an operator that describes the
+        system's energy.
+    </p>
+
+    <p>
+        For a molecule, finding the ground-state energy helps us understand
+        its stability and chemical behaviour. The Variational Quantum
+        Eigensolver, or VQE, is a hybrid quantum-classical algorithm designed
+        to estimate such energies.
+    </p>
+
+    <ol>
+        <li>
+            A classical program chooses parameters for a quantum circuit.
+        </li>
+        <li>
+            The quantum circuit prepares a trial state representing a possible
+            electronic configuration.
+        </li>
+        <li>
+            Measurements estimate the expected energy of that state.
+        </li>
+        <li>
+            A classical optimiser adjusts the parameters to seek a lower
+            energy.
+        </li>
+        <li>
+            The process repeats until a satisfactory result is obtained or
+            the computational budget is exhausted.
+        </li>
+    </ol>
+
+    <p>
+        The important connection to machine learning is that the circuit
+        contains trainable parameters, measurements provide an objective
+        value, and an optimiser searches for better parameters. This resembles
+        the training of a machine-learning model, although the underlying
+        objective and physical meaning are different.
+    </p>
+
+    <div class="equation">
+        E(&theta;) = &lang;&psi;(&theta;)|H|&psi;(&theta;)&rang;
+    </div>
+
+    <p>
+        Here, H is the molecular Hamiltonian, and &psi;(&theta;) is the
+        quantum state prepared by a circuit with parameters &theta;. The
+        goal is to find parameters that make the expected energy as low as
+        possible.
+    </p>
+
+    <p>
+        Machine-learning techniques can help choose circuit structures,
+        initialise parameters, estimate useful configurations and reduce
+        the number of expensive measurements. However, optimising a circuit
+        can be difficult, especially when the circuit is deep or its
+        gradients become very small.
+    </p>
+
+    <h3>26.1.4 Learning potential energy surfaces</h3>
+
+    <p>
+        Molecules are not fixed objects. Their atoms move, vibrate and
+        interact. To understand chemical reactions or molecular motion,
+        researchers need to know how the energy changes when the positions
+        of the atoms change.
+    </p>
+
+    <p>
+        A potential energy surface describes the relationship between
+        molecular geometry and energy. If the positions of all atoms are
+        represented by a coordinate vector R, the energy can be written as
+        E(R).
+    </p>
+
+    <div class="equation">
+        Molecular geometry R &rarr; Energy E(R) &rarr; Forces F(R)
+    </div>
+
+    <p>
+        Forces can be obtained from how the energy changes with the atomic
+        coordinates. A model that predicts both energy and reliable forces
+        can help simulate molecular motion, study reaction pathways and
+        explore candidate materials.
+    </p>
+
+    <p>
+        Quantum calculations or experiments may provide high-quality
+        training data. Machine learning then learns an approximation to
+        the energy surface. Quantum machine learning is one possible
+        modelling approach, but classical neural networks and specialised
+        geometric models are also important and often highly competitive.
+    </p>
+
+    <h3>26.1.5 Applications in materials science and physics</h3>
+
+    <p>
+        Beyond chemistry, researchers investigate quantum methods for
+        analysing condensed-matter systems, magnetic materials, phase
+        transitions and quantum many-body phenomena. In these problems,
+        the objective may be to identify a phase of matter, estimate an
+        observable or infer properties of a system from experimental data.
+    </p>
+
+    <p>
+        Consider an experiment in which a physical system is measured under
+        different temperatures, magnetic fields or control settings. A
+        learning model may help classify the resulting states or predict
+        how the system responds to a new setting. Quantum circuits may
+        be used as part of the model or as a component of the simulation.
+    </p>
+
+    <div class="example">
+        <strong>Example: Searching for a better battery material</strong>
+
+        <p>
+            Researchers may want to identify a material that conducts ions
+            efficiently and remains stable over many charging cycles. A
+            practical workflow could combine classical screening, quantum
+            calculations for selected candidates, machine-learning
+            predictions and laboratory testing. A quantum computer might
+            eventually improve particular calculations, but it would be
+            only one component of the overall research process.
+        </p>
+    </div>
+
+    <h3>26.1.6 What remains difficult?</h3>
+
+    <p>
+        Quantum scientific applications face several challenges. Preparing
+        the correct state can be difficult. Measurements are noisy, and
+        estimating an expectation value accurately may require many circuit
+        executions. Molecular calculations may also demand more qubits,
+        better connectivity and deeper circuits than current devices can
+        reliably support.
+    </p>
+
+    <p>
+        Another challenge is data loading. If a large classical dataset
+        must be encoded into a quantum state, the preparation cost may
+        remove the benefit of the quantum computation. The cost of
+        transferring information into and out of the quantum device must
+        therefore be included when comparing algorithms.
+    </p>
+
+    <p>
+        The long-term goal is not to replace all classical chemistry or
+        physics software. It is to develop a scientific computing toolkit
+        in which classical and quantum methods each perform the tasks
+        for which they are best suited.
+    </p>
+</section>
+
+<section id="transformers">
+    <h2>26.2 Quantum Transformers and Large-Model Ideas</h2>
+
+    <h3>26.2.1 Why transformers matter</h3>
+
+    <p>
+        Transformers have become central to modern artificial intelligence.
+        They are used in language models, image systems, speech processing
+        and many other applications. Their success comes partly from the
+        attention mechanism, which allows a model to decide which parts
+        of an input are important when processing another part.
+    </p>
+
+    <p>
+        Consider the sentence, "The student placed the book on the table
+        because it was stable." To interpret the word "it", a language
+        model must consider the surrounding context. Attention provides
+        a learned way to compare representations of different tokens and
+        combine information from relevant positions.
+    </p>
+
+    <p>
+        A standard transformer is a classical neural network. Its attention
+        operations, embeddings and feed-forward layers are normally
+        implemented using classical hardware, even when the model is
+        extremely large.
+    </p>
+
+    <p>
+        Quantum transformers explore whether some of these ideas can be
+        combined with quantum circuits, quantum states or quantum
+        information-processing techniques.
+    </p>
+
+    <h3>26.2.2 Understanding classical attention first</h3>
+
+    <p>
+        Before discussing quantum versions, it is useful to understand the
+        main parts of classical attention. Each token is converted into a
+        numerical representation. Learned transformations produce three
+        vectors: a query, a key and a value.
+    </p>
+
+    <ul>
+        <li>
+            <strong>Query:</strong> Represents the information a token is
+            looking for.
+        </li>
+        <li>
+            <strong>Key:</strong> Represents the information a token offers
+            for comparison with other tokens.
+        </li>
+        <li>
+            <strong>Value:</strong> Contains the information that can be
+            combined with information from other tokens.
+        </li>
+    </ul>
+
+    <p>
+        The model compares queries with keys to calculate attention scores.
+        A normalisation operation converts these scores into weights, and
+        the weights determine how the values are combined.
+    </p>
+
+    <div class="equation">
+        Attention(Q, K, V) = softmax(QK<sup>T</sup> / &radic;d<sub>k</sub>)V
+    </div>
+
+    <p>
+        Here, Q, K and V are matrices containing query, key and value
+        vectors, while d<sub>k</sub> is the key-vector dimension. The
+        division by its square root helps keep the scores at a useful
+        numerical scale.
+    </p>
+
+    <p>
+        Attention does not simply select one token and ignore everything
+        else. It can combine information from several tokens with different
+        weights. Multiple attention heads allow the model to learn different
+        kinds of relationships in parallel.
+    </p>
+
+    <h3>26.2.3 What makes a transformer quantum?</h3>
+
+    <p>
+        The term "quantum transformer" does not refer to one universally
+        accepted architecture. It describes a family of research ideas
+        that incorporate quantum processing into parts of a transformer-like
+        system.
+    </p>
+
+    <p>
+        For example, a quantum circuit could be used to transform an input
+        representation into a quantum state. Measurements could then
+        provide scores or features used by a classical attention layer.
+        Alternatively, a model could use quantum circuits to represent
+        certain interactions among features.
+    </p>
+
+    <p>
+        One possible hybrid design follows this pattern:
+    </p>
+
+    <ol>
+        <li>
+            A classical tokenizer divides the input into tokens.
+        </li>
+        <li>
+            Classical embeddings convert tokens into numerical vectors.
+        </li>
+        <li>
+            A quantum circuit encodes selected features and processes them.
+        </li>
+        <li>
+            Measurements produce classical values that feed into an
+            attention or prediction layer.
+        </li>
+        <li>
+            A classical optimiser updates the trainable parameters during
+            training.
+        </li>
+    </ol>
+
+    <p>
+        Such a model is a hybrid quantum-classical model. It does not imply
+        that the entire transformer runs on a quantum computer.
+    </p>
+
+    <div class="concept">
+        <strong>Important distinction:</strong> Putting a quantum circuit
+        inside a transformer does not automatically make the model faster
+        or more capable. The circuit must provide a measurable benefit
+        that outweighs its execution, measurement and data-transfer costs.
+    </div>
+
+    <h3>26.2.4 Quantum attention</h3>
+
+    <p>
+        Researchers can investigate several ways of introducing quantum
+        ideas into attention. One approach is to encode token features
+        into quantum states and use measurements to estimate similarities
+        between those states. The estimated similarities could influence
+        attention weights.
+    </p>
+
+    <p>
+        Another approach uses parameterised quantum circuits as feature
+        maps. These circuits transform inputs into representations whose
+        measured properties may be useful for classification or prediction.
+        The resulting features can be combined with ordinary attention
+        mechanisms.
+    </p>
+
+    <p>
+        A third possibility is to study whether quantum algorithms can
+        accelerate particular linear algebra, sampling or kernel
+        calculations associated with attention. Such proposals must be
+        evaluated carefully because a speedup for one mathematical
+        subroutine does not necessarily translate into a faster complete
+        model.
+    </p>
+
+    <p>
+        Quantum measurement introduces a particular difficulty. The
+        attention mechanism needs numerical scores, but a quantum device
+        generally produces measurement outcomes rather than revealing
+        every property of its state at once. Estimating accurate scores
+        may require repeated circuit executions.
+    </p>
+
+    <h3>26.2.5 From quantum transformers to large models</h3>
+
+    <p>
+        Large language models are trained on enormous datasets using
+        extensive computational resources. Their performance depends on
+        the model architecture, data quality, optimisation method,
+        available compute and the way they are evaluated.
+    </p>
+
+    <p>
+        Bringing quantum circuits into large models raises several
+        questions. How should classical token embeddings be encoded into
+        qubits? How many qubits are needed? Can the circuit be trained
+        reliably? How much information is lost during measurement? Can
+        the model be scaled without making the quantum portion too
+        expensive?
+    </p>
+
+    <p>
+        The data-loading problem is especially important. A classical
+        token may be represented by hundreds or thousands of numerical
+        values. Encoding all those values into a quantum state is not
+        necessarily free. An algorithm that assumes instant access to
+        a quantum representation of a large vector may overlook a
+        substantial part of the actual computational cost.
+    </p>
+
+    <h3>26.2.6 Quantum models and generative AI</h3>
+
+    <p>
+        Generative models learn patterns in data and use those patterns
+        to produce new samples. A language model generates tokens, while
+        an image model may generate pixels or latent representations.
+        Quantum generative models explore whether quantum circuits can
+        learn and sample useful probability distributions.
+    </p>
+
+    <p>
+        In principle, a hybrid generative system could use a quantum
+        circuit to generate features or samples while classical neural
+        networks handle token processing, large-scale memory and output
+        generation. This is a research possibility rather than evidence
+        that quantum models can currently replace large classical
+        foundation models.
+    </p>
+
+    <div class="warning">
+        <strong>Research caution:</strong> A small quantum model performing
+        well on a carefully selected dataset does not establish an advantage
+        over a large language model. Fair comparisons require strong
+        classical baselines, comparable resources, appropriate datasets
+        and measurements of end-to-end cost.
+    </div>
+
+    <h3>26.2.7 What would count as progress?</h3>
+
+    <p>
+        Meaningful progress would include a reproducible improvement in
+        accuracy, training cost, sampling quality or another useful
+        measure on a well-defined task. Researchers would also need to
+        explain whether the benefit comes from quantum processing, a
+        different architecture, additional resources or an unfair
+        comparison.
+    </p>
+
+    <p>
+        For the foreseeable future, hybrid experiments and carefully
+        selected subproblems are more realistic research directions than
+        replacing every component of a large AI system with quantum
+        hardware.
+    </p>
+</section>
+
+<section id="equivariant">
+    <h2>26.3 Equivariant and Geometric Quantum Machine Learning</h2>
+
+    <h3>26.3.1 Why geometry matters in machine learning</h3>
+
+    <p>
+        Many machine-learning problems contain more structure than a
+        simple list of unrelated numbers. Images contain spatial
+        relationships. Molecules contain atoms and bonds. A robot has
+        positions and orientations. A physical system may obey laws that
+        remain unchanged when the entire experiment is rotated or
+        translated.
+    </p>
+
+    <p>
+        A model that ignores this structure may need a large amount of
+        training data to learn relationships that could have been built
+        into its design from the beginning.
+    </p>
+
+    <p>
+        Geometric machine learning studies how to build models that
+        respect the structure of the data. Examples include graph neural
+        networks for molecules, convolutional neural networks for images
+        and specialised models for three-dimensional objects.
+    </p>
+
+    <h3>26.3.2 Invariance and equivariance</h3>
+
+    <p>
+        Two related ideas are invariance and equivariance. They describe
+        how a model should respond when its input is transformed.
+    </p>
+
+    <p>
+        An invariant prediction remains unchanged under a transformation.
+        For example, the total mass of a molecule does not change when
+        the molecule is rotated in space.
+    </p>
+
+    <p>
+        An equivariant prediction changes in a predictable way. For
+        example, if a molecule is rotated, its predicted force vectors
+        should rotate by the same amount.
+    </p>
+
+    <div class="equation">
+        Invariance: f(Tx) = f(x)
+        <br><br>
+        Equivariance: f(Tx) = T'f(x)
+    </div>
+
+    <p>
+        In these expressions, x is the input, T transforms the input,
+        and T' describes the corresponding transformation of the output.
+        For an invariant model, the output is unchanged. For an
+        equivariant model, the output transforms consistently with the
+        input.
+    </p>
+
+    <div class="example">
+        <strong>Example: A molecule viewed from a different direction</strong>
+
+        <p>
+            Imagine taking two photographs of the same molecule, one
+            before rotating the model and one after. Its total energy
+            should not depend on which direction the camera faces.
+            However, the directions of its forces should change with
+            the rotation. A model that respects these relationships
+            can learn the underlying chemistry more efficiently than
+            one that must discover them from examples alone.
+        </p>
+    </div>
+
+    <h3>26.3.3 Symmetry and group theory</h3>
+
+    <p>
+        Mathematicians describe many transformations using groups.
+        A group is a collection of operations that can be combined
+        according to specific rules. Rotations, translations and
+        permutations provide important examples of transformations
+        relevant to physical and geometric problems.
+    </p>
+
+    <p>
+        Symmetry is useful because it tells us which aspects of a
+        problem change and which remain the same. If a physical law
+        is symmetric under a particular transformation, a learning
+        model can be designed to respect that symmetry.
+    </p>
+
+    <p>
+        In quantum mechanics, symmetries also influence the structure
+        of quantum states and operators. They are connected to conserved
+        quantities, allowed transitions and the way a physical system
+        responds to transformations.
+    </p>
+
+    <h3>26.3.4 What is geometric quantum machine learning?</h3>
+
+    <p>
+        Geometric quantum machine learning combines geometric structure
+        with quantum representations and quantum computation. The aim
+        is to design quantum models that respect important symmetries
+        of the problem rather than treating every input as an unrelated
+        collection of numbers.
+    </p>
+
+    <p>
+        A quantum circuit can be designed to behave consistently under
+        a chosen family of transformations. One way to achieve this is
+        to use gates and circuit structures that respect a symmetry.
+        Another is to transform the input, apply a shared model and
+        combine the results in a controlled manner.
+    </p>
+
+    <p>
+        Such designs may be useful when the data comes from physical
+        systems, molecules, particle interactions or spatial
+        configurations. The model can incorporate known scientific
+        relationships into its architecture.
+    </p>
+
+    <h3>26.3.5 Symmetry-aware quantum circuits</h3>
+
+    <p>
+        Suppose a physical system has a symmetry represented by an
+        operation U. A quantum circuit may be designed so that its
+        transformation respects that symmetry. In some settings,
+        the circuit may commute with the symmetry operation.
+    </p>
+
+    <div class="equation">
+        [V, U] = VU - UV = 0
+    </div>
+
+    <p>
+        Here, V represents a circuit operation and U represents a
+        symmetry operation. The commutator is zero when applying the
+        two operations in either order gives the same result.
+    </p>
+
+    <p>
+        This is one possible way of expressing symmetry compatibility.
+        It is not a universal requirement for every equivariant model:
+        more general architectures may transform outputs according
+        to a representation of the symmetry group rather than simply
+        commuting with every transformation.
+    </p>
+
+    <p>
+        The benefit of respecting symmetry is that the model does not
+        have to learn the same physical relationship independently
+        for every equivalent orientation or configuration. This can
+        improve data efficiency and make predictions more consistent.
+    </p>
+
+    <h3>26.3.6 Graphs, molecules and quantum learning</h3>
+
+    <p>
+        Molecules can be represented as graphs. Atoms become nodes,
+        bonds become edges, and node or edge features describe chemical
+        properties. Graph-based learning methods are useful because
+        changing the order in which the atoms are listed should not
+        change the identity of the molecule.
+    </p>
+
+    <p>
+        This property is related to permutation symmetry. A model
+        should produce consistent results if the same atoms are
+        presented in a different order, provided their relationships
+        remain unchanged.
+    </p>
+
+    <p>
+        Quantum machine-learning models can use graph information
+        when constructing circuits, encoding features or defining
+        interactions. The challenge is to create a quantum
+        representation that respects the relevant graph structure
+        without introducing excessive circuit depth or difficult
+        training problems.
+    </p>
+
+    <h3>26.3.7 Why equivariance is not automatically a quantum advantage</h3>
+
+    <p>
+        Symmetry-aware architecture can improve a model, but the
+        benefit does not necessarily come from quantum computation.
+        Classical geometric neural networks already exploit many
+        forms of symmetry very effectively.
+    </p>
+
+    <p>
+        To demonstrate a quantum advantage, a quantum geometric
+        model must be compared with strong classical models that
+        use the same scientific knowledge. Otherwise, the result
+        may show only that incorporating symmetry is helpful.
+    </p>
+
+    <p>
+        The central research question is whether quantum representations
+        offer additional useful expressive power or computational
+        benefits after the advantages of geometry have been fairly
+        accounted for.
+    </p>
+</section>
+
+<section id="error-correction">
+    <h2>26.4 Quantum Machine Learning on Error-Corrected Hardware</h2>
+
+    <h3>26.4.1 Why quantum computers make errors</h3>
+
+    <p>
+        A classical computer stores information using physical states
+        that are engineered to be stable enough for reliable computation.
+        Quantum computers use delicate quantum states. Their information
+        can be disturbed by interactions with the environment, imperfect
+        control operations and measurement errors.
+    </p>
+
+    <p>
+        These disturbances are commonly described as noise. A small
+        error in one quantum operation may spread through a circuit,
+        changing its final measurement outcomes. As circuits become
+        deeper, controlling the accumulated effects of noise becomes
+        increasingly important.
+    </p>
+
+    <p>
+        This is a serious challenge for quantum machine learning because
+        training may require repeated execution of a parameterised
+        circuit. If the circuit's output is too noisy, it becomes
+        difficult to estimate its predictions or determine which
+        parameter changes would improve the model.
+    </p>
+
+    <h3>26.4.2 What quantum error correction does</h3>
+
+    <p>
+        Quantum error correction aims to protect quantum information
+        by encoding logical information across multiple physical
+        qubits. The physical qubits are the actual hardware components.
+        Logical qubits are the protected units of information used
+        by a fault-tolerant computation.
+    </p>
+
+    <p>
+        A quantum error-correcting code introduces structured redundancy.
+        The system measures carefully chosen error indicators, often
+        called syndrome information, to learn which types of errors
+        may have occurred without directly measuring and destroying
+        the logical information being protected.
+    </p>
+
+    <p>
+        A classical decoder processes the syndrome data and determines
+        a suitable correction or equivalent interpretation of the
+        error. The process can be repeated throughout a computation.
+    </p>
+
+    <div class="concept">
+        <strong>Physical versus logical qubits:</strong> A physical qubit
+        is a hardware component. A logical qubit is information protected
+        by an error-correction scheme. Constructing one reliable logical
+        qubit generally requires multiple physical qubits, and the
+        overhead depends on the code, hardware noise and target error
+        rate.
+    </div>
+
+    <h3>26.4.3 Fault tolerance</h3>
+
+    <p>
+        A fault-tolerant quantum computer is designed so that errors
+        can be managed while the computation continues. It does not
+        mean that errors become impossible. Rather, the architecture,
+        encoding and operations are arranged so that error rates can
+        be reduced to levels suitable for longer computations.
+    </p>
+
+    <p>
+        In suitable fault-tolerant architectures, increasing the
+        protection level can reduce the logical error rate, but it
+        requires additional physical resources and reliable control.
+        The exact relationship depends on the hardware and error
+        correction code.
+    </p>
+
+    <p>
+        This distinction matters for machine learning. A model that
+        works on a small noisy device may not behave the same way
+        on a larger error-corrected system. The available gate set,
+        circuit depth, logical qubit count and measurement procedures
+        all affect which algorithms are practical.
+    </p>
+
+    <h3>26.4.4 How error correction changes quantum machine learning</h3>
+
+    <p>
+        Many current quantum-learning experiments use relatively
+        shallow circuits because present devices have limited
+        coherence and imperfect operations. Error-corrected hardware
+        could allow more complex algorithms to run reliably, provided
+        the cost of encoding and correcting the quantum information
+        remains manageable.
+    </p>
+
+    <p>
+        Potential research directions include:
+    </p>
+
+    <ul>
+        <li>
+            Training quantum models that require deeper circuits.
+        </li>
+        <li>
+            Running quantum optimisation procedures for more iterations.
+        </li>
+        <li>
+            Evaluating algorithms that are too sensitive to noise
+            on present hardware.
+        </li>
+        <li>
+            Studying quantum kernels or feature maps that require
+            more complex quantum operations.
+        </li>
+        <li>
+            Combining error-corrected quantum computation with
+            classical machine-learning systems.
+        </li>
+    </ul>
+
+    <p>
+        However, error correction does not automatically make a model
+        easier to train. It protects quantum information from errors;
+        it does not guarantee that the model has a useful architecture,
+        that its loss function is easy to optimise or that it will
+        outperform a classical alternative.
+    </p>
+
+    <h3>26.4.5 The connection between noise and training</h3>
+
+    <p>
+        A parameterised quantum model produces predictions based on
+        measurements. When the circuit is noisy, the measured
+        expectation values may differ from those predicted by the
+        ideal circuit. Some noise processes introduce bias, while
+        finite measurement counts introduce statistical uncertainty.
+    </p>
+
+    <p>
+        During training, these effects can make it harder to estimate
+        gradients. The optimiser may respond to measurement fluctuations
+        rather than genuine improvements in the model.
+    </p>
+
+    <p>
+        Error mitigation techniques attempt to reduce the effect of
+        noise without fully correcting the quantum information. They
+        can be useful in some settings, but they often add sampling
+        or computational overhead and do not offer the same general
+        protection as full fault-tolerant error correction.
+    </p>
+
+    <h3>26.4.6 Logical qubits and resource estimation</h3>
+
+    <p>
+        A practical quantum-learning algorithm must be assessed using
+        realistic resource estimates. Researchers need to estimate
+        the number of logical qubits, the number and type of logical
+        gates, the circuit depth, the number of measurements and
+        the overhead required for error correction.
+    </p>
+
+    <p>
+        A circuit that appears small when counted in physical gates
+        may be expensive when implemented fault-tolerantly. Some
+        operations require considerably more resources than others,
+        depending on the error-correcting code and architecture.
+    </p>
+
+    <p>
+        For this reason, claims about future quantum machine learning
+        should distinguish between an algorithm that is mathematically
+        promising and one that can be executed within a realistic
+        hardware budget.
+    </p>
+
+    <div class="example">
+        <strong>Example: Training a deeper quantum model</strong>
+
+        <p>
+            Imagine a model whose useful circuit requires hundreds
+            of sequential quantum operations. A noisy device may
+            produce unreliable outputs before the circuit finishes.
+            An error-corrected device could protect the computation,
+            but it might require many physical qubits to construct
+            the necessary logical qubits. The real question is
+            whether the resulting reliable computation is worth
+            that resource cost.
+        </p>
+    </div>
+
+    <h3>26.4.7 The longer-term direction</h3>
+
+    <p>
+        Error-corrected hardware may broaden the range of quantum
+        algorithms available to researchers. It could make it possible
+        to explore more complex quantum learning models and more
+        demanding scientific applications.
+    </p>
+
+    <p>
+        Nevertheless, the most useful models may still be hybrid.
+        Classical computers are well suited to storing large datasets,
+        performing ordinary matrix operations, managing experiments
+        and updating many model parameters. Quantum hardware may
+        eventually handle selected computations that benefit from
+        reliable quantum processing.
+    </p>
+</section>
+
+<section id="optimisation">
+    <h2>26.5 Quantum-Enhanced Optimisation for AI Training</h2>
+
+    <h3>26.5.1 Why optimisation is central to AI</h3>
+
+    <p>
+        Training a machine-learning model usually means finding
+        parameters that make its predictions fit the training data
+        according to a chosen objective. A loss function measures
+        how poorly the model performs, and an optimiser changes
+        the parameters in an attempt to reduce that loss.
+    </p>
+
+    <p>
+        If a model has parameters represented by &theta;, its training
+        objective can be written as:
+    </p>
+
+    <div class="equation">
+        &theta;* = arg min<sub>&theta;</sub> L(&theta;)
+    </div>
+
+    <p>
+        Here, L is the loss function, and &theta;* represents a
+        parameter setting that minimises the objective, ideally
+        subject to the relevant constraints.
+    </p>
+
+    <p>
+        In practice, modern AI training often uses gradient-based
+        algorithms. These algorithms estimate how the loss changes
+        when the parameters change, then update the parameters
+        accordingly.
+    </p>
+
+    <p>
+        Optimisation becomes challenging when a model has many
+        parameters, the loss surface is complicated, training data
+        is large or evaluations are expensive. These challenges
+        motivate researchers to explore new optimisation methods,
+        including quantum approaches.
+    </p>
+
+    <h3>26.5.2 What does quantum-enhanced optimisation mean?</h3>
+
+    <p>
+        Quantum-enhanced optimisation refers to approaches in which
+        quantum computation is used to help solve an optimisation
+        problem. The quantum component might search through candidate
+        solutions, sample from a distribution, estimate an objective
+        or perform a subroutine used by a larger optimisation process.
+    </p>
+
+    <p>
+        It is important to distinguish quantum optimisation algorithms
+        from quantum machine learning itself. A quantum optimiser
+        can be used to train a classical neural network. Conversely,
+        a quantum neural network can be trained using an ordinary
+        classical optimiser.
+    </p>
+
+    <p>
+        Combining the two is possible, but it introduces extra
+        questions about how information flows between the classical
+        and quantum parts and whether the combined process is
+        computationally worthwhile.
+    </p>
+
+    <h3>26.5.3 Variational quantum optimisation</h3>
+
+    <p>
+        Variational quantum algorithms use a parameterised circuit
+        to represent candidate states or solutions. A classical
+        optimiser updates the circuit parameters according to
+        measured results.
+    </p>
+
+    <p>
+        One example is the Quantum Approximate Optimisation Algorithm,
+        or QAOA. It was developed for combinatorial optimisation
+        problems that can be expressed in terms of an objective
+        over discrete choices.
+    </p>
+
+    <p>
+        Suppose a problem asks us to select a set of items subject
+        to certain constraints. The quality of a solution can be
+        represented by a cost function. QAOA encodes that cost
+        into a quantum operation and alternates it with operations
+        intended to explore different combinations of choices.
+    </p>
+
+    <p>
+        A quantum circuit then produces candidate solutions through
+        measurement. A classical optimiser adjusts the circuit
+        parameters to increase the likelihood of obtaining
+        high-quality candidates.
+    </p>
+
+    <p>
+        QAOA is not a general-purpose method guaranteed to outperform
+        classical optimisation. Its performance depends on the
+        problem structure, circuit depth, hardware and quality
+        of the classical alternatives.
+    </p>
+
+    <h3>26.5.4 Could quantum optimisation improve neural-network training?</h3>
+
+    <p>
+        Neural-network training involves large and often non-convex
+        optimisation problems. Non-convex means that the loss
+        function can contain many local minima, flat regions,
+        saddle points and other structures that complicate the
+        search for good parameters.
+    </p>
+
+    <p>
+        Researchers have considered several ways quantum computation
+        might help:
+    </p>
+
+    <ul>
+        <li>
+            <strong>Parameter search:</strong> Explore candidate
+            parameter settings for selected optimisation problems.
+        </li>
+        <li>
+            <strong>Sampling:</strong> Generate samples from
+            distributions that may be useful in probabilistic
+            training methods.
+        </li>
+        <li>
+            <strong>Combinatorial subproblems:</strong> Address
+            discrete decisions that arise in scheduling, architecture
+            search or resource allocation.
+        </li>
+        <li>
+            <strong>Quantum subroutines:</strong> Investigate whether
+            a well-defined part of an optimisation algorithm can
+            be accelerated by a quantum algorithm.
+        </li>
+    </ul>
+
+    <p>
+        These are different research directions. A method that
+        helps with scheduling a training job does not necessarily
+        accelerate the gradient calculations needed to train a
+        neural network.
+    </p>
+
+    <h3>26.5.5 Quantum annealing and discrete optimisation</h3>
+
+    <p>
+        Some optimisation problems can be expressed using binary
+        variables. For example, a variable might indicate whether
+        a particular item is selected or whether a particular
+        connection is enabled.
+    </p>
+
+    <p>
+        Certain discrete optimisation objectives can be represented
+        as a quadratic unconstrained binary optimisation problem,
+        often called QUBO. Constraints can sometimes be incorporated
+        through penalty terms.
+    </p>
+
+    <div class="equation">
+        E(x) = &Sigma;<sub>i</sub> a<sub>i</sub>x<sub>i</sub>
+        + &Sigma;<sub>i&lt;j</sub> b<sub>ij</sub>x<sub>i</sub>x<sub>j</sub>
+        <br>
+        x<sub>i</sub> &isin; {0, 1}
+    </div>
+
+    <p>
+        Quantum annealing devices are designed to seek low-energy
+        configurations of a physical system whose energy function
+        represents the optimisation objective. Such methods can
+        be investigated for discrete problems arising in AI
+        workflows.
+    </p>
+
+    <p>
+        However, converting a real-world problem into QUBO may
+        require additional variables and penalty terms. Embedding
+        the resulting problem into the device may also be expensive.
+        Classical solvers remain very strong on many practical
+        optimisation tasks.
+    </p>
+
+    <h3>26.5.6 The measurement bottleneck</h3>
+
+    <p>
+        A quantum optimiser does not simply reveal an ideal answer
+        after one circuit execution. Measurements produce samples,
+        and repeated executions may be needed to estimate expected
+        costs or gradients accurately.
+    </p>
+
+    <p>
+        In a hybrid training loop, each iteration may involve
+        sending parameters to the quantum device, executing a
+        circuit many times, collecting measurements and sending
+        the results back to the classical optimiser. Communication
+        and queueing delays can make this process slow.
+    </p>
+
+    <p>
+        A proposed speedup must therefore account for the complete
+        process, including state preparation, circuit execution,
+        repeated measurements, classical processing and data
+        transfer.
+    </p>
+
+    <h3>26.5.7 Comparing fairly with classical optimisation</h3>
+
+    <p>
+        The correct baseline depends on the problem. For neural-network
+        training, researchers should compare against established
+        optimisers and strong practical training procedures. For
+        discrete optimisation, they should compare against suitable
+        classical algorithms, including specialised solvers when
+        appropriate.
+    </p>
+
+    <p>
+        Useful measurements include solution quality, wall-clock
+        time, energy consumption, total computational resources
+        and reliability across multiple runs. The comparison
+        should also account for preprocessing and the cost of
+        translating the problem into a form suitable for the
+        quantum hardware.
+    </p>
+
+    <div class="warning">
+        <strong>Key lesson:</strong> Quantum optimisation is a
+        possible tool for selected problems, not a universal
+        replacement for gradient descent, Adam or classical
+        combinatorial optimisation.
+    </div>
+
+    <h3>26.5.8 Where the research may lead</h3>
+
+    <p>
+        The most promising opportunities may arise when a problem
+        has a structure that a particular quantum algorithm can
+        exploit. This may include carefully chosen sampling tasks,
+        quantum-native objectives or discrete optimisation problems
+        with suitable mathematical properties.
+    </p>
+
+    <p>
+        For large-scale AI training, it remains an open research
+        question whether quantum methods can deliver a reliable
+        end-to-end advantage over highly optimised classical
+        systems.
+    </p>
+</section>
+
+<section id="federated">
+    <h2>26.6 Federated and Privacy-Preserving Quantum Learning</h2>
+
+    <h3>26.6.1 Why privacy matters in machine learning</h3>
+
+    <p>
+        Machine learning often depends on data collected by
+        different people or organisations. A hospital may hold
+        medical records, a bank may hold transaction histories,
+        and a research laboratory may hold sensitive experimental
+        measurements.
+    </p>
+
+    <p>
+        Combining these datasets could improve a model, but moving
+        all the raw data to one location may create legal,
+        commercial or privacy concerns. In some cases, the
+        organisations are not permitted to share their records
+        directly.
+    </p>
+
+    <p>
+        Federated learning is one approach to this problem. It
+        allows multiple participants to train a shared model
+        while keeping their raw datasets at their respective
+        locations.
+    </p>
+
+    <h3>26.6.2 How federated learning works</h3>
+
+    <p>
+        Consider several hospitals that want to train a model
+        to recognise patterns in medical images. Each hospital
+        holds its own dataset and cannot freely transfer its
+        patients' records to another institution.
+    </p>
+
+    <ol>
+        <li>
+            A coordinating server distributes the current model
+            parameters to participating hospitals.
+        </li>
+        <li>
+            Each hospital trains the model using its local data.
+        </li>
+        <li>
+            The hospitals send model updates, rather than the
+            original medical records, to the coordinator.
+        </li>
+        <li>
+            The coordinator combines the updates to produce
+            a new shared model.
+        </li>
+        <li>
+            The process repeats until the model reaches an
+            acceptable result or the training process stops.
+        </li>
+    </ol>
+
+    <p>
+        This general approach can reduce the need to centralise
+        sensitive data. However, keeping raw data local does
+        not automatically guarantee privacy. Model updates can
+        sometimes reveal information about individual training
+        examples.
+    </p>
+
+    <h3>26.6.3 What changes when quantum learning is introduced?</h3>
+
+    <p>
+        Quantum federated learning explores how multiple participants
+        can collaboratively train quantum models or combine
+        quantum-related information while limiting the movement
+        of sensitive data.
+    </p>
+
+    <p>
+        There are several possible arrangements. Each participant
+        might own a quantum processor and train a local quantum
+        model. Alternatively, participants may use local classical
+        datasets to train hybrid quantum-classical models, with
+        a central server coordinating selected parameters.
+    </p>
+
+    <p>
+        In another setting, a quantum service may be accessed
+        remotely. Participants submit authorised computations
+        without directly controlling the hardware. This raises
+        questions about data confidentiality, the information
+        revealed by submitted circuits and the trust placed
+        in the service provider.
+    </p>
+
+    <p>
+        These arrangements have different technical requirements.
+        A system with a quantum processor at every participant
+        is substantially different from one in which all quantum
+        operations are performed by a shared remote service.
+    </p>
+
+    <h3>26.6.4 Challenges in federated quantum learning</h3>
+
+    <p>
+        Classical federated learning already faces challenges
+        such as communication cost, unequal dataset sizes,
+        differences in local data distributions and unreliable
+        participants. Quantum systems introduce further
+        complications.
+    </p>
+
+    <ul>
+        <li>
+            <strong>Parameter compatibility:</strong> Participants
+            need compatible models or a well-defined method
+            for combining their updates.
+        </li>
+        <li>
+            <strong>Quantum hardware differences:</strong> Devices
+            may have different noise characteristics, gate sets
+            and qubit connectivity.
+        </li>
+        <li>
+            <strong>Measurement costs:</strong> Local training
+            may require repeated circuit executions to estimate
+            predictions and gradients.
+        </li>
+        <li>
+            <strong>Communication overhead:</strong> Sharing
+            model parameters and measurement information can
+            be expensive, especially when frequent updates
+            are required.
+        </li>
+        <li>
+            <strong>Data imbalance:</strong> Participants may
+            hold different amounts and types of data, which
+            can make a shared model difficult to train.
+        </li>
+    </ul>
+
+    <h3>26.6.5 Privacy techniques</h3>
+
+    <p>
+        Federated learning is a way of organising training, not
+        a complete privacy guarantee. Additional techniques may
+        be needed to reduce information leakage.
+    </p>
+
+    <p>
+        <strong>Secure aggregation</strong> allows a coordinator
+        to obtain a combined update without directly observing
+        every participant's individual update, subject to the
+        protocol's assumptions.
+    </p>
+
+    <p>
+        <strong>Differential privacy</strong> provides a formal
+        framework for limiting how much a model's released
+        information can depend on any one individual's data.
+        It commonly uses carefully calibrated noise and may
+        require limiting the influence of individual examples.
+    </p>
+
+    <p>
+        <strong>Encryption and secure computation</strong> can
+        protect data or intermediate values while they are
+        transferred or processed. Their usefulness depends
+        on the threat model, implementation and computational
+        overhead.
+    </p>
+
+    <p>
+        Quantum communication and quantum cryptographic techniques
+        may offer additional tools in specialised settings,
+        but they do not remove the need for a careful privacy
+        design.
+    </p>
+
+    <h3>26.6.6 Quantum communication and distributed learning</h3>
+
+    <p>
+        Quantum communication allows quantum states or other
+        information to be transmitted using quantum channels.
+        In principle, distributed quantum systems can share
+        entanglement and coordinate certain quantum operations
+        across different locations.
+    </p>
+
+    <p>
+        Such systems could support research into distributed
+        quantum computation and learning. However, transmitting
+        quantum states is technically demanding. Quantum
+        communication channels suffer from loss and noise,
+        and long-distance operation may require specialised
+        infrastructure such as quantum repeaters.
+    </p>
+
+    <p>
+        It is also important to distinguish quantum communication
+        from ordinary federated learning. A federated learning
+        system can operate entirely over classical communication
+        channels, even if its local models use quantum circuits.
+        Quantum communication is not a necessary component
+        of every quantum federated-learning proposal.
+    </p>
+
+    <h3>26.6.7 A practical example</h3>
+
+    <div class="example">
+        <strong>Example: Several laboratories studying a rare disease</strong>
+
+        <p>
+            Each laboratory has a small collection of patient
+            records. No laboratory has enough data to train
+            a reliable model alone, but regulations prevent
+            them from sharing raw records freely. A federated
+            system allows each laboratory to train locally
+            and contribute model updates. If a quantum model
+            is being investigated, a quantum circuit may
+            process selected features at each site, while
+            classical systems coordinate the training.
+        </p>
+
+        <p>
+            Before deployment, the researchers must still test
+            for information leakage, bias, differences between
+            institutions and the reliability of the model.
+            Quantum processing does not by itself solve these
+            problems.
+        </p>
+    </div>
+
+    <h3>26.6.8 What should be evaluated?</h3>
+
+    <p>
+        A useful evaluation should measure model quality,
+        communication volume, training time, hardware usage,
+        robustness to different local datasets and the strength
+        of the privacy guarantees.
+    </p>
+
+    <p>
+        Researchers must also identify their threat model.
+        Are participants honest? Can the central server be
+        trusted? Could one participant try to infer another
+        participant's data? Could an attacker manipulate
+        model updates?
+    </p>
+
+    <p>
+        Answering these questions is necessary before claiming
+        that a system provides privacy-preserving quantum
+        learning. A quantum model, a federated protocol and
+        a privacy guarantee are three separate components
+        that must be designed to work together.
+    </p>
+</section>
+
+<section id="cryptography">
+    <h2>26.7 Quantum AI and Cryptographic Aspects</h2>
+
+    <h3>26.7.1 Why AI and cryptography intersect</h3>
+
+    <p>
+        Cryptography protects information by controlling who
+        can read it, verify it or change it. It supports secure
+        communication, digital signatures, authentication
+        and many other essential computer systems.
+    </p>
+
+    <p>
+        Artificial intelligence introduces new opportunities
+        and risks for these systems. Machine learning can
+        help detect suspicious activity, classify malicious
+        traffic or identify unusual patterns. At the same
+        time, attackers can use AI to discover weaknesses,
+        automate analysis and create more convincing attacks.
+    </p>
+
+    <p>
+        Quantum computing adds another dimension. Some
+        quantum algorithms can solve particular mathematical
+        problems more efficiently than known classical
+        methods. Certain cryptographic systems rely on
+        the difficulty of precisely such problems.
+    </p>
+
+    <p>
+        The intersection of these fields includes the security
+        of AI systems, quantum-resistant cryptography, quantum
+        algorithms for cryptanalysis and the possible use
+        of learning methods in cryptographic research.
+    </p>
+
+    <h3>26.7.2 How quantum computing affects cryptography</h3>
+
+    <p>
+        Modern public-key cryptography often relies on mathematical
+        problems that are believed to be difficult for classical
+        computers to solve efficiently. Two well-known examples
+        are integer factorisation and the discrete logarithm
+        problem.
+    </p>
+
+    <p>
+        Shor's algorithm is a quantum algorithm that can solve
+        integer factorisation and discrete logarithm problems
+        in polynomial time under the standard algorithmic
+        model. If a sufficiently large, reliable, fault-tolerant
+        quantum computer becomes available, this could threaten
+        widely used public-key systems based on these problems.
+    </p>
+
+    <p>
+        RSA relies on the difficulty of factoring large integers.
+        Traditional elliptic-curve cryptography relies on
+        discrete-logarithm problems over suitable groups.
+        These systems therefore need to be considered in
+        planning for a future with powerful quantum computers.
+    </p>
+
+    <p>
+        This does not mean that today's noisy quantum devices
+        can immediately break all deployed cryptographic
+        systems. Large-scale cryptanalysis would require
+        substantial reliable quantum resources, and the
+        resource requirements depend on the target and
+        implementation.
+    </p>
+
+    <h3>26.7.3 What about symmetric cryptography?</h3>
+
+    <p>
+        Symmetric cryptography uses the same secret key, or
+        closely related secret keys, for encryption and
+        decryption. Examples include AES and cryptographic
+        hash functions used in security protocols.
+    </p>
+
+    <p>
+        Grover's algorithm provides a quantum search speedup
+        for certain unstructured search problems. In an idealised
+        key-search setting, it can reduce the number of oracle
+        queries required from a quantity proportional to N
+        to one proportional to the square root of N.
+    </p>
+
+    <div class="equation">
+        Classical unstructured search: O(N)
+        <br><br>
+        Quantum unstructured search: O(&radic;N)
+    </div>
+
+    <p>
+        This is a quadratic improvement in query complexity,
+        not an instant solution to every search problem.
+        Practical costs, circuit depth, error correction
+        and the structure of the cryptographic target matter.
+        Increasing key sizes can also help maintain security
+        margins for symmetric encryption against this type
+        of quantum attack.
+    </p>
+
+    <h3>26.7.4 Post-quantum cryptography</h3>
+
+    <p>
+        Post-quantum cryptography refers to cryptographic
+        methods designed to resist attacks by both classical
+        computers and quantum computers, including attacks
+        using known quantum algorithms.
+    </p>
+
+    <p>
+        These methods generally run on ordinary classical
+        computers. They do not require every user to own
+        a quantum computer. Instead, they rely on mathematical
+        problems for which no efficient classical or quantum
+        attack is currently known under the relevant security
+        assumptions.
+    </p>
+
+    <p>
+        Important families include lattice-based cryptography,
+        hash-based signatures, code-based cryptography and
+        other approaches. Security standards and implementations
+        continue to develop, so real deployments should follow
+        current guidance from recognised standards organisations.
+    </p>
+
+    <p>
+        A related field is quantum key distribution, which
+        uses quantum communication to establish secret keys
+        under particular physical and security assumptions.
+        Quantum key distribution and post-quantum cryptography
+        are different approaches: the former uses quantum
+        communication, while the latter uses classical
+        computation with quantum-resistant mathematical
+        constructions.
+    </p>
+
+    <h3>26.7.5 Can AI help cryptanalysis?</h3>
+
+    <p>
+        Cryptanalysis studies methods for evaluating or
+        breaking cryptographic systems. Machine learning
+        can help researchers analyse data produced by
+        cryptographic implementations, search for patterns
+        and evaluate certain forms of leakage.
+    </p>
+
+    <p>
+        For example, a physical device may leak information
+        through its execution time, power consumption or
+        electromagnetic emissions. These are side channels:
+        they reveal information through the behaviour of
+        the implementation rather than directly through
+        the intended mathematical interface.
+    </p>
+
+    <p>
+        Machine-learning models can sometimes classify
+        side-channel measurements and infer information
+        about secret-dependent operations. This research
+        can be used to test and improve defensive
+        implementations.
+    </p>
+
+    <p>
+        AI can also support anomaly detection in security
+        logs and help prioritise suspicious events. However,
+        a learned pattern is not automatically a cryptographic
+        break. Strong cryptographic claims require rigorous
+        analysis, reproducible evidence and a clear
+        understanding of the threat model.
+    </p>
+
+    <h3>26.7.6 Could quantum machine learning help cryptanalysis?</h3>
+
+    <p>
+        Researchers may investigate whether quantum learning
+        algorithms can improve particular tasks involving
+        cryptographic data. These tasks might include
+        classifying structured instances, learning a
+        property of a distribution or assisting a search
+        over candidate hypotheses.
+    </p>
+
+    <p>
+        The theoretical possibility of using quantum
+        machine learning does not imply that it can
+        efficiently break modern cryptography. A useful
+        result must identify the exact task, specify the
+        input model, account for data access and demonstrate
+        a benefit over classical algorithms.
+    </p>
+
+    <p>
+        For example, if a quantum algorithm assumes that
+        it can query a carefully constructed quantum oracle,
+        the result may not apply when the real-world input
+        consists of ordinary encrypted files. Building
+        that oracle or loading the data into the required
+        quantum representation may be expensive or
+        impossible in the intended setting.
+    </p>
+
+    <h3>26.7.7 Cryptography for protecting AI models</h3>
+
+    <p>
+        The relationship also works in the opposite direction:
+        cryptography can help protect machine-learning systems.
+        AI services may contain valuable model parameters,
+        sensitive training data and private user queries.
+    </p>
+
+    <p>
+        Several security techniques are relevant:
+    </p>
+
+    <ul>
+        <li>
+            <strong>Secure multiparty computation:</strong>
+            Allows multiple parties to compute a function
+            together while limiting what each party learns
+            about the others' private inputs.
+        </li>
+        <li>
+            <strong>Homomorphic encryption:</strong>
+            Supports selected computations on encrypted
+            data, allowing results to be decrypted after
+            processing without first exposing the original
+            data to the computing service.
+        </li>
+        <li>
+            <strong>Digital signatures:</strong>
+            Help verify the authenticity and integrity
+            of software, model artefacts and updates.
+        </li>
+        <li>
+            <strong>Zero-knowledge proofs:</strong>
+            Can allow a party to demonstrate that a
+            statement is true without revealing all the
+            underlying information.
+        </li>
+    </ul>
+
+    <p>
+        These techniques can be combined with machine-learning
+        systems, although their computational overhead,
+        supported operations and security assumptions vary.
+        Quantum-resistant versions of relevant cryptographic
+        components may also be important for systems expected
+        to remain secure for many years.
+    </p>
+
+    <h3>26.7.8 Quantum cryptography and the limits of security claims</h3>
+
+    <p>
+        Quantum physics provides some unusual security
+        properties, including the fact that measuring an
+        unknown quantum state can disturb it. Quantum
+        cryptographic protocols use physical principles
+        to establish security under specified assumptions.
+    </p>
+
+    <p>
+        Nevertheless, a real system is more than its
+        mathematical protocol. Hardware flaws, poor random
+        number generation, insecure key storage, software
+        vulnerabilities and implementation mistakes can
+        undermine security.
+    </p>
+
+    <p>
+        Similarly, AI-based security tools may identify
+        patterns that human analysts miss, but they can
+        also make mistakes, produce false alarms or be
+        manipulated by adversarial inputs. Strong security
+        requires layers of protection rather than reliance
+        on a single algorithm or model.
+    </p>
+
+    <div class="example">
+        <strong>Example: Protecting a financial AI service</strong>
+
+        <p>
+            A bank may use an AI model to identify unusual
+            transactions. Cryptographic protocols protect
+            communications and stored credentials, while
+            access controls restrict who can inspect the
+            data. AI helps identify suspicious behaviour,
+            but it does not replace encryption or secure
+            authentication. As quantum computing advances,
+            the bank may also need to migrate vulnerable
+            public-key cryptographic components to
+            standardised post-quantum alternatives.
+        </p>
+    </div>
+
+    <h3>26.7.9 The long-term relationship between quantum AI and security</h3>
+
+    <p>
+        Quantum computing and AI may influence security
+        in several ways. Quantum algorithms can change
+        the assumptions behind some cryptographic systems.
+        Machine learning can improve security monitoring
+        and help test implementations. Quantum learning
+        may eventually contribute to specialised analysis
+        tasks, while privacy-preserving cryptography can
+        help protect AI models and data.
+    </p>
+
+    <p>
+        The important principle is to separate established
+        results from speculation. Shor's algorithm has
+        well-established theoretical implications for
+        certain cryptographic systems. The practical
+        performance of quantum machine learning for
+        cryptanalysis, however, depends on the specific
+        problem and remains an active research question.
+    </p>
+</section>
+
+<section id="connections">
+    <h2>26.8 Connecting the Research Directions</h2>
+
+    <p>
+        The seven areas in this chapter may appear unrelated
+        at first. In reality, they are connected by a common
+        question: how can quantum information processing
+        be combined with the mathematical structure,
+        computational requirements and practical constraints
+        of modern learning systems?
+    </p>
+
+    <p>
+        Scientific applications begin with a physical problem.
+        Geometric methods exploit the symmetries of that
+        problem. Quantum circuits provide one possible
+        computational representation. Optimisation methods
+        train the model or search for useful solutions.
+        Error correction may eventually make more demanding
+        circuits reliable, while federated learning and
+        cryptographic methods address the privacy and
+        security of the overall system.
+    </p>
+
+    <div class="concept">
+        <strong>The broader picture:</strong>
+
+        <ul>
+            <li>
+                Physics and chemistry supply important
+                problems whose underlying behaviour is
+                quantum mechanical.
+            </li>
+            <li>
+                Transformer research asks how quantum
+                processing might contribute to modern
+                representation learning.
+            </li>
+            <li>
+                Geometric learning builds physical
+                symmetries into the model.
+            </li>
+            <li>
+                Error correction aims to make quantum
+                computations more reliable.
+            </li>
+            <li>
+                Quantum optimisation explores alternative
+                ways to solve selected search and training
+                problems.
+            </li>
+            <li>
+                Federated learning and privacy techniques
+                support collaboration without unrestricted
+                sharing of raw data.
+            </li>
+            <li>
+                Cryptography addresses the security
+                implications of both quantum computing
+                and AI.
+            </li>
+        </ul>
+    </div>
+
+    <p>
+        None of these directions removes the need for
+        careful experimental design. A quantum model
+        should be compared with strong classical
+        alternatives, evaluated using suitable metrics
+        and assessed with all relevant resource costs
+        included.
+    </p>
+</section>
+
+<section id="research-method">
+    <h2>26.9 How to Evaluate an Emerging Quantum AI Idea</h2>
+
+    <p>
+        New research proposals often begin with an attractive
+        possibility: perhaps a quantum circuit can represent
+        a complicated distribution, perhaps a quantum
+        optimiser can find a better solution, or perhaps
+        a quantum model can learn a scientific relationship
+        using fewer examples.
+    </p>
+
+    <p>
+        The next step is not to assume that the proposal
+        works. It is to turn the idea into a testable
+        scientific question.
+    </p>
+
+    <h3>Step 1: Define the task precisely</h3>
+
+    <p>
+        Researchers must specify the input, the desired
+        output and the conditions under which the task
+        is performed. Predicting molecular energy,
+        classifying images and searching a combinatorial
+        space are different tasks with different
+        computational requirements.
+    </p>
+
+    <h3>Step 2: Identify the quantum component</h3>
+
+    <p>
+        The proposal should explain exactly which operation
+        uses quantum processing. If the entire task can
+        be performed classically, the researchers should
+        clarify why the quantum component is expected
+        to help.
+    </p>
+
+    <h3>Step 3: Choose a strong classical baseline</h3>
+
+    <p>
+        The baseline should reflect the best reasonable
+        classical method for the task. It is not sufficient
+        to compare a new quantum model against a weak
+        or poorly tuned classical model.
+    </p>
+
+    <h3>Step 4: Count the complete computational cost</h3>
+
+    <p>
+        The evaluation should include data encoding,
+        circuit executions, measurements, classical
+        optimisation, communication, error correction
+        where relevant and the process of obtaining
+        the final answer.
+    </p>
+
+    <h3>Step 5: Evaluate reliability</h3>
+
+    <p>
+        A result obtained once may be misleading.
+        Researchers should repeat experiments, account
+        for statistical uncertainty and investigate
+        sensitivity to noise, initialisation and
+        dataset variation.
+    </p>
+
+    <h3>Step 6: State the limits of the conclusion</h3>
+
+    <p>
+        A model that performs well on one small dataset
+        demonstrates a result for that experiment.
+        It does not automatically establish an advantage
+        for all datasets, all hardware platforms or
+        all machine-learning tasks.
+    </p>
+
+    <p>
+        Following this process makes quantum machine-learning
+        research more useful. It helps distinguish a
+        genuinely promising result from an interesting
+        idea whose practical value remains uncertain.
+    </p>
+</section>
+
+<section id="summary">
+    <h2>26.10 Chapter Summary</h2>
+
+    <div class="summary">
+        <p>
+            <strong>Quantum machine learning for physics and chemistry</strong>
+            combines scientific simulation, quantum computation and
+            learning models to investigate molecular energies,
+            material properties and physical systems.
+        </p>
+
+        <p>
+            <strong>Quantum transformers</strong> investigate ways
+            to combine quantum processing with attention, feature
+            representations and generative-model ideas. Their
+            usefulness depends on the cost and benefit of the
+            quantum components.
+        </p>
+
+        <p>
+            <strong>Equivariant and geometric quantum machine learning</strong>
+            uses symmetries and geometric relationships to build
+            models that behave consistently when inputs are
+            transformed.
+        </p>
+
+        <p>
+            <strong>Error-corrected quantum machine learning</strong>
+            explores how logical qubits and fault-tolerant operations
+            may enable deeper and more reliable computations,
+            at the cost of substantial hardware resources.
+        </p>
+
+        <p>
+            <strong>Quantum-enhanced optimisation</strong> investigates
+            whether quantum algorithms can help with particular
+            training, sampling or combinatorial optimisation
+            problems. A general advantage for AI training has
+            not been established.
+        </p>
+
+        <p>
+            <strong>Federated and privacy-preserving quantum learning</strong>
+            studies how organisations can collaborate on learning
+            while protecting sensitive data, and why local data
+            storage alone is not a complete privacy guarantee.
+        </p>
+
+        <p>
+            <strong>Quantum AI and cryptography</strong> examines
+            the security consequences of quantum algorithms,
+            the role of AI in security analysis and the use
+            of cryptographic techniques to protect learning
+            systems.
+        </p>
+
+        <p>
+            Across all seven topics, the central lesson is the
+            same: quantum computing creates new computational
+            possibilities, but turning those possibilities
+            into useful AI requires sound mathematics, suitable
+            algorithms, reliable hardware and honest comparisons
+            with classical methods.
+        </p>
+    </div>
+</section>
+
+<section id="questions">
+    <h2>26.11 Questions for Reflection</h2>
+
+    <ol>
+        <li>
+            Why are quantum computers particularly interesting
+            for simulating molecules and other quantum systems?
+        </li>
+        <li>
+            What is the difference between a classical transformer
+            and a hybrid quantum transformer?
+        </li>
+        <li>
+            Explain invariance and equivariance using an example
+            involving a molecule.
+        </li>
+        <li>
+            Why are logical qubits important for reliable
+            quantum machine learning?
+        </li>
+        <li>
+            What costs must be included when evaluating a
+            quantum-enhanced optimisation algorithm?
+        </li>
+        <li>
+            Why does federated learning not automatically
+            guarantee privacy?
+        </li>
+        <li>
+            How does Shor's algorithm affect public-key
+            cryptography, and why is post-quantum cryptography
+            important?
+        </li>
+        <li>
+            Why is a strong classical baseline necessary
+            before claiming quantum advantage?
+        </li>
+    </ol>
+</section>
+
+<footer>
+    <p>
+        End of Chapter 26: Advanced Topics and Emerging Directions.
+    </p>
+    <p>
+        The research areas described here are evolving rapidly.
+        Proposed applications should be distinguished from
+        experimentally demonstrated results, and claims of
+        quantum advantage should be evaluated using current
+        evidence and realistic computational costs.
+    </p>
+</footer>
+
+</main>
+</body>
+</html>

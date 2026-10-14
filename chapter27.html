@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 27: Real-World Applications of Quantum Computing</title>
+    <style>
+        :root {
+            --primary: #174b70;
+            --secondary: #267b83;
+            --background: #f4f7fa;
+            --surface: #ffffff;
+            --text: #243447;
+            --muted: #586a7b;
+            --border: #dce5ed;
+            --highlight: #e8f4f5;
+            --warning: #fff4df;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        header {
+            background: linear-gradient(135deg, #102d49, #216b78);
+            color: white;
+            padding: 56px 22px;
+        }
+
+        .header-content {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        .chapter-label {
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 13px;
+            color: #b9e8e8;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.35;
+        }
+
+        h1 {
+            font-size: clamp(32px, 5vw, 49px);
+            margin: 14px 0;
+        }
+
+        header p {
+            max-width: 760px;
+            color: #e3eff6;
+            font-size: 19px;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 35px auto;
+            padding: 0 22px 55px;
+        }
+
+        section {
+            background: var(--surface);
+            padding: 30px;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(24, 52, 77, 0.035);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 27px;
+            margin-top: 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            color: var(--secondary);
+            font-size: 21px;
+            margin-top: 30px;
+        }
+
+        h4 {
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        p {
+            margin: 14px 0;
+        }
+
+        ul, ol {
+            padding-left: 27px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .callout {
+            background: var(--highlight);
+            border-left: 4px solid var(--secondary);
+            padding: 16px 20px;
+            margin: 22px 0;
+            border-radius: 5px;
+        }
+
+        .caution {
+            background: var(--warning);
+            border-left: 4px solid #d99a32;
+            padding: 16px 20px;
+            margin: 22px 0;
+            border-radius: 5px;
+        }
+
+        .equation {
+            background: #f0f4f8;
+            padding: 17px;
+            border-radius: 7px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            overflow-wrap: anywhere;
+            margin: 18px 0;
+        }
+
+        .example {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            margin: 18px 0;
+            background: #fcfdff;
+        }
+
+        .tag {
+            display: inline-block;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            background: #e5eef7;
+            color: #204f70;
+            padding: 3px 9px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf1f6;
+            color: var(--primary);
+            font-family: Arial, sans-serif;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .question {
+            margin: 15px 0;
+            padding: 14px 17px;
+            background: #f7f9fb;
+            border-radius: 6px;
+        }
+
+        details {
+            margin-top: 8px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            padding: 25px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+
+            header {
+                padding: 38px 20px;
+            }
+
+            main {
+                padding: 0 12px 35px;
+            }
+
+            section {
+                padding: 21px 17px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="chapter-label">Quantum Computing and Quantum Machine Learning</div>
+        <h1>Chapter 27: Real-World Applications</h1>
+        <p>
+            From discovering new medicines to designing better batteries, quantum computing
+            offers new ways to study problems that are difficult for ordinary computers.
+            But where can it genuinely help, what has already been demonstrated, and
+            what remains a research goal?
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <section id="introduction">
+        <h2>Introduction: From Quantum Theory to Real Problems</h2>
+
+        <p>
+            Imagine that scientists want to develop a medicine for a disease. They must
+            understand how molecules behave, how they interact with proteins, and whether
+            a potential drug can work safely inside the human body. At the same time,
+            engineers may be trying to design a battery that charges faster, financial
+            institutions may be estimating risk, and electricity companies may be
+            planning how to distribute power efficiently.
+        </p>
+
+        <p>
+            These problems appear unrelated, but they share an important feature:
+            they involve complicated systems with many possible states, interactions,
+            decisions, or uncertainties. Classical computers already solve many such
+            problems successfully. However, some parts can become extremely expensive
+            to calculate as the system grows.
+        </p>
+
+        <p>
+            Quantum computing introduces a different way to process information.
+            Instead of using only classical bits, which represent 0 or 1, a quantum
+            computer uses qubits. Qubits can be prepared in superpositions, and multiple
+            qubits can become entangled. Quantum algorithms use these properties to
+            carry out particular calculations.
+        </p>
+
+        <p>
+            The important word is <em>particular</em>. A quantum computer is not a
+            universally faster computer. It is a different computational tool that may
+            offer advantages for carefully chosen problems.
+        </p>
+
+        <div class="callout">
+            <strong>The central idea of this chapter:</strong> A useful quantum
+            application must do more than run on a quantum processor. It must solve
+            a meaningful part of a real problem accurately, efficiently, and preferably
+            better than the strongest practical classical alternatives.
+        </div>
+
+        <h3>How does a quantum application work?</h3>
+
+        <p>
+            A real-world quantum application usually involves a complete workflow,
+            rather than a quantum processor working alone.
+        </p>
+
+        <ol>
+            <li><strong>Define the problem.</strong> Identify the scientific or business question to be answered.</li>
+            <li><strong>Build a mathematical model.</strong> Represent the relevant physical system, decisions, or uncertainties in a form that a computer can process.</li>
+            <li><strong>Prepare the input.</strong> Encode the required information into a quantum state, or prepare a quantum circuit that represents the problem.</li>
+            <li><strong>Run the quantum algorithm.</strong> Apply quantum operations and measure the required quantities.</li>
+            <li><strong>Process the results.</strong> Use classical computation to analyse measurements, update parameters, or refine candidate solutions.</li>
+            <li><strong>Validate the answer.</strong> Compare the result with reliable reference methods and check whether it is useful in the real world.</li>
+        </ol>
+
+        <p>
+            In many present-day applications, quantum and classical computing work
+            together. The classical computer manages data, optimisation, and control,
+            while the quantum processor performs the quantum portion of the calculation.
+            This arrangement is often called hybrid quantum-classical computing.
+        </p>
+
+        <h3>Three levels of evidence</h3>
+
+        <p>
+            Throughout this chapter, it is useful to distinguish three stages of
+            technological progress.
+        </p>
+
+        <ul>
+            <li><strong>Established classical application:</strong> The problem is already solved using classical computing, such as molecular modelling or portfolio optimisation.</li>
+            <li><strong>Quantum research demonstration:</strong> A quantum device or algorithm has performed a relevant calculation, often on a small or specially chosen problem.</li>
+            <li><strong>Practical quantum advantage:</strong> A quantum approach provides a meaningful advantage in cost, speed, accuracy, or another important measure on a useful problem, compared with the best relevant classical alternatives.</li>
+        </ul>
+
+        <p>
+            These stages must not be confused. Demonstrating a quantum calculation
+            is an important scientific achievement, but it does not automatically
+            establish that quantum computing is commercially useful for that task.
+        </p>
+    </section>
+
+    <section id="drug-discovery">
+        <h2>27.1 Drug Discovery and Molecular Simulation</h2>
+
+        <h3>The challenge: Understanding molecules</h3>
+
+        <p>
+            Every medicine works through interactions between molecules. A drug
+            molecule might attach to a protein, block an unwanted chemical reaction,
+            or change the behaviour of a biological pathway.
+        </p>
+
+        <p>
+            To develop a successful medicine, researchers need to understand the
+            shape, energy, stability, and interactions of these molecules. They may
+            examine thousands or millions of possible compounds before identifying
+            promising candidates.
+        </p>
+
+        <p>
+            A major challenge comes from quantum mechanics itself. Electrons in
+            molecules interact with one another, and their behaviour determines many
+            chemical properties. A molecule with many interacting electrons can be
+            difficult to describe exactly using classical computation.
+        </p>
+
+        <h3>Why quantum computers may help</h3>
+
+        <p>
+            Quantum computers are built from physical systems that obey quantum
+            mechanics. This makes them potentially suitable for simulating certain
+            quantum systems, including the electronic structure of molecules.
+        </p>
+
+        <p>
+            In a simplified picture, the goal is to estimate the energy associated
+            with a particular molecular arrangement. The arrangement with lower energy
+            may be more stable under the conditions being studied. Comparing such
+            energies helps chemists understand reactions, bonding, and molecular
+            behaviour.
+        </p>
+
+        <div class="equation">
+            H|ψ⟩ = E|ψ⟩
+        </div>
+
+        <p>
+            This is the time-independent Schrödinger eigenvalue equation. Here,
+            <strong>H</strong> is the Hamiltonian, which represents the energy of
+            the system; <strong>|ψ⟩</strong> is a quantum state; and
+            <strong>E</strong> is the corresponding energy.
+        </p>
+
+        <p>
+            Molecular simulation often involves finding the lowest possible energy
+            for an appropriate electronic state. This is known as the ground-state
+            energy problem.
+        </p>
+
+        <h3>Important quantum methods</h3>
+
+        <h4>1. Variational Quantum Eigensolver (VQE)</h4>
+
+        <p>
+            VQE is a hybrid algorithm designed to estimate molecular energies.
+            A quantum circuit prepares a trial state, and measurements estimate
+            the energy associated with that state. A classical optimiser then changes
+            the circuit parameters in an attempt to lower the estimated energy.
+        </p>
+
+        <ol>
+            <li>The classical computer selects circuit parameters.</li>
+            <li>The quantum processor prepares the corresponding trial state.</li>
+            <li>Measurements estimate the energy.</li>
+            <li>The classical optimiser updates the parameters.</li>
+            <li>The process repeats until a stopping condition is reached.</li>
+        </ol>
+
+        <p>
+            VQE is attractive because it can be used with relatively shallow circuits
+            in some implementations. However, its success depends on the circuit,
+            the quality of measurements, the optimiser, and the physical device.
+            A circuit may struggle to represent the required molecular state, and
+            measurement noise can make accurate energy estimation expensive.
+        </p>
+
+        <h4>2. Quantum Phase Estimation (QPE)</h4>
+
+        <p>
+            Quantum Phase Estimation is a quantum algorithm that can estimate certain
+            eigenvalues by extracting phase information associated with a quantum
+            operation. When applied to suitable molecular Hamiltonians, it can be
+            used to estimate energy eigenvalues.
+        </p>
+
+        <p>
+            Under appropriate assumptions, QPE can offer favourable precision scaling
+            compared with several classical approaches. However, demanding molecular
+            applications may require many high-quality logical qubits and long,
+            fault-tolerant circuits. These requirements are beyond what most current
+            quantum hardware can comfortably support.
+        </p>
+
+        <h3>Where machine learning enters drug discovery</h3>
+
+        <p>
+            Quantum computing is only one part of the drug discovery process.
+            Classical machine learning already helps researchers predict molecular
+            properties, identify candidate compounds, model protein structures,
+            and prioritise experiments.
+        </p>
+
+        <p>
+            Quantum machine learning investigates whether quantum circuits can
+            contribute to tasks such as molecular classification, property prediction,
+            or learning patterns in chemical data. For example, a variational quantum
+            classifier could be trained to distinguish between two categories of
+            molecular candidates.
+        </p>
+
+        <p>
+            Such a classifier is useful only if it generalises to new molecules and
+            performs competitively with strong classical models. Merely encoding
+            molecular features into qubits does not guarantee an advantage.
+        </p>
+
+        <div class="example">
+            <span class="tag">Illustrative example</span>
+            <h4>Finding a molecule that binds to a protein</h4>
+            <p>
+                Suppose researchers have identified 50,000 candidate molecules.
+                Classical screening tools can quickly remove many unsuitable
+                candidates. More detailed simulations then investigate the remaining
+                molecules.
+            </p>
+            <p>
+                A future quantum processor might improve the accuracy of electronic
+                energy calculations for a difficult part of this workflow. Scientists
+                could use those results to improve their understanding of molecular
+                interactions and decide which candidates deserve laboratory testing.
+            </p>
+            <p>
+                This is a possible workflow, not evidence that quantum computers
+                can already discover a complete medicine independently.
+            </p>
+        </div>
+
+        <h3>What are the limitations?</h3>
+
+        <ul>
+            <li>Biological systems are complex, and accurate molecular energy is only one part of predicting whether a drug will work.</li>
+            <li>Quantum measurements may need to be repeated many times to achieve the required precision.</li>
+            <li>Realistic calculations may require fault-tolerant hardware with many logical qubits.</li>
+            <li>Drug safety, toxicity, absorption, metabolism, and clinical effectiveness require additional methods and experiments.</li>
+        </ul>
+
+        <div class="callout">
+            <strong>Key lesson:</strong> Quantum computers may eventually improve
+            selected molecular calculations. Drug discovery as a whole will continue
+            to require chemistry, biology, classical computing, laboratory experiments,
+            and clinical research.
+        </div>
+    </section>
+
+    <section id="materials">
+        <h2>27.2 Materials Science and Battery Design</h2>
+
+        <h3>Why materials matter</h3>
+
+        <p>
+            Modern technology depends on materials with carefully controlled
+            properties. Solar cells need materials that absorb sunlight efficiently.
+            Aircraft need strong, lightweight structures. Computer chips need
+            materials with suitable electrical behaviour. Batteries need materials
+            that store energy, release it reliably, and remain stable over many
+            charging cycles.
+        </p>
+
+        <p>
+            A material's properties depend on the arrangement of its atoms and
+            the interactions between its electrons. Small changes in composition
+            or structure can lead to large changes in conductivity, strength,
+            chemical stability, or energy storage.
+        </p>
+
+        <h3>How quantum computing could contribute</h3>
+
+        <p>
+            Quantum simulation could help scientists investigate electronic behaviour
+            in materials that are difficult to model accurately using classical
+            methods. This is especially relevant when strong electronic correlations
+            make simple approximations unreliable.
+        </p>
+
+        <p>
+            Scientists may want to estimate energy levels, compare candidate
+            structures, understand chemical reactions, or study how electrons move
+            through a material. These calculations could support the search for
+            better materials, although the complete design process involves many
+            additional factors.
+        </p>
+
+        <h3>Battery design: A closer look</h3>
+
+        <p>
+            A rechargeable battery stores energy through chemical reactions and the
+            movement of charged particles between its electrodes. During charging
+            and discharging, ions move through the electrolyte while electrons travel
+            through the external circuit.
+        </p>
+
+        <p>
+            Battery performance depends on several properties:
+        </p>
+
+        <ul>
+            <li><strong>Energy density:</strong> How much energy the battery can store for its mass or volume.</li>
+            <li><strong>Power density:</strong> How quickly the battery can deliver or accept energy.</li>
+            <li><strong>Cycle life:</strong> How many charging and discharging cycles it can withstand.</li>
+            <li><strong>Safety:</strong> How well the battery resists dangerous heating, degradation, and unwanted reactions.</li>
+            <li><strong>Cost and availability:</strong> Whether its materials can be sourced and manufactured economically.</li>
+        </ul>
+
+        <p>
+            Quantum calculations could contribute to understanding electrode materials,
+            electrolyte chemistry, chemical reaction pathways, and degradation mechanisms.
+            Better electronic-structure predictions may help scientists compare
+            candidate materials before performing expensive experiments.
+        </p>
+
+        <div class="example">
+            <span class="tag">Illustrative example</span>
+            <h4>Searching for a better electrolyte</h4>
+            <p>
+                Imagine that a research team wants an electrolyte that allows ions
+                to move efficiently while remaining stable at the battery's operating
+                voltage.
+            </p>
+            <p>
+                Classical screening could examine many chemical candidates. Quantum
+                simulation might eventually provide more accurate information about
+                selected reactions or electronic properties. Laboratory experiments
+                would then test conductivity, stability, safety, and long-term performance.
+            </p>
+        </div>
+
+        <h3>Beyond batteries</h3>
+
+        <p>
+            The same ideas apply to catalysts, superconductors, semiconductors,
+            magnetic materials, and materials for carbon capture. A catalyst can
+            accelerate a chemical reaction without being consumed in the overall
+            process. Finding better catalysts can reduce energy consumption and
+            waste in industrial manufacturing.
+        </p>
+
+        <p>
+            Quantum simulation could be valuable when the electronic behaviour of
+            the material determines how well it performs. It does not automatically
+            solve problems involving manufacturing defects, large-scale production,
+            material cost, or mechanical durability.
+        </p>
+
+        <div class="caution">
+            <strong>Important distinction:</strong> Predicting a material's electronic
+            properties is not the same as building a commercially useful battery.
+            Real-world performance depends on the entire device, manufacturing process,
+            operating conditions, and lifetime.
+        </div>
+
+        <p>
+            The near-term approach is therefore likely to be a combination of
+            classical simulation, machine learning, targeted quantum calculations,
+            and physical experiments.
+        </p>
+    </section>
+
+    <section id="finance">
+        <h2>27.3 Finance: Portfolio Optimisation, Risk, and Option Pricing</h2>
+
+        <h3>Why finance involves difficult computation</h3>
+
+        <p>
+            Financial decisions are made under uncertainty. A portfolio manager must
+            decide how to distribute money across different assets. A bank must estimate
+            possible losses. An options trader must estimate the value of a contract
+            whose payoff depends on the future price of an asset.
+        </p>
+
+        <p>
+            These tasks combine mathematical optimisation, probability, statistics,
+            and large amounts of data. Quantum algorithms have been investigated
+            for certain parts of these calculations.
+        </p>
+
+        <h3>Portfolio optimisation</h3>
+
+        <p>
+            Suppose an investor can choose among several stocks or other assets.
+            Each asset has an expected return, but its future return is uncertain.
+            The assets may also rise and fall together, so their relationships matter.
+        </p>
+
+        <p>
+            A common classical model balances expected return against portfolio risk.
+            One simplified objective is:
+        </p>
+
+        <div class="equation">
+            Maximise: μᵀw − λwᵀΣw
+        </div>
+
+        <p>
+            Here, <strong>w</strong> represents the portfolio weights,
+            <strong>μ</strong> represents expected returns, <strong>Σ</strong>
+            is the covariance matrix of asset returns, and <strong>λ</strong>
+            controls how strongly the investor penalises risk.
+        </p>
+
+        <p>
+            The investor must also respect constraints, such as having a total
+            investment of 100%, limiting exposure to individual assets, or avoiding
+            certain investments.
+        </p>
+
+        <p>
+            The basic continuous optimisation problem may be solved using classical
+            numerical methods. The problem can become harder when it includes
+            discrete choices, such as whether to buy an asset at all, transaction
+            costs, minimum trading amounts, and complicated constraints.
+        </p>
+
+        <h3>Quantum optimisation methods</h3>
+
+        <h4>1. Quantum Approximate Optimisation Algorithm (QAOA)</h4>
+
+        <p>
+            QAOA is a hybrid quantum-classical algorithm designed for certain
+            combinatorial optimisation problems. The problem is encoded into a
+            mathematical cost function, and a parameterised quantum circuit explores
+            candidate solutions.
+        </p>
+
+        <p>
+            The quantum circuit prepares a state whose measurement can produce
+            different candidate solutions. A classical optimiser adjusts the circuit
+            parameters to improve the expected cost.
+        </p>
+
+        <p>
+            For portfolio selection, a binary variable might indicate whether an
+            asset is included. The objective and constraints can then be translated
+            into a binary optimisation problem, often using a quadratic unconstrained
+            binary optimisation formulation, or QUBO.
+        </p>
+
+        <p>
+            However, mapping a financial problem to QUBO can introduce penalty terms,
+            additional variables, or restrictions. These may make the quantum problem
+            difficult to run, even when the mathematical formulation is elegant.
+        </p>
+
+        <h4>2. Quantum annealing</h4>
+
+        <p>
+            Quantum annealers are specialised devices designed to search for low-energy
+            configurations of a programmed optimisation problem. They can be used
+            to investigate suitable discrete optimisation tasks.
+        </p>
+
+        <p>
+            Their usefulness depends on how the original problem maps onto the device,
+            including connectivity, precision, constraints, and the overhead required
+            to represent the problem. A result from an annealer must still be compared
+            with strong classical optimisation methods.
+        </p>
+
+        <h3>Risk analysis</h3>
+
+        <p>
+            Financial risk analysis often asks questions such as: How much money
+            might a portfolio lose during a difficult market period? What is the
+            probability of a large loss? How do different economic scenarios affect
+            a bank's assets and liabilities?
+        </p>
+
+        <p>
+            Two familiar measures are Value at Risk (VaR) and Conditional Value at
+            Risk (CVaR). VaR estimates a loss threshold at a chosen confidence level.
+            CVaR describes the expected loss in the tail beyond that threshold, under
+            the relevant definition.
+        </p>
+
+        <p>
+            Quantum algorithms have been studied for estimating probabilities and
+            expected values. Some quantum amplitude-estimation methods offer a
+            theoretical reduction in the number of oracle queries needed to reach
+            a given estimation precision.
+        </p>
+
+        <p>
+            This advantage is not automatic. The required probability distribution
+            must be prepared or accessed efficiently, and the cost of data loading,
+            circuit execution, error correction, and result extraction must be counted.
+        </p>
+
+        <h3>Option pricing</h3>
+
+        <p>
+            An option is a financial contract that gives its holder a right, but
+            not necessarily an obligation, to buy or sell an asset under specified
+            conditions. Its value depends on factors such as the asset price,
+            strike price, time to expiry, volatility, and interest rates.
+        </p>
+
+        <p>
+            Many option-pricing models calculate the expected future payoff and
+            discount it to the present. For complex models, estimating that expectation
+            may require substantial numerical computation.
+        </p>
+
+        <p>
+            Quantum amplitude estimation is one proposed approach to accelerating
+            certain expectation-estimation tasks. Under ideal algorithmic assumptions,
+            it can improve the dependence on the target precision compared with
+            ordinary independent sampling.
+        </p>
+
+        <div class="equation">
+            Classical sampling: O(1/ε²)<br>
+            Ideal quantum amplitude estimation: O(1/ε)
+        </div>
+
+        <p>
+            Here, ε is the target additive estimation error. These expressions describe
+            idealised query complexity for suitable formulations, not guaranteed
+            end-to-end running times for real financial systems.
+        </p>
+
+        <div class="example">
+            <span class="tag">Illustrative example</span>
+            <h4>Estimating a portfolio's potential loss</h4>
+            <p>
+                A bank wants to estimate the probability that its portfolio will
+                lose more than a specified amount. It creates a model of possible
+                market scenarios and calculates the loss under each scenario.
+            </p>
+            <p>
+                A quantum algorithm might help estimate the probability or expected
+                loss if the scenario model can be prepared efficiently and the
+                necessary quantum operations can be implemented reliably.
+            </p>
+            <p>
+                The bank would still need to validate the model, account for unusual
+                market events, and compare the full computational cost with classical
+                Monte Carlo simulation and other established techniques.
+            </p>
+        </div>
+
+        <div class="caution">
+            <strong>Reality check:</strong> Quantum finance research has demonstrated
+            small-scale algorithms and proof-of-concept experiments. A general,
+            commercially decisive quantum advantage in portfolio management, risk
+            calculation, or option pricing has not been established.
+        </div>
+    </section>
+
+    <section id="logistics">
+        <h2>27.4 Logistics, Supply Chain, and Scheduling</h2>
+
+        <h3>The problem of making many decisions</h3>
+
+        <p>
+            Consider a delivery company with hundreds of vehicles, thousands of
+            deliveries, limited fuel, delivery time windows, and customers expecting
+            their orders on time. The company wants to minimise travel distance,
+            cost, and delays.
+        </p>
+
+        <p>
+            This is not simply a matter of finding the shortest route. Vehicles may
+            have different capacities, roads may have different travel times, and
+            some deliveries must occur before others. Drivers also need breaks, and
+            warehouses may have limited loading capacity.
+        </p>
+
+        <p>
+            Such problems belong to the broader family of combinatorial optimisation
+            problems. Their number of possible solutions can grow very rapidly as
+            the number of decisions increases.
+        </p>
+
+        <h3>Common applications</h3>
+
+        <ul>
+            <li><strong>Vehicle routing:</strong> Decide which vehicles should serve which customers and in what order.</li>
+            <li><strong>Warehouse operations:</strong> Assign picking tasks, workers, and storage locations.</li>
+            <li><strong>Supply-chain planning:</strong> Decide where to store products, when to replenish stock, and how to move goods.</li>
+            <li><strong>Production scheduling:</strong> Decide the order in which machines perform jobs while respecting deadlines and dependencies.</li>
+            <li><strong>Airline and railway scheduling:</strong> Coordinate vehicles, crews, maintenance, and timetables.</li>
+            <li><strong>Resource allocation:</strong> Assign limited resources to competing activities.</li>
+        </ul>
+
+        <h3>How quantum optimisation fits in</h3>
+
+        <p>
+            QAOA and quantum annealing can be applied to selected optimisation
+            formulations. A delivery-routing problem, for example, may be represented
+            using binary decision variables that indicate whether a vehicle travels
+            between two locations at a particular step.
+        </p>
+
+        <p>
+            A cost function can reward shorter routes while penalty terms discourage
+            invalid solutions, such as visiting a required customer more than once
+            or exceeding a vehicle's capacity.
+        </p>
+
+        <p>
+            The resulting mathematical model can be submitted to a suitable quantum
+            algorithm. However, a large real-world problem may require so many
+            variables and constraints that it cannot be represented efficiently
+            on current quantum hardware.
+        </p>
+
+        <h3>Quantum-inspired methods</h3>
+
+        <p>
+            There is an important distinction between quantum computing and
+            quantum-inspired optimisation. A quantum computer uses physical qubits
+            and quantum operations. A quantum-inspired method runs on a classical
+            computer but borrows ideas from quantum physics or quantum algorithms.
+        </p>
+
+        <p>
+            Quantum-inspired methods can be useful today, but their success does
+            not demonstrate that a quantum processor is faster. They should be
+            evaluated as classical algorithms in their own right.
+        </p>
+
+        <div class="example">
+            <span class="tag">Illustrative example</span>
+            <h4>Planning deliveries across a city</h4>
+            <p>
+                Suppose a company must deliver 300 packages using 20 vehicles.
+                It wants to reduce fuel consumption without missing customer deadlines.
+            </p>
+            <p>
+                A practical system may first cluster nearby deliveries, use a classical
+                routing algorithm to create good initial routes, and improve those
+                routes with local search or other optimisation methods.
+            </p>
+            <p>
+                A future quantum optimiser could be tested on a carefully selected
+                subproblem, such as a difficult assignment decision. Its results
+                would then be compared with the classical system on the same
+                instances and under the same constraints.
+            </p>
+        </div>
+
+        <h3>What makes a real-world comparison fair?</h3>
+
+        <p>
+            The quantum method must include the time needed to formulate the problem,
+            encode it, execute the circuit, repeat measurements, and convert the
+            result into a valid schedule. The classical method must also be given
+            a reasonable amount of computation and access to appropriate algorithms.
+        </p>
+
+        <p>
+            In business, a solution that arrives ten minutes earlier but costs
+            more to operate may not be better. A useful comparison should consider
+            solution quality, reliability, computational cost, energy use, and
+            whether the answer respects every operational constraint.
+        </p>
+    </section>
+
+    <section id="energy">
+        <h2>27.5 Energy and Climate Modelling</h2>
+
+        <h3>Why energy systems are difficult to manage</h3>
+
+        <p>
+            Electricity systems must balance supply and demand continuously. At
+            the same time, renewable energy sources such as solar and wind depend
+            on weather conditions. Electricity networks also face constraints on
+            transmission, storage, and generation.
+        </p>
+
+        <p>
+            Climate modelling is a different but equally complex challenge. Climate
+            scientists combine observations, physical equations, and numerical
+            simulations to understand how the atmosphere, oceans, land, ice, and
+            living systems interact.
+        </p>
+
+        <p>
+            Quantum computing is being investigated for selected calculations
+            relevant to these areas. It is not a replacement for the complete
+            classical infrastructure used to forecast weather, model climate,
+            or operate electricity networks.
+        </p>
+
+        <h3>Energy production and storage</h3>
+
+        <p>
+            Quantum simulation may help researchers study materials and chemical
+            reactions that matter for energy technologies. Examples include battery
+            electrodes, catalysts for hydrogen production, materials for solar
+            cells, and processes relevant to carbon capture.
+        </p>
+
+        <p>
+            If more accurate simulations identify a better catalyst, an industrial
+            process may eventually require less energy. If a new material improves
+            battery performance, renewable electricity may become easier to store.
+            These are possible chains of impact, rather than guaranteed direct
+            outcomes of quantum computation.
+        </p>
+
+        <h3>Electricity-grid optimisation</h3>
+
+        <p>
+            Power-grid operators must decide which generators to use, how much
+            electricity each should produce, and how to maintain safe operation
+            while meeting demand. This includes unit commitment, economic dispatch,
+            transmission planning, and storage scheduling.
+        </p>
+
+        <p>
+            Some of these decisions involve discrete choices and complex constraints.
+            Quantum optimisation methods may therefore be studied for selected
+            subproblems. Nevertheless, mature classical optimisation methods already
+            play a major role in grid operations and provide a demanding baseline.
+        </p>
+
+        <h3>Climate modelling</h3>
+
+        <p>
+            Climate models divide the Earth system into computational elements and
+            solve equations that describe physical processes. Higher resolution
+            and more detailed representations of clouds, turbulence, ocean circulation,
+            and chemical reactions can demand enormous computational resources.
+        </p>
+
+        <p>
+            Quantum computers do not automatically accelerate these calculations.
+            Many climate computations involve large classical data sets and numerical
+            methods for which classical processors are highly effective. Encoding
+            such data into quantum states can itself be costly.
+        </p>
+
+        <p>
+            More promising research directions include selected quantum simulations
+            of physical or chemical processes, specialised optimisation problems,
+            and carefully formulated sampling tasks. Whether these approaches
+            improve useful climate predictions remains an open question.
+        </p>
+
+        <div class="example">
+            <span class="tag">Illustrative example</span>
+            <h4>Reducing the cost of hydrogen production</h4>
+            <p>
+                A research team wants to identify a catalyst that helps produce
+                hydrogen using less energy. It screens candidate materials with
+                classical machine learning and simulation, then uses more detailed
+                calculations on promising candidates.
+            </p>
+            <p>
+                If a quantum computer eventually provides more accurate predictions
+                for a difficult electronic-structure calculation, that information
+                could help researchers decide which material to test experimentally.
+                The final result still depends on laboratory validation, manufacturing,
+                durability, and total system cost.
+            </p>
+        </div>
+
+        <div class="callout">
+            <strong>Key lesson:</strong> The strongest near-term connection between
+            quantum computing and clean energy may come from better materials and
+            chemistry, alongside targeted optimisation, rather than replacing
+            large-scale climate simulations.
+        </div>
+    </section>
+
+    <section id="healthcare">
+        <h2>27.6 Healthcare and Genomics</h2>
+
+        <h3>Healthcare involves more than one computational problem</h3>
+
+        <p>
+            Healthcare includes medical imaging, diagnosis, treatment planning,
+            protein research, drug development, patient monitoring, and the analysis
+            of genetic information. Each task has its own data, mathematical
+            structure, and requirements for reliability.
+        </p>
+
+        <p>
+            Quantum computing research explores whether quantum algorithms can
+            contribute to some of these tasks. However, many healthcare applications
+            already work well with classical machine learning and high-performance
+            computing. Any proposed quantum method must be compared with those
+            established approaches.
+        </p>
+
+        <h3>Genomics: Reading the information in DNA</h3>
+
+        <p>
+            DNA contains sequences built from four chemical bases, commonly
+            represented by the letters A, C, G, and T. Differences in these sequences
+            can influence biological characteristics and may be associated with
+            certain diseases.
+        </p>
+
+        <p>
+            Genomics uses computational methods to analyse DNA sequences, identify
+            genetic variants, study gene regulation, and understand relationships
+            between genetic information and biological outcomes.
+        </p>
+
+        <p>
+            Some genomic tasks involve very large data sets, complex statistical
+            models, and high-dimensional patterns. Quantum machine learning
+            investigates whether quantum feature maps, quantum kernels, or
+            parameterised quantum circuits could help with selected learning tasks.
+        </p>
+
+        <h3>Quantum kernels and classification</h3>
+
+        <p>
+            In machine learning, a kernel measures a notion of similarity between
+            two data points. A quantum kernel can encode classical data into
+            quantum states and estimate a similarity based on measurements or
+            state overlaps.
+        </p>
+
+        <p>
+            In principle, a quantum feature map may represent relationships that
+            are difficult for some classical models to capture efficiently. In
+            practice, the value of this representation depends on the data, the
+            encoding, the quantum circuit, and the learning task.
+        </p>
+
+        <p>
+            If preparing the input requires excessive work, or if estimating each
+            similarity takes too many measurements, the overall method may not be
+            competitive. Strong classical kernel methods and modern machine-learning
+            models must be used as baselines.
+        </p>
+
+        <h3>Protein and molecular research</h3>
+
+        <p>
+            Proteins perform many essential functions in the body. Their behaviour
+            depends on their structure, interactions, and chemical environment.
+            Quantum chemistry may eventually contribute to detailed calculations
+            of electronic effects that influence molecular interactions.
+        </p>
+
+        <p>
+            This overlaps with drug discovery, but it is useful to distinguish the
+            tasks. Predicting a protein's structure, estimating the electronic energy
+            of a molecule, and determining whether a drug is safe are different
+            problems requiring different methods.
+        </p>
+
+        <h3>Medical imaging and diagnosis</h3>
+
+        <p>
+            Researchers have investigated quantum machine-learning models for
+            image classification, disease prediction, and other pattern-recognition
+            tasks. Small experiments can test whether a quantum circuit learns
+            from a data set, but this is not enough to establish medical usefulness.
+        </p>
+
+        <p>
+            A clinically useful system must be accurate on independent patient
+            populations, robust to changes in equipment and data quality, explainable
+            where necessary, and carefully evaluated for bias and safety.
+        </p>
+
+        <p>
+            Current quantum devices also have limited capacity and are affected by
+            noise. These limitations make large-scale medical data processing
+            challenging.
+        </p>
+
+        <div class="caution">
+            <strong>Healthcare requires a high standard of evidence.</strong>
+            A promising quantum classifier is not a clinically validated diagnostic
+            tool. It must undergo rigorous testing and appropriate regulatory review
+            before being used to guide patient care.
+        </div>
+
+        <h3>Privacy and sensitive medical data</h3>
+
+        <p>
+            Genomic and medical data can reveal deeply personal information.
+            Quantum computing does not automatically make such data private or
+            secure. Privacy requires appropriate data governance, access controls,
+            cryptographic protections, and responsible handling of research data.
+        </p>
+    </section>
+
+    <section id="cybersecurity">
+        <h2>27.7 Cybersecurity and Post-Quantum Cryptography</h2>
+
+        <h3>Why cybersecurity is directly affected by quantum computing</h3>
+
+        <p>
+            Cybersecurity protects information as it moves between people, devices,
+            servers, and organisations. It relies on cryptographic methods for
+            encryption, authentication, digital signatures, and secure communication.
+        </p>
+
+        <p>
+            A sufficiently powerful fault-tolerant quantum computer would affect
+            some widely used public-key cryptographic systems. This makes
+            cybersecurity one of the clearest areas in which quantum computing
+            has important real-world consequences, even before large-scale
+            quantum computers become available.
+        </p>
+
+        <h3>Shor's algorithm</h3>
+
+        <p>
+            Many public-key cryptographic systems rely on mathematical problems
+            that are believed to be difficult for classical computers to solve
+            efficiently. Examples include integer factorisation in RSA and the
+            discrete logarithm problem in several elliptic-curve cryptographic
+            systems.
+        </p>
+
+        <p>
+            Shor's algorithm is a quantum algorithm that can solve integer
+            factorisation and discrete logarithm problems in polynomial time
+            under the standard algorithmic model.
+        </p>
+
+        <p>
+            This does not mean that current quantum computers can break ordinary
+            internet encryption at will. Practical attacks against cryptographically
+            relevant keys would require sufficiently capable, fault-tolerant
+            quantum hardware, which is far beyond the capabilities of today's
+            noisy devices for those large instances.
+        </p>
+
+        <h3>Grover's algorithm</h3>
+
+        <p>
+            Grover's algorithm provides a quadratic query-complexity improvement
+            for unstructured search. In an idealised setting, if there are N
+            possibilities and one is a marked solution, classical search requires
+            O(N) queries in the worst case, while Grover's algorithm uses
+            O(√N) oracle queries.
+        </p>
+
+        <p>
+            This matters when considering exhaustive search and some cryptographic
+            security parameters. However, the query improvement does not translate
+            directly into a universal square-root reduction in every attack's
+            practical cost. Circuit depth, parallelism, error correction, and
+            implementation overhead also matter.
+        </p>
+
+        <h3>What is post-quantum cryptography?</h3>
+
+        <p>
+            Post-quantum cryptography (PQC) refers to cryptographic algorithms
+            designed to resist attacks from both classical computers and
+            quantum computers, including known quantum algorithms.
+        </p>
+
+        <p>
+            These algorithms run on ordinary classical computers. They do not
+            require a quantum processor. This makes them especially important
+            because organisations can begin adopting them before a large-scale
+            quantum computer capable of breaking existing public-key systems exists.
+        </p>
+
+        <h3>Important families of post-quantum cryptography</h3>
+
+        <ul>
+            <li><strong>Lattice-based cryptography:</strong> Uses problems involving mathematical structures called lattices. Several standardised PQC schemes belong to this family.</li>
+            <li><strong>Hash-based signatures:</strong> Uses cryptographic hash functions to construct digital signature systems.</li>
+            <li><strong>Code-based cryptography:</strong> Builds security around problems related to decoding error-correcting codes.</li>
+            <li><strong>Other mathematical approaches:</strong> Additional families have been studied, although their maturity and standardisation status vary.</li>
+        </ul>
+
+        <p>
+            Post-quantum cryptography should not be confused with quantum cryptography.
+            PQC uses classical computation and mathematical problems believed to
+            resist quantum attacks. Quantum cryptography uses quantum physical
+            effects in cryptographic protocols, such as quantum key distribution.
+        </p>
+
+        <h3>Why organisations should prepare now</h3>
+
+        <p>
+            Sensitive information may need to remain confidential for many years.
+            An attacker could collect encrypted information today and attempt to
+            decrypt it in the future when more powerful technology becomes available.
+            This risk is often called <em>harvest now, decrypt later</em>.
+        </p>
+
+        <p>
+            Organisations should therefore identify where vulnerable cryptography
+            is used, prioritise systems with long confidentiality requirements,
+            assess software and hardware dependencies, and plan a controlled
+            migration to suitable post-quantum standards.
+        </p>
+
+        <p>
+            This transition is not as simple as replacing one encryption function.
+            Cryptographic systems include certificates, protocols, firmware,
+            key management, third-party services, and devices that may remain
+            in use for many years.
+        </p>
+
+        <div class="callout">
+            <strong>Key lesson:</strong> Post-quantum cryptography is a practical
+            security priority today. Organisations do not need to wait for a
+            large-scale quantum computer before preparing their systems.
+        </div>
+    </section>
+
+    <section id="case-studies">
+        <h2>27.8 Case Studies: What Has Actually Been Demonstrated?</h2>
+
+        <h3>Why evidence matters</h3>
+
+        <p>
+            Quantum computing attracts attention because it combines unusual
+            physics with the promise of solving difficult computational problems.
+            However, it is easy to confuse a successful experiment with a
+            commercially useful application.
+        </p>
+
+        <p>
+            A careful case study asks four questions:
+        </p>
+
+        <ol>
+            <li>What exact problem did the researchers solve?</li>
+            <li>What quantum hardware and algorithm did they use?</li>
+            <li>What was the classical comparison, if any?</li>
+            <li>Did the result establish practical value for a real application, or only demonstrate a scientific capability?</li>
+        </ol>
+
+        <h3>Case study 1: Quantum chemistry on small systems</h3>
+
+        <p>
+            Researchers have used quantum processors to perform small-scale
+            molecular and electronic-structure calculations. Experiments have
+            explored variational methods, energy estimation, and other quantum
+            chemistry algorithms.
+        </p>
+
+        <p>
+            These demonstrations show that quantum hardware can be programmed
+            to investigate meaningful scientific quantities. They also help
+            researchers understand the effects of noise, measurement uncertainty,
+            and circuit design.
+        </p>
+
+        <p>
+            However, many demonstrations have involved small molecules, simplified
+            models, or carefully chosen conditions. Classical computational chemistry
+            remains highly effective for many practical systems.
+        </p>
+
+        <p>
+            <strong>What has been established:</strong> Quantum devices can perform
+            selected molecular calculations and provide valuable experimental
+            evidence about quantum algorithms.
+        </p>
+
+        <p>
+            <strong>What has not been established:</strong> A general ability to
+            outperform the best classical methods on commercially important
+            drug-discovery calculations.
+        </p>
+
+        <h3>Case study 2: Google's quantum supremacy experiment</h3>
+
+        <p>
+            In 2019, Google's Sycamore processor performed a specialised random
+            circuit sampling task. The experiment was designed to demonstrate
+            that a quantum processor could perform a carefully selected sampling
+            computation that was extremely difficult for classical computers
+            to reproduce at the time.
+        </p>
+
+        <p>
+            The task was not a drug-discovery, financial, or logistics application.
+            It was a controlled computational experiment designed to investigate
+            the capabilities of quantum hardware.
+        </p>
+
+        <p>
+            Subsequent improvements in classical simulation methods and changes
+            in computational estimates have highlighted why quantum advantage
+            claims must be assessed against evolving classical techniques.
+        </p>
+
+        <p>
+            <strong>What has been established:</strong> The experiment was an
+            important milestone in controlling and measuring a quantum processor
+            on a specialised task.
+        </p>
+
+        <p>
+            <strong>What it does not establish:</strong> That the processor is
+            faster or more economical for ordinary commercial computing tasks.
+        </p>
+
+        <h3>Case study 3: IBM and the development of quantum utility</h3>
+
+        <p>
+            IBM and other research groups have investigated quantum computation
+            on increasingly complex circuits, including experiments in which
+            classical simulation becomes challenging.
+        </p>
+
+        <p>
+            Such experiments are important because they test whether quantum
+            processors can produce useful computational results as hardware
+            scales. However, the meaning of usefulness depends on the task.
+            A calculation that cannot easily be reproduced by a classical
+            simulator is not automatically useful for chemistry, finance, or
+            another practical application.
+        </p>
+
+        <p>
+            The next step is to demonstrate scientifically valuable results,
+            verify them where possible, and compare the complete workflow
+            against strong classical alternatives.
+        </p>
+
+        <h3>Case study 4: Quantum optimisation experiments</h3>
+
+        <p>
+            Quantum annealers and gate-based processors have been used to explore
+            optimisation tasks, including graph problems, scheduling formulations,
+            and other combinatorial problems.
+        </p>
+
+        <p>
+            These experiments demonstrate that optimisation models can be encoded
+            and investigated using quantum hardware. They also reveal practical
+            challenges such as limited connectivity, embedding overhead, noise,
+            and the difficulty of finding high-quality solutions reliably.
+        </p>
+
+        <p>
+            In many comparisons, classical methods remain highly competitive or
+            superior. The outcome depends on the problem structure, the size of
+            the instance, the algorithm, and the quality of the baseline.
+        </p>
+
+        <p>
+            <strong>What has been established:</strong> Quantum hardware can
+            explore a variety of optimisation formulations and provide experimental
+            data about their behaviour.
+        </p>
+
+        <p>
+            <strong>What remains open:</strong> Whether quantum optimisation
+            can consistently outperform the strongest classical methods on
+            useful industrial problems when total cost and solution quality
+            are included.
+        </p>
+
+        <h3>Case study 5: Quantum machine learning</h3>
+
+        <p>
+            Researchers have implemented quantum classifiers, quantum kernels,
+            variational circuits, and other quantum machine-learning methods
+            on simulators and physical quantum processors.
+        </p>
+
+        <p>
+            Small data sets are often used to investigate whether a circuit
+            can learn a decision boundary or represent a useful feature map.
+            Such experiments can reveal how circuit architecture, noise,
+            optimisation, and data encoding affect learning.
+        </p>
+
+        <p>
+            The difficult question is whether the quantum model provides an
+            advantage over an appropriately tuned classical model. A fair
+            comparison must include data preparation, training, inference,
+            circuit repetitions, and the cost of obtaining the final output.
+        </p>
+
+        <p>
+            <strong>What has been established:</strong> Quantum machine-learning
+            models can be trained and evaluated on selected tasks, and their
+            learning behaviour can be studied experimentally.
+        </p>
+
+        <p>
+            <strong>What remains open:</strong> Broad, reproducible practical
+            advantages for real-world machine-learning workloads.
+        </p>
+
+        <h3>Case study 6: Post-quantum cryptographic standardisation</h3>
+
+        <p>
+            Unlike many proposed quantum applications, post-quantum cryptography
+            has already moved into practical standardisation and migration planning.
+            The National Institute of Standards and Technology (NIST) published
+            its first principal post-quantum cryptography standards in 2024.
+        </p>
+
+        <p>
+            These standards include ML-KEM for key establishment and ML-DSA
+            and SLH-DSA for digital signatures. They are intended to help
+            organisations deploy cryptographic systems designed to resist
+            known quantum attacks as well as classical attacks.
+        </p>
+
+        <p>
+            The algorithms are classical software and mathematical constructions,
+            not quantum algorithms running on quantum computers. Their adoption
+            demonstrates a concrete real-world response to the future security
+            implications of quantum computing.
+        </p>
+
+        <p>
+            <strong>What has been established:</strong> Standardised post-quantum
+            cryptographic algorithms are available for implementation and
+            migration planning.
+        </p>
+
+        <p>
+            <strong>What remains ongoing:</strong> Deployment across the many
+            protocols, applications, devices, and organisations that depend
+            on public-key cryptography.
+        </p>
+
+        <h3>Summary of the evidence</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Application area</th>
+                    <th>What has been demonstrated</th>
+                    <th>Main unresolved challenge</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Drug discovery and chemistry</td>
+                    <td>Small-scale quantum chemistry calculations and hybrid algorithms.</td>
+                    <td>Accurate, useful calculations at realistic scale that beat strong classical methods.</td>
+                </tr>
+                <tr>
+                    <td>Materials and batteries</td>
+                    <td>Research on quantum simulation of molecular and material properties.</td>
+                    <td>Demonstrating improved industrial material discovery and validation.</td>
+                </tr>
+                <tr>
+                    <td>Finance</td>
+                    <td>Proofs of concept for optimisation and estimation algorithms.</td>
+                    <td>End-to-end economic advantages on real financial workloads.</td>
+                </tr>
+                <tr>
+                    <td>Logistics and scheduling</td>
+                    <td>Small-scale optimisation experiments on quantum devices.</td>
+                    <td>Scalable performance against strong classical solvers.</td>
+                </tr>
+                <tr>
+                    <td>Energy and climate</td>
+                    <td>Research into materials, chemistry, optimisation, and specialised simulations.</td>
+                    <td>Validated improvements in energy technology or climate-relevant computations.</td>
+                </tr>
+                <tr>
+                    <td>Healthcare and genomics</td>
+                    <td>Experimental quantum classifiers and other small learning models.</td>
+                    <td>Reliable clinical or genomic advantages on representative real data.</td>
+                </tr>
+                <tr>
+                    <td>Cybersecurity</td>
+                    <td>Known quantum algorithms with implications for cryptography and standardised post-quantum alternatives.</td>
+                    <td>Preparing for future quantum attacks and completing secure migrations.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout">
+            <strong>How to read this table:</strong> Research demonstrations are
+            genuine achievements, even when they do not yet provide a commercial
+            advantage. The goal is to identify exactly what each experiment
+            proves, rather than dismissing all progress or assuming every promise
+            has already been fulfilled.
+        </div>
+    </section>
+
+    <section id="evaluating-claims">
+        <h2>How to Judge a Quantum Application Claim</h2>
+
+        <p>
+            Whenever a company or research paper claims that quantum computing
+            has solved a practical problem, it helps to ask a few simple questions.
+            These questions apply to every field discussed in this chapter.
+        </p>
+
+        <h3>1. Is the problem genuinely difficult for classical computers?</h3>
+
+        <p>
+            A quantum algorithm may look impressive when compared with a weak
+            classical method. A meaningful comparison should include modern
+            classical algorithms, suitable hardware, and sensible optimisation.
+        </p>
+
+        <h3>2. Is the input preparation efficient?</h3>
+
+        <p>
+            Quantum algorithms often require information to be encoded into
+            quantum states. If loading the data takes more resources than the
+            algorithm saves, the theoretical advantage may disappear.
+        </p>
+
+        <h3>3. Is the output useful?</h3>
+
+        <p>
+            Quantum measurement does not normally reveal every detail of a
+            large quantum state. The algorithm must be designed so that the
+            information extracted through measurement is sufficient to answer
+            the original question.
+        </p>
+
+        <h3>4. Are noise and error correction included?</h3>
+
+        <p>
+            Real quantum devices experience errors. Repeated measurements,
+            error mitigation, and fault-tolerant error correction can require
+            substantial additional resources. A realistic evaluation should
+            account for these costs.
+        </p>
+
+        <h3>5. Does the advantage matter outside the laboratory?</h3>
+
+        <p>
+            An application may need to satisfy strict requirements for accuracy,
+            reliability, cost, energy consumption, or response time. A quantum
+            method that performs well on a small demonstration may not satisfy
+            those requirements at production scale.
+        </p>
+
+        <h3>6. Can another team reproduce the result?</h3>
+
+        <p>
+            Independent verification, transparent benchmarks, and reproducible
+            experiments help establish whether a result is robust. This is
+            particularly important when the classical comparison is difficult
+            or the quantum output is noisy.
+        </p>
+    </section>
+
+    <section id="future">
+        <h2>What Could Change as Quantum Hardware Improves?</h2>
+
+        <p>
+            Many of the applications in this chapter depend on the availability
+            of reliable logical qubits. A physical qubit is a device-level
+            implementation of a qubit and is affected by errors. A logical
+            qubit is encoded across physical qubits using quantum error
+            correction so that information can be protected against certain
+            errors.
+        </p>
+
+        <p>
+            Error correction requires additional physical qubits and repeated
+            operations. The overhead depends on the hardware, noise levels,
+            error-correcting code, target reliability, and circuit requirements.
+            Consequently, the number of physical qubits available is not the
+            same as the number of reliable logical qubits a useful algorithm
+            can employ.
+        </p>
+
+        <p>
+            As hardware improves, researchers hope to run deeper circuits,
+            perform more accurate simulations, and execute algorithms whose
+            resource requirements exceed what current devices can handle.
+            This could make quantum chemistry, selected optimisation problems,
+            and some estimation tasks more practical.
+        </p>
+
+        <p>
+            However, better hardware alone will not guarantee an advantage.
+            Algorithms, problem formulations, error-correction methods,
+            data preparation, and classical baselines must improve as well.
+        </p>
+
+        <h3>The likely path to useful applications</h3>
+
+        <ol>
+            <li><strong>Small demonstrations:</strong> Verify that quantum circuits can carry out the intended operations.</li>
+            <li><strong>Algorithm development:</strong> Improve accuracy, reduce circuit depth, and understand resource requirements.</li>
+            <li><strong>Fault-tolerant execution:</strong> Run reliable calculations using error-corrected logical qubits.</li>
+            <li><strong>Application-level validation:</strong> Demonstrate meaningful results on realistic scientific or industrial problems.</li>
+            <li><strong>Economic evaluation:</strong> Establish whether the quantum workflow offers enough benefit to justify its total cost.</li>
+        </ol>
+
+        <p>
+            This progression will not happen at the same speed in every field.
+            Quantum chemistry may benefit from a different set of algorithms
+            and hardware capabilities than finance or combinatorial optimisation.
+            Each application needs its own evidence.
+        </p>
+    </section>
+
+    <section id="conclusion">
+        <h2>Conclusion: Quantum Computing as a Practical Scientific Tool</h2>
+
+        <p>
+            Quantum computing becomes easier to understand when it is connected
+            to real problems. Drug discovery and materials science involve
+            the behaviour of molecules and electrons. Finance involves
+            optimisation and uncertainty. Logistics involves finding good
+            decisions under many constraints. Energy research involves
+            materials, chemistry, and the management of complex systems.
+            Healthcare involves biological data and demanding standards of
+            accuracy. Cybersecurity must prepare for the mathematical
+            capabilities of future quantum computers.
+        </p>
+
+        <p>
+            These applications do not all benefit from the same quantum
+            algorithm. Molecular simulation may use energy estimation methods.
+            Optimisation may use QAOA or quantum annealing. Some financial
+            calculations may investigate amplitude estimation. Quantum
+            machine learning studies how quantum circuits can represent and
+            learn patterns in data. Post-quantum cryptography, meanwhile,
+            protects classical information systems against potential
+            quantum attacks.
+        </p>
+
+        <p>
+            The most important scientific question is not whether quantum
+            computing can be applied to a problem in principle. It is whether
+            a practical quantum implementation can produce a better result
+            than the alternatives.
+        </p>
+
+        <p>
+            Some capabilities have already been demonstrated in controlled
+            experiments. Many commercial applications remain under development.
+            Distinguishing between these stages is essential for understanding
+            the field honestly.
+        </p>
+
+        <div class="callout">
+            <strong>The central takeaway:</strong> Quantum computing is not
+            a replacement for all classical computing. Its potential lies in
+            solving selected problems in new ways, particularly where the
+            mathematical structure of the problem matches the capabilities
+            of quantum algorithms. Its real success will be measured by
+            verified scientific discoveries, useful engineering improvements,
+            reliable computation, and practical advantages.
+        </div>
+    </section>
+
+    <section id="revision">
+        <h2>Revision Questions</h2>
+
+        <div class="question">
+            <strong>1. Why might quantum computers help with molecular simulation?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    Molecular properties depend on interacting electrons and
+                    quantum states. Quantum computers may eventually represent
+                    and estimate certain properties of these systems more
+                    efficiently than classical methods for selected problems.
+                </p>
+            </details>
+        </div>
+
+        <div class="question">
+            <strong>2. What is the difference between VQE and QPE?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    VQE is a hybrid algorithm that optimises a trial quantum
+                    state using quantum measurements and a classical optimiser.
+                    QPE estimates eigenvalue-related phase information using
+                    a quantum algorithm that generally requires deeper,
+                    more demanding circuits for challenging applications.
+                </p>
+            </details>
+        </div>
+
+        <div class="question">
+            <strong>3. How could quantum computing contribute to battery design?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    It may improve selected calculations involving electrode
+                    materials, electrolyte chemistry, and chemical reactions.
+                    Laboratory testing is still required to establish safety,
+                    lifetime, performance, and cost.
+                </p>
+            </details>
+        </div>
+
+        <div class="question">
+            <strong>4. Why must quantum optimisation be compared with classical methods?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    Classical algorithms are already highly effective for many
+                    optimisation problems. A quantum method is useful only
+                    if it provides a meaningful advantage after accounting
+                    for solution quality, data preparation, execution, and
+                    other costs.
+                </p>
+            </details>
+        </div>
+
+        <div class="question">
+            <strong>5. What is the difference between quantum machine learning and classical machine learning?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    Classical machine learning uses classical computational
+                    representations and operations. Quantum machine learning
+                    uses quantum states, circuits, or quantum measurements
+                    as part of the learning procedure. Quantum methods do
+                    not automatically perform better.
+                </p>
+            </details>
+        </div>
+
+        <div class="question">
+            <strong>6. Why does Shor's algorithm matter for cybersecurity?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    A sufficiently capable fault-tolerant quantum computer
+                    running Shor's algorithm could threaten public-key systems
+                    based on integer factorisation and discrete logarithms.
+                    Post-quantum cryptography provides classical algorithms
+                    designed to resist known quantum attacks.
+                </p>
+            </details>
+        </div>
+
+        <div class="question">
+            <strong>7. Does a successful quantum experiment prove practical quantum advantage?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    No. A successful experiment shows that a particular task
+                    was performed. Practical advantage requires a meaningful
+                    comparison against strong classical alternatives, including
+                    the cost, reliability, and quality of the complete workflow.
+                </p>
+            </details>
+        </div>
+
+        <div class="question">
+            <strong>8. Which application area already has a concrete response to future quantum threats?</strong>
+            <details>
+                <summary>Reveal answer</summary>
+                <p>
+                    Cybersecurity has developed post-quantum cryptographic
+                    standards and migration programmes. These classical
+                    algorithms are designed to protect systems against
+                    known quantum attacks.
+                </p>
+            </details>
+        </div>
+    </section>
+
+    <section id="glossary">
+        <h2>Key Terms</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Term</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Hamiltonian</td>
+                    <td>A mathematical operator describing the energy of a quantum system.</td>
+                </tr>
+                <tr>
+                    <td>Ground state</td>
+                    <td>The lowest-energy state of a system under the specified conditions.</td>
+                </tr>
+                <tr>
+                    <td>VQE</td>
+                    <td>A hybrid quantum-classical method for estimating eigenvalues, commonly used for molecular energy calculations.</td>
+                </tr>
+                <tr>
+                    <td>QPE</td>
+                    <td>Quantum Phase Estimation, a method for estimating phase information related to eigenvalues.</td>
+                </tr>
+                <tr>
+                    <td>QAOA</td>
+                    <td>A hybrid quantum-classical algorithm for certain combinatorial optimisation problems.</td>
+                </tr>
+                <tr>
+                    <td>Quantum annealing</td>
+                    <td>A computational approach that uses quantum dynamics to search for low-energy configurations of a problem.</td>
+                </tr>
+                <tr>
+                    <td>Quantum advantage</td>
+                    <td>A demonstrated benefit over relevant classical alternatives for a specified computational task.</td>
+                </tr>
+                <tr>
+                    <td>Quantum kernel</td>
+                    <td>A similarity function estimated using a quantum representation of data.</td>
+                </tr>
+                <tr>
+                    <td>Fault tolerance</td>
+                    <td>The ability to perform reliable computation despite physical errors, using techniques such as quantum error correction.</td>
+                </tr>
+                <tr>
+                    <td>Logical qubit</td>
+                    <td>A qubit encoded across physical qubits to protect quantum information against certain errors.</td>
+                </tr>
+                <tr>
+                    <td>Post-quantum cryptography</td>
+                    <td>Classical cryptographic methods designed to resist attacks from quantum computers as well as classical computers.</td>
+                </tr>
+                <tr>
+                    <td>Quantum-inspired algorithm</td>
+                    <td>A classical algorithm that borrows ideas from quantum computing or quantum physics.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="further-reading">
+        <h2>Further Reading and References</h2>
+
+        <p>
+            The following sources provide useful starting points for understanding
+            quantum algorithms, practical demonstrations, and cryptographic
+            preparation. Research papers should be read with attention to the
+            exact task, assumptions, hardware, and classical comparison.
+        </p>
+
+        <ol>
+            <li>
+                <strong>Quantum chemistry:</strong>
+                Peruzzo et al., "A variational eigenvalue solver on a photonic
+                quantum processor", <em>Nature Communications</em>, 2014.
+                <a href="https://doi.org/10.1038/ncomms5213" target="_blank" rel="noopener noreferrer">Read the paper</a>.
+            </li>
+            <li>
+                <strong>Quantum supremacy experiment:</strong>
+                Arute et al., "Quantum supremacy using a programmable superconducting processor",
+                <em>Nature</em>, 2019.
+                <a href="https://doi.org/10.1038/s41586-019-1666-5" target="_blank" rel="noopener noreferrer">Read the paper</a>.
+            </li>
+            <li>
+                <strong>Quantum approximate optimisation:</strong>
+                Farhi, Goldstone and Gutmann, "A Quantum Approximate Optimization Algorithm".
+                <a href="https://arxiv.org/abs/1411.4028" target="_blank" rel="noopener noreferrer">Read the paper</a>.
+            </li>
+            <li>
+                <strong>Quantum machine learning:</strong>
+                Biamonte et al., "Quantum machine learning",
+                <em>Nature</em>, 2017.
+                <a href="https://doi.org/10.1038/nature23474" target="_blank" rel="noopener noreferrer">Read the review</a>.
+            </li>
+            <li>
+                <strong>Quantum algorithms and phase estimation:</strong>
+                Nielsen and Chuang, <em>Quantum Computation and Quantum Information</em>.
+                <a href="https://doi.org/10.1017/CBO9780511976667" target="_blank" rel="noopener noreferrer">View the book</a>.
+            </li>
+            <li>
+                <strong>Post-quantum cryptography:</strong>
+                National Institute of Standards and Technology (NIST),
+                Post-Quantum Cryptography project.
+                <a href="https://csrc.nist.gov/projects/post-quantum-cryptography" target="_blank" rel="noopener noreferrer">Explore the project</a>.
+            </li>
+            <li>
+                <strong>Post-quantum cryptographic standards:</strong>
+                NIST FIPS 203, FIPS 204, and FIPS 205.
+                <a href="https://csrc.nist.gov/pubs/fips/203/final" target="_blank" rel="noopener noreferrer">FIPS 203: ML-KEM</a>,
+                <a href="https://csrc.nist.gov/pubs/fips/204/final" target="_blank" rel="noopener noreferrer">FIPS 204: ML-DSA</a>,
+                <a href="https://csrc.nist.gov/pubs/fips/205/final" target="_blank" rel="noopener noreferrer">FIPS 205: SLH-DSA</a>.
+            </li>
+        </ol>
+
+        <p>
+            These references establish background and selected experimental results.
+            They should not be interpreted as proof that every application discussed
+            in this chapter already has a practical quantum advantage.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    Chapter 27 · Real-World Applications of Quantum Computing
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 15: Where Quantum Meets Machine Learning</title>
+    <style>
+        :root {
+            --primary: #174a78;
+            --secondary: #286b9c;
+            --accent: #e5f1fb;
+            --text: #263445;
+            --muted: #586779;
+            --border: #d5e0e9;
+            --background: #f4f7fb;
+            --white: #ffffff;
+            --code: #edf2f7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #102d4c, #286b9c);
+            color: white;
+            padding: 52px 22px;
+        }
+
+        .header-content {
+            max-width: 960px;
+            margin: auto;
+        }
+
+        header .chapter-label {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #c5e2ff;
+        }
+
+        header h1 {
+            font-size: clamp(30px, 5vw, 45px);
+            line-height: 1.2;
+            margin: 15px 0;
+        }
+
+        header p {
+            max-width: 760px;
+            font-size: 18px;
+            color: #e5f0fa;
+        }
+
+        main {
+            max-width: 960px;
+            margin: 30px auto;
+            padding: 0 20px 50px;
+        }
+
+        section {
+            background: var(--white);
+            margin-bottom: 25px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(20, 50, 80, 0.04);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 27px;
+            line-height: 1.4;
+            margin-top: 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            color: var(--secondary);
+            font-size: 21px;
+            margin-top: 30px;
+        }
+
+        h4 {
+            color: var(--primary);
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 14px 0;
+        }
+
+        li {
+            margin-bottom: 9px;
+        }
+
+        .callout {
+            padding: 18px 20px;
+            background: var(--accent);
+            border-left: 4px solid var(--secondary);
+            border-radius: 5px;
+            margin: 22px 0;
+        }
+
+        .warning {
+            background: #fff5e6;
+            border-left: 4px solid #c17a16;
+            padding: 18px 20px;
+            border-radius: 5px;
+            margin: 22px 0;
+        }
+
+        .formula {
+            padding: 18px;
+            background: #f0f4f8;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+            overflow-wrap: anywhere;
+            margin: 20px 0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 580px;
+            font-size: 15px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf2f9;
+            color: var(--primary);
+        }
+
+        code {
+            background: var(--code);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: "Courier New", monospace;
+        }
+
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 24px 0;
+        }
+
+        .flow-box {
+            padding: 12px 15px;
+            background: #eaf2f9;
+            border: 1px solid #b9d0e5;
+            border-radius: 7px;
+            text-align: center;
+            flex: 1 1 130px;
+        }
+
+        .arrow {
+            color: var(--secondary);
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .small {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .question {
+            padding: 15px 18px;
+            margin: 15px 0;
+            background: #f7f9fc;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            section {
+                padding: 20px;
+            }
+
+            header {
+                padding: 35px 20px;
+            }
+
+            h2 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="chapter-label">Chapter 15 · Quantum Computing and AI</div>
+        <h1>Where Quantum Meets Machine Learning</h1>
+        <p>
+            Machine learning helps computers discover patterns in data.
+            Quantum computing offers a different way to represent and process
+            information. Quantum machine learning brings these two ideas
+            together, asking whether quantum systems can help us learn things
+            that are difficult to learn using classical computers alone.
+        </p>
+    </div>
+</header>
+
+<main>
+
+<section id="introduction">
+    <h2>Introduction: Why Bring Quantum Computing and Machine Learning Together?</h2>
+
+    <p>
+        Imagine that you are teaching a computer to recognise handwritten
+        digits. You give it thousands of examples, such as images of the
+        numbers 0 to 9. The computer studies these examples, adjusts its
+        internal parameters and gradually learns to predict which digit
+        appears in a new image. This is a typical machine learning task.
+    </p>
+
+    <p>
+        Today, almost all practical machine learning runs on classical
+        computers. These include CPUs, GPUs and specialised AI accelerators.
+        They represent information using bits, which take the value 0 or 1.
+        Modern classical systems are extremely powerful and can learn
+        complicated patterns from enormous datasets.
+    </p>
+
+    <p>
+        Quantum computers process information using qubits. A qubit can
+        occupy a quantum state that is a superposition of the basis states
+        associated with 0 and 1. Qubits can also become entangled, creating
+        correlations that cannot be described as ordinary independent
+        classical bits.
+    </p>
+
+    <p>
+        Quantum machine learning, usually abbreviated as QML, studies how
+        these quantum properties might be used in learning algorithms,
+        data representations, model training and prediction.
+    </p>
+
+    <div class="callout">
+        <strong>The central question:</strong> Can a quantum computer help a
+        learning system represent, discover or predict patterns more
+        effectively than a suitable classical approach?
+    </div>
+
+    <p>
+        Notice the wording. The aim is not simply to put a quantum computer
+        inside an AI system and expect it to become more intelligent.
+        The aim is to identify specific mathematical or computational
+        advantages and determine whether they translate into useful
+        improvements on real learning problems.
+    </p>
+
+    <h3>Two fields with different starting points</h3>
+
+    <p>
+        Machine learning begins with data, a model and an objective. The
+        model makes predictions, compares them with the correct answers
+        or another learning signal, and adjusts its parameters.
+    </p>
+
+    <p>
+        Quantum computing begins with quantum states, quantum gates and
+        measurements. A quantum circuit prepares a state, transforms it
+        through a sequence of operations, and produces measurement
+        outcomes from which useful information is extracted.
+    </p>
+
+    <p>
+        QML connects these approaches. A classical computer might prepare
+        the input data and optimise model parameters, while a quantum
+        processor evaluates part of the model. Alternatively, a learning
+        algorithm may run largely on a quantum computer and use quantum
+        data directly.
+    </p>
+
+    <div class="flow">
+        <div class="flow-box"><strong>Data</strong><br>Examples or quantum states</div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><strong>Model</strong><br>Classical or quantum</div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><strong>Learning</strong><br>Optimise parameters</div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><strong>Prediction</strong><br>Output or decision</div>
+    </div>
+
+    <p>
+        The important point is that quantum machine learning is not one
+        algorithm. It is a broad family of approaches, and understanding
+        the type of data and the type of computation involved is the
+        natural place to begin.
+    </p>
+</section>
+
+<section id="four-flavours">
+    <h2>15.1 Four Flavours: CC, CQ, QC and QQ</h2>
+
+    <p>
+        One of the clearest ways to understand quantum machine learning
+        is to classify systems according to two questions:
+    </p>
+
+    <ol>
+        <li>Is the input data classical or quantum?</li>
+        <li>Is the learning computation classical or quantum?</li>
+    </ol>
+
+    <p>
+        Combining the answers gives four broad categories: CC, CQ, QC and QQ.
+        The letters describe the type of data and the type of learning
+        computation, in that order.
+    </p>
+
+    <div class="callout">
+        <strong>Notation used in this chapter:</strong><br>
+        The first letter refers to the data, and the second refers to the
+        learning computation. C means classical and Q means quantum.
+        These labels describe a useful taxonomy, although terminology can
+        vary between research papers.
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Input data</th>
+                    <th>Learning computation</th>
+                    <th>Basic idea</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>CC</strong></td>
+                    <td>Classical</td>
+                    <td>Classical</td>
+                    <td>Ordinary machine learning.</td>
+                </tr>
+                <tr>
+                    <td><strong>CQ</strong></td>
+                    <td>Classical</td>
+                    <td>Quantum</td>
+                    <td>Encode classical examples into quantum states and process them with quantum circuits.</td>
+                </tr>
+                <tr>
+                    <td><strong>QC</strong></td>
+                    <td>Quantum</td>
+                    <td>Classical</td>
+                    <td>Use quantum data or measurements as inputs to a classical learning procedure.</td>
+                </tr>
+                <tr>
+                    <td><strong>QQ</strong></td>
+                    <td>Quantum</td>
+                    <td>Quantum</td>
+                    <td>Use quantum data and quantum learning computation together.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>15.1.1 CC: Classical Data, Classical Learning</h3>
+
+    <p>
+        CC is the familiar world of machine learning. The input consists
+        of ordinary digital data, and the learning algorithm runs on
+        classical hardware.
+    </p>
+
+    <p>
+        Suppose a bank wants to predict whether a transaction is
+        fraudulent. Each transaction can be represented using features
+        such as its amount, time, location, merchant category and other
+        relevant information. A classical model studies labelled
+        transactions and learns to estimate the likelihood of fraud.
+    </p>
+
+    <p>
+        A neural network might calculate a prediction, compare it with
+        the known label, and adjust its weights through gradient descent
+        and backpropagation. The training process repeats until the model
+        learns useful patterns or reaches a chosen stopping condition.
+    </p>
+
+    <div class="formula">
+        Classical data → Classical model → Classical prediction
+    </div>
+
+    <p>
+        CC provides the baseline against which a proposed QML method
+        should be compared. A quantum approach that takes longer, costs
+        more or predicts less accurately than a good classical model
+        has not demonstrated a practical advantage merely because it
+        uses qubits.
+    </p>
+
+    <h3>15.1.2 CQ: Classical Data, Quantum Learning</h3>
+
+    <p>
+        In CQ, the data begins as ordinary classical information, but
+        some of the computation takes place on a quantum processor.
+        This is one of the most widely studied approaches in current QML.
+    </p>
+
+    <p>
+        Suppose each example contains three numerical features:
+        temperature, pressure and humidity. A quantum circuit cannot
+        directly accept these numbers as abstract mathematical values.
+        They must first be mapped into a quantum state through a process
+        called <strong>quantum data encoding</strong>.
+    </p>
+
+    <p>
+        One approach is angle encoding. A numerical feature determines
+        the angle of a rotation gate applied to a qubit. For example,
+        a feature value may determine the angle of a rotation around
+        the Y axis.
+    </p>
+
+    <div class="formula">
+        |0⟩ → RY(θ)|0⟩
+        <br><br>
+        RY(θ)|0⟩ = cos(θ/2)|0⟩ + sin(θ/2)|1⟩
+    </div>
+
+    <p>
+        Here, θ is an angle derived from the input feature. The rotation
+        changes the qubit's state. The resulting state contains information
+        about the feature, although measurement does not reveal the full
+        quantum state in a single shot.
+    </p>
+
+    <p>
+        A quantum model may then apply trainable gates. These gates contain
+        adjustable parameters, often represented by θ or a parameter
+        vector. The circuit is measured, and the measurement outcomes are
+        used to calculate a prediction or a loss value.
+    </p>
+
+    <div class="flow">
+        <div class="flow-box">Classical features</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Quantum encoding</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Trainable quantum circuit</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Measurement and prediction</div>
+    </div>
+
+    <p>
+        A common example is a <strong>variational quantum classifier</strong>.
+        A classical optimiser adjusts the circuit's parameters to reduce
+        a classification loss. The quantum circuit evaluates the model
+        for the current parameters, while the classical computer helps
+        decide how the parameters should change.
+    </p>
+
+    <p>
+        This arrangement is called hybrid quantum-classical learning.
+        It is particularly important because present-day quantum devices
+        have limitations in qubit counts, noise and circuit execution.
+    </p>
+
+    <div class="callout">
+        <strong>Important distinction:</strong> A quantum circuit does not
+        automatically learn from classical data. The data must be encoded,
+        a suitable model must be selected, and a training procedure must
+        connect the circuit's outputs to the learning objective.
+    </div>
+
+    <h3>15.1.3 QC: Quantum Data, Classical Learning</h3>
+
+    <p>
+        QC reverses the data situation. The input is quantum, but the
+        learning procedure is classical. This category becomes particularly
+        relevant when the data is naturally produced by a quantum system.
+    </p>
+
+    <p>
+        Imagine that a researcher studies a molecule. The molecule's
+        electronic state is quantum mechanical. A quantum experiment or
+        quantum simulator may prepare that state and perform measurements
+        on it.
+    </p>
+
+    <p>
+        The researcher may collect measurement results, expectation values
+        or other accessible features and provide them to a classical
+        learning algorithm. The classical algorithm could then classify
+        the state, estimate a property or identify patterns across
+        different experimental conditions.
+    </p>
+
+    <p>
+        The distinction between the quantum state and the data obtained
+        from it matters. A quantum state cannot generally be copied
+        perfectly or read in full through one measurement. Instead,
+        experiments provide samples from measurement distributions.
+        Learning systems must work with the information that can
+        actually be extracted.
+    </p>
+
+    <div class="formula">
+        Quantum state → Measurements or accessible features
+        → Classical learning algorithm
+    </div>
+
+    <p>
+        Consider quantum state classification. A device prepares states
+        under different conditions, and an experiment measures selected
+        observables. A classical classifier learns to associate the
+        resulting feature vectors with labels.
+    </p>
+
+    <p>
+        The resulting learning algorithm may be completely classical.
+        Its special feature is the origin of the data, rather than the
+        hardware used for training.
+    </p>
+
+    <div class="warning">
+        <strong>A subtle point:</strong> Measurement outcomes from a
+        quantum experiment are ordinary classical records, such as strings
+        of 0s and 1s. In the QC category, the underlying examples originate
+        as quantum states. Once those states have been measured, the
+        learner usually receives classical information about them.
+    </div>
+
+    <h3>15.1.4 QQ: Quantum Data, Quantum Learning</h3>
+
+    <p>
+        QQ combines quantum data with quantum learning computation.
+        Both sides of the learning problem involve quantum systems.
+    </p>
+
+    <p>
+        Suppose a quantum device prepares a collection of quantum states
+        representing different physical conditions. Another quantum
+        circuit processes these states and produces measurement outcomes
+        that are used to distinguish between categories.
+    </p>
+
+    <p>
+        In an idealised setting, a learning procedure may operate directly
+        on quantum states and quantum operations rather than converting
+        all the relevant information into ordinary feature vectors first.
+        This can be useful when the structure of the original data is
+        itself quantum mechanical.
+    </p>
+
+    <p>
+        However, QQ is not automatically more powerful than the other
+        categories. Preparing the data, applying quantum operations,
+        estimating outputs and obtaining useful results all have costs.
+        Quantum information also cannot be extracted arbitrarily from
+        a state, so the learning task must respect the rules of quantum
+        measurement and information.
+    </p>
+
+    <div class="formula">
+        Quantum data → Quantum learning process → Quantum measurement
+        → Classical decision or output
+    </div>
+
+    <p>
+        Even in a QQ system, the final answer may be a classical value,
+        such as a predicted label or an estimated energy. The classification
+        describes the data and learning computation, not necessarily
+        the format of the final answer.
+    </p>
+
+    <h3>Comparing the four flavours</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th>CC</th>
+                    <th>CQ</th>
+                    <th>QC</th>
+                    <th>QQ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Where does the data originate?</td>
+                    <td>Classical sources</td>
+                    <td>Classical sources</td>
+                    <td>Quantum systems</td>
+                    <td>Quantum systems</td>
+                </tr>
+                <tr>
+                    <td>Where does the main learning computation run?</td>
+                    <td>Classical hardware</td>
+                    <td>Quantum hardware or quantum computation</td>
+                    <td>Classical hardware</td>
+                    <td>Quantum hardware or quantum computation</td>
+                </tr>
+                <tr>
+                    <td>Typical challenge</td>
+                    <td>Scaling and generalisation</td>
+                    <td>Encoding and circuit training</td>
+                    <td>Extracting useful features from quantum data</td>
+                    <td>Quantum-state access and computational cost</td>
+                </tr>
+                <tr>
+                    <td>Classical computer involved?</td>
+                    <td>Yes</td>
+                    <td>Usually yes</td>
+                    <td>Yes</td>
+                    <td>Often, as part of the wider workflow</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p>
+        The four flavours are a map of the field, not a ranking from
+        weakest to strongest. CC can be the best choice for an ordinary
+        business dataset, CQ may be worth studying for certain circuit
+        models, and QC or QQ may be natural when the source data is
+        genuinely quantum.
+    </p>
+</section>
+
+<section id="motivations">
+    <h2>15.2 Motivations: Speed, Expressivity and New Model Classes</h2>
+
+    <p>
+        Why should anyone try to combine quantum computing with machine
+        learning when classical machine learning is already so successful?
+        Researchers investigate QML for three broad reasons: computational
+        speed, expressive power and the possibility of developing new
+        kinds of models.
+    </p>
+
+    <p>
+        These motivations are related, but they are not interchangeable.
+        A model may represent a complicated function without being faster
+        to train. A quantum algorithm may have a theoretical speed
+        advantage without producing a better prediction. A new model
+        class may be scientifically useful even if it does not outperform
+        classical systems on every benchmark.
+    </p>
+
+    <h3>15.2.1 Motivation One: Computational Speed</h3>
+
+    <p>
+        Classical machine learning can be expensive. Training large
+        neural networks may require enormous numbers of operations,
+        repeated passes over data and significant memory. Researchers
+        therefore ask whether quantum algorithms can reduce the cost
+        of certain computational tasks that arise in learning.
+    </p>
+
+    <p>
+        A quantum computer is not simply a classical computer that
+        performs every calculation faster. Its potential advantage comes
+        from the way quantum states evolve and interfere, and from the
+        kinds of operations that can be performed efficiently on those
+        states.
+    </p>
+
+    <p>
+        Quantum algorithms have demonstrated theoretical advantages for
+        particular problems. Some QML proposals attempt to use related
+        ideas for tasks such as linear algebra, estimating properties
+        of structured data or processing quantum states.
+    </p>
+
+    <h4>Where could speed come from?</h4>
+
+    <ul>
+        <li>
+            <strong>Quantum state processing:</strong> If the input is
+            already available as a quantum state, certain quantum
+            operations may process its structure without first converting
+            every detail into an ordinary classical representation.
+        </li>
+        <li>
+            <strong>Quantum linear algebra:</strong> Some algorithms
+            offer theoretical speedups for specific matrix problems
+            under particular assumptions about input access, conditioning,
+            precision and output requirements.
+        </li>
+        <li>
+            <strong>Quantum sampling:</strong> A quantum device can
+            generate samples from distributions that may be difficult
+            for classical systems to reproduce efficiently in certain
+            settings. Whether those samples improve a learning task is
+            a separate question.
+        </li>
+        <li>
+            <strong>Structured physical problems:</strong> Quantum
+            processors may eventually help with learning tasks involving
+            quantum chemistry, materials or quantum experiments, where
+            the underlying system is naturally quantum mechanical.
+        </li>
+    </ul>
+
+    <p>
+        There is an important qualification. A theoretical speedup
+        often depends on how the input is supplied. If loading a large
+        classical dataset into quantum states takes substantial time,
+        the loading cost may remove the advantage.
+    </p>
+
+    <p>
+        Likewise, if an algorithm produces a compact quantum state but
+        the user needs millions of individual classical predictions,
+        extracting those results can be expensive. A fair comparison
+        must include data preparation, circuit execution, measurement,
+        optimisation and output extraction.
+    </p>
+
+    <div class="warning">
+        <strong>Do not confuse a fast internal calculation with a fast
+        end-to-end learning system.</strong> The relevant question is
+        whether the complete quantum-assisted workflow solves the intended
+        task more efficiently than a competitive classical alternative.
+    </div>
+
+    <h3>15.2.2 Motivation Two: Expressivity</h3>
+
+    <p>
+        Expressivity refers to the range and complexity of functions a
+        model can represent. A highly expressive model can describe
+        complicated relationships between inputs and outputs. However,
+        having more expressive power does not automatically mean that
+        the model can learn those relationships from limited data.
+    </p>
+
+    <p>
+        Consider a dataset containing points that form a circle. A simple
+        linear classifier draws a straight boundary. It may fail to
+        separate points inside the circle from points outside it.
+        A more flexible model can represent a curved decision boundary.
+    </p>
+
+    <p>
+        Classical machine learning addresses such problems using methods
+        including kernel functions, decision trees and neural networks.
+        Quantum machine learning explores whether quantum states and
+        quantum circuits can provide useful alternative representations
+        of the input data.
+    </p>
+
+    <h4>Quantum feature maps</h4>
+
+    <p>
+        A feature map transforms an input into a representation that a
+        learning model can use. In a quantum model, a classical input
+        x may be encoded into a quantum state using a parameterised
+        quantum operation.
+    </p>
+
+    <div class="formula">
+        |φ(x)⟩ = U(x)|0...0⟩
+    </div>
+
+    <p>
+        Here, x represents the input features, U(x) is a quantum circuit
+        that depends on those features, and |0...0⟩ is the initial
+        state of the qubits. The resulting state |φ(x)⟩ is the quantum
+        feature representation.
+    </p>
+
+    <p>
+        The circuit may apply rotations, entangling gates and other
+        operations. These can transform the input into a state whose
+        measurement statistics depend on relationships among the
+        features.
+    </p>
+
+    <p>
+        The point is not that the quantum state magically stores every
+        possible answer. Rather, the feature map defines a particular
+        mathematical representation. The quality of that representation
+        depends on the problem, the circuit design and the information
+        that can be extracted from the state.
+    </p>
+
+    <h4>Quantum kernels</h4>
+
+    <p>
+        Kernel methods compare examples through a similarity function.
+        Instead of explicitly constructing every feature of a complex
+        representation, a kernel calculates a measure of similarity
+        between two inputs.
+    </p>
+
+    <p>
+        A quantum feature map can define a kernel based on the overlap
+        between the states associated with two inputs.
+    </p>
+
+    <div class="formula">
+        K(x, z) = |⟨φ(x)|φ(z)⟩|²
+    </div>
+
+    <p>
+        This expression calculates the squared magnitude of the overlap
+        between the quantum states representing x and z. If the states
+        are identical, the overlap is maximal. If they are orthogonal,
+        the overlap is zero.
+    </p>
+
+    <p>
+        A quantum computer can estimate such similarities using an
+        appropriate circuit and measurement procedure. A classical
+        learning algorithm, such as a support vector machine, can then
+        use the resulting kernel values to construct a decision boundary.
+    </p>
+
+    <p>
+        This is a useful example of how a quantum representation can
+        be combined with a classical learning algorithm. However,
+        calculating the kernel for many pairs of examples may require
+        many circuit executions. The resulting kernel matrix can become
+        expensive to construct.
+    </p>
+
+    <div class="callout">
+        <strong>Expressivity is not the same as learnability.</strong>
+        A model might represent a very complicated function but still
+        be difficult to train, sensitive to noise or prone to fitting
+        the training examples without generalising to new data.
+    </div>
+
+    <h3>15.2.3 Motivation Three: New Model Classes</h3>
+
+    <p>
+        A model class is a family of mathematical functions that can
+        be produced by a particular learning architecture. Neural
+        networks, decision trees and support vector machines are
+        examples of different model classes.
+    </p>
+
+    <p>
+        Quantum computing introduces additional design possibilities.
+        Quantum circuits have parameters, gates, entanglement patterns
+        and measurement choices. These ingredients can be combined
+        to define learning models that differ from ordinary neural
+        networks.
+    </p>
+
+    <h4>Variational quantum circuits</h4>
+
+    <p>
+        A variational quantum circuit contains adjustable parameters.
+        The circuit produces an output that depends on both the input
+        and the parameters. A classical optimiser can tune those
+        parameters to improve the model's predictions.
+    </p>
+
+    <div class="formula">
+        f(x, θ) = ⟨ψ(x, θ)| O |ψ(x, θ)⟩
+    </div>
+
+    <p>
+        In this expression:
+    </p>
+
+    <ul>
+        <li><code>x</code> represents the input data.</li>
+        <li><code>θ</code> represents the trainable circuit parameters.</li>
+        <li><code>|ψ(x, θ)⟩</code> is the quantum state prepared by the circuit.</li>
+        <li><code>O</code> is an observable, a measurable physical quantity.</li>
+        <li>The expectation value gives the average measurement result predicted by the model.</li>
+    </ul>
+
+    <p>
+        By changing θ, the circuit changes the state and therefore
+        changes its expected output. Training searches for parameter
+        values that minimise a loss function or otherwise improve
+        a learning objective.
+    </p>
+
+    <p>
+        The architecture may be designed for classification, regression,
+        generative modelling or another task. It may use a quantum
+        circuit as the whole model or as one component in a larger
+        classical system.
+    </p>
+
+    <h4>Quantum generative models</h4>
+
+    <p>
+        Generative models learn how to produce new examples resembling
+        a dataset. Classical examples include generative adversarial
+        networks, variational autoencoders and diffusion models.
+    </p>
+
+    <p>
+        A quantum generative model may use a quantum circuit to produce
+        measurement samples from a learned probability distribution.
+        The training process adjusts the circuit so that its outputs
+        match useful properties of the target data.
+    </p>
+
+    <p>
+        Such models are interesting because quantum measurement naturally
+        produces probabilistic outcomes. However, a probabilistic output
+        alone does not make a model useful. The generated distribution
+        must capture meaningful structure, and the complete model must
+        be competitive with suitable classical generative methods.
+    </p>
+
+    <h4>Quantum-enhanced scientific learning</h4>
+
+    <p>
+        Some of the most natural opportunities for QML may occur in
+        scientific research. Quantum systems can be difficult to
+        simulate accurately using classical methods as their size
+        and complexity increase. Quantum hardware may eventually help
+        researchers process quantum data or estimate properties of
+        physical systems.
+    </p>
+
+    <p>
+        For example, researchers may use learning methods to identify
+        phases of matter, estimate molecular properties or recognise
+        patterns in quantum experiments. A quantum computer may assist
+        with state preparation, measurement or parts of the model.
+    </p>
+
+    <p>
+        This is different from claiming that a quantum computer will
+        improve every image classifier, chatbot or recommendation
+        engine. The strongest motivation depends on the structure
+        of the actual problem.
+    </p>
+
+    <h3>How the three motivations differ</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Motivation</th>
+                    <th>Main question</th>
+                    <th>What would count as progress?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Speed</td>
+                    <td>Can the learning task be completed with fewer resources?</td>
+                    <td>A meaningful end-to-end improvement in time, cost or computational scaling.</td>
+                </tr>
+                <tr>
+                    <td>Expressivity</td>
+                    <td>Can the model represent useful relationships more effectively?</td>
+                    <td>A useful representation that improves learning on relevant tasks.</td>
+                </tr>
+                <tr>
+                    <td>New model classes</td>
+                    <td>Can quantum circuits enable learning approaches that are otherwise difficult to realise?</td>
+                    <td>A model with useful properties, validated against suitable alternatives.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p>
+        These motivations should be treated as research questions rather
+        than guaranteed benefits. Quantum machine learning becomes
+        scientifically convincing when a proposed advantage can be
+        explained mathematically, tested experimentally and compared
+        fairly with classical methods.
+    </p>
+</section>
+
+<section id="landscape">
+    <h2>15.3 The QML Landscape and Taxonomy</h2>
+
+    <p>
+        Quantum machine learning contains several research directions.
+        They overlap, but each focuses on a different part of the
+        learning process. A useful way to organise the field is to
+        examine how quantum circuits are used, what type of information
+        is processed, and which learning objective is being solved.
+    </p>
+
+    <h3>15.3.1 Variational Quantum Machine Learning</h3>
+
+    <p>
+        Variational quantum machine learning uses parameterised quantum
+        circuits as models. The circuit has trainable parameters, and
+        an optimisation procedure adjusts them to improve a chosen
+        objective.
+    </p>
+
+    <p>
+        A typical workflow begins by preparing an input state, applying
+        parameterised gates, measuring an observable and calculating
+        a loss from the output. A classical optimiser proposes new
+        parameters, and the process repeats.
+    </p>
+
+    <div class="flow">
+        <div class="flow-box">Initial parameters</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Quantum circuit</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Measurements</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Loss and optimisation</div>
+    </div>
+
+    <p>
+        This approach is popular because it can be adapted to different
+        hardware devices and learning objectives. It is also compatible
+        with hybrid systems, in which quantum and classical computations
+        share the work.
+    </p>
+
+    <p>
+        The difficulty is that training may be unstable or expensive.
+        Quantum measurements are probabilistic, so estimating an output
+        with sufficient accuracy may require repeated circuit executions.
+        Some circuits also suffer from barren plateaus, where gradients
+        become extremely small and optimisation becomes difficult.
+    </p>
+
+    <h3>15.3.2 Quantum Kernel Methods</h3>
+
+    <p>
+        Quantum kernel methods use quantum circuits to calculate
+        similarities between data points. The kernel values are then
+        supplied to a classical learning algorithm.
+    </p>
+
+    <p>
+        In a typical example, a quantum circuit encodes each input
+        into a state. An experiment estimates the similarity between
+        pairs of states. A classical support vector machine uses
+        the resulting kernel matrix to classify new examples.
+    </p>
+
+    <p>
+        The attraction is that the quantum feature representation
+        may capture relationships that are difficult for certain
+        classical representations to reproduce efficiently.
+        The challenge is demonstrating that this advantage is useful
+        after accounting for circuit costs, measurement noise and
+        classical alternatives.
+    </p>
+
+    <h3>15.3.3 Quantum Neural Networks</h3>
+
+    <p>
+        The term quantum neural network, or QNN, is often used for
+        trainable quantum circuit models. Despite the name, these
+        models do not necessarily reproduce the architecture of a
+        classical neural network.
+    </p>
+
+    <p>
+        A classical neural network combines weighted sums, activation
+        functions and layers. A quantum circuit instead applies quantum
+        gates to a state and obtains outputs through measurement.
+        Trainable rotations may play a role similar to adjustable
+        parameters, but the underlying mathematics is different.
+    </p>
+
+    <p>
+        A QNN can contain encoding layers, trainable layers and
+        entangling operations. The choice of these components affects
+        its representational ability, trainability and sensitivity
+        to hardware noise.
+    </p>
+
+    <p>
+        Researchers are studying QNNs for classification, regression,
+        scientific prediction and other tasks. Whether a particular
+        QNN is better than a classical neural network depends on
+        the problem and the quality of the comparison.
+    </p>
+
+    <h3>15.3.4 Quantum Generative Learning</h3>
+
+    <p>
+        Quantum generative models attempt to learn probability
+        distributions and generate samples from them. They may use
+        variational circuits, quantum Born machines or hybrid
+        architectures that combine quantum sampling with classical
+        optimisation.
+    </p>
+
+    <p>
+        In a Born-machine-style model, the probability of obtaining
+        a particular measurement result is determined by the squared
+        magnitude of the corresponding quantum-state amplitude.
+        Training aims to make the resulting distribution resemble
+        the target distribution according to a selected objective.
+    </p>
+
+    <p>
+        Potential applications include structured data generation
+        and the study of probability distributions that arise in
+        physical systems. Yet efficient training and evaluation
+        remain difficult, especially when the target distribution
+        is large or when only a limited number of measurements
+        are available.
+    </p>
+
+    <h3>15.3.5 Quantum Reinforcement Learning</h3>
+
+    <p>
+        Reinforcement learning involves an agent interacting with
+        an environment. The agent selects actions, receives rewards
+        and learns a policy that aims to maximise long-term reward.
+    </p>
+
+    <p>
+        Quantum reinforcement learning explores the use of quantum
+        computation in parts of this process. A quantum circuit
+        might help represent a policy, estimate values or process
+        certain structured states.
+    </p>
+
+    <p>
+        The environment itself may be classical, quantum or simulated.
+        A quantum agent does not automatically learn a better policy;
+        it must still balance exploration, exploitation, reward
+        estimation and the costs of interacting with the environment.
+    </p>
+
+    <h3>15.3.6 Quantum Learning Theory</h3>
+
+    <p>
+        Quantum learning theory studies the mathematical foundations
+        of learning with quantum resources. It asks questions such
+        as how much data is needed, how well a model can generalise,
+        which problems can be learned efficiently, and what quantum
+        resources are required.
+    </p>
+
+    <p>
+        This branch is essential because a successful experiment
+        on a small dataset does not establish a general computational
+        advantage. Theoretical analysis can identify conditions
+        under which an advantage is possible and the assumptions
+        needed for it to hold.
+    </p>
+
+    <h3>15.3.7 Quantum-Inspired Classical Machine Learning</h3>
+
+    <p>
+        Quantum-inspired algorithms use ideas associated with quantum
+        information or quantum algorithms but execute entirely on
+        classical computers. They are related to QML, but they are
+        not themselves quantum computation.
+    </p>
+
+    <p>
+        For example, a classical algorithm may use tensor networks
+        or techniques inspired by quantum-state representations
+        to organise a large computation. These methods can sometimes
+        perform well without quantum hardware.
+    </p>
+
+    <p>
+        Quantum-inspired methods are important for two reasons.
+        First, they may provide useful practical algorithms today.
+        Second, they are strong competitors in comparisons with
+        quantum approaches. A quantum method should not be compared
+        only with an outdated or deliberately weak classical baseline.
+    </p>
+
+    <h3>15.3.8 Quantum Data and Quantum Experiments</h3>
+
+    <p>
+        Another major direction focuses on learning directly from
+        quantum systems. Examples include estimating molecular
+        properties, classifying quantum states, identifying physical
+        phases and analysing experimental measurements.
+    </p>
+
+    <p>
+        These problems are distinctive because the data may not
+        be available as an ordinary table of numbers at the start.
+        Researchers must consider how quantum states are prepared,
+        which measurements can be performed and how much information
+        can be extracted from each experiment.
+    </p>
+
+    <p>
+        In this setting, QML may be valuable not because quantum
+        computation makes an unrelated classical task faster, but
+        because the underlying scientific problem already involves
+        quantum information.
+    </p>
+
+    <h3>A practical taxonomy of QML</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research direction</th>
+                    <th>Quantum component</th>
+                    <th>Classical component</th>
+                    <th>Typical goal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Variational QML</td>
+                    <td>Trainable circuit and measurements</td>
+                    <td>Often optimises parameters</td>
+                    <td>Learn a predictive model</td>
+                </tr>
+                <tr>
+                    <td>Quantum kernels</td>
+                    <td>Estimates quantum-state similarities</td>
+                    <td>Uses a classical kernel learner</td>
+                    <td>Classification or regression</td>
+                </tr>
+                <tr>
+                    <td>Quantum neural networks</td>
+                    <td>Quantum circuit architecture</td>
+                    <td>May handle training and preprocessing</td>
+                    <td>Build trainable quantum models</td>
+                </tr>
+                <tr>
+                    <td>Quantum generative models</td>
+                    <td>Generates measurement distributions</td>
+                    <td>May optimise a generative objective</td>
+                    <td>Learn and sample distributions</td>
+                </tr>
+                <tr>
+                    <td>Quantum reinforcement learning</td>
+                    <td>May represent policies or assist computation</td>
+                    <td>Often manages environment interaction</td>
+                    <td>Learn reward-maximising behaviour</td>
+                </tr>
+                <tr>
+                    <td>Quantum learning theory</td>
+                    <td>Studies quantum resources and algorithms</td>
+                    <td>Mathematical analysis</td>
+                    <td>Establish learning limits and advantages</td>
+                </tr>
+                <tr>
+                    <td>Quantum-data learning</td>
+                    <td>Processes quantum states or measurements</td>
+                    <td>May analyse experimental results</td>
+                    <td>Understand quantum systems</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>How the different directions fit together</h3>
+
+    <p>
+        These categories are not mutually exclusive. A variational
+        quantum neural network may also be a hybrid learning model.
+        A quantum kernel can be used for classification. A quantum
+        generative model may be trained using variational optimisation.
+        A scientific QML project may combine quantum data, a quantum
+        circuit and classical statistical analysis.
+    </p>
+
+    <p>
+        The taxonomy therefore helps us ask precise questions. What
+        is the input? What does the quantum processor actually do?
+        Which part is trained? What is the output? Which classical
+        method is the correct comparison? These questions are more
+        useful than simply labelling a project as quantum AI.
+    </p>
+</section>
+
+<section id="expectations">
+    <h2>15.4 Realistic Expectations vs. Hype</h2>
+
+    <p>
+        Quantum machine learning attracts attention because quantum
+        computing is based on unfamiliar physical principles and may
+        offer computational advantages for certain tasks. However,
+        the excitement surrounding a technology must be separated
+        from what experiments and mathematical results have actually
+        established.
+    </p>
+
+    <p>
+        The most useful attitude is neither to dismiss QML nor to
+        assume it will replace classical AI. It is to understand
+        the conditions under which quantum resources may be useful
+        and to test each claim carefully.
+    </p>
+
+    <h3>15.4.1 Myth: A Quantum Computer Tries Every Answer at Once</h3>
+
+    <p>
+        Superposition allows a quantum state to contain amplitudes
+        associated with multiple basis states. For example, a system
+        of n qubits can have a state described using 2ⁿ computational
+        basis amplitudes.
+    </p>
+
+    <div class="formula">
+        |ψ⟩ = Σₓ αₓ|x⟩
+        <br><br>
+        Σₓ |αₓ|² = 1
+    </div>
+
+    <p>
+        Here, each |x⟩ represents a computational basis state, αₓ
+        is its complex amplitude, and the squared magnitude of an
+        amplitude determines the probability of observing that
+        state in the corresponding measurement.
+    </p>
+
+    <p>
+        Although the mathematical state contains many amplitudes,
+        a measurement does not reveal all of them. It produces
+        an outcome according to the probability distribution.
+        Repeated experiments can estimate that distribution, but
+        the number of measurements and the structure of the circuit
+        matter.
+    </p>
+
+    <p>
+        Quantum algorithms aim to manipulate amplitudes through
+        interference so that useful outcomes become more likely.
+        This can be powerful, but it does not provide automatic
+        access to every possible answer.
+    </p>
+
+    <h3>15.4.2 Myth: More Qubits Automatically Mean Better AI</h3>
+
+    <p>
+        The number of qubits is only one measure of a quantum
+        processor. A learning application also depends on gate
+        quality, connectivity, circuit depth, measurement accuracy,
+        error rates and the ability to run the required circuit
+        reliably.
+    </p>
+
+    <p>
+        A large circuit may be difficult to train if its operations
+        are noisy or if the model's gradients are too small.
+        A smaller circuit with a carefully designed architecture
+        may be more useful for a particular experiment.
+    </p>
+
+    <p>
+        Furthermore, more parameters do not automatically improve
+        generalisation. A model still needs suitable data, an
+        appropriate objective and a training procedure that
+        discovers useful parameter values.
+    </p>
+
+    <h3>15.4.3 Myth: Quantum Models Will Replace Neural Networks</h3>
+
+    <p>
+        Classical neural networks benefit from mature software,
+        specialised hardware, large datasets and decades of
+        research into optimisation and generalisation. They
+        already perform extremely well on many language, vision,
+        audio and recommendation tasks.
+    </p>
+
+    <p>
+        Quantum models face additional costs, including quantum
+        state preparation, circuit execution, repeated measurements
+        and transfers between classical and quantum systems.
+        Current quantum processors also have limitations in
+        reliability and scale.
+    </p>
+
+    <p>
+        It is therefore entirely possible that classical models
+        will remain the best choice for many practical applications.
+        QML may eventually offer an advantage in selected problems
+        without replacing the broader classical machine learning
+        ecosystem.
+    </p>
+
+    <h3>15.4.4 The Encoding Bottleneck</h3>
+
+    <p>
+        Encoding is one of the most important practical challenges
+        in QML. Classical datasets may contain millions of examples,
+        each with hundreds or thousands of features. A quantum
+        processor has a limited number of physical qubits and
+        requires a circuit to map classical values into quantum
+        states.
+    </p>
+
+    <p>
+        Some encodings use a separate qubit or gate operation for
+        each feature. Others attempt to place information into
+        amplitudes or more structured quantum states. These
+        approaches have different costs and requirements.
+    </p>
+
+    <p>
+        A compact encoding is not necessarily cheap. Preparing
+        a complicated quantum state can require a large number
+        of operations, and retrieving useful information may
+        require many measurements.
+    </p>
+
+    <div class="callout">
+        If a claimed advantage depends on representing a large
+        classical dataset inside a quantum state, always ask:
+        how is that state prepared, how long does preparation take,
+        and what information can actually be recovered from it?
+    </div>
+
+    <h3>15.4.5 The Training Bottleneck</h3>
+
+    <p>
+        Many QML models are trained by repeatedly evaluating a
+        quantum circuit and adjusting its parameters. A single
+        optimisation step may require multiple circuit evaluations.
+        If each evaluation must be repeated many times to estimate
+        its output accurately, the total cost can grow quickly.
+    </p>
+
+    <p>
+        Training can also be difficult because of the shape of
+        the loss function. Some parameterised quantum circuits
+        exhibit barren plateaus: regions where gradients become
+        extremely small, making it hard for a gradient-based
+        optimiser to identify a useful direction for improvement.
+    </p>
+
+    <p>
+        Barren plateaus do not occur in every quantum model, but
+        their existence highlights a fundamental lesson: a model
+        that can represent a solution may still be difficult
+        to train to find that solution.
+    </p>
+
+    <h3>15.4.6 The Measurement Bottleneck</h3>
+
+    <p>
+        Quantum circuits typically return measurement outcomes
+        rather than an unrestricted description of the final
+        quantum state. If a model needs an expectation value,
+        that value is usually estimated by repeating the circuit
+        and averaging the observed results.
+    </p>
+
+    <p>
+        Measurement uncertainty decreases as more independent
+        samples are collected. For many simple sampling settings,
+        achieving a fixed estimation precision requires a number
+        of samples that scales roughly with the inverse square
+        of the desired error tolerance.
+    </p>
+
+    <div class="formula">
+        Number of samples ∝ 1 / ε²
+    </div>
+
+    <p>
+        Here, ε represents a target estimation error, under
+        appropriate assumptions about the measured quantity.
+        This is not a universal formula for every quantum
+        experiment, but it illustrates why obtaining highly
+        precise results can be costly.
+    </p>
+
+    <p>
+        The overall learning process may require measurements
+        during training, validation and final prediction.
+        These costs must be included when evaluating performance.
+    </p>
+
+    <h3>15.4.7 The Classical Baseline Problem</h3>
+
+    <p>
+        Suppose a quantum classifier achieves 92 per cent accuracy
+        on a small dataset. Is that evidence of a quantum advantage?
+        Not by itself.
+    </p>
+
+    <p>
+        A classical logistic regression model, support vector
+        machine or carefully tuned neural network might achieve
+        96 per cent accuracy on the same task. Alternatively,
+        the quantum model might perform better on a small sample
+        but require much more computation.
+    </p>
+
+    <p>
+        A convincing comparison should use appropriate classical
+        baselines, comparable data, sound statistical procedures
+        and transparent reporting of computational costs.
+        The goal is to test whether the quantum method contributes
+        something meaningful, not merely to show that it can
+        produce a prediction.
+    </p>
+
+    <h3>15.4.8 What Counts as a Quantum Advantage?</h3>
+
+    <p>
+        The phrase quantum advantage can refer to different
+        achievements, and these should not be confused.
+    </p>
+
+    <ul>
+        <li>
+            <strong>Computational advantage:</strong> A quantum
+            method performs a well-defined task more efficiently
+            than the relevant classical alternatives under
+            specified assumptions.
+        </li>
+        <li>
+            <strong>Learning advantage:</strong> Quantum resources
+            improve a meaningful learning measure, such as sample
+            efficiency or the ability to learn a target function,
+            under a carefully defined comparison.
+        </li>
+        <li>
+            <strong>Practical advantage:</strong> A quantum-assisted
+            system solves a useful real-world task with better
+            end-to-end performance, cost or resource usage.
+        </li>
+    </ul>
+
+    <p>
+        A theoretical result may establish an advantage under
+        certain assumptions without demonstrating that today's
+        hardware can realise it. Similarly, a quantum experiment
+        that is difficult to simulate classically does not by
+        itself show that the system can train a useful predictive
+        model.
+    </p>
+
+    <h3>15.4.9 A Balanced View of QML</h3>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>What is promising?</th>
+                    <th>What must still be established?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Quantum circuits provide new ways to represent and transform information.</td>
+                    <td>Whether those representations help on useful learning tasks.</td>
+                </tr>
+                <tr>
+                    <td>Some quantum algorithms have theoretical computational advantages.</td>
+                    <td>Whether the assumptions hold for complete learning workflows.</td>
+                </tr>
+                <tr>
+                    <td>Quantum data occurs naturally in chemistry and physics.</td>
+                    <td>Whether available devices can produce reliable scientific improvements.</td>
+                </tr>
+                <tr>
+                    <td>Hybrid quantum-classical training is possible.</td>
+                    <td>Whether optimisation, measurement and hardware costs are manageable.</td>
+                </tr>
+                <tr>
+                    <td>New quantum model classes can be studied mathematically.</td>
+                    <td>Whether they generalise and compete with well-designed classical models.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p>
+        The realistic expectation is that QML will develop through
+        carefully selected problems, better hardware, improved
+        algorithms and rigorous experiments. Its future may be
+        significant without requiring every AI application to
+        become quantum.
+    </p>
+</section>
+
+<section id="open-questions">
+    <h2>15.5 Open Questions in the Field</h2>
+
+    <p>
+        Quantum machine learning is an active research area because
+        many important questions remain unanswered. These questions
+        are not minor implementation details. They concern whether
+        quantum learning can provide a reliable, scalable and
+        scientifically meaningful advantage.
+    </p>
+
+    <h3>15.5.1 Which Learning Problems Truly Benefit from Quantum Computation?</h3>
+
+    <p>
+        This is one of the central questions in QML. A quantum
+        algorithm may be mathematically interesting without offering
+        a useful advantage for a practical learning task.
+    </p>
+
+    <p>
+        Researchers need to identify problems where quantum resources
+        improve a clearly defined objective. The improvement might
+        concern computation time, the amount of training data
+        required, prediction quality under a specified resource
+        budget or the ability to learn a function that is difficult
+        for a particular class of classical models.
+    </p>
+
+    <p>
+        The comparison must be precise. Which classical algorithms
+        are allowed? What assumptions are made about data access?
+        How many measurements can the quantum model use? What
+        output must the algorithm produce?
+    </p>
+
+    <p>
+        Until these questions are answered, a statement such as
+        "quantum machine learning is faster" is too broad to be
+        scientifically useful.
+    </p>
+
+    <h3>15.5.2 Can Quantum Models Generalise Well?</h3>
+
+    <p>
+        Generalisation is the ability to perform well on unseen
+        examples rather than merely memorising the training data.
+        It is essential for any useful learning system.
+    </p>
+
+    <p>
+        Quantum models may have large state spaces and complicated
+        parameterised circuits. But the number of possible states
+        does not directly tell us how well a model will generalise.
+        Generalisation depends on the hypothesis class, training
+        procedure, data distribution and other properties of
+        the learning problem.
+    </p>
+
+    <p>
+        Researchers study how circuit depth, entanglement,
+        parameter count and the structure of the quantum feature
+        map affect the ability to learn useful patterns from
+        limited data.
+    </p>
+
+    <p>
+        A model that fits the training set perfectly but performs
+        poorly on new examples is not a successful learning model,
+        regardless of whether its operations are quantum or classical.
+    </p>
+
+    <h3>15.5.3 How Should Quantum Data Be Encoded?</h3>
+
+    <p>
+        Data encoding affects both the expressivity of a quantum
+        model and its computational cost. A good encoding should
+        represent relevant features without requiring an impractical
+        number of qubits or operations.
+    </p>
+
+    <p>
+        Angle encoding is relatively intuitive, but may require
+        repeated operations when the input has many features.
+        Amplitude encoding can represent a vector through state
+        amplitudes, but preparing an arbitrary amplitude-encoded
+        state can be expensive.
+    </p>
+
+    <p>
+        More advanced encodings may exploit problem structure,
+        symmetry or correlations. The open question is how to
+        select an encoding that preserves useful information
+        and supports efficient training on available hardware.
+    </p>
+
+    <h3>15.5.4 How Can Quantum Models Be Trained Reliably?</h3>
+
+    <p>
+        Training a quantum model involves estimating outputs,
+        calculating or approximating gradients and updating
+        parameters. Noise and limited measurement budgets can
+        make each of these steps difficult.
+    </p>
+
+    <p>
+        Research directions include better circuit architectures,
+        improved initialisation, gradient estimation methods,
+        optimisation strategies and techniques for reducing
+        the effect of noise.
+    </p>
+
+    <p>
+        One important question is how to avoid barren plateaus
+        without making the circuit too restricted to represent
+        useful functions. Another is how to balance circuit
+        depth against the need for expressive power.
+    </p>
+
+    <h3>15.5.5 How Much Does Noise Matter?</h3>
+
+    <p>
+        Physical quantum processors are affected by errors in
+        gate operations, measurements and interactions with
+        their surroundings. These errors can alter the output
+        distribution of a circuit.
+    </p>
+
+    <p>
+        A learning model may tolerate some noise, but the effect
+        depends on the task and the architecture. Noise may
+        reduce accuracy, distort gradients or change the
+        similarity values used by a quantum kernel.
+    </p>
+
+    <p>
+        Researchers must determine when error mitigation is
+        sufficient, when quantum error correction is necessary,
+        and how the resource costs of either approach affect
+        the final learning system.
+    </p>
+
+    <p>
+        Fault-tolerant quantum computers could enable more
+        reliable and deeper computations, but error correction
+        introduces overhead. The relevant question is not
+        simply whether noise can be reduced, but whether the
+        resulting system remains useful after accounting for
+        the resources required.
+    </p>
+
+    <h3>15.5.6 Can We Make Fair and Reproducible Comparisons?</h3>
+
+    <p>
+        A research result is only as convincing as the comparison
+        used to support it. QML experiments can be difficult
+        to reproduce because they depend on circuit design,
+        optimiser settings, random initialisation, hardware
+        calibration and measurement budgets.
+    </p>
+
+    <p>
+        Strong evaluations should report the data preprocessing,
+        model architecture, training procedure, number of
+        circuit evaluations, measurement shots and relevant
+        hardware conditions.
+    </p>
+
+    <p>
+        They should also compare against classical algorithms
+        that have been tuned appropriately. If a quantum method
+        is evaluated on a small dataset, the researchers should
+        explain why that dataset is relevant and whether the
+        result is likely to hold at a larger scale.
+    </p>
+
+    <p>
+        Reproducibility is especially important when the measured
+        improvement is small. A tiny difference in accuracy
+        may arise from statistical variation rather than a
+        genuine improvement in the learning method.
+    </p>
+
+    <h3>15.5.7 How Should We Measure Resource Costs?</h3>
+
+    <p>
+        Counting qubits alone is insufficient. A useful resource
+        analysis should include the operations needed to prepare
+        inputs, the depth of quantum circuits, the number of
+        measurement shots, classical optimisation and the
+        cost of transferring data between systems.
+    </p>
+
+    <p>
+        For fault-tolerant algorithms, the number of logical
+        qubits and the cost of implementing reliable logical
+        operations also matter. Physical qubits and logical
+        qubits are not interchangeable because quantum error
+        correction generally requires additional physical
+        resources to protect logical information.
+    </p>
+
+    <p>
+        Researchers need consistent ways to compare these
+        resources across different hardware platforms and
+        algorithms. Without such comparisons, claims about
+        efficiency can be misleading.
+    </p>
+
+    <h3>15.5.8 Can Quantum Learning Work at Realistic Data Scales?</h3>
+
+    <p>
+        Many demonstrations use small datasets because current
+        quantum hardware has limited capacity and execution
+        time. However, practical machine learning often involves
+        millions of examples, high-dimensional inputs or
+        repeated predictions under strict latency requirements.
+    </p>
+
+    <p>
+        A model that works on a handful of features may not
+        scale efficiently when the input grows. The circuit
+        may become deeper, state preparation more expensive
+        and measurement requirements larger.
+    </p>
+
+    <p>
+        Future research must establish whether useful quantum
+        methods can operate at relevant scales, or whether
+        they are most effective as specialised components
+        within larger classical systems.
+    </p>
+
+    <h3>15.5.9 What Role Will Hybrid Architectures Play?</h3>
+
+    <p>
+        Quantum computers are unlikely to operate in isolation
+        from classical systems for many near-term applications.
+        Classical computers are well suited to data handling,
+        optimisation, orchestration and conventional numerical
+        calculations.
+    </p>
+
+    <p>
+        Quantum processors may be used for a specialised
+        operation, such as evaluating a circuit or estimating
+        a quantity that is difficult to obtain in another way.
+        The classical system then incorporates the result
+        into the larger workflow.
+    </p>
+
+    <p>
+        This raises practical questions about how to divide
+        computation between the two systems, minimise
+        communication overhead, schedule quantum jobs and
+        handle noisy or delayed results.
+    </p>
+
+    <p>
+        A successful hybrid architecture will need to provide
+        a genuine benefit from its quantum component rather
+        than simply adding another complex dependency.
+    </p>
+
+    <h3>15.5.10 Can We Understand What a Quantum Model Has Learned?</h3>
+
+    <p>
+        Interpretability is the study of how a model makes
+        predictions and which aspects of its input influence
+        the output. It matters in scientific discovery and
+        in applications where predictions must be explained.
+    </p>
+
+    <p>
+        Quantum circuits are governed by mathematical operations,
+        but understanding a circuit's internal state can be
+        difficult. Measurement reveals only selected information,
+        and a large quantum state cannot generally be inspected
+        completely through a single experiment.
+    </p>
+
+    <p>
+        Researchers are therefore investigating how to analyse
+        quantum feature maps, identify the role of circuit
+        components and connect model predictions to meaningful
+        physical or statistical properties.
+    </p>
+
+    <p>
+        Interpretability could be particularly valuable when
+        a quantum model is used to study molecules, materials
+        or physical systems. In those applications, the goal
+        may be not only to predict an outcome but also to
+        understand the underlying scientific relationship.
+    </p>
+
+    <h3>15.5.11 What Are the Best Applications for QML?</h3>
+
+    <p>
+        It is tempting to apply quantum computing to every
+        important machine learning problem. A better strategy
+        is to identify applications where quantum resources
+        are naturally connected to the structure of the data
+        or the computation.
+    </p>
+
+    <p>
+        Quantum chemistry and materials science are important
+        areas because the underlying systems are quantum
+        mechanical. Quantum-state classification and learning
+        from quantum experiments are also natural candidates.
+        Other fields may become suitable if a well-defined
+        computational advantage can be demonstrated.
+    </p>
+
+    <p>
+        By contrast, a conventional classification task with
+        abundant labelled data and highly optimised classical
+        solutions may offer little immediate reason to use
+        a quantum processor.
+    </p>
+
+    <p>
+        The most promising applications will be identified
+        through evidence rather than by assuming that every
+        complicated problem benefits from quantum computation.
+    </p>
+
+    <h3>15.5.12 How Will the Field Develop as Hardware Improves?</h3>
+
+    <p>
+        Better hardware may allow deeper circuits, more reliable
+        measurements and larger experiments. Fault-tolerant
+        systems could make algorithms practical that are
+        currently beyond the reach of noisy devices.
+    </p>
+
+    <p>
+        Nevertheless, improved hardware will not automatically
+        solve every learning challenge. Data encoding, model
+        design, optimisation and fair evaluation will remain
+        important even on more reliable quantum processors.
+    </p>
+
+    <p>
+        A central open question is which QML ideas will remain
+        useful as hardware evolves. Some methods may be suited
+        to near-term noisy devices, while others may require
+        fault-tolerant quantum computation. Still others may
+        turn out to have efficient classical alternatives.
+    </p>
+
+    <p>
+        Understanding these distinctions will help researchers
+        direct their effort towards approaches with a realistic
+        path from mathematical promise to practical use.
+    </p>
+</section>
+
+<section id="research-workflow">
+    <h2>How to Evaluate a Quantum Machine Learning Idea</h2>
+
+    <p>
+        When you encounter a new QML paper, do not begin by
+        asking how many qubits the authors used or whether
+        the model is called a quantum neural network. Begin
+        with the learning problem itself.
+    </p>
+
+    <div class="flow">
+        <div class="flow-box"><strong>1. Define the task</strong><br>What is being predicted or learned?</div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><strong>2. Inspect the data</strong><br>Is it classical or quantum?</div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><strong>3. Identify the quantum role</strong><br>Which computation uses quantum resources?</div>
+    </div>
+
+    <div class="flow">
+        <div class="flow-box"><strong>4. Examine the assumptions</strong><br>How are data and outputs accessed?</div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><strong>5. Check the baseline</strong><br>What classical methods were tested?</div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><strong>6. Measure the benefit</strong><br>Is there a reliable end-to-end advantage?</div>
+    </div>
+
+    <h3>Questions every QML researcher should ask</h3>
+
+    <ul>
+        <li>What precise problem is the algorithm solving?</li>
+        <li>Is the input classical data, quantum data or a mixture?</li>
+        <li>How is the input represented in the quantum system?</li>
+        <li>Does the algorithm need a quantum processor during training, prediction or both?</li>
+        <li>How many qubits, circuit operations and measurement shots are required?</li>
+        <li>How are noise and measurement uncertainty handled?</li>
+        <li>Which competitive classical algorithms were used as baselines?</li>
+        <li>Does the advantage include data preparation and output extraction?</li>
+        <li>Does the result hold beyond a small demonstration?</li>
+        <li>Can another researcher reproduce the result?</li>
+    </ul>
+
+    <div class="callout">
+        A good QML researcher needs to understand both sides of the
+        problem: the learning theory that explains how a model learns,
+        and the quantum computing theory that explains what the
+        quantum processor can actually do.
+    </div>
+</section>
+
+<section id="worked-example">
+    <h2>A Worked Example: Classifying Two Types of Data</h2>
+
+    <p>
+        Let us bring the ideas together using a simple example.
+        Imagine a researcher wants to classify samples into two
+        categories, A and B, based on two numerical features.
+        The aim is to predict the category of a new sample.
+    </p>
+
+    <h3>Approach 1: Classical machine learning (CC)</h3>
+
+    <p>
+        The researcher collects labelled samples and trains a
+        classical classifier. The model learns a decision boundary
+        from the training examples. Its predictions are evaluated
+        on samples that were not used for training.
+    </p>
+
+    <h3>Approach 2: A quantum feature map (CQ)</h3>
+
+    <p>
+        The researcher maps each feature vector into a quantum
+        state. A circuit applies rotations and entangling gates,
+        and measurements produce quantities used to calculate
+        the predicted category.
+    </p>
+
+    <p>
+        A classical optimiser adjusts the circuit parameters.
+        The researcher then compares the trained model with
+        the classical classifier using the same data splits
+        and a suitable evaluation procedure.
+    </p>
+
+    <h3>Approach 3: A quantum kernel (CQ)</h3>
+
+    <p>
+        Instead of directly training a quantum circuit to predict
+        the label, the researcher uses a quantum circuit to
+        estimate similarities between pairs of examples.
+        A classical support vector machine uses these similarities
+        to learn a decision boundary.
+    </p>
+
+    <h3>What would the experiment establish?</h3>
+
+    <p>
+        Suppose the quantum feature map performs better than
+        a simple classical baseline. That is a reason to
+        investigate further, but it does not yet establish
+        quantum advantage. The researcher should compare
+        against stronger classical models, test statistical
+        reliability and measure the quantum circuit costs.
+    </p>
+
+    <p>
+        If the quantum approach consistently improves a meaningful
+        metric or reduces the total resources required, the
+        evidence becomes more interesting. If a well-tuned
+        classical model performs equally well at a lower cost,
+        the quantum method may still be scientifically interesting
+        but has not demonstrated a practical advantage for
+        this particular task.
+    </p>
+
+    <div class="warning">
+        <strong>The lesson:</strong> The value of a quantum
+        learning model is determined by what it can reliably
+        achieve, not merely by the fact that it uses a quantum
+        circuit.
+    </div>
+</section>
+
+<section id="summary">
+    <h2>Chapter Summary</h2>
+
+    <p>
+        Quantum machine learning brings quantum computation
+        into the study of learning algorithms. Its central
+        purpose is to discover whether quantum resources can
+        help with particular learning tasks, representations
+        or scientific problems.
+    </p>
+
+    <ul>
+        <li>
+            <strong>CC</strong> uses classical data and classical
+            learning computation.
+        </li>
+        <li>
+            <strong>CQ</strong> uses classical data with quantum
+            learning computation.
+        </li>
+        <li>
+            <strong>QC</strong> uses quantum data with classical
+            learning computation.
+        </li>
+        <li>
+            <strong>QQ</strong> uses quantum data and quantum
+            learning computation.
+        </li>
+        <li>
+            The main motivations are possible computational
+            speedups, useful feature representations and new
+            model classes.
+        </li>
+        <li>
+            Important research directions include variational
+            quantum models, quantum kernels, quantum generative
+            learning, quantum reinforcement learning and
+            learning from quantum data.
+        </li>
+        <li>
+            Quantum models face challenges involving data
+            encoding, measurement cost, optimisation, noise
+            and generalisation.
+        </li>
+        <li>
+            A convincing advantage must be established through
+            sound theory or fair experiments against competitive
+            classical alternatives.
+        </li>
+    </ul>
+
+    <div class="callout">
+        <strong>The big idea to remember:</strong> Quantum
+        computing introduces new ways to represent and process
+        information, while machine learning provides methods
+        for discovering patterns from data. Quantum machine
+        learning investigates where these two sets of ideas
+        genuinely complement each other. Its future depends
+        not on hype, but on mathematical insight, reliable
+        hardware and convincing evidence.
+    </div>
+</section>
+
+<section id="questions">
+    <h2>Review Questions</h2>
+
+    <div class="question">
+        <h4>1. What do the letters CC, CQ, QC and QQ represent?</h4>
+        Explain the difference between the type of input data
+        and the type of learning computation.
+    </div>
+
+    <div class="question">
+        <h4>2. Why is data encoding important in CQ learning?</h4>
+        Explain how a classical numerical feature can influence
+        the state of a qubit.
+    </div>
+
+    <div class="question">
+        <h4>3. What is a quantum feature map?</h4>
+        Describe how it converts an input into a quantum-state
+        representation.
+    </div>
+
+    <div class="question">
+        <h4>4. How does a quantum kernel differ from a variational quantum classifier?</h4>
+        Explain the role of the quantum circuit in each approach.
+    </div>
+
+    <div class="question">
+        <h4>5. Why does superposition not mean that every answer can be read at once?</h4>
+        Discuss the role of measurement and interference.
+    </div>
+
+    <div class="question">
+        <h4>6. What is a barren plateau?</h4>
+        Explain why very small gradients can make a quantum model difficult to train.
+    </div>
+
+    <div class="question">
+        <h4>7. Why must data preparation and measurement costs be included in a quantum speedup claim?</h4>
+        Describe how these costs can affect the total performance of a QML system.
+    </div>
+
+    <div class="question">
+        <h4>8. What evidence would convince you that a quantum learning model has a practical advantage?</h4>
+        Identify the comparisons, measurements and reproducibility checks you would require.
+    </div>
+
+    <div class="question">
+        <h4>9. Why might learning from quantum data be a natural application of QML?</h4>
+        Give an example involving a physical or chemical system.
+    </div>
+
+    <div class="question">
+        <h4>10. Does a more expressive model always generalise better?</h4>
+        Explain why representation power and successful learning are different properties.
+    </div>
+</section>
+
+<section id="further-reading">
+    <h2>Further Reading</h2>
+
+    <p>
+        The following research papers and books provide useful
+        foundations for studying quantum machine learning beyond
+        this introductory chapter.
+    </p>
+
+    <ul>
+        <li>
+            <strong>Schuld, Sinayskiy and Petruccione (2015).</strong>
+            <em>A Primer on Quantum Machine Learning.</em>
+            Contemporary Physics, 56(2), 172–185.
+            <br>
+            <span class="small">
+                An introduction to the main concepts and early
+                directions of quantum machine learning.
+            </span>
+        </li>
+
+        <li>
+            <strong>Schuld and Petruccione (2021).</strong>
+            <em>Machine Learning with Quantum Computers.</em>
+            Springer, second edition.
+            <br>
+            <span class="small">
+                A detailed treatment of quantum learning methods,
+                quantum feature spaces and algorithms.
+            </span>
+        </li>
+
+        <li>
+            <strong>Biamonte et al. (2017).</strong>
+            <em>Quantum Machine Learning.</em>
+            Nature, 549, 195–202.
+            <br>
+            <span class="small">
+                A broad overview of the opportunities and
+                theoretical foundations of quantum machine learning.
+            </span>
+        </li>
+
+        <li>
+            <strong>Preskill (2018).</strong>
+            <em>Quantum Computing in the NISQ Era and Beyond.</em>
+            Quantum, 2, 79.
+            <br>
+            <span class="small">
+                Explains the noisy intermediate-scale quantum
+                computing era and its limitations.
+            </span>
+        </li>
+
+        <li>
+            <strong>Cerezo et al. (2021).</strong>
+            <em>Variational Quantum Algorithms.</em>
+            Nature Reviews Physics, 3, 625–644.
+            <br>
+            <span class="small">
+                Reviews variational quantum algorithms, including
+                important issues in optimisation and implementation.
+            </span>
+        </li>
+
+        <li>
+            <strong>Huang et al. (2021).</strong>
+            <em>Power of Data in Quantum Machine Learning.</em>
+            Nature Communications, 12, 2631.
+            <br>
+            <span class="small">
+                Studies the relationship between data and the
+                potential advantages of quantum learning.
+            </span>
+        </li>
+    </ul>
+</section>
+
+</main>
+
+<footer>
+    Chapter 15 · Where Quantum Meets Machine Learning
+    <br>
+    Understanding the possibilities of QML through mathematics,
+    evidence and careful reasoning.
+</footer>
+
+</body>
+</html>

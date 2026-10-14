@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 19: Quantum Neural Networks</title>
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-light: #eef2ff;
+            --accent: #0f766e;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --code: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        header {
+            padding: 58px 22px;
+            color: white;
+            background: linear-gradient(135deg, #312e81, #4338ca, #0f766e);
+        }
+
+        header .inner,
+        main {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        header h1 {
+            margin: 0 0 12px;
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.2;
+        }
+
+        header p {
+            max-width: 780px;
+            color: #e0e7ff;
+            font-size: 18px;
+        }
+
+        .chapter-label {
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        main {
+            padding: 28px 20px 70px;
+        }
+
+        section,
+        .learning-box,
+        .diagram,
+        .example,
+        .warning,
+        .summary {
+            margin: 25px 0;
+            padding: 25px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #312e81;
+            font-size: 27px;
+            line-height: 1.4;
+        }
+
+        h3 {
+            margin-top: 28px;
+            color: #3730a3;
+            font-size: 20px;
+        }
+
+        h4 {
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        .toc {
+            padding: 25px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+        }
+
+        .toc a {
+            display: block;
+            padding: 5px 0;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .learning-box {
+            background: var(--primary-light);
+            border-color: #c7d2fe;
+        }
+
+        .learning-box h3 {
+            margin-top: 0;
+        }
+
+        .diagram {
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin: 18px 0;
+        }
+
+        .node {
+            min-width: 115px;
+            padding: 12px 15px;
+            border: 1px solid #a5b4fc;
+            border-radius: 9px;
+            background: #eef2ff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .arrow {
+            color: var(--primary);
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .formula {
+            margin: 18px 0;
+            padding: 17px;
+            overflow-x: auto;
+            background: var(--code);
+            border-left: 4px solid var(--primary);
+            border-radius: 6px;
+            font-family: "Courier New", monospace;
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .example {
+            background: #f0fdfa;
+            border-color: #99f6e4;
+        }
+
+        .example h3 {
+            margin-top: 0;
+            color: #115e59;
+        }
+
+        .warning {
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+
+        .warning h3 {
+            margin-top: 0;
+            color: #92400e;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--primary-light);
+            color: #312e81;
+        }
+
+        code {
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: var(--code);
+            font-family: "Courier New", monospace;
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        pre code {
+            padding: 0;
+            background: transparent;
+            color: inherit;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 5px;
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 30px 20px;
+            background: #0f172a;
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 16px 12px 45px;
+            }
+
+            section,
+            .learning-box,
+            .diagram,
+            .example,
+            .warning,
+            .summary {
+                padding: 17px;
+            }
+
+            .node {
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="inner">
+        <div class="chapter-label">Quantum Computing and Quantum Machine Learning</div>
+        <h1>Chapter 19: Quantum Neural Networks</h1>
+        <p>
+            From artificial neurons to quantum circuits, convolutional models,
+            attention, graph learning and hybrid quantum-classical networks.
+            Understand how these models work, why researchers study them, and
+            how to build a simple one using Python and PennyLane.
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <nav class="toc">
+        <h2>Chapter Contents</h2>
+        <a href="#intro">19.0 Introduction: What is a QNN?</a>
+        <a href="#classical">19.1 From classical neurons to quantum circuits</a>
+        <a href="#perceptrons">19.2 Quantum perceptrons</a>
+        <a href="#qcnn">19.3 Quantum convolutional neural networks</a>
+        <a href="#recurrent">19.4 Quantum recurrent and attention-style models</a>
+        <a href="#graph">19.5 Quantum graph neural networks</a>
+        <a href="#dissipative">19.6 Dissipative and measurement-based QNNs</a>
+        <a href="#hybrid">19.7 Hybrid classical-quantum neural networks</a>
+        <a href="#hands-on">19.8 Hands-on: PyTorch/TensorFlow and PennyLane</a>
+        <a href="#training">19.9 Training, gradients and optimisation</a>
+        <a href="#limitations">19.10 Challenges and realistic expectations</a>
+        <a href="#summary">19.11 Chapter summary</a>
+        <a href="#questions">19.12 Questions for practice</a>
+    </nav>
+
+    <section id="intro">
+        <h2>19.0 Introduction: What is a Quantum Neural Network?</h2>
+
+        <p>
+            Artificial neural networks are inspired by the way biological
+            nervous systems process information. They contain connected
+            computational units called neurons. Each neuron receives inputs,
+            combines them using adjustable weights, applies a mathematical
+            function and passes the result to the next layer.
+        </p>
+
+        <p>
+            A quantum neural network, usually shortened to QNN, uses a
+            parameterised quantum circuit as part or all of a machine learning
+            model. Instead of relying only on ordinary numerical operations,
+            the model encodes information into quantum states and processes
+            those states using quantum gates. Measurements then produce
+            classical numbers that can be used to make predictions.
+        </p>
+
+        <p>
+            The word <strong>parameterised</strong> is important. A quantum
+            circuit can contain gates whose rotation angles are controlled by
+            trainable parameters. During learning, an optimisation algorithm
+            adjusts these parameters so that the circuit produces outputs
+            closer to the desired answers.
+        </p>
+
+        <div class="diagram">
+            <h3>The basic idea behind a QNN</h3>
+            <div class="flow">
+                <div class="node">Classical data</div>
+                <span class="arrow">→</span>
+                <div class="node">Encode into qubits</div>
+                <span class="arrow">→</span>
+                <div class="node">Trainable quantum circuit</div>
+                <span class="arrow">→</span>
+                <div class="node">Measurement</div>
+                <span class="arrow">→</span>
+                <div class="node">Prediction</div>
+            </div>
+            <p>
+                The circuit parameters are updated repeatedly using a classical
+                optimiser until the model learns a useful relationship between
+                inputs and outputs.
+            </p>
+        </div>
+
+        <h3>Does a QNN have to look like a human brain?</h3>
+
+        <p>
+            No. The name comes from the mathematical role that the circuit
+            plays in a learning system, not from a claim that quantum circuits
+            behave like biological neurons. Most QNNs are better understood
+            as trainable mathematical models built from quantum operations.
+        </p>
+
+        <div class="learning-box">
+            <h3>What you should understand by the end</h3>
+            <ul>
+                <li>How an ordinary neuron differs from a quantum circuit.</li>
+                <li>How quantum gates and measurements form a trainable model.</li>
+                <li>How quantum convolution, recurrence, attention and graph models are constructed.</li>
+                <li>Why many useful QNNs are hybrid classical-quantum systems.</li>
+                <li>How to implement and train a small QNN in Python.</li>
+                <li>Why a QNN is not automatically faster or more accurate than a classical neural network.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="classical">
+        <h2>19.1 From Classical Neurons to Quantum Circuits</h2>
+
+        <h3>19.1.1 How does a classical neuron work?</h3>
+
+        <p>
+            Imagine building a system that predicts whether a student will
+            pass an examination. The inputs might include the number of hours
+            studied, attendance and marks in earlier tests. A classical neuron
+            combines these inputs into a score.
+        </p>
+
+        <p>
+            Each input has a weight. A larger weight means that the
+            corresponding input has a stronger influence on the score.
+            The neuron also has a bias, which allows the decision boundary
+            to shift.
+        </p>
+
+        <div class="formula">
+            z = w₁x₁ + w₂x₂ + ... + wₙxₙ + b
+
+            <br><br>
+
+            y = φ(z)
+        </div>
+
+        <p>
+            Here, x₁, x₂ and the other x values are inputs; w₁, w₂ and the
+            other w values are trainable weights; b is the bias; and φ is
+            an activation function such as sigmoid, tanh or ReLU.
+        </p>
+
+        <p>
+            The first equation combines the information. The second converts
+            the combined score into an output. A neural network connects many
+            such computations into layers, allowing it to learn complicated
+            relationships.
+        </p>
+
+        <h3>19.1.2 What changes when we use a quantum circuit?</h3>
+
+        <p>
+            A quantum circuit uses qubits instead of ordinary bits as its
+            basic information-processing units. A classical bit has a value
+            of either 0 or 1. A qubit can exist in a quantum superposition
+            of the computational basis states |0⟩ and |1⟩.
+        </p>
+
+        <p>
+            A pure single-qubit state can be written as:
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = α|0⟩ + β|1⟩
+
+            <br><br>
+
+            |α|² + |β|² = 1
+        </div>
+
+        <p>
+            The complex numbers α and β are probability amplitudes. If we
+            measure the qubit in the computational basis, the probability
+            of obtaining 0 is |α|² and the probability of obtaining 1 is
+            |β|².
+        </p>
+
+        <p>
+            Superposition does not mean that a measurement reveals both 0
+            and 1 at the same time. A measurement returns a particular
+            outcome. The amplitudes determine the probabilities of the
+            possible outcomes.
+        </p>
+
+        <p>
+            Quantum circuits also support entanglement. Entangled qubits can
+            possess joint quantum properties that cannot be described by
+            treating each qubit as an independent quantum state. This gives
+            quantum models another way to represent relationships between
+            parts of the input.
+        </p>
+
+        <h3>19.1.3 Gates take the place of trainable computations</h3>
+
+        <p>
+            Classical neural networks apply weighted sums and activation
+            functions. A QNN applies quantum gates to transform a quantum
+            state. Some gates are fixed, while others depend on trainable
+            parameters.
+        </p>
+
+        <p>
+            For example, a rotation gate changes a qubit's state according
+            to an angle θ. A controlled-NOT gate, or CNOT, performs an
+            operation on a target qubit depending on the state of a control
+            qubit. Such gates can create entanglement.
+        </p>
+
+        <div class="formula">
+            |ψ(θ)⟩ = U(θ)|ψ₀⟩
+
+            <br><br>
+
+            f(θ) = ⟨ψ(θ)| O |ψ(θ)⟩
+        </div>
+
+        <p>
+            In this notation, |ψ₀⟩ is the initial quantum state, U(θ) is
+            the parameterised circuit, and O is a measurable observable.
+            The function f(θ) is the expected measurement value of O.
+        </p>
+
+        <p>
+            For a Pauli-Z measurement on a single qubit, the expectation
+            value lies between -1 and +1. If the probabilities of obtaining
+            0 and 1 are P(0) and P(1), respectively, then:
+        </p>
+
+        <div class="formula">
+            ⟨Z⟩ = P(0) - P(1)
+        </div>
+
+        <p>
+            This expected value is a classical number. It can be passed to
+            another layer or used as a prediction. In practice, the value
+            may be estimated by repeating measurements, also called shots.
+        </p>
+
+        <h3>19.1.4 Where does learning happen?</h3>
+
+        <p>
+            Suppose a circuit contains trainable rotation angles θ₁, θ₂ and
+            θ₃. Initially, these angles may be selected randomly. The model
+            makes a prediction, compares it with the correct answer and
+            calculates a loss.
+        </p>
+
+        <p>
+            The optimiser then changes the angles to reduce the loss. This
+            process repeats over many training examples. The circuit does
+            not automatically know which gates are useful; learning comes
+            from selecting parameters that improve the objective.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">Initial parameters</div>
+                <span class="arrow">→</span>
+                <div class="node">Quantum circuit</div>
+                <span class="arrow">→</span>
+                <div class="node">Prediction</div>
+                <span class="arrow">→</span>
+                <div class="node">Loss</div>
+            </div>
+            <div class="flow">
+                <div class="node">Optimiser updates parameters</div>
+                <span class="arrow">←</span>
+                <div class="node">Gradient information</div>
+            </div>
+            <p>
+                This is a feedback loop. The model improves by repeatedly
+                evaluating its current parameters and adjusting them.
+            </p>
+        </div>
+
+        <h3>19.1.5 A useful comparison</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Classical neural network</th>
+                        <th>Quantum neural network</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Uses classical numbers and tensors.</td>
+                        <td>Uses quantum states represented by qubits.</td>
+                    </tr>
+                    <tr>
+                        <td>Computations use operations such as matrix multiplication and activation functions.</td>
+                        <td>Computations use quantum gates and measurements.</td>
+                    </tr>
+                    <tr>
+                        <td>Trainable parameters are commonly weights and biases.</td>
+                        <td>Trainable parameters are commonly gate angles or other circuit controls.</td>
+                    </tr>
+                    <tr>
+                        <td>Activations can often be evaluated directly.</td>
+                        <td>Outputs are obtained through measurements or estimated expectation values.</td>
+                    </tr>
+                    <tr>
+                        <td>Many operations can be efficiently performed on ordinary hardware.</td>
+                        <td>Quantum circuit execution requires a simulator or quantum processor.</td>
+                    </tr>
+                    <tr>
+                        <td>Deep architectures can be trained using established techniques.</td>
+                        <td>Training can be affected by measurement noise, hardware limitations and difficult gradients.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="warning">
+            <h3>A point worth remembering</h3>
+            <p>
+                A QNN is not simply a classical neural network running on
+                a quantum computer. Its internal representation and operations
+                are different. However, the complete learning system can
+                still depend heavily on classical computers for data
+                preparation, optimisation and evaluation.
+            </p>
+        </div>
+    </section>
+
+    <section id="perceptrons">
+        <h2>19.2 Quantum Perceptrons</h2>
+
+        <h3>19.2.1 What is a perceptron?</h3>
+
+        <p>
+            A perceptron is one of the simplest models used in neural
+            networks. It receives input values, combines them using weights
+            and produces an output. A traditional binary perceptron often
+            uses a threshold to decide between two classes.
+        </p>
+
+        <p>
+            A quantum perceptron attempts to perform an analogous learning
+            role using quantum states, quantum operations and measurements.
+            There is no single universal circuit design that defines every
+            quantum perceptron. Different proposals use different encodings,
+            gates, measurements and learning rules.
+        </p>
+
+        <h3>19.2.2 A simple quantum-perceptron design</h3>
+
+        <p>
+            Consider a model with two numerical inputs, x₁ and x₂. Each
+            input is encoded into a qubit using a rotation gate. A trainable
+            circuit then mixes the encoded information before a measurement
+            produces an output.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">x₁</div>
+                <span class="arrow">→</span>
+                <div class="node">Encode qubit 1</div>
+            </div>
+            <div class="flow">
+                <div class="node">x₂</div>
+                <span class="arrow">→</span>
+                <div class="node">Encode qubit 2</div>
+            </div>
+            <div class="flow">
+                <div class="node">Trainable rotations</div>
+                <span class="arrow">→</span>
+                <div class="node">Entangling gate</div>
+                <span class="arrow">→</span>
+                <div class="node">Measurement</div>
+            </div>
+        </div>
+
+        <p>
+            For example, an angle encoding might prepare the state:
+        </p>
+
+        <div class="formula">
+            |ψ(x)⟩ = RY(x₁)|0⟩ ⊗ RY(x₂)|0⟩
+        </div>
+
+        <p>
+            Here, RY(x) is a rotation around the Y axis of the Bloch sphere,
+            and ⊗ denotes the tensor product. The resulting two-qubit state
+            is a joint representation of the two input features.
+        </p>
+
+        <p>
+            A trainable circuit V(θ) can then transform this state. If we
+            measure the first qubit using the Pauli-Z observable, the model
+            output may be defined as:
+        </p>
+
+        <div class="formula">
+            f(x, θ) = ⟨ψ(x)| V†(θ) Z₁ V(θ) |ψ(x)⟩
+        </div>
+
+        <p>
+            The dagger symbol indicates the conjugate transpose, and Z₁
+            means that the observable acts on the first qubit. The result
+            is an expected value between -1 and +1.
+        </p>
+
+        <h3>19.2.3 Turning the output into a prediction</h3>
+
+        <p>
+            Suppose the task is binary classification. One possible rule
+            is to predict class 1 when f(x, θ) is above zero and class 0
+            otherwise. Another approach maps the expectation value to a
+            probability:
+        </p>
+
+        <div class="formula">
+            p(class 1 | x) = (1 + f(x, θ)) / 2
+        </div>
+
+        <p>
+            This mapping produces a value between zero and one. It is a
+            possible modelling choice, not a requirement for every QNN.
+            The model can be trained using a suitable loss function.
+        </p>
+
+        <h3>19.2.4 Why use trainable quantum operations?</h3>
+
+        <p>
+            A trainable circuit can represent a family of functions rather
+            than a single fixed function. Different parameter values produce
+            different transformations, and training searches for a useful
+            member of that family.
+        </p>
+
+        <p>
+            Entangling gates can help represent relationships between input
+            features. This does not guarantee that every quantum perceptron
+            is more expressive than a classical perceptron, or that it
+            learns better. Its performance depends on the circuit structure,
+            encoding, task and training procedure.
+        </p>
+
+        <div class="example">
+            <h3>Example: deciding whether to recommend a book</h3>
+            <p>
+                Imagine that x₁ represents a reader's interest score and
+                x₂ represents the similarity between the reader and the
+                book. The quantum circuit encodes both values, processes
+                them and returns a score.
+            </p>
+            <p>
+                During training, examples of books that readers liked or
+                disliked guide the adjustment of circuit parameters. After
+                training, the model can estimate how suitable another book
+                might be.
+            </p>
+            <p>
+                This example describes the modelling idea. It does not imply
+                that a quantum perceptron would outperform an ordinary
+                recommendation model for this task.
+            </p>
+        </div>
+
+        <h3>19.2.5 The limitations of a quantum perceptron</h3>
+
+        <ul>
+            <li>Classical inputs must be encoded into quantum states.</li>
+            <li>Measurement introduces statistical uncertainty when finite shots are used.</li>
+            <li>The number of useful trainable parameters is constrained by the circuit design.</li>
+            <li>Some proposed quantum neuron models use specialised operations that are difficult to realise on current hardware.</li>
+            <li>A small quantum circuit may not have enough capacity for a complicated task.</li>
+        </ul>
+    </section>
+
+    <section id="qcnn">
+        <h2>19.3 Quantum Convolutional Neural Networks (QCNN)</h2>
+
+        <h3>19.3.1 Understanding classical convolution</h3>
+
+        <p>
+            A classical convolutional neural network, or CNN, is commonly
+            used for images. An image contains local patterns such as edges,
+            corners and textures. Instead of examining every pixel in an
+            unrelated way, a CNN applies small filters across the image.
+        </p>
+
+        <p>
+            The same filter is reused at different locations. This allows
+            the network to detect a similar pattern even when it appears
+            in a different part of an image. Later layers combine simpler
+            patterns into more complex ones.
+        </p>
+
+        <p>
+            Pooling or downsampling can reduce the size of the representation.
+            For example, a network might gradually transform pixels into
+            edges, edges into shapes and shapes into object-level features.
+        </p>
+
+        <h3>19.3.2 How does a QCNN differ?</h3>
+
+        <p>
+            A quantum convolutional neural network uses structured quantum
+            operations to process information in a manner inspired by
+            convolutional architectures. Some QCNN designs use local
+            parameterised gates followed by pooling-like operations that
+            reduce the number of active qubits.
+        </p>
+
+        <p>
+            In one common conceptual design, neighbouring qubits interact
+            first. A smaller collection of qubits then carries information
+            into the next stage. This process repeats, allowing the circuit
+            to build a hierarchy of quantum features.
+        </p>
+
+        <div class="diagram">
+            <h3>A hierarchical quantum convolutional circuit</h3>
+            <div class="flow">
+                <div class="node">Input qubits</div>
+                <span class="arrow">→</span>
+                <div class="node">Local trainable gates</div>
+                <span class="arrow">→</span>
+                <div class="node">Pooling-like stage</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">Fewer active qubits</div>
+                <span class="arrow">→</span>
+                <div class="node">More local gates</div>
+                <span class="arrow">→</span>
+                <div class="node">Final measurement</div>
+            </div>
+        </div>
+
+        <p>
+            The phrase <strong>pooling-like</strong> is deliberate. Classical
+            max pooling selects values from a region. A quantum pooling
+            operation can instead use gates and measurements, discard or
+            reset qubits, or use other circuit structures to reduce the
+            representation. It need not be identical to classical pooling.
+        </p>
+
+        <h3>19.3.3 What does a quantum convolutional layer learn?</h3>
+
+        <p>
+            The trainable gates can learn transformations of quantum states
+            that help separate different classes. Local gates initially
+            process small groups of qubits, while subsequent stages combine
+            information across increasingly large portions of the system.
+        </p>
+
+        <p>
+            This hierarchical structure is useful for thinking about
+            structured data. In certain quantum physics problems, the
+            inputs themselves may be quantum states rather than ordinary
+            images. QCNN architectures have been studied for tasks involving
+            quantum phases of matter and related state-classification
+            problems.
+        </p>
+
+        <h3>19.3.4 Why are QCNNs interesting?</h3>
+
+        <ul>
+            <li><strong>Hierarchical processing:</strong> Local transformations build towards larger-scale representations.</li>
+            <li><strong>Parameter sharing:</strong> Some architectures reuse related gate structures, which can reduce the number of independent parameters.</li>
+            <li><strong>Structured interactions:</strong> The circuit can reflect local relationships in the problem.</li>
+            <li><strong>Quantum-native applications:</strong> Some tasks involve quantum states that are naturally processed by quantum hardware.</li>
+        </ul>
+
+        <h3>19.3.5 Why is a QCNN not automatically an image-classification breakthrough?</h3>
+
+        <p>
+            Ordinary images contain many pixel values. Encoding a large image
+            into a useful quantum state can be expensive. Loading the data,
+            executing the circuit, repeating measurements and transferring
+            results back to classical software all contribute to the total
+            cost.
+        </p>
+
+        <p>
+            A QCNN might use fewer trainable parameters than a particular
+            classical network, but parameter count alone does not establish
+            computational advantage. A fair comparison must account for
+            data loading, circuit execution, training cost, prediction
+            quality and the hardware required.
+        </p>
+
+        <div class="warning">
+            <h3>Important distinction</h3>
+            <p>
+                A QCNN is a family of architectures, not one standard circuit.
+                Its usefulness depends on the task and on how the quantum
+                representation is prepared. For ordinary image datasets,
+                classical CNNs remain the established practical choice in
+                most applications.
+            </p>
+        </div>
+    </section>
+
+    <section id="recurrent">
+        <h2>19.4 Quantum Recurrent and Attention-Style Models</h2>
+
+        <h3>19.4.1 Why do sequences need special models?</h3>
+
+        <p>
+            Consider the sentence, "The boy picked up the book because it
+            was interesting." Understanding the word "it" requires looking
+            back at earlier words. The order of information matters.
+        </p>
+
+        <p>
+            The same problem appears in speech, time-series forecasting,
+            sensor data and financial records. A model that treats every
+            input as an unrelated item may lose the relationships between
+            earlier and later observations.
+        </p>
+
+        <p>
+            Classical recurrent neural networks process a sequence one step
+            at a time. They maintain a hidden state that summarises
+            information from previous steps. Long short-term memory networks
+            (LSTMs) and gated recurrent units (GRUs) were developed to help
+            recurrent models learn useful dependencies over longer sequences.
+        </p>
+
+        <h3>19.4.2 Quantum recurrent neural networks</h3>
+
+        <p>
+            A quantum recurrent neural network, or QRNN, incorporates a
+            quantum circuit into a sequence-processing model. The circuit
+            may receive the current input together with a representation
+            of the previous state and produce an output or updated state.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">Input at time t</div>
+                <span class="arrow">→</span>
+                <div class="node">Encode input</div>
+                <span class="arrow">→</span>
+                <div class="node">Quantum circuit</div>
+                <span class="arrow">→</span>
+                <div class="node">Measured output</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">Classical or quantum state update</div>
+                <span class="arrow">→</span>
+                <div class="node">Next time step</div>
+            </div>
+        </div>
+
+        <p>
+            There are several ways to implement this idea. A model may keep
+            a classical hidden state between circuit executions, use a
+            quantum state that is carried forward, or combine both.
+            These choices lead to different computational costs and
+            different meanings of recurrence.
+        </p>
+
+        <h3>19.4.3 A simple recurrent formulation</h3>
+
+        <p>
+            A classical recurrent model often uses the following equation:
+        </p>
+
+        <div class="formula">
+            hₜ = g(xₜ, hₜ₋₁; θ)
+
+            <br><br>
+
+            yₜ = r(hₜ)
+        </div>
+
+        <p>
+            Here, xₜ is the current input, hₜ₋₁ is the previous hidden state,
+            hₜ is the updated state, and yₜ is the output. The parameter
+            set θ controls the update rule.
+        </p>
+
+        <p>
+            In a quantum-inspired recurrent design, the update function g
+            can include a parameterised quantum circuit and a measurement
+            step. For example, the classical hidden state may be encoded
+            into qubits alongside the current input. The circuit then
+            produces measured values that help construct the next hidden
+            state.
+        </p>
+
+        <p>
+            This approach is hybrid because the circuit performs quantum
+            operations while the recurrent state update can remain classical.
+        </p>
+
+        <h3>19.4.4 What about quantum attention?</h3>
+
+        <p>
+            Attention is a mechanism that lets a model assign different
+            levels of importance to different parts of an input. In a
+            transformer, an input representation is transformed into query,
+            key and value vectors.
+        </p>
+
+        <p>
+            A query represents what a position is looking for. Keys represent
+            what each position offers for matching. Values carry the
+            information that is combined using the attention weights.
+        </p>
+
+        <div class="formula">
+            Attention(Q, K, V) = softmax(QKᵀ / √dₖ)V
+        </div>
+
+        <p>
+            The expression QKᵀ calculates similarity scores between queries
+            and keys. Dividing by the square root of the key dimension helps
+            control the scale of the scores. Softmax converts them into
+            weights, and these weights are applied to the value vectors.
+        </p>
+
+        <p>
+            A quantum attention-style model may use quantum circuits to
+            generate feature representations, estimate similarities or
+            implement a trainable transformation inside an attention
+            architecture. Other proposals define quantum analogues of
+            attention using quantum states and measurements.
+        </p>
+
+        <p>
+            However, the term <strong>quantum attention</strong> does not
+            refer to one universally accepted algorithm. Some models retain
+            the ordinary classical attention equation and replace part of
+            its feature-processing pipeline with a quantum circuit. Others
+            investigate more directly quantum formulations.
+        </p>
+
+        <h3>19.4.5 Quantum circuits inside a transformer</h3>
+
+        <p>
+            One practical research direction is to replace a small
+            transformation within a transformer with a variational quantum
+            circuit. For example, a circuit might process a compressed
+            representation of each token and return a few measured features.
+            Classical layers can then perform the usual attention calculation.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">Input tokens</div>
+                <span class="arrow">→</span>
+                <div class="node">Classical embeddings</div>
+                <span class="arrow">→</span>
+                <div class="node">Quantum feature circuit</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">Classical attention</div>
+                <span class="arrow">→</span>
+                <div class="node">Feed-forward layers</div>
+                <span class="arrow">→</span>
+                <div class="node">Prediction</div>
+            </div>
+        </div>
+
+        <p>
+            Such a design does not make the entire transformer quantum.
+            It is a hybrid architecture with a quantum component.
+        </p>
+
+        <h3>19.4.6 The main challenges</h3>
+
+        <ul>
+            <li>Sequences may contain many tokens or time steps, making repeated circuit execution expensive.</li>
+            <li>Quantum measurements can introduce sampling noise into hidden-state updates and attention scores.</li>
+            <li>Long sequences may require many circuit calls during training.</li>
+            <li>Compressing a high-dimensional token representation into a few qubits may discard useful information.</li>
+            <li>Quantum recurrence and quantum attention must be compared against strong classical baselines, not merely simple neural networks.</li>
+        </ul>
+    </section>
+
+    <section id="graph">
+        <h2>19.5 Quantum Graph Neural Networks</h2>
+
+        <h3>19.5.1 What is a graph?</h3>
+
+        <p>
+            Many real-world problems are not naturally represented as
+            ordinary rows and columns. A social network contains people
+            connected by friendships. A molecule contains atoms connected
+            by chemical bonds. A computer network contains machines linked
+            by communication channels.
+        </p>
+
+        <p>
+            A graph represents such a system using nodes and edges. Nodes
+            represent entities, while edges represent relationships between
+            them. Nodes and edges can also have their own features.
+        </p>
+
+        <div class="diagram">
+            <h3>A simple graph</h3>
+            <svg viewBox="0 0 340 175" width="100%" height="175" role="img"
+                 aria-label="A graph containing four nodes connected by edges">
+                <line x1="65" y1="55" x2="165" y2="35" stroke="#64748b" stroke-width="3"/>
+                <line x1="65" y1="55" x2="105" y2="135" stroke="#64748b" stroke-width="3"/>
+                <line x1="165" y1="35" x2="270" y2="85" stroke="#64748b" stroke-width="3"/>
+                <line x1="105" y1="135" x2="270" y2="85" stroke="#64748b" stroke-width="3"/>
+                <circle cx="65" cy="55" r="22" fill="#4338ca"/>
+                <circle cx="165" cy="35" r="22" fill="#0f766e"/>
+                <circle cx="105" cy="135" r="22" fill="#0f766e"/>
+                <circle cx="270" cy="85" r="22" fill="#4338ca"/>
+                <g fill="white" font-size="13" text-anchor="middle" font-weight="bold">
+                    <text x="65" y="60">A</text>
+                    <text x="165" y="40">B</text>
+                    <text x="105" y="140">C</text>
+                    <text x="270" y="90">D</text>
+                </g>
+            </svg>
+            <p>
+                The nodes are entities, and the lines show which entities
+                are connected. A graph learning model uses both node
+                features and relationships.
+            </p>
+        </div>
+
+        <h3>19.5.2 How does a classical graph neural network work?</h3>
+
+        <p>
+            A classical graph neural network, or GNN, commonly updates a
+            node's representation using information from its neighbours.
+            This process is known as message passing.
+        </p>
+
+        <div class="formula">
+            mᵥ = AGGREGATE({φ(hᵥ, hᵤ, eᵤᵥ) : u ∈ N(v)})
+
+            <br><br>
+
+            hᵥ' = UPDATE(hᵥ, mᵥ)
+        </div>
+
+        <p>
+            Here, hᵥ is the current representation of node v, N(v) is its
+            set of neighbours, and eᵤᵥ represents an optional edge feature.
+            The model builds messages from neighbouring nodes, aggregates
+            them and updates the representation of the central node.
+        </p>
+
+        <p>
+            Repeating this process allows a node to learn from increasingly
+            distant parts of the graph. After several layers, the model
+            can use these representations to classify nodes, predict edges
+            or make predictions about an entire graph.
+        </p>
+
+        <h3>19.5.3 How can quantum circuits help?</h3>
+
+        <p>
+            A quantum graph neural network uses quantum circuits within
+            graph representation learning. One design may encode the
+            features of a node and its neighbours into qubits, apply
+            parameterised gates and measure the circuit to generate a
+            learned representation.
+        </p>
+
+        <p>
+            Another design may use quantum circuits to calculate similarities
+            between node representations. Quantum kernels can then support
+            graph classification or other prediction tasks.
+        </p>
+
+        <p>
+            The circuit architecture must reflect the graph problem. If
+            every node is treated differently without respecting the graph's
+            structure, the model may fail to capture the very relationships
+            that make graph learning useful.
+        </p>
+
+        <h3>19.5.4 An illustrative quantum message-passing layer</h3>
+
+        <p>
+            Suppose node A represents a person, while nodes B and C represent
+            two of that person's contacts. Each node has a feature vector.
+            A quantum graph model could encode these features into a
+            circuit and apply trainable operations that combine information
+            from the connected nodes.
+        </p>
+
+        <p>
+            After measurement, the resulting numerical features can be
+            combined with the previous node representation using a classical
+            update function. The process can then be repeated across the graph.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">Node features</div>
+                <span class="arrow">→</span>
+                <div class="node">Encode node information</div>
+                <span class="arrow">→</span>
+                <div class="node">Quantum circuit</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">Measurement</div>
+                <span class="arrow">→</span>
+                <div class="node">Aggregate neighbour information</div>
+                <span class="arrow">→</span>
+                <div class="node">Updated node embedding</div>
+            </div>
+        </div>
+
+        <p>
+            This is one possible architecture, not a definition that every
+            quantum GNN must follow. The exact implementation depends on
+            how nodes, edges and their features are encoded.
+        </p>
+
+        <h3>19.5.5 Where could quantum GNNs be useful?</h3>
+
+        <ul>
+            <li><strong>Molecular modelling:</strong> Molecules naturally form graphs, and some molecular problems also involve quantum chemistry.</li>
+            <li><strong>Material science:</strong> Researchers may study relationships between the structure of a material and its properties.</li>
+            <li><strong>Network analysis:</strong> Graphs can represent communication networks, transport systems or social relationships.</li>
+            <li><strong>Quantum systems:</strong> Graphs can describe relationships between interacting physical components.</li>
+        </ul>
+
+        <p>
+            These are areas where graph learning or quantum computation may
+            be relevant. They are not proof that a quantum GNN currently
+            outperforms classical graph neural networks in those applications.
+        </p>
+    </section>
+
+    <section id="dissipative">
+        <h2>19.6 Dissipative and Measurement-Based QNNs</h2>
+
+        <p>
+            So far, we have mainly considered models in which trainable
+            gates transform a quantum state and the final state is measured.
+            Other approaches change how the state is processed, including
+            dissipative quantum models and measurement-based quantum
+            computation.
+        </p>
+
+        <h3>19.6.1 What does dissipative mean?</h3>
+
+        <p>
+            In everyday language, dissipation means that energy or another
+            physical quantity is dispersed into the surroundings. In
+            quantum computing, an open quantum system can interact with
+            its environment. Its evolution may no longer be described by
+            a unitary operation on the system alone.
+        </p>
+
+        <p>
+            A unitary gate transforms a pure quantum state reversibly.
+            Dissipative evolution can instead involve effects such as
+            relaxation, decoherence or engineered interactions with an
+            environment. These effects may normally be unwanted noise, but
+            carefully controlled dissipation can also be used as part of
+            a computational model.
+        </p>
+
+        <h3>19.6.2 Quantum states and density matrices</h3>
+
+        <p>
+            A pure quantum state is often represented by a state vector.
+            When a system is mixed, or when we do not have complete
+            information about its state, a density matrix is useful.
+        </p>
+
+        <div class="formula">
+            ρ = Σᵢ pᵢ |ψᵢ⟩⟨ψᵢ|
+
+            <br><br>
+
+            pᵢ ≥ 0,   Σᵢ pᵢ = 1
+        </div>
+
+        <p>
+            This expression represents a mixture of possible pure states.
+            Each state |ψᵢ⟩ has a probability pᵢ. A density matrix contains
+            the information needed to calculate measurement statistics for
+            the mixed state.
+        </p>
+
+        <p>
+            A general open-system evolution can be represented by a quantum
+            channel:
+        </p>
+
+        <div class="formula">
+            ρ' = E(ρ)
+        </div>
+
+        <p>
+            Here, E is a map that transforms the input density matrix into
+            an output density matrix. A physically valid quantum channel
+            is completely positive and trace-preserving. In a dissipative
+            QNN, the trainable model may be built around such channels
+            rather than only around unitary gates.
+        </p>
+
+        <h3>19.6.3 How can dissipation support learning?</h3>
+
+        <p>
+            Some dissipative models are designed to drive the system
+            towards a desired steady state. A steady state is one that
+            remains unchanged under the relevant evolution.
+        </p>
+
+        <p>
+            Trainable interactions can be chosen so that the final state
+            depends on the input and model parameters. Measurements of this
+            state provide features or predictions. Learning then adjusts
+            the parameters so that the measured outputs better match the
+            target.
+        </p>
+
+        <p>
+            The important idea is that the system's evolution itself can
+            perform part of the information-processing task. The environment
+            is not always merely a nuisance; in engineered models, its
+            interaction with the system can be part of the design.
+        </p>
+
+        <h3>19.6.4 What is measurement-based quantum computing?</h3>
+
+        <p>
+            Measurement-based quantum computing is a model of quantum
+            computation in which a highly entangled resource state is
+            prepared first. Computation is then carried out by measuring
+            individual qubits in chosen bases. Later measurement choices
+            may depend on earlier measurement outcomes.
+        </p>
+
+        <p>
+            This differs from the familiar circuit model, where computation
+            is usually described as a sequence of gates applied to qubits.
+            Both models can implement quantum computations, but their
+            operations are organised differently.
+        </p>
+
+        <p>
+            In measurement-based QNN proposals, trainable measurement bases,
+            adaptive measurement patterns or the preparation of the resource
+            state can provide the model's adjustable components.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">Prepare entangled resource</div>
+                <span class="arrow">→</span>
+                <div class="node">Choose measurement settings</div>
+                <span class="arrow">→</span>
+                <div class="node">Measure qubits</div>
+                <span class="arrow">→</span>
+                <div class="node">Classical output</div>
+            </div>
+        </div>
+
+        <h3>19.6.5 Why are these models important?</h3>
+
+        <p>
+            They broaden the range of possible quantum learning architectures.
+            A model does not have to be restricted to the most familiar
+            sequence of unitary gates. Open-system dynamics and measurement
+            patterns offer different ways to build trainable transformations.
+        </p>
+
+        <p>
+            However, these approaches can be challenging to implement.
+            Environmental effects must be controlled or modelled correctly,
+            and measurement-based systems may require carefully prepared
+            entangled resource states. Their practical value depends on
+            the application, available hardware and training method.
+        </p>
+    </section>
+
+    <section id="hybrid">
+        <h2>19.7 Hybrid Classical-Quantum Neural Networks</h2>
+
+        <h3>19.7.1 Why combine classical and quantum computation?</h3>
+
+        <p>
+            Modern neural networks require many operations, including
+            data processing, matrix multiplication, activation functions,
+            loss calculation and parameter optimisation. Classical computers
+            are excellent at these tasks and have highly developed software
+            libraries.
+        </p>
+
+        <p>
+            Current quantum processors have a different set of capabilities
+            and limitations. They can execute quantum circuits, but they
+            are not a general replacement for GPUs or CPUs. A practical
+            approach is to assign a limited part of the model to a quantum
+            circuit while leaving the remaining operations classical.
+        </p>
+
+        <p>
+            Such a model is called a <strong>hybrid classical-quantum
+            neural network</strong>. It combines classical trainable layers
+            with one or more parameterised quantum circuits.
+        </p>
+
+        <h3>19.7.2 The architecture of a hybrid network</h3>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">Raw input</div>
+                <span class="arrow">→</span>
+                <div class="node">Classical preprocessing</div>
+                <span class="arrow">→</span>
+                <div class="node">Classical feature layer</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">Encode into qubits</div>
+                <span class="arrow">→</span>
+                <div class="node">Quantum circuit</div>
+                <span class="arrow">→</span>
+                <div class="node">Measurements</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">Classical output layer</div>
+                <span class="arrow">→</span>
+                <div class="node">Prediction and loss</div>
+            </div>
+        </div>
+
+        <p>
+            The classical preprocessing layer reduces or transforms the
+            input into a representation that can be encoded by the quantum
+            circuit. The circuit transforms that representation and returns
+            measured features. A classical output layer converts those
+            features into the final prediction.
+        </p>
+
+        <h3>19.7.3 Why not send the entire dataset directly to the quantum circuit?</h3>
+
+        <p>
+            The number of qubits available on a processor is limited, and
+            loading a large classical dataset into a quantum state is not
+            automatically free. A hybrid model may therefore use a classical
+            network to compress the data before encoding it into a smaller
+            quantum system.
+        </p>
+
+        <p>
+            This creates a design question: which part of the computation
+            should be quantum? The answer should come from the problem's
+            structure and evidence about the model, not from the assumption
+            that any quantum layer must improve performance.
+        </p>
+
+        <h3>19.7.4 The hybrid training loop</h3>
+
+        <p>
+            Training a hybrid network follows a feedback process. First,
+            the classical layers transform the input. The quantum circuit
+            executes using its current parameters, and measurements provide
+            numerical outputs. The remaining classical layers produce a
+            prediction and calculate the loss.
+        </p>
+
+        <p>
+            Gradients are then calculated for the trainable parameters.
+            The classical optimiser updates them, and the next training
+            step begins.
+        </p>
+
+        <div class="formula">
+            θ* = arg minθ L(y, f(x; θ))
+
+            <br><br>
+
+            θ ← θ - η ∇θ L
+        </div>
+
+        <p>
+            Here, L is the loss function, y is the correct target, f is the
+            hybrid model, θ represents its trainable parameters, and η is
+            the learning rate. The gradient indicates how the loss changes
+            with the parameters.
+        </p>
+
+        <p>
+            The quantum circuit may contribute gradients through a
+            differentiable simulator, a parameter-shift calculation or
+            another supported differentiation method. The exact method
+            depends on the circuit operations and software interface.
+        </p>
+
+        <h3>19.7.5 Advantages of a hybrid design</h3>
+
+        <ul>
+            <li>It can reuse established classical machine learning libraries.</li>
+            <li>It allows a small quantum circuit to be tested without requiring an entirely quantum software stack.</li>
+            <li>Classical layers can perform preprocessing and complex output tasks.</li>
+            <li>It is suitable for research into how quantum features interact with classical representations.</li>
+            <li>It can be developed using simulators before attempting execution on quantum hardware.</li>
+        </ul>
+
+        <h3>19.7.6 The costs of a hybrid design</h3>
+
+        <p>
+            Every quantum circuit execution has a cost. If the training
+            process needs thousands of circuit evaluations for one optimiser
+            step, training may become slow. On real hardware, finite-shot
+            measurements can make the estimated output and gradient noisy.
+        </p>
+
+        <p>
+            Communication between classical software and a quantum
+            processor can also add latency. A model that works quickly on
+            a simulator may be much slower on hardware. Consequently,
+            total end-to-end training time matters more than the number
+            of quantum gates alone.
+        </p>
+
+        <div class="example">
+            <h3>Example: a hybrid model for classifying measurements</h3>
+            <p>
+                Suppose each record contains four numerical sensor readings.
+                A classical layer first normalises the readings. A quantum
+                circuit then encodes the four values into four qubits and
+                applies trainable rotations and entangling gates.
+            </p>
+            <p>
+                Measurements return four expectation values. A classical
+                output layer uses these values to predict one of two classes.
+                The loss is calculated against the correct labels, and the
+                optimiser updates both the classical weights and the quantum
+                circuit parameters.
+            </p>
+            <p>
+                This architecture is small enough to study on a simulator.
+                Whether it is useful for a real sensor problem would require
+                experiments against suitable classical models.
+            </p>
+        </div>
+    </section>
+
+    <section id="hands-on">
+        <h2>19.8 Hands-on: Hybrid Networks with PyTorch and PennyLane</h2>
+
+        <p>
+            We will now build a small hybrid neural network. The goal is
+            to understand how classical inputs travel through a quantum
+            circuit, how measurements become outputs, and how training
+            updates the circuit parameters.
+        </p>
+
+        <p>
+            We will use Python, PyTorch and PennyLane. PennyLane provides
+            tools for defining quantum circuits as differentiable functions
+            and connecting them to classical machine learning frameworks.
+        </p>
+
+        <h3>19.8.1 Install the required libraries</h3>
+
+        <pre><code>pip install pennylane torch scikit-learn</code></pre>
+
+        <p>
+            These packages provide the quantum circuit interface, the
+            classical neural network framework and a simple dataset
+            generator. The example below uses a simulator, so a physical
+            quantum processor is not required.
+        </p>
+
+        <h3>19.8.2 What will we build?</h3>
+
+        <p>
+            The model will classify two-dimensional points into two
+            categories. A classical linear layer transforms each input
+            into two values. These values are encoded into two qubits.
+            A trainable quantum circuit processes the state and returns
+            two measurement expectation values. A final classical layer
+            converts those measurements into class scores.
+        </p>
+
+        <div class="diagram">
+            <div class="flow">
+                <div class="node">2 input features</div>
+                <span class="arrow">→</span>
+                <div class="node">Linear layer</div>
+                <span class="arrow">→</span>
+                <div class="node">2 qubits</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">RY encoding</div>
+                <span class="arrow">→</span>
+                <div class="node">Trainable gates</div>
+                <span class="arrow">→</span>
+                <div class="node">CNOT entanglement</div>
+            </div>
+            <div class="flow">
+                <span class="arrow">↓</span>
+            </div>
+            <div class="flow">
+                <div class="node">Z measurements</div>
+                <span class="arrow">→</span>
+                <div class="node">Classical output layer</div>
+                <span class="arrow">→</span>
+                <div class="node">Class prediction</div>
+            </div>
+        </div>
+
+        <h3>19.8.3 Complete example</h3>
+
+        <pre><code>import pennylane as qml
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+from sklearn.datasets import make_moons
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import DataLoader, TensorDataset
+
+# Reproducible classical initialisation.
+torch.manual_seed(7)
+
+# -------------------------------------------------
+# 1. Create a small binary classification dataset
+# -------------------------------------------------
+
+X, y = make_moons(
+    n_samples=300,
+    noise=0.15,
+    random_state=7
+)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.25,
+    random_state=7,
+    stratify=y
+)
+
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+X_train = torch.tensor(X_train, dtype=torch.float32)
+X_test = torch.tensor(X_test, dtype=torch.float32)
+
+y_train = torch.tensor(y_train, dtype=torch.long)
+y_test = torch.tensor(y_test, dtype=torch.long)
+
+train_loader = DataLoader(
+    TensorDataset(X_train, y_train),
+    batch_size=16,
+    shuffle=True
+)
+
+# -------------------------------------------------
+# 2. Define a two-qubit quantum device
+# -------------------------------------------------
+
+n_qubits = 2
+dev = qml.device("default.qubit", wires=n_qubits)
+
+# -------------------------------------------------
+# 3. Define the parameterised quantum circuit
+# -------------------------------------------------
+
+@qml.qnode(dev, interface="torch", diff_method="backprop")
+def quantum_circuit(inputs, weights):
+    # Encode two classical features.
+    qml.RY(inputs[0], wires=0)
+    qml.RY(inputs[1], wires=1)
+
+    # Trainable single-qubit transformations.
+    qml.RY(weights[0], wires=0)
+    qml.RY(weights[1], wires=1)
+
+    # Couple the qubits.
+    qml.CNOT(wires=[0, 1])
+
+    # Additional trainable transformations.
+    qml.RY(weights[2], wires=0)
+    qml.RY(weights[3], wires=1)
+
+    # Return classical expectation values.
+    return (
+        qml.expval(qml.PauliZ(0)),
+        qml.expval(qml.PauliZ(1))
+    )
+
+# -------------------------------------------------
+# 4. Wrap the circuit in a PyTorch layer
+# -------------------------------------------------
+
+weight_shapes = {"weights": (4,)}
+
+quantum_layer = qml.qnn.TorchLayer(
+    quantum_circuit,
+    weight_shapes
+)
+
+# -------------------------------------------------
+# 5. Build the hybrid neural network
+# -------------------------------------------------
+
+class HybridQNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.preprocess = nn.Linear(2, 2)
+        self.quantum = quantum_layer
+        self.classifier = nn.Linear(2, 2)
+
+    def forward(self, x):
+        # Map classical inputs into circuit angles.
+        x = torch.tanh(self.preprocess(x)) * torch.pi
+
+        # PennyLane evaluates the circuit for each input.
+        x = self.quantum(x)
+
+        # Convert measured features into class logits.
+        return self.classifier(x)
+
+model = HybridQNN()
+
+# -------------------------------------------------
+# 6. Choose the loss and optimiser
+# -------------------------------------------------
+
+criterion = nn.CrossEntropyLoss()
+
+optimizer = optim.Adam(
+    model.parameters(),
+    lr=0.02
+)
+
+# -------------------------------------------------
+# 7. Train the hybrid model
+# -------------------------------------------------
+
+epochs = 15
+
+for epoch in range(epochs):
+    model.train()
+    total_loss = 0.0
+
+    for features, labels in train_loader:
+        optimizer.zero_grad()
+
+        logits = model(features)
+        loss = criterion(logits, labels)
+
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item() * len(labels)
+
+    average_loss = total_loss / len(X_train)
+
+    print(
+        f"Epoch {epoch + 1:02d} | "
+        f"Loss: {average_loss:.4f}"
+    )
+
+# -------------------------------------------------
+# 8. Evaluate on unseen examples
+# -------------------------------------------------
+
+model.eval()
+
+with torch.no_grad():
+    logits = model(X_test)
+    predictions = logits.argmax(dim=1)
+    accuracy = (predictions == y_test).float().mean()
+
+print(f"Test accuracy: {accuracy.item():.3f}")</code></pre>
+
+        <h3>19.8.4 Understanding the code, step by step</h3>
+
+        <h4>Step 1: Create a dataset</h4>
+
+        <p>
+            The <code>make_moons</code> function generates two classes of
+            points shaped roughly like two interlocking moons. It is a
+            useful small classification problem because the classes are
+            not separated by a single straight line in the original
+            two-dimensional input space.
+        </p>
+
+        <p>
+            We split the dataset into training and testing portions.
+            The scaler learns its mean and standard deviation from the
+            training inputs only, then applies the same transformation
+            to the test inputs. This avoids leaking information from
+            the test set into preprocessing.
+        </p>
+
+        <h4>Step 2: Create a quantum device</h4>
+
+        <p>
+            The line <code>qml.device("default.qubit", wires=2)</code>
+            creates a state-vector simulator with two qubits. A simulator
+            represents the circuit mathematically and allows us to study
+            its behaviour without physical hardware.
+        </p>
+
+        <p>
+            A two-qubit state vector has four complex amplitudes. In general,
+            a pure state of n qubits is described by 2ⁿ complex amplitudes,
+            which is why simulating large quantum systems becomes demanding.
+        </p>
+
+        <h4>Step 3: Encode the data</h4>
+
+        <p>
+            The <code>RY</code> gates rotate the qubits by angles supplied
+            by the input. The input features are first transformed by the
+            classical layer and scaled into a bounded interval.
+        </p>
+
+        <p>
+            Angle encoding is straightforward, but the numerical values
+            must be mapped sensibly to rotation angles. Different encodings
+            can change the functions the circuit can represent.
+        </p>
+
+        <h4>Step 4: Introduce trainable parameters</h4>
+
+        <p>
+            The four values in <code>weights</code> control the trainable
+            rotations. During training, the optimiser adjusts them.
+            The CNOT gate couples the two qubits, allowing the circuit
+            to create entanglement for suitable input states.
+        </p>
+
+        <p>
+            Notice that the circuit structure itself stays fixed. Learning
+            changes the parameters inside that structure.
+        </p>
+
+        <h4>Step 5: Measure the qubits</h4>
+
+        <p>
+            The circuit returns the expectation values of Pauli-Z for both
+            qubits. Each value is between -1 and +1. The simulator calculates
+            these values from the state vector.
+        </p>
+
+        <p>
+            On real hardware, the same expectation values are usually
+            estimated from repeated measurements. Finite-shot estimates
+            fluctuate, so the training process may be noisier.
+        </p>
+
+        <h4>Step 6: Combine quantum and classical layers</h4>
+
+        <p>
+            The <code>TorchLayer</code> object exposes the quantum circuit
+            as a PyTorch-compatible layer. Its output is a tensor containing
+            the measured features. The final linear layer converts those
+            features into two class logits.
+        </p>
+
+        <p>
+            A logit is an unnormalised class score. PyTorch's
+            <code>CrossEntropyLoss</code> combines the logits and target
+            labels to calculate the classification loss.
+        </p>
+
+        <h4>Step 7: Calculate gradients and update parameters</h4>
+
+        <p>
+            The call to <code>loss.backward()</code> asks PyTorch's
+            automatic differentiation system to calculate gradients.
+            PennyLane connects the quantum layer to the differentiation
+            mechanism specified by the QNode. The simulator used here
+            supports backpropagation through its state-vector computation.
+        </p>
+
+        <p>
+            The call to <code>optimizer.step()</code> updates the trainable
+            parameters using Adam. This includes the classical layers
+            and the quantum layer.
+        </p>
+
+        <p>
+            The precise differentiation method supported depends on the
+            device, circuit operations and software version. On quantum
+            hardware, a common alternative is the parameter-shift rule,
+            which estimates derivatives using additional circuit evaluations.
+        </p>
+
+        <h3>19.8.5 What results should you expect?</h3>
+
+        <p>
+            The code prints the average training loss for each epoch and
+            the test accuracy at the end. The exact values depend on
+            the software environment, initial parameters and optimisation
+            behaviour.
+        </p>
+
+        <p>
+            Do not assume that one successful run proves that the quantum
+            circuit is useful. The appropriate next step is to repeat
+            the experiment with different random seeds and compare the
+            model against a classical neural network trained on the same
+            splits.
+        </p>
+
+        <h3>19.8.6 Common implementation issues</h3>
+
+        <ul>
+            <li><strong>Tensor shape errors:</strong> Check the batch dimension and ensure that each example has the expected number of features.</li>
+            <li><strong>Version differences:</strong> PennyLane and PyTorch interfaces can change. If an argument or differentiation method is unsupported, consult the installed version's documentation.</li>
+            <li><strong>Slow training:</strong> A quantum circuit can be evaluated repeatedly during gradient computation. Start with a small dataset and a small circuit.</li>
+            <li><strong>Unexpected gradients:</strong> Confirm that the circuit parameters are trainable and that the selected device supports the differentiation method.</li>
+            <li><strong>Poor accuracy:</strong> Inspect preprocessing, learning rate, circuit depth and model capacity before assuming that the quantum approach is inherently unsuitable.</li>
+        </ul>
+
+        <h3>19.8.7 Connecting a QNN to TensorFlow</h3>
+
+        <p>
+            PennyLane also provides interfaces for TensorFlow in supported
+            configurations. The overall idea remains the same: define a
+            differentiable quantum circuit, wrap it in a compatible layer,
+            connect it to classical layers and train the complete model.
+        </p>
+
+        <p>
+            The following is an outline of the model structure. The exact
+            wrapper and interface options depend on the PennyLane and
+            TensorFlow versions installed.
+        </p>
+
+        <pre><code># Conceptual TensorFlow workflow
+
+import tensorflow as tf
+import pennylane as qml
+
+# 1. Define a PennyLane device.
+# 2. Define a QNode with TensorFlow-compatible differentiation.
+# 3. Wrap the QNode in the supported TensorFlow/Keras interface.
+# 4. Connect it to classical Keras layers.
+# 5. Compile using an optimiser and a suitable loss.
+# 6. Train using model.fit(...).
+
+# Conceptual architecture:
+#
+# inputs = tf.keras.Input(shape=(2,))
+# x = tf.keras.layers.Dense(2, activation="tanh")(inputs)
+# x = quantum_layer(x)
+# outputs = tf.keras.layers.Dense(2)(x)
+#
+# model = tf.keras.Model(inputs, outputs)
+# model.compile(...)
+# model.fit(...)</code></pre>
+
+        <p>
+            This outline illustrates the architecture rather than a complete,
+            version-independent TensorFlow implementation. Before running
+            it, use the interface documented for your installed PennyLane
+            release. Do not assume that every PyTorch wrapper has an
+            identical TensorFlow counterpart.
+        </p>
+    </section>
+
+    <section id="training">
+        <h2>19.9 Training Quantum Neural Networks: The Deeper Picture</h2>
+
+        <p>
+            Understanding the architecture is only half the job. A neural
+            network must also be trainable. QNNs face several issues that
+            arise from the mathematics of quantum circuits and the practical
+            limitations of measurement.
+        </p>
+
+        <h3>19.9.1 The loss function</h3>
+
+        <p>
+            A loss function measures how far a model's predictions are
+            from the desired answers. For regression, a common choice is
+            mean squared error. For classification, cross-entropy is widely
+            used when the model provides class scores or probabilities.
+        </p>
+
+        <div class="formula">
+            MSE = (1/N) Σᵢ (yᵢ - ŷᵢ)²
+        </div>
+
+        <p>
+            Here, yᵢ is the correct target, ŷᵢ is the prediction, and N is
+            the number of examples. A training algorithm attempts to reduce
+            the loss over the training data while maintaining useful
+            performance on unseen examples.
+        </p>
+
+        <h3>19.9.2 Parameter-shift gradients</h3>
+
+        <p>
+            Classical neural networks often use backpropagation to calculate
+            gradients. For suitable parameterised quantum gates, derivatives
+            can be calculated using a method called the parameter-shift rule.
+        </p>
+
+        <p>
+            For a common gate parameter whose generator has eigenvalues
+            of equal magnitude, the derivative of an expectation value
+            takes the form:
+        </p>
+
+        <div class="formula">
+            ∂f(θ)/∂θ = [f(θ + π/2) - f(θ - π/2)] / 2
+        </div>
+
+        <p>
+            The formula applies to the relevant class of parameterised
+            gates and observables; it is not a universal derivative rule
+            for every possible quantum operation. More general cases may
+            require different shifts or additional terms.
+        </p>
+
+        <p>
+            The practical idea is simple: evaluate the circuit at shifted
+            parameter values and combine the outputs to estimate the
+            derivative. On hardware, these evaluations require circuit
+            executions and measurements, which can make gradient
+            calculation expensive.
+        </p>
+
+        <h3>19.9.3 Why can gradients become difficult?</h3>
+
+        <p>
+            In some parameterised circuit families, especially sufficiently
+            random circuits with certain properties, gradients can become
+            extremely small as the system grows. This behaviour is associated
+            with a phenomenon called a barren plateau.
+        </p>
+
+        <p>
+            When gradients are tiny, changing the parameters produces only
+            a very small estimated improvement. Optimisation can then
+            become difficult, and measurement noise may hide the useful
+            gradient signal.
+        </p>
+
+        <p>
+            Barren plateaus do not affect every QNN equally. Their occurrence
+            depends on the circuit structure, initialisation, cost function,
+            problem and other conditions.
+        </p>
+
+        <h3>19.9.4 Techniques that may help</h3>
+
+        <ul>
+            <li>Begin with shallow circuits and increase depth only when needed.</li>
+            <li>Use circuit structures that reflect the problem rather than choosing gates entirely at random.</li>
+            <li>Choose parameter initialisation methods that avoid immediately uninformative regions where possible.</li>
+            <li>Measure training behaviour and gradient sizes instead of relying only on the final loss.</li>
+            <li>Compare different data encodings and circuit designs.</li>
+            <li>Use suitable classical preprocessing to avoid loading unnecessarily large inputs into the quantum circuit.</li>
+        </ul>
+
+        <h3>19.9.5 Generalisation and overfitting</h3>
+
+        <p>
+            A QNN can overfit just like a classical neural network. It may
+            learn patterns that work well on the training examples but fail
+            on new data. A quantum circuit is not protected from overfitting
+            merely because it uses quantum states.
+        </p>
+
+        <p>
+            Training and test splits, validation data, regularisation,
+            early stopping and repeated experiments are still important.
+            For noisy hardware, it is also necessary to distinguish
+            genuine learning behaviour from statistical variation caused
+            by measurements.
+        </p>
+    </section>
+
+    <section id="limitations">
+        <h2>19.10 Challenges and Realistic Expectations</h2>
+
+        <p>
+            Quantum neural networks are an active research area. They offer
+            interesting mathematical structures and possible ways to use
+            quantum computation for learning. However, their potential
+            should be assessed carefully.
+        </p>
+
+        <h3>19.10.1 The data-loading problem</h3>
+
+        <p>
+            A classical dataset must be represented in a form that the
+            quantum circuit can process. If the dataset contains many
+            features, encoding them can require substantial resources.
+            A compact quantum state does not automatically make the
+            process of loading arbitrary classical data inexpensive.
+        </p>
+
+        <h3>19.10.2 Measurement costs</h3>
+
+        <p>
+            Quantum measurements return individual outcomes. Expectation
+            values are usually estimated from multiple repetitions.
+            More repetitions generally improve statistical precision,
+            but they also require more circuit executions.
+        </p>
+
+        <p>
+            If a model requires many expectation values and many gradient
+            evaluations, the total number of circuit runs can grow quickly.
+        </p>
+
+        <h3>19.10.3 Noise and limited hardware</h3>
+
+        <p>
+            Real quantum processors have imperfect gates, measurement errors
+            and finite coherence times. Long circuits can accumulate
+            errors. Hardware constraints may also limit the number of
+            qubits and the interactions that can be performed efficiently.
+        </p>
+
+        <p>
+            Simulators avoid many hardware errors but can become expensive
+            as the number of qubits increases. A successful simulation
+            therefore does not guarantee that the same model will train
+            efficiently on a physical processor.
+        </p>
+
+        <h3>19.10.4 Expressivity is not the same as usefulness</h3>
+
+        <p>
+            A circuit may represent a complicated family of functions.
+            That does not automatically mean it can learn the correct
+            function from a limited dataset. Training difficulty,
+            generalisation, measurement cost and the structure of the
+            target problem all matter.
+        </p>
+
+        <p>
+            A model that is highly expressive but difficult to optimise
+            may be less useful than a smaller model that trains reliably.
+        </p>
+
+        <h3>19.10.5 What would count as a meaningful quantum advantage?</h3>
+
+        <p>
+            A meaningful advantage would require a well-defined task on
+            which the quantum approach offers a convincing benefit over
+            suitable classical alternatives. Depending on the task, that
+            benefit might concern runtime, sample complexity, memory,
+            prediction quality or another clearly defined measure.
+        </p>
+
+        <p>
+            A convincing evaluation must include the cost of preparing
+            inputs, running the quantum circuit, estimating measurements,
+            training parameters and processing outputs. It must also use
+            competitive classical baselines and comparable experimental
+            conditions.
+        </p>
+
+        <div class="warning">
+            <h3>What should you conclude?</h3>
+            <p>
+                QNNs are not guaranteed replacements for classical neural
+                networks. At present, their strongest role is often in
+                research: exploring trainable quantum models, studying
+                quantum data, developing new circuit architectures and
+                testing whether particular problems benefit from quantum
+                computation.
+            </p>
+            <p>
+                Learning to build small QNNs is valuable even without
+                immediate practical advantage. It teaches you how quantum
+                states, measurement, optimisation and machine learning
+                interact.
+            </p>
+        </div>
+    </section>
+
+    <section id="summary" class="summary">
+        <h2>19.11 Chapter Summary</h2>
+
+        <p>
+            A quantum neural network is a trainable model that uses quantum
+            circuits to transform information and generate measurable
+            outputs. Its parameters are adjusted through a learning
+            algorithm, much as weights are adjusted in a classical neural
+            network.
+        </p>
+
+        <p>
+            A quantum perceptron provides a simple way to study the idea
+            of a trainable quantum model. QCNNs introduce hierarchical
+            processing and pooling-like operations. Quantum recurrent
+            architectures address sequential information, while
+            attention-style approaches explore quantum components in
+            similarity calculations and feature processing. Quantum GNNs
+            investigate how circuits can support learning on structured
+            relationships.
+        </p>
+
+        <p>
+            Dissipative and measurement-based models broaden the possible
+            ways to perform quantum information processing. Hybrid
+            classical-quantum networks combine these quantum components
+            with classical layers and optimisers, making them practical
+            starting points for experimentation.
+        </p>
+
+        <p>
+            PennyLane allows quantum circuits to be connected to frameworks
+            such as PyTorch and, in supported configurations, TensorFlow.
+            A small hybrid model can be trained on a simulator, giving
+            you an opportunity to understand data encoding, circuit
+            parameters, measurements, gradients and optimisation.
+        </p>
+
+        <h3>The central idea</h3>
+
+        <div class="formula">
+            Data → Quantum representation → Trainable circuit
+            → Measurement → Prediction → Loss → Parameter update
+        </div>
+
+        <p>
+            The important question is not whether a model contains a
+            quantum circuit. The important question is whether that
+            circuit helps solve a well-defined learning problem under
+            realistic computational and hardware constraints.
+        </p>
+    </section>
+
+    <section id="questions">
+        <h2>19.12 Questions for Practice</h2>
+
+        <h3>Conceptual questions</h3>
+
+        <ol>
+            <li>What is a quantum neural network, and how does it differ from a classical neural network?</li>
+            <li>Why are trainable gate parameters important in a QNN?</li>
+            <li>What is the difference between a quantum state and a measurement outcome?</li>
+            <li>How does a quantum perceptron turn encoded data into a prediction?</li>
+            <li>How does a QCNN's hierarchical structure relate to the idea of convolution and pooling?</li>
+            <li>What problem does recurrence solve when processing sequential data?</li>
+            <li>What are queries, keys and values in classical attention, and how might a quantum circuit contribute to an attention-style model?</li>
+            <li>Explain message passing in a graph neural network.</li>
+            <li>What is the difference between unitary circuit evolution and dissipative evolution?</li>
+            <li>Why are hybrid classical-quantum models useful for present-day experiments?</li>
+        </ol>
+
+        <h3>Mathematical questions</h3>
+
+        <ol>
+            <li>A qubit is measured as 0 with probability 0.7 and as 1 with probability 0.3. What is the expectation value of Pauli-Z?</li>
+            <li>Why must the squared magnitudes of the amplitudes of a normalised pure qubit state add up to one?</li>
+            <li>What does the gradient of a QNN's loss function tell the optimiser?</li>
+            <li>Under what conditions can the parameter-shift expression be used to calculate a derivative?</li>
+            <li>Why can small gradients make a QNN difficult to train?</li>
+        </ol>
+
+        <h3>Programming exercises</h3>
+
+        <ol>
+            <li>Change the two-qubit circuit into a circuit with three qubits and three input features.</li>
+            <li>Add another trainable rotation layer and compare the training loss.</li>
+            <li>Run the experiment with several random seeds and record the mean and variation in test accuracy.</li>
+            <li>Build a classical neural network with the same input and output dimensions, and compare its performance with the hybrid QNN.</li>
+            <li>Change the training-set size and investigate whether the two models behave differently.</li>
+            <li>Investigate how finite-shot measurements affect predictions by running an equivalent circuit with a shot-based simulator.</li>
+        </ol>
+
+        <div class="learning-box">
+            <h3>Suggested learning sequence</h3>
+            <ol>
+                <li>Understand qubits, quantum gates, entanglement and measurement.</li>
+                <li>Learn classical neural networks, loss functions and gradient descent.</li>
+                <li>Build a small parameterised quantum circuit.</li>
+                <li>Connect the circuit to PyTorch or a supported TensorFlow interface.</li>
+                <li>Train the hybrid model and inspect its gradients and predictions.</li>
+                <li>Compare it fairly with a classical baseline before drawing conclusions.</li>
+            </ol>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>End of Chapter 19: Quantum Neural Networks</p>
+    <p>Learn the mathematics, build the circuit, test the model, and question the results.</p>
+</footer>
+
+</body>
+</html>

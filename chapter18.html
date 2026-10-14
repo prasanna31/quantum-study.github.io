@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 18: Quantum Kernel Methods</title>
+    <style>
+        :root {
+            --primary: #2457a7;
+            --primary-light: #eaf1ff;
+            --accent: #087f8c;
+            --text: #253044;
+            --muted: #5d6b80;
+            --background: #f5f7fb;
+            --surface: #ffffff;
+            --border: #dce3ed;
+            --code: #172338;
+            --success: #e8f6ed;
+            --warning: #fff4dc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        header {
+            padding: 64px 24px 52px;
+            color: white;
+            background: linear-gradient(130deg, #102347, #2457a7 65%, #087f8c);
+        }
+
+        header .eyebrow {
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: bold;
+            opacity: 0.85;
+        }
+
+        header h1 {
+            max-width: 900px;
+            margin: 15px auto;
+            font-size: clamp(34px, 5vw, 52px);
+            line-height: 1.2;
+        }
+
+        header p {
+            max-width: 850px;
+            margin: 18px auto 0;
+            font-size: 19px;
+            color: #e6efff;
+        }
+
+        header .eyebrow {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 36px auto;
+            padding: 0 22px 60px;
+        }
+
+        section {
+            background: var(--surface);
+            padding: 30px clamp(20px, 4vw, 42px);
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(24, 43, 76, 0.035);
+        }
+
+        h2, h3, h4 {
+            color: #173c78;
+            line-height: 1.4;
+        }
+
+        h2 {
+            font-size: 29px;
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            font-size: 22px;
+        }
+
+        h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 13px 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .lead {
+            font-size: 19px;
+            color: #334968;
+        }
+
+        .callout {
+            margin: 22px 0;
+            padding: 17px 21px;
+            border-left: 4px solid var(--accent);
+            background: #edf8fa;
+            border-radius: 0 9px 9px 0;
+        }
+
+        .important {
+            background: var(--warning);
+            border-left-color: #c48a19;
+        }
+
+        .success {
+            background: var(--success);
+            border-left-color: #21834b;
+        }
+
+        .formula {
+            overflow-x: auto;
+            padding: 19px 15px;
+            margin: 18px 0;
+            border: 1px solid #dbe5f4;
+            border-radius: 9px;
+            background: #f3f6fc;
+            color: #183e78;
+            text-align: center;
+            font-family: "Times New Roman", serif;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        .formula .explanation {
+            display: block;
+            margin-top: 8px;
+            color: var(--muted);
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        .diagram {
+            padding: 22px;
+            background: #f7f9fd;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin: 22px 0;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .diagram-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .node {
+            padding: 12px 16px;
+            border: 1px solid #b9cbe8;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            color: var(--accent);
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 520px;
+            font-size: 15px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--primary-light);
+            color: #173c78;
+        }
+
+        pre {
+            background: var(--code);
+            color: #edf4ff;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 0.9em;
+        }
+
+        p code, li code, td code {
+            background: #edf1f8;
+            color: #234a86;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: #e9effc;
+            color: #244e92;
+            font: bold 12px Arial, sans-serif;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+        .mini-card {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: #fbfcff;
+        }
+
+        .mini-card h4 {
+            margin-top: 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            min-width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            font: bold 15px Arial, sans-serif;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            margin-top: 0;
+        }
+
+        footer {
+            padding: 30px 20px;
+            background: #142440;
+            color: #e6efff;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                font-size: 16px;
+            }
+
+            header {
+                padding: 42px 20px;
+            }
+
+            main {
+                padding: 0 12px 35px;
+                margin-top: 20px;
+            }
+
+            section {
+                padding: 23px 18px;
+            }
+
+            h2 {
+                font-size: 25px;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .formula {
+                text-align: left;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="eyebrow">Quantum Computing · Part V · Quantum Machine Learning</div>
+    <h1>Chapter 18: Quantum Kernel Methods</h1>
+    <p>
+        How quantum computers can transform data into new mathematical representations,
+        how kernel methods learn from those representations, and why a quantum kernel
+        is not automatically better than a classical one.
+    </p>
+</header>
+
+<main>
+
+    <section id="introduction">
+        <h2>Chapter Overview</h2>
+
+        <p class="lead">
+            Imagine that you have to separate pictures of cats from pictures of dogs.
+            In one representation, the two groups may overlap so much that drawing a
+            straight line between them is difficult. But after transforming the data
+            into a more useful representation, the groups might become easier to
+            separate. Kernel methods are built around this idea.
+        </p>
+
+        <p>
+            Quantum kernel methods bring quantum circuits into this process. A quantum
+            circuit transforms a classical input into a quantum state. We then compare
+            the resulting states to estimate how similar the original inputs are in
+            the quantum representation. A classical learning algorithm, such as a
+            support vector machine, can use these similarities to make predictions.
+        </p>
+
+        <p>
+            The central question is not simply whether a quantum computer can represent
+            data. It is whether the representation produced by a quantum circuit helps
+            solve a particular learning problem more effectively than practical
+            classical alternatives.
+        </p>
+
+        <h3>Learning objectives</h3>
+        <ul>
+            <li>Understand classical kernels and feature maps.</li>
+            <li>Connect quantum states with feature spaces and inner products.</li>
+            <li>Calculate a quantum kernel using state overlaps and measurements.</li>
+            <li>Understand quantum kernel estimation and support vector machines.</li>
+            <li>Learn how kernels can be trained and aligned with a learning task.</li>
+            <li>Recognise concentration effects, noise, computational costs and other pitfalls.</li>
+            <li>Build a small quantum-kernel classification experiment using Python.</li>
+        </ul>
+
+        <div class="callout">
+            <strong>The big picture:</strong> A quantum circuit supplies a feature
+            representation. The kernel measures similarity in that representation.
+            A classical learning algorithm uses the similarities to learn a decision
+            boundary.
+        </div>
+    </section>
+
+    <section id="kernels">
+        <h2>18.1 Kernels and Feature Maps Revisited</h2>
+
+        <h3>18.1.1 Why do we need feature maps?</h3>
+
+        <p>
+            A machine-learning dataset usually begins with ordinary numbers. For
+            example, a student dataset might contain hours studied and attendance
+            percentage. A fraud-detection dataset might contain transaction amount,
+            transaction time and account activity.
+        </p>
+
+        <p>
+            We call each example an input vector. If an example has two features,
+            we can represent it as:
+        </p>
+
+        <div class="formula">
+            x = (x₁, x₂)
+            <span class="explanation">Here, x₁ and x₂ are the two measured properties of one example.</span>
+        </div>
+
+        <p>
+            A learning algorithm tries to discover a relationship between these
+            features and the correct output. A simple classifier may draw a straight
+            line in two dimensions, or a plane in three dimensions, to separate two
+            classes.
+        </p>
+
+        <p>
+            However, real data is not always separated by a straight line. Consider
+            points arranged in two concentric circles: one class occupies the inner
+            circle, and the other occupies the outer ring. A straight line cannot
+            separate the two classes perfectly.
+        </p>
+
+        <p>
+            One solution is to construct new features. Instead of using only x₁ and
+            x₂, we might include their squared values or a function of their distance
+            from the origin. The transformed representation can reveal patterns that
+            were difficult to see in the original data.
+        </p>
+
+        <h3>18.1.2 What is a feature map?</h3>
+
+        <p>
+            A feature map is a mathematical transformation that converts an input into
+            a representation that may be more useful for learning. We write it as
+            φ(x), pronounced "phi of x".
+        </p>
+
+        <div class="formula">
+            φ : X → F
+            <span class="explanation">A feature map takes an input from the original space X into a feature space F.</span>
+        </div>
+
+        <p>
+            For a simple example, suppose an input contains one number, x. A feature
+            map could transform it into:
+        </p>
+
+        <div class="formula">
+            φ(x) = (x, x²)
+        </div>
+
+        <p>
+            The original input has one coordinate, but the transformed representation
+            has two. This is useful because a relationship that is complicated in the
+            original space may become simpler in the transformed space.
+        </p>
+
+        <p>
+            A feature map does not automatically improve a model. Its usefulness
+            depends on whether the transformation exposes information relevant to the
+            task. A poor representation can make learning harder rather than easier.
+        </p>
+
+        <h3>18.1.3 What is a kernel?</h3>
+
+        <p>
+            Suppose we transform two inputs, x and z, into feature vectors φ(x) and
+            φ(z). One way to compare them is to calculate their inner product.
+            In ordinary Euclidean space, the inner product multiplies corresponding
+            coordinates and adds the results.
+        </p>
+
+        <div class="formula">
+            K(x, z) = φ(x) · φ(z)
+            <span class="explanation">The kernel measures similarity through an inner product in the feature space.</span>
+        </div>
+
+        <p>
+            This function K is called a kernel when it satisfies the mathematical
+            conditions required of a valid kernel for the learning method being used.
+            For the standard real-valued positive-semidefinite kernels discussed here,
+            the Gram matrix must be positive semidefinite.
+        </p>
+
+        <p>
+            The important observation is that we may be able to calculate K(x, z)
+            without explicitly constructing the entire transformed vector φ(x).
+            A function that directly calculates the inner product is called a
+            <strong>kernel function</strong>.
+        </p>
+
+        <h3>18.1.4 A numerical example</h3>
+
+        <p>
+            Consider the feature map:
+        </p>
+
+        <div class="formula">
+            φ(x) = (x, x²)
+        </div>
+
+        <p>
+            For x = 2 and z = 3, the transformed vectors are (2, 4) and (3, 9).
+            Their inner product is:
+        </p>
+
+        <div class="formula">
+            K(2, 3) = 2 × 3 + 4 × 9 = 42
+        </div>
+
+        <p>
+            We can calculate the same value directly from the original inputs:
+        </p>
+
+        <div class="formula">
+            K(x, z) = xz + x²z²
+        </div>
+
+        <p>
+            Substituting x = 2 and z = 3 gives 6 + 36 = 42. We have obtained the
+            inner product in the transformed space without separately constructing
+            the transformed vectors.
+        </p>
+
+        <p>
+            Notice that a kernel value is not necessarily a probability. It can be
+            larger than one or even negative for some valid kernels. A quantum fidelity
+            kernel, introduced later, has a different range because it is based on
+            squared state overlap.
+        </p>
+
+        <h3>18.1.5 Common classical kernels</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kernel</th>
+                        <th>Definition</th>
+                        <th>General intuition</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Linear</td>
+                        <td>K(x,z) = x · z</td>
+                        <td>Compares the original feature vectors directly.</td>
+                    </tr>
+                    <tr>
+                        <td>Polynomial</td>
+                        <td>K(x,z) = (γx · z + r)<sup>d</sup></td>
+                        <td>Captures interactions between features up to a degree controlled by d.</td>
+                    </tr>
+                    <tr>
+                        <td>Gaussian RBF</td>
+                        <td>K(x,z) = exp(−γ‖x − z‖²)</td>
+                        <td>Assigns high similarity to nearby inputs and lower similarity to distant inputs.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            The Gaussian radial basis function, or RBF, kernel is especially useful
+            because it can represent nonlinear decision boundaries without explicitly
+            creating a very large feature vector.
+        </p>
+
+        <div class="callout success">
+            <strong>Connection to quantum computing:</strong> Classical kernel methods
+            already provide a way to learn from complicated feature spaces. Quantum
+            kernel methods replace or supplement the classical feature map with a
+            quantum-state preparation circuit.
+        </div>
+    </section>
+
+    <section id="quantum-feature-maps">
+        <h2>18.2 Quantum Feature Maps and Hilbert Space</h2>
+
+        <h3>18.2.1 From a classical vector to a quantum state</h3>
+
+        <p>
+            A quantum feature map is a quantum circuit that depends on the classical
+            input. We represent it as U(x). When the circuit acts on a fixed initial
+            state, usually the all-zero state, it produces a state that depends on x.
+        </p>
+
+        <div class="formula">
+            |φ(x)⟩ = U(x)|0⟩<sup>⊗n</sup>
+            <span class="explanation">U(x) is the input-dependent circuit, and n is the number of qubits.</span>
+        </div>
+
+        <p>
+            The notation |0⟩<sup>⊗n</sup> means that all n qubits begin in the
+            computational basis state zero. For two qubits, the initial state is
+            |00⟩. The feature map applies gates to this state to encode the input.
+        </p>
+
+        <p>
+            A quantum state is described by amplitudes. For n qubits, a pure state
+            can be written as a superposition of 2ⁿ computational basis states:
+        </p>
+
+        <div class="formula">
+            |φ(x)⟩ = Σ<sub>j=0</sub><sup>2ⁿ−1</sup> a<sub>j</sub>(x)|j⟩
+        </div>
+
+        <p>
+            The complex amplitude a<sub>j</sub>(x) describes the contribution of basis
+            state |j⟩. The squared magnitudes of the amplitudes sum to one:
+        </p>
+
+        <div class="formula">
+            Σ<sub>j</sub> |a<sub>j</sub>(x)|² = 1
+        </div>
+
+        <p>
+            This growing state space is one reason quantum feature maps are interesting.
+            With n qubits, the state description contains 2ⁿ complex amplitudes.
+            A carefully designed circuit can create relationships between amplitudes
+            that are difficult to reproduce using certain restricted classical
+            representations. But the size of the state vector alone does not prove
+            a practical computational advantage.
+        </p>
+
+        <h3>18.2.2 What is a Hilbert space?</h3>
+
+        <p>
+            A Hilbert space is a vector space equipped with an inner product and a
+            completeness property. In finite-dimensional quantum mechanics, it is
+            enough for us to think of it as a complex vector space in which quantum
+            states can be represented and compared using inner products.
+        </p>
+
+        <p>
+            Quantum states are vectors in this space. The inner product of two states
+            is written as:
+        </p>
+
+        <div class="formula">
+            ⟨φ(x)|φ(z)⟩
+        </div>
+
+        <p>
+            This quantity is generally complex. Its magnitude tells us how much the
+            two state vectors overlap. The squared magnitude has a direct operational
+            meaning: it is the probability of obtaining the all-zero outcome after
+            applying the inverse of one state-preparation circuit to the other
+            prepared state, assuming ideal operations and measurement.
+        </p>
+
+        <h3>18.2.3 The quantum kernel</h3>
+
+        <p>
+            A common quantum kernel is the fidelity kernel:
+        </p>
+
+        <div class="formula">
+            K(x,z) = |⟨φ(x)|φ(z)⟩|²
+            <span class="explanation">The fidelity kernel measures the squared overlap between two pure quantum states.</span>
+        </div>
+
+        <p>
+            This formula connects the quantum circuit directly to classical kernel
+            learning. Each classical input becomes a quantum state, and the similarity
+            between two inputs is estimated by comparing those states.
+        </p>
+
+        <p>
+            Because the states are normalised, the fidelity kernel lies between zero
+            and one:
+        </p>
+
+        <ul>
+            <li><strong>K(x,z) = 1:</strong> the states are identical up to a global phase.</li>
+            <li><strong>K(x,z) = 0:</strong> the states are orthogonal and perfectly distinguishable in the ideal pure-state setting.</li>
+            <li><strong>Values between zero and one:</strong> the states have partial overlap.</li>
+        </ul>
+
+        <p>
+            This does not mean that two inputs with a kernel value of 0.9 must belong
+            to the same class. Similarity is a property of the chosen representation;
+            classification also depends on the training labels and the learning
+            algorithm.
+        </p>
+
+        <h3>18.2.4 Why the quantum kernel is a valid kernel</h3>
+
+        <p>
+            Consider the pure-state density operator:
+        </p>
+
+        <div class="formula">
+            ρ(x) = |φ(x)⟩⟨φ(x)|
+        </div>
+
+        <p>
+            An operator is a linear transformation on a vector space. The density
+            operator here describes the pure quantum state in a form that is useful
+            for calculating overlaps. The fidelity kernel can be written as:
+        </p>
+
+        <div class="formula">
+            K(x,z) = Tr[ρ(x)ρ(z)]
+        </div>
+
+        <p>
+            Here, Tr means the trace, which is the sum of the diagonal entries of a
+            matrix. This expression is the Hilbert–Schmidt inner product of the two
+            density operators. For any set of inputs, the resulting Gram matrix is
+            positive semidefinite, making this a valid kernel.
+        </p>
+
+        <p>
+            The quantum feature map can therefore be viewed as an ordinary feature
+            map into a space of operators. This observation is important because it
+            explains why a quantum kernel can be used by a classical support vector
+            machine.
+        </p>
+
+        <h3>18.2.5 A one-qubit example</h3>
+
+        <p>
+            Let us encode a real number x into one qubit using a rotation about the
+            Y-axis:
+        </p>
+
+        <div class="formula">
+            R<sub>Y</sub>(x) =
+            [ cos(x/2)  −sin(x/2) ]
+            <br>
+            [ sin(x/2)   cos(x/2) ]
+        </div>
+
+        <p>
+            Starting with |0⟩, the circuit prepares:
+        </p>
+
+        <div class="formula">
+            |φ(x)⟩ = cos(x/2)|0⟩ + sin(x/2)|1⟩
+        </div>
+
+        <p>
+            For another input z, the inner product is cos((x − z)/2). Therefore:
+        </p>
+
+        <div class="formula">
+            K(x,z) = cos²((x − z)/2)
+        </div>
+
+        <p>
+            If x and z are equal, the kernel is one. If their difference is π, the
+            kernel is zero. This is a simple example of how a circuit defines a
+            particular similarity measure.
+        </p>
+
+        <div class="callout important">
+            <strong>Important:</strong> A quantum circuit does not automatically
+            create a useful feature map just because it uses qubits. The encoding
+            gates, entangling gates, number of layers and input scaling all influence
+            the similarity function that the model receives.
+        </div>
+    </section>
+
+    <section id="kernel-estimation">
+        <h2>18.3 Quantum Kernel Estimation</h2>
+
+        <h3>18.3.1 Turning the formula into a circuit</h3>
+
+        <p>
+            We know the mathematical definition of a fidelity kernel. The next
+            question is practical: how can a quantum computer estimate its value?
+        </p>
+
+        <p>
+            Assume the feature map U(x) prepares |φ(x)⟩. To estimate K(x,z), we
+            prepare the state for z and then apply the inverse circuit for x.
+            The resulting state is:
+        </p>
+
+        <div class="formula">
+            U(x)† U(z)|0⟩<sup>⊗n</sup>
+        </div>
+
+        <p>
+            The dagger symbol denotes the conjugate transpose, corresponding to the
+            inverse of a unitary circuit. The order of operations matters: the circuit
+            for z is applied first, followed by the inverse circuit for x.
+        </p>
+
+        <p>
+            If the two feature states are identical, the inverse circuit returns the
+            system to the all-zero state. If the states are orthogonal, the ideal
+            all-zero probability is zero.
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="node">Initial state |0...0⟩</div>
+                <div class="arrow">→</div>
+                <div class="node">Apply U(z)</div>
+            </div>
+            <div class="diagram-row">
+                <div class="node">Apply U(x)†</div>
+                <div class="arrow">→</div>
+                <div class="node">Measure all qubits</div>
+            </div>
+            <div class="diagram-row">
+                <div class="node">Count all-zero outcomes</div>
+                <div class="arrow">→</div>
+                <div class="node">Estimate K(x,z)</div>
+            </div>
+        </div>
+
+        <h3>18.3.2 Why do we measure many times?</h3>
+
+        <p>
+            A quantum measurement produces an individual outcome, not a direct
+            readout of every probability in the state. The circuit must therefore
+            be run repeatedly. Each execution is commonly called a shot.
+        </p>
+
+        <p>
+            Suppose we run the circuit 1,000 times and observe the all-zero outcome
+            720 times. The estimated kernel is:
+        </p>
+
+        <div class="formula">
+            K̂(x,z) = 720 / 1000 = 0.72
+        </div>
+
+        <p>
+            The hat over K indicates an estimate rather than the exact theoretical
+            value. If the ideal probability is p and we use N independent shots, the
+            estimator is the sample proportion. Its standard error is:
+        </p>
+
+        <div class="formula">
+            SE = √[p(1 − p)/N]
+        </div>
+
+        <p>
+            Since p is usually unknown, we can estimate the standard error by
+            substituting the observed proportion p̂. The uncertainty generally
+            decreases in proportion to 1/√N. To reduce the statistical error by
+            approximately half, we need about four times as many shots.
+        </p>
+
+        <p>
+            This is a fundamental practical trade-off. More shots can improve
+            precision, but they increase circuit executions and computational cost.
+            Hardware noise can introduce additional bias that more shots alone will
+            not remove.
+        </p>
+
+        <h3>18.3.3 Constructing a kernel matrix</h3>
+
+        <p>
+            Machine-learning datasets contain many examples, not just two. Suppose
+            the training set is:
+        </p>
+
+        <div class="formula">
+            D = {(x₁,y₁), (x₂,y₂), ..., (xₘ,yₘ)}
+        </div>
+
+        <p>
+            We calculate the kernel between every pair of training inputs. This
+            produces an m × m Gram matrix:
+        </p>
+
+        <div class="formula">
+            K<sub>ij</sub> = K(xᵢ,xⱼ)
+        </div>
+
+        <p>
+            For a fidelity kernel, the diagonal entries are one in the ideal case
+            because every state has unit overlap with itself. The matrix is symmetric
+            for real-valued fidelity kernels:
+        </p>
+
+        <div class="formula">
+            K(xᵢ,xⱼ) = K(xⱼ,xᵢ)
+        </div>
+
+        <p>
+            With m training examples, there are m² entries in a full matrix, although
+            symmetry means that only m(m + 1)/2 distinct entries need to be estimated
+            if the diagonal is included. Even this can become expensive for large
+            datasets.
+        </p>
+
+        <h3>18.3.4 Training and test kernel matrices</h3>
+
+        <p>
+            When a model is evaluated on new examples, it needs similarities between
+            each test input and every training input. If there are t test examples,
+            the test kernel matrix has dimensions t × m.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Matrix</th>
+                        <th>Dimensions</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Training Gram matrix</td>
+                        <td>m × m</td>
+                        <td>Used to fit the classifier.</td>
+                    </tr>
+                    <tr>
+                        <td>Test kernel matrix</td>
+                        <td>t × m</td>
+                        <td>Used to predict labels for unseen examples.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            It is essential to use the same feature map and circuit settings for
+            training and test kernels. Otherwise, the model may be trained and
+            evaluated using different notions of similarity.
+        </p>
+
+        <h3>18.3.5 Estimation on real quantum hardware</h3>
+
+        <p>
+            Real hardware adds complications beyond sampling uncertainty. Gates may
+            be imperfect, measurements may be biased, and qubits may lose coherence
+            while the circuit is running. These effects can change the observed
+            kernel values.
+        </p>
+
+        <p>
+            A matrix estimated from noisy measurements may fail to be positive
+            semidefinite, even though the exact fidelity kernel is valid. Depending
+            on the application, practitioners may symmetrise the matrix, project it
+            towards a positive-semidefinite matrix or use another carefully justified
+            correction. These operations can change the effective kernel and should
+            be reported during evaluation.
+        </p>
+
+        <div class="callout">
+            <strong>Practical lesson:</strong> Quantum kernel estimation is not a
+            single calculation. It is a data-processing pipeline involving circuit
+            construction, repeated measurements, statistical estimation, matrix
+            construction and validation.
+        </div>
+    </section>
+
+    <section id="qsvm">
+        <h2>18.4 Quantum Support Vector Machines</h2>
+
+        <h3>18.4.1 What does an SVM do?</h3>
+
+        <p>
+            A support vector machine, or SVM, is a supervised-learning algorithm.
+            It learns from labelled examples and attempts to separate the classes
+            using a decision boundary.
+        </p>
+
+        <p>
+            Imagine red and blue points scattered on a sheet of paper. Many lines
+            might separate the two groups. An SVM prefers a boundary that maximises
+            the margin, which is the distance between the boundary and the closest
+            training points from the two classes.
+        </p>
+
+        <p>
+            Those closest points are called support vectors. They are especially
+            important because they help determine the final decision boundary.
+        </p>
+
+        <h3>18.4.2 Why use a kernel with an SVM?</h3>
+
+        <p>
+            A linear SVM works with a linear boundary in its feature representation.
+            A kernel SVM can create nonlinear boundaries in the original input space
+            by comparing examples through a kernel function.
+        </p>
+
+        <p>
+            The kernel trick allows the SVM optimisation to depend on inner products
+            between examples rather than on explicit feature vectors. This makes
+            kernel methods practical even when the feature representation is large
+            or conceptually infinite-dimensional.
+        </p>
+
+        <h3>18.4.3 The SVM optimisation problem</h3>
+
+        <p>
+            For a binary classification problem, labels are usually represented as
+            yᵢ ∈ {−1,+1}. A soft-margin SVM balances a wide margin against violations
+            of the classification constraints. Its standard dual optimisation
+            problem is:
+        </p>
+
+        <div class="formula">
+            Maximise: Σᵢ αᵢ − ½ ΣᵢΣⱼ αᵢαⱼyᵢyⱼK(xᵢ,xⱼ)
+        </div>
+
+        <p>
+            Subject to:
+        </p>
+
+        <div class="formula">
+            0 ≤ αᵢ ≤ C, &nbsp;&nbsp; Σᵢ αᵢyᵢ = 0
+        </div>
+
+        <p>
+            Here, αᵢ are learned coefficients, and C controls the trade-off between
+            a large margin and training errors. The kernel K(xᵢ,xⱼ) supplies the
+            similarities required by the optimisation.
+        </p>
+
+        <p>
+            In a quantum kernel SVM, we replace a classical kernel with the estimated
+            quantum kernel. The optimisation itself can still run on an ordinary
+            classical computer.
+        </p>
+
+        <h3>18.4.4 The complete workflow</h3>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="node">Classical labelled data</div>
+                <div class="arrow">→</div>
+                <div class="node">Quantum feature map</div>
+            </div>
+            <div class="diagram-row">
+                <div class="node">Estimate pairwise fidelities</div>
+                <div class="arrow">→</div>
+                <div class="node">Build Gram matrix</div>
+            </div>
+            <div class="diagram-row">
+                <div class="node">Train classical SVM</div>
+                <div class="arrow">→</div>
+                <div class="node">Predict unseen labels</div>
+            </div>
+        </div>
+
+        <p>
+            The quantum circuit does not need to learn the labels directly in this
+            workflow. Instead, it supplies a similarity matrix. The SVM learns how
+            to use that matrix to distinguish the classes.
+        </p>
+
+        <h3>18.4.5 Does the quantum kernel make the SVM faster?</h3>
+
+        <p>
+            Not necessarily. The classical SVM optimisation still has its own
+            computational cost. Moreover, estimating a quantum kernel may require
+            many circuit executions. If the dataset is large, constructing the
+            Gram matrix can become the dominant expense.
+        </p>
+
+        <p>
+            Quantum advantage would require evidence that the complete quantum
+            workflow offers a meaningful improvement over strong classical methods
+            under a fair comparison. It is not enough to show that a quantum state
+            has many amplitudes or that a small quantum model classifies a dataset
+            successfully.
+        </p>
+
+        <div class="callout important">
+            <strong>Remember:</strong> A quantum kernel SVM is usually a hybrid
+            algorithm. Quantum hardware estimates similarities, while a classical
+            computer performs the SVM optimisation and often handles the remaining
+            data-processing steps.
+        </div>
+    </section>
+
+    <section id="alignment">
+        <h2>18.5 Kernel Alignment and Trainable Kernels</h2>
+
+        <h3>18.5.1 The problem with a fixed feature map</h3>
+
+        <p>
+            Consider a quantum feature map that is selected before training begins.
+            It might be based on rotation gates, entangling gates and a fixed number
+            of circuit layers. The resulting kernel is fixed once these choices
+            are made.
+        </p>
+
+        <p>
+            But not every feature map suits every dataset. A circuit may produce
+            representations that are mathematically rich but fail to distinguish
+            the classes we care about. Another circuit might produce a more useful
+            structure for the same problem.
+        </p>
+
+        <p>
+            This motivates trainable quantum kernels. Instead of keeping every
+            circuit parameter fixed, we introduce parameters that can be adjusted
+            using the training data.
+        </p>
+
+        <h3>18.5.2 Parameterised quantum feature maps</h3>
+
+        <p>
+            Let θ represent trainable circuit parameters. The state becomes:
+        </p>
+
+        <div class="formula">
+            |φ(x;θ)⟩ = U(x;θ)|0⟩<sup>⊗n</sup>
+        </div>
+
+        <p>
+            The associated fidelity kernel is:
+        </p>
+
+        <div class="formula">
+            K<sub>θ</sub>(x,z) =
+            |⟨φ(x;θ)|φ(z;θ)⟩|²
+        </div>
+
+        <p>
+            Changing θ changes the states and, consequently, the similarities between
+            data points. Training the kernel means searching for parameters that
+            produce a useful similarity structure for the task.
+        </p>
+
+        <h3>18.5.3 What is kernel alignment?</h3>
+
+        <p>
+            Kernel alignment measures how well a kernel matrix agrees with a
+            target structure derived from the training labels. For binary labels,
+            one simple target matrix is:
+        </p>
+
+        <div class="formula">
+            T<sub>ij</sub> = yᵢyⱼ
+        </div>
+
+        <p>
+            If two examples have the same label, their product is +1. If their
+            labels differ, their product is −1. This gives us a simple indication
+            of the relationships we would like the model to learn.
+        </p>
+
+        <p>
+            A common normalised alignment measure for a real kernel matrix K and
+            target matrix T is:
+        </p>
+
+        <div class="formula">
+            A(K,T) =
+            ⟨K,T⟩<sub>F</sub> /
+            (‖K‖<sub>F</sub> ‖T‖<sub>F</sub>)
+        </div>
+
+        <p>
+            The Frobenius inner product, written ⟨K,T⟩<sub>F</sub>, is the sum of
+            the products of corresponding matrix entries. The Frobenius norm is
+            the square root of the sum of the squared entries.
+        </p>
+
+        <p>
+            Intuitively, alignment measures whether the patterns in the kernel matrix
+            agree with the patterns suggested by the labels. Maximising alignment
+            can be used as a training objective, although the precise objective and
+            its normalisation vary across methods.
+        </p>
+
+        <h3>18.5.4 A small conceptual example</h3>
+
+        <p>
+            Suppose four examples have labels:
+        </p>
+
+        <div class="formula">
+            y = (+1, +1, −1, −1)
+        </div>
+
+        <p>
+            The target matrix has positive entries for pairs with matching labels
+            and negative entries for pairs with different labels. A useful learned
+            kernel would ideally assign higher similarities to examples from the
+            same class and lower similarities to examples from different classes.
+        </p>
+
+        <p>
+            This is an intuition, not a universal rule that every pair of same-class
+            points must have a larger kernel value than every pair of different-class
+            points. Real datasets can overlap, contain noise and have complex
+            class boundaries.
+        </p>
+
+        <h3>18.5.5 How is the kernel trained?</h3>
+
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Choose a parameterised circuit</h4>
+                <p>
+                    Select the number of qubits, encoding gates, trainable rotations
+                    and entangling operations. These choices determine the family of
+                    kernels the model can represent.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Estimate the kernel matrix</h4>
+                <p>
+                    Prepare circuits for training pairs and estimate their fidelity
+                    values. The result depends on the current parameters θ.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Evaluate a training objective</h4>
+                <p>
+                    Calculate kernel alignment or another suitable objective based
+                    on the labels and estimated kernel.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h4>Update the circuit parameters</h4>
+                <p>
+                    Use a classical optimiser and, when needed, gradient estimates
+                    to update θ. Repeat until the stopping criterion is reached.
+                </p>
+            </div>
+        </div>
+
+        <p>
+            This procedure creates a hybrid training loop. The quantum processor
+            evaluates the parameter-dependent circuit, and the classical optimiser
+            decides how to change the parameters.
+        </p>
+
+        <h3>18.5.6 Alignment is not the same as generalisation</h3>
+
+        <p>
+            A kernel can align closely with the training labels and still perform
+            poorly on unseen data. If the kernel is tuned too aggressively to a
+            small training set, it may capture accidental patterns rather than
+            useful relationships.
+        </p>
+
+        <p>
+            Kernel training must therefore be evaluated using validation data that
+            is kept separate from the training data. Hyperparameters should be
+            selected without using the final test labels. A high alignment score
+            is useful evidence about the training representation, but it is not
+            proof of strong predictive performance.
+        </p>
+
+        <div class="callout">
+            <strong>Connection to Chapter 17:</strong> Variational quantum circuits
+            also have trainable parameters, but their outputs and training objectives
+            differ. A variational quantum model commonly learns from measured
+            observables, whereas a trainable quantum kernel learns a similarity
+            function that is subsequently used by a kernel-based classical learner.
+        </div>
+    </section>
+
+    <section id="concentration">
+        <h2>18.6 Exponential Concentration and Kernel Pitfalls</h2>
+
+        <h3>18.6.1 Why can quantum similarities become uninformative?</h3>
+
+        <p>
+            A quantum state may have an enormous number of amplitudes, but this
+            does not guarantee that its overlap with another state provides useful
+            information. In some feature-map families, especially under particular
+            choices of random circuits, increasing circuit depth or system size
+            can cause pairwise fidelities to concentrate around a common value.
+        </p>
+
+        <p>
+            Imagine calculating similarities between hundreds of examples. If
+            almost every pair receives approximately the same kernel value, the
+            matrix no longer distinguishes meaningful relationships between examples.
+            The SVM then receives little useful information about which examples
+            are alike and which are different.
+        </p>
+
+        <p>
+            This phenomenon is called kernel concentration. Its severity depends
+            on the circuit family, input distribution, circuit depth, measurement
+            strategy and system size. It is not a universal property of every
+            quantum kernel.
+        </p>
+
+        <h3>18.6.2 Concentration of fidelity</h3>
+
+        <p>
+            For two independent random pure states in a complex Hilbert space of
+            dimension D, the expected squared overlap is:
+        </p>
+
+        <div class="formula">
+            E[|⟨ψ|φ⟩|²] = 1/D
+        </div>
+
+        <p>
+            If the states are distributed uniformly according to the Haar measure,
+            the fidelity also has variance:
+        </p>
+
+        <div class="formula">
+            Var(|⟨ψ|φ⟩|²) =
+            (D − 1) / [D²(D + 1)]
+        </div>
+
+        <p>
+            For n qubits, D = 2ⁿ. The expected overlap is therefore 2⁻ⁿ.
+            As the number of qubits increases, the typical overlap becomes very
+            small, and the absolute spread around its mean also becomes small.
+        </p>
+
+        <p>
+            This example explains why highly random quantum states can have
+            pairwise fidelities that are difficult to distinguish accurately.
+            However, real feature-map states are not necessarily independent Haar
+            random states. The equations describe a particular random-state model,
+            not every quantum learning circuit.
+        </p>
+
+        <h3>18.6.3 The connection to measurement cost</h3>
+
+        <p>
+            Suppose the kernel values of interest are extremely small. Estimating a
+            probability near zero to a useful relative precision can require many
+            shots. A circuit might therefore be difficult to use even when its
+            mathematical kernel is well-defined.
+        </p>
+
+        <p>
+            Concentration can also create a learning problem: the matrix entries
+            become similar to one another, so the classifier cannot easily use
+            them to distinguish classes. The difficulty is not only that the
+            quantum calculation is expensive. The resulting representation may
+            itself be unsuitable for learning.
+        </p>
+
+        <h3>18.6.4 Barren plateaus and related training difficulties</h3>
+
+        <p>
+            A related but distinct issue occurs when training the parameters of
+            a quantum circuit. In some parameterised circuits, the variance of
+            gradients can decrease rapidly with system size. Such a region is
+            commonly called a barren plateau.
+        </p>
+
+        <p>
+            If gradients are very small compared with their estimation noise,
+            a classical optimiser may struggle to find a useful parameter update.
+            This is particularly relevant when trainable kernels rely on deep or
+            highly expressive circuits.
+        </p>
+
+        <p>
+            Kernel concentration and barren plateaus should not be confused.
+            Concentration concerns the distribution of similarities between data
+            points. A barren plateau concerns the difficulty of obtaining useful
+            gradients for parameter optimisation. They can arise together in some
+            settings, but one does not automatically imply the other.
+        </p>
+
+        <h3>18.6.5 Other practical pitfalls</h3>
+
+        <div class="two-col">
+            <div class="mini-card">
+                <h4>1. Data encoding cost</h4>
+                <p>
+                    Classical features must be loaded into the quantum circuit.
+                    If encoding requires many gates or repeated state preparations,
+                    the cost may remove any advantage.
+                </p>
+            </div>
+
+            <div class="mini-card">
+                <h4>2. Too many kernel entries</h4>
+                <p>
+                    An m-example training set requires m² entries in the full
+                    Gram matrix. The number of distinct pairs still grows
+                    quadratically with m.
+                </p>
+            </div>
+
+            <div class="mini-card">
+                <h4>3. Hardware noise</h4>
+                <p>
+                    Imperfect gates and measurements can distort similarities.
+                    Deep circuits often accumulate more errors.
+                </p>
+            </div>
+
+            <div class="mini-card">
+                <h4>4. Unfair baselines</h4>
+                <p>
+                    A quantum kernel should be compared with tuned classical
+                    kernels, suitable feature engineering and comparable
+                    computational budgets.
+                </p>
+            </div>
+
+            <div class="mini-card">
+                <h4>5. Overfitting</h4>
+                <p>
+                    A trainable kernel can learn accidental properties of the
+                    training set. Validation and independent testing remain
+                    necessary.
+                </p>
+            </div>
+
+            <div class="mini-card">
+                <h4>6. Classical simulation limits</h4>
+                <p>
+                    Simulating a quantum circuit may become expensive as qubit
+                    count and circuit complexity grow. A small simulator result
+                    does not establish hardware advantage.
+                </p>
+            </div>
+        </div>
+
+        <h3>18.6.6 How should a quantum kernel be evaluated?</h3>
+
+        <p>
+            A careful experiment should evaluate both the statistical learning
+            performance and the computational cost of the complete pipeline.
+        </p>
+
+        <ul>
+            <li>Compare against linear, polynomial and RBF kernels where appropriate.</li>
+            <li>Use the same train, validation and test splits for every method.</li>
+            <li>Report accuracy and suitable metrics such as precision, recall, F1 score or ROC-AUC.</li>
+            <li>Inspect the distribution of kernel entries and the spectrum of the Gram matrix.</li>
+            <li>Report the number of qubits, circuit depth, shots, execution time and hardware conditions.</li>
+            <li>Separate simulator results from results obtained on actual quantum hardware.</li>
+            <li>Include data encoding, kernel estimation, preprocessing and classical training in the cost comparison.</li>
+        </ul>
+
+        <div class="callout important">
+            <strong>The scientific standard:</strong> A useful quantum kernel should
+            do more than look mathematically sophisticated. It should preserve
+            task-relevant information, remain estimable at a reasonable cost and
+            generalise to unseen data.
+        </div>
+    </section>
+
+    <section id="hands-on">
+        <h2>18.7 Hands-on: Quantum Kernels with scikit-learn Integration</h2>
+
+        <p class="lead">
+            In this exercise, we will build a small binary classifier using a
+            quantum fidelity kernel and a classical SVM. We will use Qiskit to
+            construct the quantum circuit and scikit-learn to prepare the dataset,
+            train the classifier and measure its performance.
+        </p>
+
+        <p>
+            The goal is to understand the complete workflow rather than to claim a
+            quantum speed-up. A simulator is suitable for learning because it lets
+            us inspect the kernel without needing access to quantum hardware.
+        </p>
+
+        <h3>18.7.1 Install the packages</h3>
+
+        <p>
+            Run the following command in a fresh Python environment. The example
+            uses the current Qiskit circuit and simulator interfaces together with
+            scikit-learn. Quantum package APIs change over time, so use compatible
+            versions if your installed environment differs.
+        </p>
+
+<pre><code>python -m pip install qiskit qiskit-aer scikit-learn numpy</code></pre>
+
+        <h3>18.7.2 Design the feature map</h3>
+
+        <p>
+            We will use two qubits and two input features. Each feature controls a
+            rotation gate. A controlled-Z gate then introduces an interaction
+            between the qubits. Finally, the circuit applies another input-dependent
+            rotation layer.
+        </p>
+
+        <p>
+            The entangling gate makes the circuit more expressive than two entirely
+            independent single-qubit rotations. However, the presence of entanglement
+            does not guarantee that the resulting kernel will classify the dataset
+            well.
+        </p>
+
+<pre><code>import numpy as np
+
+from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+from sklearn.datasets import make_moons
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics.pairwise import rbf_kernel
+
+
+def feature_map(x):
+    """
+    Prepare a two-qubit quantum state from two real-valued features.
+
+    The input is assumed to contain two scaled features.
+    """
+    qc = QuantumCircuit(2)
+
+    # Encode the classical features.
+    qc.ry(float(x[0]), 0)
+    qc.ry(float(x[1]), 1)
+
+    # Introduce an interaction between the qubits.
+    qc.cz(0, 1)
+
+    # Apply a second input-dependent layer.
+    qc.ry(float(np.pi * x[0]), 0)
+    qc.ry(float(np.pi * x[1]), 1)
+
+    return qc</code></pre>
+
+        <h3>18.7.3 Understand the circuit</h3>
+
+        <p>
+            The first pair of rotations encodes the input into the qubits. The
+            controlled-Z gate adds a phase that depends on the joint computational
+            state of the two qubits. The final rotations mix the resulting
+            amplitudes again.
+        </p>
+
+        <p>
+            Notice that this is a chosen example of a feature map, not a universally
+            optimal circuit. Its performance depends on the dataset and the input
+            scaling. We should test different designs rather than assume that
+            additional gates will always improve the model.
+        </p>
+
+        <h3>18.7.4 Define the quantum fidelity kernel</h3>
+
+        <p>
+            For each pair of examples x and z, we construct the statevectors
+            corresponding to their feature maps. The inner product is then
+            calculated, and its squared magnitude gives the fidelity kernel.
+        </p>
+
+        <p>
+            Statevector simulation calculates the amplitudes directly. This is
+            convenient for a tutorial, but it is not the same as estimating the
+            overlap through repeated measurements on physical quantum hardware.
+        </p>
+
+<pre><code>def quantum_kernel_value(x, z):
+    """
+    Exact fidelity kernel using statevector simulation.
+
+    This is a simulator-based calculation, not a hardware
+    measurement experiment.
+    """
+    state_x = Statevector.from_instruction(feature_map(x))
+    state_z = Statevector.from_instruction(feature_map(z))
+
+    overlap = np.vdot(state_x.data, state_z.data)
+
+    # Squared magnitude of the complex overlap.
+    value = float(np.abs(overlap) ** 2)
+
+    return value
+
+
+def quantum_kernel_matrix(X1, X2):
+    """
+    Return the matrix K[i, j] = K(X1[i], X2[j]).
+    """
+    matrix = np.empty((len(X1), len(X2)), dtype=float)
+
+    for i, x in enumerate(X1):
+        for j, z in enumerate(X2):
+            matrix[i, j] = quantum_kernel_value(x, z)
+
+    return matrix</code></pre>
+
+        <h3>18.7.5 Prepare a nonlinear dataset</h3>
+
+        <p>
+            We will use the two-moons dataset. It contains two curved groups of
+            points, making it a useful demonstration of nonlinear classification.
+            The dataset is synthetic, so it is appropriate for experimentation
+            without requiring an external data source.
+        </p>
+
+<pre><code># Generate a reproducible two-class dataset.
+X, y = make_moons(
+    n_samples=120,
+    noise=0.12,
+    random_state=42
+)
+
+# Split before fitting the scaler to avoid data leakage.
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.25,
+    random_state=42,
+    stratify=y
+)
+
+# Fit scaling only on training data.
+scaler = MinMaxScaler(feature_range=(0, np.pi))
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+print("Training examples:", len(X_train))
+print("Test examples:", len(X_test))
+print("Features per example:", X_train.shape[1])</code></pre>
+
+        <p>
+            We scale the features into the interval from zero to π because the
+            feature map uses them as rotation angles. Scaling is part of the model
+            design: changing the scale changes the prepared quantum states and
+            therefore changes the kernel.
+        </p>
+
+        <h3>18.7.6 Construct the kernel matrices</h3>
+
+        <p>
+            The training matrix contains similarities between training examples.
+            The test matrix contains similarities between test examples and
+            training examples. In scikit-learn, the custom-kernel interface expects
+            the second matrix to have one row per test example and one column per
+            training example.
+        </p>
+
+<pre><code># Calculate the training Gram matrix.
+K_train = quantum_kernel_matrix(X_train, X_train)
+
+# Calculate similarities between test and training examples.
+K_test = quantum_kernel_matrix(X_test, X_train)
+
+print("Training kernel shape:", K_train.shape)
+print("Test kernel shape:", K_test.shape)
+
+# Basic checks for the ideal fidelity kernel.
+print("Minimum training entry:", K_train.min())
+print("Maximum training entry:", K_train.max())
+print("Maximum symmetry error:",
+      np.max(np.abs(K_train - K_train.T)))
+print("Diagonal close to one:",
+      np.allclose(np.diag(K_train), 1.0, atol=1e-8))</code></pre>
+
+        <p>
+            For this simulator-based example, the training kernel should be symmetric,
+            with entries between zero and one and diagonal values close to one.
+            These checks help identify implementation errors before model training.
+        </p>
+
+        <h3>18.7.7 Train a classical SVM using the quantum kernel</h3>
+
+        <p>
+            Scikit-learn's <code>SVC</code> accepts a precomputed kernel matrix.
+            We pass the training Gram matrix during fitting and the test kernel
+            matrix during prediction.
+        </p>
+
+<pre><code># Train the SVM using the precomputed quantum kernel.
+quantum_svm = SVC(
+    kernel="precomputed",
+    C=1.0
+)
+
+quantum_svm.fit(K_train, y_train)
+
+# Predict test labels.
+y_pred_quantum = quantum_svm.predict(K_test)
+
+print(
+    "Quantum-kernel SVM accuracy:",
+    accuracy_score(y_test, y_pred_quantum)
+)
+
+print(
+    classification_report(
+        y_test,
+        y_pred_quantum,
+        zero_division=0
+    )
+)</code></pre>
+
+        <p>
+            This is the main integration point: scikit-learn does not need to
+            understand quantum circuits. It only needs a valid kernel matrix.
+            The quantum circuit supplies the similarities, while the SVM handles
+            the classification optimisation.
+        </p>
+
+        <h3>18.7.8 Compare against a classical RBF kernel</h3>
+
+        <p>
+            A quantum-kernel experiment is incomplete without a baseline. The RBF
+            kernel is a strong starting point for many nonlinear classification
+            problems. We will tune its main hyperparameter using cross-validation
+            on the training set, then evaluate the selected model on the same
+            held-out test set.
+        </p>
+
+<pre><code>from sklearn.model_selection import GridSearchCV
+
+# Tune the classical RBF kernel using training data only.
+rbf_search = GridSearchCV(
+    estimator=SVC(kernel="rbf"),
+    param_grid={
+        "C": [0.1, 1.0, 10.0, 100.0],
+        "gamma": ["scale", 0.1, 1.0, 10.0]
+    },
+    cv=5,
+    scoring="accuracy",
+    n_jobs=-1
+)
+
+rbf_search.fit(X_train, y_train)
+
+rbf_svm = rbf_search.best_estimator_
+y_pred_rbf = rbf_svm.predict(X_test)
+
+print("Best RBF parameters:", rbf_search.best_params_)
+print(
+    "Classical RBF accuracy:",
+    accuracy_score(y_test, y_pred_rbf)
+)</code></pre>
+
+        <p>
+            Compare the test scores, but do not draw a general conclusion from a
+            single small dataset or random split. The RBF baseline has been tuned,
+            whereas the example quantum feature map is fixed. For a more rigorous
+            study, repeat experiments across several random seeds, tune both
+            approaches fairly and report uncertainty in the results.
+        </p>
+
+        <h3>18.7.9 Optional: inspect the kernel values</h3>
+
+        <p>
+            We can inspect the distribution of the training kernel entries to
+            understand whether the feature map creates a useful range of similarities.
+            A matrix in which almost all off-diagonal entries are nearly identical
+            may have limited discriminatory power.
+        </p>
+
+<pre><code>off_diagonal = K_train[
+    ~np.eye(len(K_train), dtype=bool)
+]
+
+print("Off-diagonal mean:", off_diagonal.mean())
+print("Off-diagonal standard deviation:",
+      off_diagonal.std())
+print("Smallest eigenvalue:",
+      np.linalg.eigvalsh(
+          (K_train + K_train.T) / 2
+      ).min())</code></pre>
+
+        <p>
+            The eigenvalue check uses the symmetrised matrix to reduce the effect
+            of tiny numerical asymmetries. For an exact fidelity kernel, the Gram
+            matrix should be positive semidefinite, apart from small numerical
+            errors. If the smallest eigenvalue is significantly negative, inspect
+            the implementation and numerical precision before drawing conclusions.
+        </p>
+
+        <h3>18.7.10 What would change on real hardware?</h3>
+
+        <p>
+            The tutorial uses exact statevector simulation, so it does not include
+            shot noise or hardware noise. On hardware, the overlap would usually be
+            estimated by executing the circuit U(x)†U(z) repeatedly and measuring
+            how often the all-zero outcome occurs.
+        </p>
+
+        <p>
+            That change introduces a practical challenge: every pairwise kernel
+            value needs an estimate. For larger training sets, the number of
+            circuit evaluations and shots can become expensive. Hardware experiments
+            should therefore report the total number of circuit executions, shots,
+            circuit depth and the backend used.
+        </p>
+
+        <div class="callout success">
+            <strong>Hands-on conclusion:</strong> You have built a complete hybrid
+            classification pipeline: classical data → quantum feature map →
+            quantum kernel matrix → scikit-learn SVM → test evaluation. The same
+            precomputed-kernel interface can be used with many other valid kernels.
+        </div>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter Summary: Connecting the Ideas</h2>
+
+        <p>
+            Quantum kernel methods become easier to understand when viewed as a
+            sequence of connected ideas rather than as a collection of unrelated
+            equations.
+        </p>
+
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Feature maps change the representation</h4>
+                <p>
+                    Classical or quantum feature maps transform inputs into a space
+                    where useful patterns may be easier to learn.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Kernels compare transformed inputs</h4>
+                <p>
+                    A kernel provides the inner product between representations,
+                    often without explicitly constructing the complete feature vectors.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Quantum circuits prepare the representations</h4>
+                <p>
+                    An input-dependent unitary U(x) prepares a quantum state
+                    |φ(x)⟩. The fidelity kernel compares two such states using
+                    their squared overlap.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h4>Measurements estimate similarities</h4>
+                <p>
+                    The circuit U(x)†U(z) and repeated measurements estimate the
+                    all-zero probability. Repeated shots reduce sampling uncertainty.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h4>The classical learner uses the kernel</h4>
+                <p>
+                    A support vector machine uses the Gram matrix to learn a decision
+                    boundary. Quantum state preparation does not remove the need
+                    for classical optimisation.
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">6</div>
+            <div class="step-content">
+                <h4>Training and evaluation determine usefulness</h4>
+                <p>
+                    Trainable kernels can adapt their representations, but concentration,
+                    sampling cost, hardware noise and overfitting must all be considered.
+                </p>
+            </div>
+        </div>
+
+        <h3>The most important equations</h3>
+
+        <div class="formula">
+            Classical kernel: K(x,z) = φ(x) · φ(z)
+        </div>
+
+        <div class="formula">
+            Quantum feature state: |φ(x)⟩ = U(x)|0⟩<sup>⊗n</sup>
+        </div>
+
+        <div class="formula">
+            Quantum fidelity kernel: K(x,z) = |⟨φ(x)|φ(z)⟩|²
+        </div>
+
+        <div class="formula">
+            Kernel estimation: K̂(x,z) = N<sub>0</sub> / N
+        </div>
+
+        <div class="formula">
+            Quantum SVM: learn from K(xᵢ,xⱼ), rather than explicit quantum feature vectors
+        </div>
+
+        <h3>Questions for revision</h3>
+
+        <ol>
+            <li>Why can a feature map make a nonlinear classification problem easier?</li>
+            <li>What is the difference between a feature vector and a kernel value?</li>
+            <li>Why is the fidelity kernel defined using the squared magnitude of the state overlap?</li>
+            <li>How does applying U(x)†U(z) help estimate a quantum kernel?</li>
+            <li>Why do we need repeated shots on quantum hardware?</li>
+            <li>What information is stored in a Gram matrix, and how does an SVM use it?</li>
+            <li>How does kernel alignment help train a quantum feature map?</li>
+            <li>What is the difference between kernel concentration and a barren plateau?</li>
+            <li>Why must a quantum kernel be compared with a tuned classical RBF kernel?</li>
+            <li>Which costs must be included when evaluating a claimed quantum advantage?</li>
+        </ol>
+
+        <h3>Final perspective</h3>
+
+        <p>
+            Quantum kernel methods offer a clear way to combine quantum circuits
+            with established machine-learning algorithms. Their central idea is
+            straightforward: encode each example into a quantum state, measure
+            similarities between states, and use those similarities to train a
+            classical learner.
+        </p>
+
+        <p>
+            The difficult part is choosing a representation that is both useful
+            for the learning task and efficient to estimate. A larger state space
+            is not enough. The kernel must distinguish relevant examples, the
+            resulting classifier must generalise, and the full workflow must
+            justify its computational cost.
+        </p>
+
+        <p>
+            That is the standard against which quantum kernel methods should be
+            studied: not merely whether quantum mechanics creates a different
+            representation, but whether that representation provides a measurable
+            and reproducible advantage for a real learning problem.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>Chapter 18 · Quantum Kernel Methods</p>
+    <p>From classical feature maps to quantum similarities and hybrid learning.</p>
+</footer>
+
+</body>
+</html>

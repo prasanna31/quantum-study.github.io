@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 28: Building a Career and a Project in Quantum</title>
+    <style>
+        :root {
+            --primary: #2546a8;
+            --secondary: #087e8b;
+            --background: #f5f7fc;
+            --surface: #ffffff;
+            --text: #263247;
+            --muted: #58677d;
+            --border: #dce3ef;
+            --highlight: #eaf0ff;
+            --green: #e8f6ed;
+            --orange: #fff3df;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        header {
+            padding: 54px 22px;
+            color: white;
+            background: linear-gradient(135deg, #142554, #2546a8 65%, #087e8b);
+        }
+
+        header .container,
+        main,
+        footer {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .chapter-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.85;
+        }
+
+        h1 {
+            margin: 12px 0;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.2;
+        }
+
+        header p {
+            max-width: 760px;
+            font-size: 1.08rem;
+            color: #edf2ff;
+        }
+
+        main {
+            padding: 26px 20px 60px;
+        }
+
+        section {
+            margin: 28px 0;
+            padding: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(25, 45, 85, 0.04);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.75rem;
+            line-height: 1.4;
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: #174b73;
+            font-size: 1.25rem;
+        }
+
+        h4 {
+            margin-bottom: 6px;
+            color: #334d75;
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        li {
+            margin: 7px 0;
+        }
+
+        .intro {
+            font-size: 1.08rem;
+        }
+
+        .callout {
+            margin: 22px 0;
+            padding: 18px 20px;
+            background: var(--highlight);
+            border-left: 5px solid var(--primary);
+            border-radius: 7px;
+        }
+
+        .success {
+            background: var(--green);
+            border-left-color: #26834a;
+        }
+
+        .caution {
+            background: var(--orange);
+            border-left-color: #c17a14;
+        }
+
+        .path {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 10px;
+            margin: 22px 0;
+        }
+
+        .path div {
+            flex: 1 1 140px;
+            padding: 14px;
+            text-align: center;
+            background: #edf2ff;
+            border: 1px solid #d5defb;
+            border-radius: 9px;
+            font-weight: bold;
+        }
+
+        .path span {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 0.88rem;
+            font-weight: normal;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: left;
+            vertical-align: top;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background: #edf2ff;
+            color: #203c83;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+
+        .equation {
+            margin: 18px 0;
+            padding: 16px;
+            overflow-x: auto;
+            text-align: center;
+            background: #f0f5fa;
+            border-radius: 8px;
+            font-family: "Courier New", monospace;
+            font-size: 1rem;
+        }
+
+        .resource {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .resource:last-child {
+            border-bottom: none;
+        }
+
+        a {
+            color: #244bb5;
+            overflow-wrap: anywhere;
+        }
+
+        .checklist li {
+            list-style: none;
+            position: relative;
+            padding-left: 28px;
+        }
+
+        .checklist li::before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--primary);
+            font-size: 1.15rem;
+        }
+
+        footer {
+            padding: 0 20px 40px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            section {
+                padding: 20px 16px;
+            }
+
+            header {
+                padding: 38px 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <div class="chapter-label">Quantum Computing and Quantum Machine Learning</div>
+        <h1>Chapter 28: Building a Career and a Project in Quantum</h1>
+        <p>
+            From learning the fundamentals to building useful projects, contributing to
+            open source, accessing quantum hardware and writing research papers, this
+            chapter explains how to turn an interest in quantum computing into practical
+            skills and meaningful work.
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <section id="introduction">
+        <h2>Introduction: From Learning Quantum to Doing Quantum</h2>
+
+        <p class="intro">
+            Learning quantum computing and building a career in it are two different
+            challenges. Learning introduces us to qubits, quantum gates, superposition,
+            entanglement and quantum algorithms. Building a career requires us to use
+            these ideas to solve problems, write reliable code, understand research
+            results and communicate our findings to other people.
+        </p>
+
+        <p>
+            Imagine a student who learns how a classical computer works. The student
+            understands bits, logic gates and algorithms. However, this knowledge alone
+            does not automatically make the student a good software engineer. The student
+            must also write programs, debug errors, build projects and learn how real
+            systems are designed.
+        </p>
+
+        <p>
+            Quantum computing follows the same pattern, although its mathematical
+            foundations are different. Understanding a quantum circuit is the beginning.
+            Implementing it, testing it on a simulator, comparing it with a classical
+            method and explaining the results are the steps that turn knowledge into skill.
+        </p>
+
+        <div class="path">
+            <div>Learn<span>Mathematics and physics</span></div>
+            <div>Implement<span>Circuits and algorithms</span></div>
+            <div>Experiment<span>Simulators and hardware</span></div>
+            <div>Evaluate<span>Correctness and performance</span></div>
+            <div>Communicate<span>Projects and research</span></div>
+        </div>
+
+        <p>
+            These stages are connected. A project reveals gaps in our understanding.
+            Filling those gaps makes the next project stronger. Over time, this cycle
+            helps us move from being a learner to becoming an engineer or researcher.
+        </p>
+
+        <div class="callout">
+            <strong>The central idea:</strong> Do not wait until you have learnt all of
+            quantum computing before starting a project. Learn the necessary theory,
+            implement a small idea, examine what happens and use the result to decide
+            what you need to learn next.
+        </div>
+    </section>
+
+    <section id="skills">
+        <h2>28.1 Skills and Learning Paths</h2>
+
+        <h3>28.1.1 What does a quantum computing professional actually do?</h3>
+
+        <p>
+            Quantum computing is not a single profession. It is a collection of related
+            fields that approach quantum technology from different directions. Some
+            professionals develop algorithms, some build software tools, some design
+            quantum hardware and others study whether quantum methods can improve
+            machine learning or scientific simulations.
+        </p>
+
+        <p>
+            Consider a team developing a quantum algorithm to investigate a chemical
+            molecule. A physicist may explain the molecular system, a mathematician may
+            analyse the algorithm, a quantum software engineer may implement its circuit,
+            and a computer scientist may investigate its computational cost. The team
+            needs these different skills because no single perspective answers every question.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Career direction</th>
+                        <th>Main responsibility</th>
+                        <th>Important skills</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Quantum Software Engineer</td>
+                        <td>Build software that creates, runs and analyses quantum circuits.</td>
+                        <td>Python, software engineering, quantum SDKs, testing and debugging.</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum Algorithms Researcher</td>
+                        <td>Design and analyse quantum algorithms for specific computational problems.</td>
+                        <td>Linear algebra, algorithms, probability, complexity theory and proofs.</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum Machine Learning Researcher</td>
+                        <td>Investigate quantum models for learning, inference and data analysis.</td>
+                        <td>Machine learning, statistics, optimisation and quantum circuits.</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum Error Correction Researcher</td>
+                        <td>Develop methods to protect quantum information against noise.</td>
+                        <td>Quantum information, coding theory, probability and mathematical analysis.</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum Hardware Engineer</td>
+                        <td>Help design, control or improve physical quantum devices.</td>
+                        <td>Physics, electronics, control systems and experimental methods.</td>
+                    </tr>
+                    <tr>
+                        <td>Quantum Applications Scientist</td>
+                        <td>Investigate quantum approaches to chemistry, materials or optimisation.</td>
+                        <td>Quantum algorithms and knowledge of the target scientific domain.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            These roles overlap. A quantum software engineer working on quantum error
+            correction may need to understand coding theory, while a quantum machine
+            learning researcher may need strong software engineering skills to run
+            reproducible experiments. The difference is usually the problem each person
+            spends most of their time solving.
+        </p>
+
+        <h3>28.1.2 The mathematical foundation</h3>
+
+        <p>
+            The first important skill is linear algebra. Classical programming usually
+            represents information using bits, variables and data structures. Quantum
+            computing represents a qubit using a mathematical state, often written as
+            a vector in a complex vector space.
+        </p>
+
+        <p>
+            A single qubit can be represented as
+        </p>
+
+        <div class="equation">
+            |ψ⟩ = α|0⟩ + β|1⟩
+        </div>
+
+        <p>
+            Here, α and β are complex probability amplitudes. Their squared magnitudes
+            determine the probabilities of observing the two possible measurement outcomes.
+            They must satisfy the normalisation condition
+        </p>
+
+        <div class="equation">
+            |α|² + |β|² = 1
+        </div>
+
+        <p>
+            You do not need to master every advanced mathematical topic before writing
+            your first circuit. However, you should gradually understand vectors, matrices,
+            complex numbers, inner products, eigenvalues and unitary transformations.
+            These ideas explain how quantum states are represented and how quantum gates
+            change them.
+        </p>
+
+        <p>
+            Probability is equally important. Quantum measurement produces outcomes with
+            particular probabilities. When an experiment is repeated many times, the
+            observed frequencies can be compared with the theoretical predictions.
+            Statistics helps determine whether differences are meaningful or simply caused
+            by random variation.
+        </p>
+
+        <h3>28.1.3 Learn quantum computing in layers</h3>
+
+        <p>
+            A useful learning path begins with the smallest possible system and gradually
+            introduces more complicated ideas.
+        </p>
+
+        <h4>Layer 1: Classical computing</h4>
+        <p>
+            Understand bits, binary numbers, Boolean logic, algorithms, computational
+            complexity and the difference between time and space complexity. These concepts
+            help explain what a classical algorithm does and what it costs to run.
+        </p>
+
+        <h4>Layer 2: Quantum foundations</h4>
+        <p>
+            Learn qubits, superposition, measurement, quantum gates, tensor products,
+            entanglement and quantum circuits. Focus on what each concept means and how
+            it changes the state of a system. A circuit diagram should not be treated
+            merely as a picture to memorise; it represents a sequence of mathematical
+            operations.
+        </p>
+
+        <h4>Layer 3: Quantum algorithms</h4>
+        <p>
+            Implement introductory algorithms such as Deutsch-Jozsa, Bernstein-Vazirani,
+            Grover's search and quantum teleportation. These examples teach different
+            lessons: interference, oracle access, amplitude amplification and the role
+            of entanglement and classical communication.
+        </p>
+
+        <h4>Layer 4: Hardware and noise</h4>
+        <p>
+            Study why real quantum devices do not behave like perfect mathematical
+            simulators. Gates may be imperfect, qubits can lose their quantum states,
+            and measurements can be inaccurate. Learn about noise models, repeated
+            measurements, calibration and error mitigation.
+        </p>
+
+        <h4>Layer 5: A specialisation</h4>
+        <p>
+            Once the foundations are comfortable, choose a direction such as quantum
+            algorithms, quantum machine learning, quantum error correction, quantum
+            chemistry or quantum systems software. Specialisation gives your learning
+            a purpose without preventing you from exploring other areas later.
+        </p>
+
+        <h3>28.1.4 Choosing a path in Quantum Machine Learning</h3>
+
+        <p>
+            Quantum machine learning, commonly called QML, studies the relationship
+            between quantum computation and machine learning. It includes using quantum
+            circuits as learning models, studying quantum algorithms for learning tasks
+            and learning properties of quantum systems.
+        </p>
+
+        <p>
+            A beginner can implement a variational quantum classifier. In this approach,
+            classical data is encoded into a quantum circuit, trainable quantum gates
+            process the state, and measurements produce values used to make a prediction.
+            A classical optimiser then adjusts the trainable parameters to reduce a loss
+            function.
+        </p>
+
+        <div class="path">
+            <div>Classical data<span>Features and labels</span></div>
+            <div>Encoding<span>Prepare a quantum state</span></div>
+            <div>Quantum model<span>Apply trainable gates</span></div>
+            <div>Measurement<span>Estimate output values</span></div>
+            <div>Optimisation<span>Update parameters</span></div>
+        </div>
+
+        <p>
+            To work seriously in QML, learn the classical machine learning concepts
+            first: training and test sets, loss functions, overfitting, regularisation,
+            gradient-based optimisation, feature scaling and statistical evaluation.
+            Otherwise, it becomes difficult to tell whether a quantum model has learnt
+            something useful or merely produced an attractive result on a small dataset.
+        </p>
+
+        <div class="callout caution">
+            <strong>Important:</strong> A quantum model is not automatically better than
+            a classical model. A convincing experiment must compare the quantum approach
+            against suitable classical baselines and account for the cost of data
+            encoding, circuit execution, measurement and optimisation.
+        </div>
+
+        <h3>28.1.5 A practical six-month learning plan</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Focus</th>
+                        <th>Expected outcome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Month 1</td>
+                        <td>Linear algebra, probability, complex numbers and classical algorithms.</td>
+                        <td>Explain the mathematical language used by quantum computing.</td>
+                    </tr>
+                    <tr>
+                        <td>Month 2</td>
+                        <td>Qubits, gates, measurement and entanglement.</td>
+                        <td>Implement basic circuits and predict their outcomes.</td>
+                    </tr>
+                    <tr>
+                        <td>Month 3</td>
+                        <td>Quantum algorithms and circuit simulators.</td>
+                        <td>Implement and test several introductory algorithms.</td>
+                    </tr>
+                    <tr>
+                        <td>Month 4</td>
+                        <td>Choose QML, algorithms, error correction or another specialisation.</td>
+                        <td>Build a small project with a clear problem statement.</td>
+                    </tr>
+                    <tr>
+                        <td>Month 5</td>
+                        <td>Run experiments, compare baselines and study noise.</td>
+                        <td>Produce reliable measurements and explain limitations.</td>
+                    </tr>
+                    <tr>
+                        <td>Month 6</td>
+                        <td>Document the project, study related papers and share the code.</td>
+                        <td>Publish a reproducible portfolio project or a research report.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            This is a suggested sequence, not a deadline. Someone already comfortable
+            with machine learning and software engineering may progress faster through
+            programming and spend more time on quantum theory. Someone new to mathematics
+            may need longer to build a strong foundation. The important point is steady,
+            measurable progress.
+        </p>
+    </section>
+
+    <section id="open-source">
+        <h2>28.2 Open-Source Ecosystems and Communities</h2>
+
+        <h3>28.2.1 Why open source matters</h3>
+
+        <p>
+            Open-source software makes its source code available under a licence that
+            permits specified forms of use, modification and redistribution. In quantum
+            computing, open-source projects provide circuit simulators, programming
+            interfaces, optimisers, educational material and tools for analysing
+            experiments.
+        </p>
+
+        <p>
+            Suppose you are learning quantum circuits and encounter a simulator that
+            produces an unexpected result. You can inspect its documentation, reproduce
+            the behaviour in a small program, examine the relevant implementation and
+            report a clear issue if something appears incorrect. This process teaches
+            you more than simply running code written by somebody else.
+        </p>
+
+        <p>
+            Open-source contribution also helps you understand how professional software
+            is maintained. You learn to read unfamiliar code, write tests, discuss design
+            decisions, review changes and explain why a modification is necessary.
+            These skills are valuable in both quantum and classical software engineering.
+        </p>
+
+        <h3>28.2.2 Important quantum software ecosystems</h3>
+
+        <div class="resource">
+            <h4>Qiskit</h4>
+            <p>
+                Qiskit is a quantum software development framework associated with IBM's
+                quantum ecosystem. It can be used to construct quantum circuits, simulate
+                them and work with supported quantum computing services. It is a practical
+                starting point for learning circuit programming.
+            </p>
+            <p><a href="https://qiskit.org/" target="_blank" rel="noopener noreferrer">Qiskit website</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>Cirq</h4>
+            <p>
+                Cirq is a Python framework for creating, modifying and executing quantum
+                circuits. It is useful for understanding circuit construction, simulation
+                and hardware-oriented circuit constraints.
+            </p>
+            <p><a href="https://quantumai.google/cirq" target="_blank" rel="noopener noreferrer">Cirq documentation</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>PennyLane</h4>
+            <p>
+                PennyLane focuses on quantum programming and differentiable quantum
+                computation. It is especially relevant to QML because it connects quantum
+                circuits with classical machine learning frameworks and optimisation tools.
+            </p>
+            <p><a href="https://pennylane.ai/" target="_blank" rel="noopener noreferrer">PennyLane website</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>CUDA-Q</h4>
+            <p>
+                CUDA-Q provides tools for hybrid quantum-classical programming and for
+                working across supported quantum processors and simulators. It is useful
+                for exploring the relationship between conventional high-performance
+                computing and quantum workflows.
+            </p>
+            <p><a href="https://developer.nvidia.com/cuda-q" target="_blank" rel="noopener noreferrer">CUDA-Q website</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>QuTiP</h4>
+            <p>
+                QuTiP is a software package for simulating quantum dynamics and studying
+                quantum systems. It is particularly useful when the goal is to understand
+                physical evolution, open quantum systems and the effects of the environment.
+            </p>
+            <p><a href="https://qutip.org/" target="_blank" rel="noopener noreferrer">QuTiP website</a></p>
+        </div>
+
+        <p class="small">
+            Frameworks evolve over time. Before beginning a project, check each project's
+            current documentation, supported Python versions, installation instructions,
+            licence and hardware compatibility.
+        </p>
+
+        <h3>28.2.3 How should a beginner contribute?</h3>
+
+        <p>
+            A common mistake is to assume that the first contribution must involve
+            inventing a new quantum algorithm. In reality, useful contributions come
+            in many forms, and small improvements can be valuable.
+        </p>
+
+        <ul>
+            <li>
+                <strong>Documentation:</strong> Clarify a confusing explanation, add a
+                missing example or correct an inaccurate instruction.
+            </li>
+            <li>
+                <strong>Tests:</strong> Add a test for a circuit operation or a boundary
+                case that was not previously covered.
+            </li>
+            <li>
+                <strong>Examples:</strong> Create a small, reproducible demonstration of
+                an existing feature.
+            </li>
+            <li>
+                <strong>Bug fixes:</strong> Reproduce an issue, identify its cause and
+                implement a fix with a test.
+            </li>
+            <li>
+                <strong>Performance:</strong> Measure a real bottleneck and propose a
+                change supported by benchmarks.
+            </li>
+        </ul>
+
+        <h3>28.2.4 Understanding a repository before changing it</h3>
+
+        <p>
+            Before modifying an unfamiliar repository, read its README, installation
+            guide, contribution guidelines and licence. Run a small example and execute
+            the existing tests if possible. This establishes a baseline: you know what
+            works before your change.
+        </p>
+
+        <p>
+            Next, look at the issue tracker. A problem reported by another user may
+            already have a discussion explaining the expected behaviour. If you choose
+            an issue, begin by reproducing it rather than immediately changing code.
+            Reproduction helps distinguish an actual defect from a misunderstanding
+            about how the framework works.
+        </p>
+
+        <p>
+            A good pull request explains what changed, why the change is needed, how it
+            was tested and whether it affects existing behaviour. The reviewer should
+            be able to understand the reasoning without having to guess your intention.
+        </p>
+
+        <div class="callout success">
+            <strong>A good first contribution:</strong> Find a quantum circuit example
+            that is difficult for beginners to understand. Reproduce it, verify the
+            expected output, improve the explanation and submit a small documentation
+            change with the necessary checks.
+        </div>
+
+        <h3>28.2.5 Communities are part of the learning process</h3>
+
+        <p>
+            Quantum computing communities include software maintainers, university
+            researchers, students, hardware providers and independent developers.
+            Their discussions can help you discover new tools, understand open problems
+            and find collaborators.
+        </p>
+
+        <p>
+            When asking for help, provide a minimal code example, the error message,
+            the software version and what you expected to happen. Explain what you have
+            already tried. A precise question is easier to answer than a general message
+            saying that the entire program is not working.
+        </p>
+
+        <p>
+            Similarly, when you learn something useful, share a small explanation or
+            reproducible example. Teaching another person often reveals gaps in your
+            own understanding. Over time, this exchange builds both technical skill
+            and professional relationships.
+        </p>
+    </section>
+
+    <section id="cloud">
+        <h2>28.3 Cloud Access to Quantum Hardware</h2>
+
+        <h3>28.3.1 Why do we need cloud access?</h3>
+
+        <p>
+            Quantum computers are difficult to build and operate. Many physical
+            implementations require specialised equipment, carefully controlled
+            environments and sophisticated measurement systems. Most learners cannot
+            keep such a device at home or in a normal computer laboratory.
+        </p>
+
+        <p>
+            Cloud quantum computing addresses this problem by allowing users to submit
+            jobs to remote quantum systems through an online service. You write code
+            on your computer, send a circuit or job description to the provider, and
+            receive measurement results after the job has been processed.
+        </p>
+
+        <div class="path">
+            <div>Your computer<span>Write the program</span></div>
+            <div>Cloud interface<span>Submit the job</span></div>
+            <div>Quantum processor<span>Execute supported operations</span></div>
+            <div>Measurements<span>Collect outcomes</span></div>
+            <div>Analysis<span>Interpret the results</span></div>
+        </div>
+
+        <p>
+            The cloud service is not itself a quantum computer. It is the access layer
+            connecting users to available quantum hardware and software. A provider may
+            also offer classical simulators, which are conventional computers simulating
+            quantum behaviour.
+        </p>
+
+        <h3>28.3.2 Simulator versus real quantum hardware</h3>
+
+        <p>
+            A simulator and a real quantum processor can execute conceptually similar
+            circuits, but their behaviour and limitations differ.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Quantum simulator</th>
+                        <th>Physical quantum hardware</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Execution</td>
+                        <td>A classical computer calculates an approximation or representation of quantum behaviour.</td>
+                        <td>Physical quantum devices carry out quantum operations and measurements.</td>
+                    </tr>
+                    <tr>
+                        <td>Noise</td>
+                        <td>May be ideal or use an explicitly specified noise model.</td>
+                        <td>Has real device errors and operational variations.</td>
+                    </tr>
+                    <tr>
+                        <td>Scale</td>
+                        <td>Exact simulation can become extremely expensive as the number of qubits increases.</td>
+                        <td>Available qubit counts and circuit capabilities depend on the device.</td>
+                    </tr>
+                    <tr>
+                        <td>Access</td>
+                        <td>Can often run locally without waiting for a hardware queue.</td>
+                        <td>May involve queues, quotas, authentication and usage costs.</td>
+                    </tr>
+                    <tr>
+                        <td>Main purpose</td>
+                        <td>Develop, debug and study circuits under controlled conditions.</td>
+                        <td>Test behaviour on a physical processor and investigate hardware effects.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            For a small project, begin with a simulator. It is easier to inspect the
+            circuit, repeat experiments and identify programming errors without
+            consuming limited hardware access. Once the circuit works, try it on
+            hardware if the provider supports the operations you need.
+        </p>
+
+        <p>
+            Do not expect a real device to reproduce ideal simulation results perfectly.
+            Measurement counts can vary, and noise can shift the observed distribution.
+            That difference is not necessarily a software bug; it may be a physical
+            limitation that your experiment must account for.
+        </p>
+
+        <h3>28.3.3 Where can you access quantum hardware?</h3>
+
+        <div class="resource">
+            <h4>IBM Quantum</h4>
+            <p>
+                IBM provides a quantum computing ecosystem that includes Qiskit and
+                cloud-based access options to supported quantum processors and simulators.
+                Availability, access rules and quotas depend on the current service.
+            </p>
+            <p><a href="https://quantum.ibm.com/" target="_blank" rel="noopener noreferrer">IBM Quantum platform</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>AWS Braket</h4>
+            <p>
+                Amazon Braket is an AWS service for working with quantum computing
+                hardware from supported providers and with managed simulation options.
+                It fits naturally into projects that already use AWS services.
+            </p>
+            <p><a href="https://aws.amazon.com/braket/" target="_blank" rel="noopener noreferrer">Amazon Braket</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>Azure Quantum</h4>
+            <p>
+                Azure Quantum provides a cloud environment for exploring quantum
+                computing tools and supported quantum hardware offerings. Available
+                backends and service conditions can change, so consult the current
+                documentation before planning an experiment.
+            </p>
+            <p><a href="https://azure.microsoft.com/en-us/products/quantum" target="_blank" rel="noopener noreferrer">Azure Quantum</a></p>
+        </div>
+
+        <p>
+            These platforms differ in their programming interfaces, supported devices,
+            billing models and access conditions. Choosing one does not require a
+            permanent commitment. Start with the framework that best suits your project
+            and use another provider when it adds something useful.
+        </p>
+
+        <h3>28.3.4 How to run your first cloud experiment</h3>
+
+        <ol>
+            <li>
+                <strong>Create a small circuit.</strong> A circuit that prepares a
+                superposition and measures a qubit is sufficient for the first experiment.
+            </li>
+            <li>
+                <strong>Run it locally.</strong> Check the expected probabilities and
+                ensure that the code behaves as intended.
+            </li>
+            <li>
+                <strong>Choose a supported backend.</strong> Review the device's available
+                gates, qubit connectivity, limits and current access requirements.
+            </li>
+            <li>
+                <strong>Submit the job.</strong> Follow the provider's authentication,
+                account and job-submission instructions.
+            </li>
+            <li>
+                <strong>Collect measurement counts.</strong> Record how many times each
+                output was observed.
+            </li>
+            <li>
+                <strong>Compare results.</strong> Examine the simulator's prediction
+                alongside the hardware distribution and explain any differences.
+            </li>
+        </ol>
+
+        <h3>28.3.5 Understanding repeated measurements</h3>
+
+        <p>
+            A quantum measurement gives an outcome, not a complete printed copy of the
+            quantum state. To estimate the probability of an outcome, the same experiment
+            is usually repeated many times. Each repetition is commonly called a shot.
+        </p>
+
+        <p>
+            If a measurement produces an outcome 0 in 510 of 1,000 shots, the estimated
+            probability of that outcome is
+        </p>
+
+        <div class="equation">
+            Estimated probability of 0 = 510 / 1000 = 0.51
+        </div>
+
+        <p>
+            If the ideal probability is 0.5, observing 0.51 is unsurprising for a finite
+            experiment. Random sampling alone can cause small differences. A persistent
+            or unusually large difference may require investigating noise, readout errors
+            or other device effects.
+        </p>
+
+        <h3>28.3.6 Budget and access discipline</h3>
+
+        <p>
+            Cloud access should be planned like any other computing resource. Some
+            services offer limited free access, while others charge according to the
+            device, task or execution method. Prices and policies can change.
+        </p>
+
+        <ul>
+            <li>Check the pricing and quota rules before submitting jobs.</li>
+            <li>Debug circuits locally before using physical hardware.</li>
+            <li>Use small experiments to verify the workflow.</li>
+            <li>Save job identifiers, circuit definitions and measurement results.</li>
+            <li>Protect API credentials and never commit secret keys to a public repository.</li>
+            <li>Record the backend and execution date so the experiment can be interpreted later.</li>
+        </ul>
+
+        <div class="callout caution">
+            <strong>Remember:</strong> Having access to a real quantum processor does
+            not automatically make a project research-grade. The value comes from the
+            question being investigated, the quality of the experiment and the honesty
+            of the conclusions.
+        </div>
+    </section>
+
+    <section id="project">
+        <h2>28.4 Designing a QML Research or Product Project</h2>
+
+        <h3>28.4.1 Start with a problem, not a fashionable algorithm</h3>
+
+        <p>
+            One of the most important decisions in a quantum project is choosing the
+            question. It is tempting to begin with an exciting-sounding algorithm and
+            search for a problem to attach to it. A stronger approach begins with a
+            concrete problem and asks whether a quantum method is appropriate.
+        </p>
+
+        <p>
+            Consider a student who wants to build a quantum classifier for handwritten
+            digits. This is a reasonable learning project, but it is not yet a complete
+            research question. The student must decide which digits to classify, how
+            images will be represented, which model will be used, what the classical
+            baseline is and how success will be measured.
+        </p>
+
+        <p>
+            A clearer question might be: "For a small binary image-classification task,
+            how does a variational quantum classifier compare with a classical classifier
+            when both use the same training and test examples and are evaluated under
+            a defined computational budget?"
+        </p>
+
+        <p>
+            This question does not assume that the quantum model will win. It gives the
+            experiment a fair purpose: finding out what happens and understanding why.
+        </p>
+
+        <h3>28.4.2 Research projects and product projects have different goals</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Research project</th>
+                        <th>Product project</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Investigates a question or tests a hypothesis.</td>
+                        <td>Solves a user or business problem.</td>
+                    </tr>
+                    <tr>
+                        <td>Values novelty, evidence and a clear explanation of limitations.</td>
+                        <td>Values reliability, usability, maintainability and cost.</td>
+                    </tr>
+                    <tr>
+                        <td>May conclude that a proposed method does not work well.</td>
+                        <td>Must meet agreed requirements or provide a useful alternative.</td>
+                    </tr>
+                    <tr>
+                        <td>Produces experiments, analysis and possibly a paper.</td>
+                        <td>Produces software, documentation, operational metrics and a user experience.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            A project can contain both elements. For example, a team might investigate
+            whether a quantum optimisation method improves a scheduling workflow, then
+            build a demonstration application. However, evidence that an algorithm works
+            on a small test problem is different from evidence that it is ready for
+            real-world deployment.
+        </p>
+
+        <h3>28.4.3 A systematic project design process</h3>
+
+        <h4>Step 1: Define the problem precisely</h4>
+
+        <p>
+            Write down the input, expected output, constraints and success criteria.
+            Avoid vague goals such as "use quantum computing to improve AI". Instead,
+            identify the task, the dataset or mathematical problem and the result you
+            want to evaluate.
+        </p>
+
+        <p>
+            For a classification problem, the input might be a vector of features and
+            the output a class label. For an optimisation problem, the input might be
+            a set of choices and constraints, while the output is a candidate solution
+            with an associated objective value.
+        </p>
+
+        <h4>Step 2: Study existing work</h4>
+
+        <p>
+            Search for papers and implementations that already address the problem.
+            Identify what is known, which assumptions are required and what limitations
+            remain. If an existing method already answers your question, that may be
+            an opportunity to reproduce its results before attempting an extension.
+        </p>
+
+        <p>
+            Reproducing a result is a valuable learning exercise. It reveals details that
+            may be hidden by a paper's summary, including preprocessing choices,
+            hyperparameters, numerical precision and differences between the reported
+            experiment and a practical implementation.
+        </p>
+
+        <h4>Step 3: Choose an appropriate quantum approach</h4>
+
+        <p>
+            A variational quantum circuit is one possible QML model. It uses a circuit
+            with trainable parameters and a classical optimisation loop. A quantum
+            kernel method is another option: it uses a quantum circuit to construct
+            quantities that describe similarities between examples. Other projects
+            might use quantum search, quantum simulation or quantum optimisation methods.
+        </p>
+
+        <p>
+            Choose the method based on the problem and available resources. Consider
+            circuit depth, number of qubits, connectivity requirements, measurement
+            cost and whether the data can be encoded efficiently.
+        </p>
+
+        <h4>Step 4: Build a classical baseline</h4>
+
+        <p>
+            A baseline is a reference method against which your proposed approach can
+            be evaluated. In a classification project, it might be logistic regression,
+            a support vector machine or a small neural network. For an optimisation
+            problem, it could be a greedy algorithm, a standard solver or a well-known
+            heuristic.
+        </p>
+
+        <p>
+            The baseline should be appropriate for the task. Comparing a complicated
+            quantum method against a deliberately weak classical method can create a
+            misleading impression of success.
+        </p>
+
+        <h4>Step 5: Design a fair experiment</h4>
+
+        <p>
+            Decide how the data will be divided, which metrics will be recorded and
+            how many runs are needed. For machine learning, prevent information from
+            the test set leaking into training. Apply preprocessing consistently and
+            use the same data splits when comparing methods.
+        </p>
+
+        <p>
+            If the quantum model uses a small subset of the data because of circuit
+            limitations, explain that decision. Do not compare its performance against
+            a classical model trained under substantially different conditions without
+            discussing the difference.
+        </p>
+
+        <h4>Step 6: Measure the complete cost</h4>
+
+        <p>
+            A quantum circuit's execution time is only one part of a QML experiment.
+            The complete workflow may include feature encoding, circuit compilation,
+            repeated measurements, network communication, classical optimisation and
+            post-processing.
+        </p>
+
+        <p>
+            Record the quantities relevant to the project: predictive performance,
+            wall-clock time, number of circuit evaluations, number of shots, memory
+            usage, device access costs and stability across repeated runs. Not every
+            project needs every metric, but the chosen measurements must match the claim.
+        </p>
+
+        <h4>Step 7: Analyse failures as carefully as successes</h4>
+
+        <p>
+            Perhaps the quantum model trains successfully but performs no better than
+            a simple baseline. Perhaps the model performs well in simulation but degrades
+            on hardware. Perhaps optimisation becomes unstable as the circuit grows.
+        </p>
+
+        <p>
+            These outcomes can still be informative. Investigate possible explanations,
+            such as limited data, poor feature scaling, circuit noise, insufficient
+            model capacity or difficult optimisation. A negative result is not a
+            failure when the experiment was well designed and the conclusion is supported
+            by evidence.
+        </p>
+
+        <h3>28.4.4 Example project: A variational quantum classifier</h3>
+
+        <p>
+            Let us design a manageable QML project that can be implemented by a learner
+            who understands basic Python, machine learning and quantum circuits.
+        </p>
+
+        <div class="callout">
+            <strong>Project question:</strong> Can a small variational quantum classifier
+            learn to distinguish two classes in a low-dimensional dataset, and how does
+            its performance compare with a classical baseline?
+        </div>
+
+        <h4>Project design</h4>
+
+        <ul>
+            <li>
+                <strong>Dataset:</strong> Begin with a small binary classification dataset
+                containing only a few features.
+            </li>
+            <li>
+                <strong>Preprocessing:</strong> Clean the data, scale the features and
+                create training, validation and test sets where appropriate.
+            </li>
+            <li>
+                <strong>Encoding:</strong> Map the selected features to quantum circuit
+                operations using a documented encoding scheme.
+            </li>
+            <li>
+                <strong>Model:</strong> Construct a parameterised circuit with a suitable
+                measurement-based output.
+            </li>
+            <li>
+                <strong>Training:</strong> Use a classical optimiser to adjust the
+                trainable circuit parameters.
+            </li>
+            <li>
+                <strong>Baseline:</strong> Train a classical classifier on the same task
+                using a fair evaluation protocol.
+            </li>
+            <li>
+                <strong>Evaluation:</strong> Measure test accuracy and other appropriate
+                metrics, along with training cost and variability across runs.
+            </li>
+            <li>
+                <strong>Analysis:</strong> Discuss the strengths, limitations and
+                possible sources of error.
+            </li>
+        </ul>
+
+        <h4>How the training loop works</h4>
+
+        <p>
+            Suppose the quantum circuit has trainable parameters represented by the
+            vector θ. For each training example, the circuit produces an output used
+            to calculate a loss. The optimiser then updates θ in an attempt to reduce
+            that loss.
+        </p>
+
+        <div class="equation">
+            θ<sub>new</sub> = Optimiser(θ, estimated loss and gradient)
+        </div>
+
+        <p>
+            This expression describes the idea rather than a specific optimisation
+            algorithm. The exact update depends on the optimiser, gradient-estimation
+            method and parameter constraints. Some circuits permit parameter-shift
+            gradient estimation, while other training approaches use different
+            estimators or derivative-free optimisation.
+        </p>
+
+        <p>
+            A complete implementation should log the loss, evaluation metrics,
+            parameters or checkpoints where appropriate, random seeds and experiment
+            configuration. This makes it possible to investigate unexpected results
+            and repeat the experiment later.
+        </p>
+
+        <h3>28.4.5 A useful project structure</h3>
+
+        <p>
+            Keeping the project organised from the beginning makes it easier to debug,
+            share and extend.
+        </p>
+
+        <div class="equation" style="text-align:left;">
+            quantum-ml-project/<br>
+            &nbsp;&nbsp;README.md<br>
+            &nbsp;&nbsp;requirements.txt<br>
+            &nbsp;&nbsp;configs/<br>
+            &nbsp;&nbsp;data/<br>
+            &nbsp;&nbsp;src/<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;preprocessing.py<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;quantum_model.py<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;classical_baseline.py<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;training.py<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;evaluation.py<br>
+            &nbsp;&nbsp;tests/<br>
+            &nbsp;&nbsp;experiments/<br>
+            &nbsp;&nbsp;results/<br>
+            &nbsp;&nbsp;report/
+        </div>
+
+        <p>
+            This is only one possible structure. The important principle is separation
+            of responsibilities. Data processing should not be tangled with circuit
+            construction, and evaluation should be reproducible without manually
+            repeating steps in a notebook.
+        </p>
+
+        <h3>28.4.6 What makes a project research-worthy?</h3>
+
+        <p>
+            A working implementation is a useful achievement, but a research contribution
+            requires more than reproducing an algorithm from a tutorial. It needs a
+            clearly defined question and a result that adds knowledge beyond simply
+            showing that the code runs.
+        </p>
+
+        <p>
+            A contribution could involve testing an assumption under conditions not
+            previously studied, explaining why a model fails, developing a more efficient
+            training strategy, producing a careful comparison, or establishing a useful
+            theoretical result. The importance of the contribution depends on the field
+            and the strength of the evidence.
+        </p>
+
+        <p>
+            A small and rigorous result can be more valuable than a large demonstration
+            built around unsupported claims. Research is not a competition to use the
+            greatest number of qubits. It is a disciplined attempt to answer a question.
+        </p>
+
+        <h3>28.4.7 Turning a project into a product</h3>
+
+        <p>
+            A product-oriented quantum project must also consider who will use it and
+            what benefit it offers. A scientific demonstration may be enough for a
+            research portfolio, but a product requires a dependable interface, clear
+            failure handling, useful outputs and predictable operating costs.
+        </p>
+
+        <p>
+            A practical architecture might contain a conventional application that
+            validates inputs, a job manager that submits quantum tasks, a storage layer
+            that saves results, and an analysis service that interprets measurements.
+            The application can expose the result through an API or a user interface.
+        </p>
+
+        <p>
+            A conventional backend can handle authentication, validation, persistence,
+            retries and monitoring. A quantum processor can be used only for the
+            computation that requires it. This hybrid design is often more practical
+            than attempting to move the entire application onto a quantum device.
+        </p>
+
+        <p>
+            The product should also have a fallback strategy. If a quantum service is
+            unavailable, the system may queue the task, return a clear status or use
+            an appropriate classical method. Whether such a fallback is acceptable
+            depends on the application's requirements.
+        </p>
+
+        <div class="callout success">
+            <strong>Project success means answering three questions:</strong>
+            Does the implementation work? Does the evidence support the conclusion?
+            Does the result provide value for the intended user or research community?
+        </div>
+    </section>
+
+    <section id="papers">
+        <h2>28.5 Reading and Writing Quantum Research Papers</h2>
+
+        <h3>28.5.1 Why papers matter</h3>
+
+        <p>
+            Textbooks explain established concepts in a structured manner. Research
+            papers investigate more specific questions, often introducing a new method,
+            analysing a limitation or reporting an experiment. Reading papers helps
+            you understand what researchers are currently investigating and which
+            questions remain unanswered.
+        </p>
+
+        <p>
+            However, research papers are not usually written like beginner tutorials.
+            Authors often assume that readers already understand the mathematical
+            background and terminology. A paper may introduce a complicated algorithm
+            in a few paragraphs because its main purpose is to communicate the research
+            contribution rather than teach every prerequisite.
+        </p>
+
+        <p>
+            Therefore, reading research papers is a skill that develops gradually.
+            You should not expect to understand every equation on your first attempt.
+            The goal is to extract the main question, identify the method, understand
+            the evidence and recognise what remains uncertain.
+        </p>
+
+        <h3>28.5.2 Where to find research papers</h3>
+
+        <div class="resource">
+            <h4>arXiv</h4>
+            <p>
+                arXiv is a widely used repository for research preprints, including
+                quantum physics, computer science, mathematics and machine learning.
+                A preprint may not yet have completed peer review, so check its publication
+                history and subsequent versions where relevant.
+            </p>
+            <p><a href="https://arxiv.org/" target="_blank" rel="noopener noreferrer">arXiv</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>Google Scholar</h4>
+            <p>
+                Google Scholar helps locate scholarly articles, related publications,
+                authors and papers that cite a particular work. Citation counts can help
+                with discovery, but they do not independently establish that a paper is
+                correct or important.
+            </p>
+            <p><a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Google Scholar</a></p>
+        </div>
+
+        <div class="resource">
+            <h4>Proceedings and journals</h4>
+            <p>
+                Quantum computing research appears in specialist physics journals,
+                quantum information journals and computer science conferences. For QML,
+                machine learning conferences and related workshops may also be relevant.
+                Check the venue, publication status and review process rather than
+                relying only on a paper's title or abstract.
+            </p>
+        </div>
+
+        <h3>28.5.3 How to read a paper without getting lost</h3>
+
+        <p>
+            Reading a paper from the first sentence to the last sentence is not always
+            the best first step. Use several passes, with a different purpose for each.
+        </p>
+
+        <h4>Pass 1: Understand the purpose</h4>
+
+        <p>
+            Read the title, abstract, introduction and conclusion. Ask what problem the
+            authors are solving, why it matters and what they claim to contribute.
+            Write a short summary in your own words. If you cannot explain the problem
+            after this pass, reread the introduction or look up the necessary background.
+        </p>
+
+        <h4>Pass 2: Understand the method</h4>
+
+        <p>
+            Identify the assumptions, inputs, outputs and central steps of the proposed
+            method. For a quantum algorithm, determine what circuit is used, what
+            information it receives, which operations are applied and what measurement
+            results are required. For a QML paper, also identify the model, training
+            procedure and loss function.
+        </p>
+
+        <h4>Pass 3: Examine the evidence</h4>
+
+        <p>
+            Read the experimental setup, results, tables and figures carefully. Ask
+            whether the baseline is appropriate, whether the dataset is large enough,
+            whether repeated runs were performed and whether the conclusions follow
+            from the measurements.
+        </p>
+
+        <p>
+            For a theoretical paper, focus instead on the assumptions, definitions,
+            theorem statements and proof strategy. Identify which part of the argument
+            is doing the important work.
+        </p>
+
+        <h4>Pass 4: Examine the limitations</h4>
+
+        <p>
+            Read the discussion and limitations. A method may work only under particular
+            assumptions, require an impractical number of measurements or rely on
+            hardware capabilities that are not widely available. Understanding these
+            conditions tells you what the paper actually establishes.
+        </p>
+
+        <h3>28.5.4 Questions to ask while reading a QML paper</h3>
+
+        <ul>
+            <li>What exact learning problem is being solved?</li>
+            <li>Is the input classical data, quantum data or a mixture of both?</li>
+            <li>How are inputs encoded into quantum states?</li>
+            <li>Which circuit or quantum algorithm is used, and why?</li>
+            <li>How are measurements converted into predictions or estimates?</li>
+            <li>How are the model parameters trained?</li>
+            <li>Which classical baselines are used?</li>
+            <li>Are the training and test procedures clearly separated?</li>
+            <li>Does the method require a large number of circuit evaluations or shots?</li>
+            <li>Were experiments conducted in simulation, on real hardware or both?</li>
+            <li>Are statistical variation and noise taken into account?</li>
+            <li>Do the results support the authors' claims, or are some claims speculative?</li>
+        </ul>
+
+        <p>
+            These questions are particularly important because quantum machine learning
+            papers sometimes study theoretical possibilities, small simulated examples
+            or early hardware demonstrations. Those are legitimate forms of research,
+            but they support different conclusions. A successful simulation is not
+            automatically evidence of practical quantum advantage.
+        </p>
+
+        <h3>28.5.5 Keep a research notebook</h3>
+
+        <p>
+            Do not depend on memory alone when reading papers. Maintain a research
+            notebook in which each paper has a short, structured record. This makes
+            it easier to compare approaches and identify unanswered questions.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>What to record</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Reference</td>
+                        <td>Title, authors, year, venue and a stable link or identifier.</td>
+                    </tr>
+                    <tr>
+                        <td>Problem</td>
+                        <td>The precise question addressed by the paper.</td>
+                    </tr>
+                    <tr>
+                        <td>Method</td>
+                        <td>The algorithm, model, assumptions and important mathematical ideas.</td>
+                    </tr>
+                    <tr>
+                        <td>Evidence</td>
+                        <td>Datasets, baselines, experimental conditions and principal results.</td>
+                    </tr>
+                    <tr>
+                        <td>Limitations</td>
+                        <td>Known weaknesses, computational costs and unresolved questions.</td>
+                    </tr>
+                    <tr>
+                        <td>My questions</td>
+                        <td>Concepts to learn, claims to verify and experiments worth attempting.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            The most useful entry is not a copied abstract. It is your own explanation
+            of the paper's central idea and your assessment of the evidence. Writing
+            that explanation forces you to distinguish what you understand from what
+            you have merely read.
+        </p>
+
+        <h3>28.5.6 How to move from reading to research</h3>
+
+        <p>
+            After reading several papers on one topic, compare them rather than treating
+            each paper as an isolated result. One paper may propose a model, another may
+            analyse its training difficulties, and a third may show that a similar
+            task can be handled by a classical method.
+        </p>
+
+        <p>
+            Together, these papers reveal a broader picture. You begin to see which
+            assumptions are common, which results are well established and which claims
+            remain disputed. This is where research questions often emerge.
+        </p>
+
+        <p>
+            For example, several papers may report that a variational quantum classifier
+            works on small datasets, but the effect of measurement noise may be unclear.
+            You could formulate a project that measures how classification performance
+            changes as the noise level or number of shots changes. This would be a
+            focused investigation inspired by existing work.
+        </p>
+
+        <p>
+            Before calling the idea novel, search for related studies. Someone may have
+            already answered the question under different conditions. Novelty is not
+            established merely because you have not personally seen the experiment before.
+        </p>
+
+        <h3>28.5.7 Structure of a research paper</h3>
+
+        <p>
+            Although formats vary between disciplines and venues, many scientific
+            papers follow a structure that moves from the question to the evidence.
+        </p>
+
+        <h4>1. Title and abstract</h4>
+        <p>
+            The title identifies the subject, while the abstract summarises the problem,
+            approach, main findings and significance. The abstract should reflect the
+            paper's actual evidence rather than promise results that the study does not
+            establish.
+        </p>
+
+        <h4>2. Introduction</h4>
+        <p>
+            Explain the problem, why it matters, what is already known and what gap
+            the paper addresses. End with a clear statement of the contribution.
+            Avoid claiming that a field has no solution unless the literature supports
+            that conclusion.
+        </p>
+
+        <h4>3. Related work</h4>
+        <p>
+            Describe the most relevant previous approaches and explain how the present
+            work relates to them. Related work should make the research context clear,
+            not become a long list of paper summaries.
+        </p>
+
+        <h4>4. Method</h4>
+        <p>
+            Explain the model or algorithm, the assumptions, the mathematical
+            formulation and the implementation details necessary to understand the
+            work. Include enough information for another researcher to reproduce the
+            main procedure.
+        </p>
+
+        <h4>5. Experimental setup</h4>
+        <p>
+            Describe datasets, preprocessing, train-test splits, baselines, hyperparameters,
+            hardware or simulators, software versions and evaluation metrics. State
+            important constraints and explain choices that could affect the result.
+        </p>
+
+        <h4>6. Results</h4>
+        <p>
+            Present the measurements using suitable tables, plots or statistical
+            summaries. Distinguish measured results from theoretical predictions and
+            interpretations. Include relevant uncertainty rather than reporting only
+            the best run.
+        </p>
+
+        <h4>7. Discussion and limitations</h4>
+        <p>
+            Explain what the results mean, where the method works and where it does
+            not. Discuss alternative explanations, computational costs and the extent
+            to which the conclusions can be generalised.
+        </p>
+
+        <h4>8. Conclusion and references</h4>
+        <p>
+            Summarise the contribution without introducing unsupported claims. Cite
+            the work that informed the research, and provide code, data or supplementary
+            details when appropriate and permitted.
+        </p>
+
+        <h3>28.5.8 Writing clearly about quantum mathematics</h3>
+
+        <p>
+            Quantum research often uses mathematical notation, but equations should
+            support the explanation rather than replace it. Introduce each symbol,
+            explain its role and state the assumptions under which the equation applies.
+        </p>
+
+        <p>
+            For example, when writing about a quantum state, do not simply display a
+            vector and continue. Explain what the components represent, how the state
+            is normalised and which measurement probabilities follow from it. A reader
+            should understand both the mathematical statement and its physical or
+            computational meaning.
+        </p>
+
+        <p>
+            Likewise, distinguish an exact mathematical result from a numerical
+            observation. If a simulation estimates a value from repeated measurements,
+            describe it as an estimate. If an experiment demonstrates a result only on
+            a particular device and dataset, do not present it as a universal guarantee.
+        </p>
+
+        <h3>28.5.9 Reproducibility is part of good research</h3>
+
+        <p>
+            A paper is stronger when another person can repeat the experiment and
+            investigate the result. When possible, publish the implementation, environment
+            configuration, data preparation steps and experiment settings. Include the
+            random seeds where meaningful and explain any external dependencies.
+        </p>
+
+        <p>
+            Quantum experiments may depend on a specific backend, calibration state,
+            compiler version or access policy. These details should be recorded because
+            an identical circuit may not produce identical results across devices or
+            execution dates.
+        </p>
+
+        <p>
+            Reproducibility does not mean that every physical measurement must be
+            identical. It means that the procedure is documented well enough for
+            another person to repeat it, understand the expected variation and judge
+            whether the reported conclusions are supported.
+        </p>
+
+        <div class="callout">
+            <strong>A useful rule for writing:</strong> Make it possible for a reader
+            to understand what you did, why you did it, what happened, how uncertain
+            the result is and what you cannot conclude from it.
+        </div>
+    </section>
+
+    <section id="career-strategy">
+        <h2>28.6 Connecting Skills, Projects and Career Opportunities</h2>
+
+        <p>
+            A career in quantum computing develops through the connection between
+            theoretical understanding, practical work and communication. These are
+            not three independent activities. They strengthen one another.
+        </p>
+
+        <p>
+            Theory helps you understand why a circuit works. Implementation exposes
+            practical difficulties. Experiments reveal the limits of the method.
+            Writing forces you to explain the reasoning and distinguish evidence from
+            assumptions. Each activity makes the next one more effective.
+        </p>
+
+        <h3>28.6.1 Build a portfolio that shows your reasoning</h3>
+
+        <p>
+            A useful portfolio should contain a small number of well-explained projects
+            rather than a large collection of copied tutorials. For each project,
+            describe the problem, the approach, the experiments, the results and the
+            limitations.
+        </p>
+
+        <p>
+            For someone pursuing quantum software engineering, a well-tested library
+            extension or a clean circuit-execution service may demonstrate engineering
+            skill. For someone pursuing QML research, a careful comparison of quantum
+            and classical models may be more relevant. For quantum algorithms research,
+            a mathematically sound implementation and a clear analysis of complexity
+            may be particularly valuable.
+        </p>
+
+        <h3>28.6.2 Make the work easy to evaluate</h3>
+
+        <ul class="checklist">
+            <li>Provide a clear README with setup and execution instructions.</li>
+            <li>Explain the mathematical or scientific idea in accessible language.</li>
+            <li>Include tests and examples that another person can run.</li>
+            <li>Report the environment, framework versions and experiment settings.</li>
+            <li>Show suitable classical baselines when making performance claims.</li>
+            <li>Discuss limitations, failures and unexpected results honestly.</li>
+            <li>Link to relevant papers and distinguish your contribution from existing work.</li>
+        </ul>
+
+        <h3>28.6.3 Choose the next step based on the role you want</h3>
+
+        <p>
+            If you want to become a quantum software engineer, strengthen programming,
+            testing, API design, software architecture and quantum SDK skills. Learn
+            how to build reliable workflows around circuit execution rather than
+            concentrating only on mathematical demonstrations.
+        </p>
+
+        <p>
+            If you want to become a quantum algorithms researcher, deepen your
+            mathematical foundations, complexity theory and proof-writing ability.
+            Work through algorithms carefully and learn how to establish correctness
+            and analyse resource requirements.
+        </p>
+
+        <p>
+            If you want to become a QML researcher, study statistical learning theory,
+            optimisation, experimental design and classical baselines alongside quantum
+            information. Learn to identify when a proposed model is likely to be useful
+            and when its limitations outweigh its potential.
+        </p>
+
+        <p>
+            If you want to pursue quantum error correction, study quantum states and
+            channels, stabiliser formalism, coding theory and the mathematical structure
+            of fault-tolerant computation. Implementing small codes and analysing their
+            behaviour can provide a strong foundation for more advanced work.
+        </p>
+
+        <p>
+            No single project guarantees admission to a research programme or success
+            in a job search. Nevertheless, a portfolio that demonstrates careful
+            reasoning, technical competence and intellectual honesty gives other people
+            concrete evidence of your abilities.
+        </p>
+    </section>
+
+    <section id="roadmap">
+        <h2>28.7 A Practical Roadmap: Your First Quantum Project</h2>
+
+        <p>
+            The following roadmap brings the chapter together into a sequence that
+            a beginner can follow. It assumes that the goal is to learn quantum
+            computing, build a demonstrable project and prepare for more advanced work.
+        </p>
+
+        <h3>Phase 1: Establish the foundations</h3>
+        <ul class="checklist">
+            <li>Revise vectors, matrices, complex numbers and probability.</li>
+            <li>Understand qubits, measurement, gates and quantum circuits.</li>
+            <li>Implement small circuits in a simulator.</li>
+            <li>Explain the output probabilities without relying on memorised descriptions.</li>
+        </ul>
+
+        <h3>Phase 2: Explore the ecosystem</h3>
+        <ul class="checklist">
+            <li>Choose one quantum software framework.</li>
+            <li>Read its installation instructions and introductory tutorials.</li>
+            <li>Run its examples and inspect the resulting circuits.</li>
+            <li>Learn its testing and contribution practices.</li>
+        </ul>
+
+        <h3>Phase 3: Select a project</h3>
+        <ul class="checklist">
+            <li>Write a precise research question or product requirement.</li>
+            <li>Find relevant papers and existing implementations.</li>
+            <li>Choose a manageable method and a suitable dataset or test problem.</li>
+            <li>Define success metrics and a realistic resource budget.</li>
+        </ul>
+
+        <h3>Phase 4: Implement and evaluate</h3>
+        <ul class="checklist">
+            <li>Build a correct simulator-based implementation.</li>
+            <li>Test important components independently.</li>
+            <li>Implement a fair classical baseline.</li>
+            <li>Run repeatable experiments and record the results.</li>
+            <li>Use cloud hardware only when it adds value to the investigation.</li>
+        </ul>
+
+        <h3>Phase 5: Share and improve</h3>
+        <ul class="checklist">
+            <li>Write a clear README and technical report.</li>
+            <li>Document the assumptions and limitations.</li>
+            <li>Publish the code where appropriate and permitted.</li>
+            <li>Ask for feedback from the relevant community.</li>
+            <li>Use the feedback to plan the next experiment or contribution.</li>
+        </ul>
+
+        <div class="callout success">
+            <strong>Your first milestone:</strong> Build a small quantum circuit or QML
+            model, explain its mathematical operation, compare its output with an
+            expected result, and document what you learnt. A project of this size can
+            provide the foundation for a much larger research effort.
+        </div>
+    </section>
+
+    <section id="conclusion">
+        <h2>Conclusion: Build Understanding, Not Just a Portfolio</h2>
+
+        <p>
+            A career in quantum computing is not built by collecting framework names,
+            running impressive-looking circuits or claiming that quantum computers
+            can solve every difficult problem. It is built by learning the foundations,
+            asking precise questions, implementing ideas carefully and examining the
+            evidence.
+        </p>
+
+        <p>
+            Open-source communities make it possible to learn from real implementations.
+            Cloud platforms make quantum hardware accessible without owning a physical
+            device. Research projects provide a way to investigate new questions, while
+            technical writing makes the reasoning and results understandable to others.
+        </p>
+
+        <p>
+            These opportunities are available at different levels. A beginner can
+            start with a simulator and a small circuit. A software engineer can build
+            reliable tools around quantum workflows. A student interested in research
+            can reproduce an existing result and investigate a specific limitation.
+            With stronger foundations and experience, the projects can become more
+            ambitious.
+        </p>
+
+        <p>
+            Most importantly, remain willing to question your own results. If a quantum
+            method does not outperform a classical approach, understand why. If a
+            simulator and a real device disagree, investigate the difference. If a
+            paper makes a strong claim, examine the assumptions and evidence.
+        </p>
+
+        <p>
+            That habit of careful thinking is one of the most valuable skills a quantum
+            computing professional can develop. The objective is not merely to use
+            quantum technology. It is to understand what it can do, what it cannot yet
+            do and how to contribute responsibly to its development.
+        </p>
+    </section>
+
+    <section id="revision">
+        <h2>Chapter Review</h2>
+
+        <h3>Key ideas to remember</h3>
+        <ol>
+            <li>
+                Quantum careers include software engineering, algorithms, machine
+                learning, error correction, hardware and scientific applications.
+            </li>
+            <li>
+                Linear algebra, probability, programming and quantum fundamentals form
+                the foundation for specialised work.
+            </li>
+            <li>
+                Open source provides a practical way to learn software engineering,
+                contribute improvements and connect with other developers.
+            </li>
+            <li>
+                Cloud platforms provide access to supported quantum devices and
+                simulators, each with different capabilities and limitations.
+            </li>
+            <li>
+                A strong QML project defines a precise problem, studies previous work,
+                uses appropriate classical baselines and evaluates the complete cost.
+            </li>
+            <li>
+                Research papers should be read critically, with attention to assumptions,
+                methodology, evidence and limitations.
+            </li>
+            <li>
+                Reproducible code, clear documentation and honest conclusions make
+                technical work more valuable to others.
+            </li>
+        </ol>
+
+        <h3>Questions for self-assessment</h3>
+        <ol>
+            <li>What is the difference between a quantum software engineer and a quantum algorithms researcher?</li>
+            <li>Why are linear algebra and probability important for quantum computing?</li>
+            <li>What are three useful ways a beginner can contribute to an open-source quantum project?</li>
+            <li>How does a quantum simulator differ from a physical quantum processor?</li>
+            <li>Why should a QML experiment include a suitable classical baseline?</li>
+            <li>What is the difference between a research project and a product project?</li>
+            <li>Why can a negative experimental result still be useful?</li>
+            <li>How would you investigate a difference between ideal simulation results and hardware measurements?</li>
+            <li>What information should a research notebook contain?</li>
+            <li>How can a researcher distinguish a paper's measured results from its broader claims?</li>
+        </ol>
+
+        <h3>Practical exercise</h3>
+
+        <p>
+            Choose a small quantum circuit or introductory QML problem. Implement it
+            in a simulator, write down its expected behaviour, run the experiment and
+            compare the observations with your prediction. Read one related research
+            paper and identify the problem, method, evidence and limitations. Finally,
+            write a short report explaining what you learnt and what you would investigate
+            next.
+        </p>
+
+        <p>
+            Completing this exercise will not make you an expert overnight. It will,
+            however, take you through the complete cycle of learning, implementation,
+            experimentation, reading and communication that underpins real work in
+            quantum computing.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>End of Chapter 28 — Building a Career and a Project in Quantum</p>
+    <p>Learn carefully. Experiment honestly. Build something that others can understand and reproduce.</p>
+</footer>
+
+</body>
+</html>

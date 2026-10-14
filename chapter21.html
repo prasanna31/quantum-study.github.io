@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 21: Quantum Generative Models</title>
+  <style>
+    :root {
+      --ink: #202b3c;
+      --muted: #526176;
+      --primary: #4937a8;
+      --primary-light: #f0edff;
+      --teal: #087e8b;
+      --teal-light: #e8f7f7;
+      --orange: #a85c13;
+      --orange-light: #fff4e6;
+      --border: #dce2eb;
+      --paper: #ffffff;
+      --background: #f4f6fa;
+      --code: #172337;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .page {
+      max-width: 1000px;
+      margin: 28px auto;
+      padding: 44px 54px;
+      background: var(--paper);
+      box-shadow: 0 8px 35px rgba(27, 39, 66, 0.07);
+      border-radius: 14px;
+    }
+
+    .chapter-label {
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 5vw, 3.5rem);
+      line-height: 1.16;
+      letter-spacing: -1.5px;
+      margin: 12px 0 20px;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-top: 58px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+      line-height: 1.35;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin-top: 32px;
+      color: var(--primary);
+    }
+
+    h4 { margin-bottom: 5px; }
+
+    p { margin: 15px 0; }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 780px;
+    }
+
+    .lead {
+      font-size: 1.08rem;
+      line-height: 1.9;
+    }
+
+    .toc, .callout, .example, .warning, .definition {
+      margin: 24px 0;
+      padding: 20px 24px;
+      border-radius: 10px;
+    }
+
+    .toc {
+      background: #f7f8fc;
+      border: 1px solid var(--border);
+    }
+
+    .toc a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .toc li { margin: 5px 0; }
+
+    .callout {
+      background: var(--primary-light);
+      border-left: 5px solid var(--primary);
+    }
+
+    .example {
+      background: var(--teal-light);
+      border-left: 5px solid var(--teal);
+    }
+
+    .warning {
+      background: var(--orange-light);
+      border-left: 5px solid #d88729;
+    }
+
+    .definition {
+      background: #f3f6fa;
+      border: 1px solid var(--border);
+    }
+
+    .equation {
+      margin: 22px 0;
+      padding: 20px;
+      border-radius: 9px;
+      background: #f6f4ff;
+      text-align: center;
+      overflow-x: auto;
+      font-family: "Cambria Math", Georgia, serif;
+      font-size: 1.18rem;
+    }
+
+    .equation small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 0.85rem;
+    }
+
+    .diagram {
+      margin: 25px 0;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fbfcff;
+      text-align: center;
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .node {
+      padding: 12px 16px;
+      border: 1px solid #c9c2f3;
+      background: var(--primary-light);
+      border-radius: 9px;
+      font-weight: 600;
+    }
+
+    .arrow {
+      color: var(--primary);
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .diagram-caption {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 22px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th, td {
+      padding: 13px 15px;
+      text-align: left;
+      vertical-align: top;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f0edff;
+      color: #33277b;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f0f2f7;
+      padding: 2px 5px;
+      border-radius: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    pre {
+      padding: 22px;
+      overflow-x: auto;
+      background: var(--code);
+      color: #e8eef8;
+      border-radius: 10px;
+      line-height: 1.65;
+      font-size: 0.9rem;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    .key-idea {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .mini-title {
+      color: var(--teal);
+      font-weight: 800;
+    }
+
+    .checklist li { margin: 9px 0; }
+
+    .references li { margin: 10px 0; }
+
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 700px) {
+      .page {
+        margin: 0;
+        padding: 25px 20px;
+        border-radius: 0;
+      }
+
+      h2 { margin-top: 42px; }
+
+      .flow { flex-direction: column; }
+
+      .arrow { transform: rotate(90deg); }
+    }
+
+    @media print {
+      body { background: white; }
+      .page {
+        max-width: none;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none;
+      }
+      h2, h3 { break-after: avoid; }
+      .callout, .example, .warning, .diagram { break-inside: avoid; }
+    }
+  </style>
+</head>
+
+<body>
+<main class="page">
+
+  <header>
+    <div class="chapter-label">Quantum Computing and Machine Learning</div>
+    <h1>Chapter 21: Quantum Generative Models</h1>
+    <p class="subtitle">
+      How quantum circuits can learn patterns in data, generate new samples,
+      and connect quantum physics with modern generative artificial intelligence.
+    </p>
+
+    <div class="callout">
+      <strong>The central question:</strong>
+      Can we train a quantum system to learn the patterns hidden in examples
+      and then use it to produce new examples that follow those patterns?
+      Quantum generative models explore this possibility.
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Table of contents">
+    <h3 style="margin-top:0">Chapter contents</h3>
+    <ol>
+      <li><a href="#intro">Understanding generative models</a></li>
+      <li><a href="#born">21.1 Born machines</a></li>
+      <li><a href="#gan">21.2 Quantum GANs</a></li>
+      <li><a href="#boltzmann">21.3 Quantum Boltzmann machines</a></li>
+      <li><a href="#autoencoder">21.4 Quantum autoencoders</a></li>
+      <li><a href="#diffusion">21.5 Quantum diffusion and sampling models</a></li>
+      <li><a href="#evaluation">21.6 Evaluating generative quality</a></li>
+      <li><a href="#comparison">Comparing the main approaches</a></li>
+      <li><a href="#practice">A practical learning experiment</a></li>
+      <li><a href="#limitations">Limitations and open research questions</a></li>
+      <li><a href="#summary">Chapter summary and questions</a></li>
+      <li><a href="#references">Further reading</a></li>
+    </ol>
+  </nav>
+
+  <section id="intro">
+    <h2>1. Understanding generative models</h2>
+
+    <p class="lead">
+      Most people first encounter machine learning through prediction. A model
+      receives information and predicts an answer. For example, an image
+      classifier receives a photograph and predicts whether it contains a dog
+      or a cat. A generative model solves a different problem: it learns how
+      examples are structured and uses that knowledge to create new samples.
+    </p>
+
+    <p>
+      Suppose we give a model thousands of handwritten digit images. We do not
+      simply want it to label an image as a three or an eight. We want it to
+      learn the shapes, curves, stroke patterns, and variations found in those
+      images. After training, it should be able to generate a new handwritten
+      digit that resembles the training examples without merely copying one
+      of them.
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Training examples</div>
+        <div class="arrow">→</div>
+        <div class="node">Learned probability model</div>
+        <div class="arrow">→</div>
+        <div class="node">New samples</div>
+      </div>
+      <p class="diagram-caption">
+        A generative model learns a representation of the patterns in its
+        training data and uses it to produce samples.
+      </p>
+    </div>
+
+    <h3>1.1 What does it mean to learn a distribution?</h3>
+
+    <p>
+      Imagine a bag containing red and blue balls. If 70% of the balls are red
+      and 30% are blue, repeatedly picking a ball produces a distribution with
+      those proportions. A generative model learns a more complicated version
+      of this idea.
+    </p>
+
+    <p>
+      Instead of choosing only between two colours, it may need to assign
+      probabilities to thousands of possible images, sequences, or scientific
+      configurations. We represent the real data distribution by
+      <code>p<sub>data</sub>(x)</code>, where <code>x</code> is one possible
+      data sample. The model learns an approximation
+      <code>p<sub>model</sub>(x)</code>.
+    </p>
+
+    <div class="equation">
+      p<sub>model</sub>(x) ≈ p<sub>data</sub>(x)
+      <small>The aim is to learn a distribution that captures the important
+      patterns in the real data.</small>
+    </div>
+
+    <p>
+      This does not mean that the model must reproduce every training example
+      exactly. In fact, simply memorising the training set is usually a sign of
+      poor generalisation. A good model should capture the rules and variations
+      that make the examples meaningful.
+    </p>
+
+    <h3>1.2 Why introduce quantum computing?</h3>
+
+    <p>
+      Classical computers represent information using bits. Quantum computers
+      use quantum bits, or qubits, whose states can involve superposition and
+      entanglement. A system of many qubits can represent a quantum state with
+      amplitudes associated with many computational basis states.
+    </p>
+
+    <p>
+      For <code>n</code> qubits, the state can be written as
+      <code>|ψ⟩ = Σₓ αₓ|x⟩</code>, where each <code>x</code> is an
+      n-bit string and the amplitudes satisfy
+      <code>Σₓ |αₓ|² = 1</code>.
+    </p>
+
+    <p>
+      The probability of observing the bit string <code>x</code> in the
+      computational basis is given by the Born rule:
+    </p>
+
+    <div class="equation">
+      p(x) = |α<sub>x</sub>|²
+      <small>Measurement converts the quantum state's amplitudes into
+      observable probabilities.</small>
+    </div>
+
+    <p>
+      This relationship is the starting point for an important family of
+      quantum generative models. By preparing and measuring carefully designed
+      quantum states, we can obtain samples from a probability distribution.
+      Training changes the circuit so that the measured distribution better
+      matches the desired data distribution.
+    </p>
+
+    <div class="warning">
+      <strong>Important distinction:</strong> A quantum state may describe
+      exponentially many amplitudes, but this does not mean we can read all of
+      them from one measurement. A measurement returns a limited classical
+      result. Whether a quantum model provides a practical advantage depends
+      on the learning task, circuit, data-loading cost, noise, and classical
+      alternatives.
+    </div>
+
+    <h3>1.3 The common structure behind quantum generative models</h3>
+
+    <p>
+      Although different models use different learning strategies, many follow
+      the same broad pattern:
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Prepare qubits</div>
+        <div class="arrow">→</div>
+        <div class="node">Apply trainable gates</div>
+        <div class="arrow">→</div>
+        <div class="node">Measure</div>
+        <div class="arrow">→</div>
+        <div class="node">Collect samples</div>
+      </div>
+      <p class="diagram-caption">
+        The trainable quantum circuit changes the probabilities of different
+        measurement outcomes.
+      </p>
+    </div>
+
+    <p>
+      Let the circuit have parameters represented by
+      <code>θ</code>. These parameters may be rotation angles in quantum gates.
+      Applying the circuit to an initial state gives
+      <code>|ψ(θ)⟩</code>. Measuring this state produces a model distribution:
+    </p>
+
+    <div class="equation">
+      p<sub>θ</sub>(x) = |⟨x|ψ(θ)⟩|²
+    </div>
+
+    <p>
+      Training attempts to find parameters <code>θ</code> that make this
+      distribution resemble the target distribution. Depending on the model,
+      training may minimise a statistical distance, maximise a likelihood,
+      minimise an energy-based objective, or play an adversarial game.
+    </p>
+
+    <p>
+      This brings us to the first major model: the Born machine.
+    </p>
+  </section>
+
+  <section id="born">
+    <h2>21.1 Born machines</h2>
+
+    <h3>21.1.1 The central idea</h3>
+
+    <p>
+      A Born machine is a generative model that uses the Born rule of quantum
+      mechanics to define the probability of each possible output. The simplest
+      picture is straightforward: prepare a quantum state, measure it, record
+      the result, and repeat the process to obtain a collection of samples.
+    </p>
+
+    <p>
+      The term <em>Born machine</em> refers to a family of approaches rather
+      than one single circuit design. Some use parameterised quantum circuits;
+      others use tensor-network representations or different methods for
+      constructing the quantum state.
+    </p>
+
+    <h3>21.1.2 Building a Born machine step by step</h3>
+
+    <p>
+      Consider a system containing two qubits. When measured in the
+      computational basis, the system can produce four outcomes:
+      <code>00</code>, <code>01</code>, <code>10</code>, and <code>11</code>.
+      The model assigns a probability to each outcome.
+    </p>
+
+    <p>
+      Suppose a circuit prepares the state
+      <code>|ψ⟩ = α₀₀|00⟩ + α₀₁|01⟩ + α₁₀|10⟩ + α₁₁|11⟩</code>.
+      Its output probabilities are the squared magnitudes of the corresponding
+      amplitudes.
+    </p>
+
+    <div class="equation">
+      p(00) = |α₀₀|², &nbsp;
+      p(01) = |α₀₁|²
+      <br><br>
+      p(10) = |α₁₀|², &nbsp;
+      p(11) = |α₁₁|²
+    </div>
+
+    <p>
+      The probabilities must add up to one. The circuit's gates determine the
+      amplitudes, while the measurement basis determines how the outcomes are
+      interpreted.
+    </p>
+
+    <h3>21.1.3 A numerical example</h3>
+
+    <p>
+      Imagine that our training data contains four possible two-bit patterns.
+      Their observed frequencies suggest the following target distribution:
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Bit string</th>
+            <th>Target probability</th>
+            <th>Expected count in 1,000 samples</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>00</code></td><td>0.50</td><td>500</td></tr>
+          <tr><td><code>01</code></td><td>0.25</td><td>250</td></tr>
+          <tr><td><code>10</code></td><td>0.15</td><td>150</td></tr>
+          <tr><td><code>11</code></td><td>0.10</td><td>100</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      A trained Born machine should produce these patterns with approximately
+      the desired frequencies. The actual counts will fluctuate because
+      quantum measurement is probabilistic. Even a perfectly trained model
+      need not return exactly 500 instances of <code>00</code> in every batch
+      of 1,000 measurements.
+    </p>
+
+    <p>
+      The table gives an idealised target. A real circuit may not be capable of
+      representing every possible distribution with its chosen gates and
+      number of qubits. Training is meaningful only within the model's
+      representational limits.
+    </p>
+
+    <h3>21.1.4 Training the Born machine</h3>
+
+    <p>
+      Training means adjusting the circuit parameters so that its output
+      probabilities match the target distribution as closely as possible.
+      There are several possible objectives.
+    </p>
+
+    <h4>Maximum-likelihood training</h4>
+
+    <p>
+      If the model can evaluate the probability of each observed sample, it can
+      maximise the likelihood of the training data. For samples
+      <code>x₁, x₂, ..., xₘ</code>, the log-likelihood is:
+    </p>
+
+    <div class="equation">
+      L(θ) = Σᵢ log p<sub>θ</sub>(xᵢ)
+    </div>
+
+    <p>
+      The optimiser changes <code>θ</code> to increase this quantity.
+      Equivalently, it can minimise the negative log-likelihood.
+      Maximum-likelihood training is convenient when the probabilities can be
+      computed or estimated reliably.
+    </p>
+
+    <h4>Distribution matching</h4>
+
+    <p>
+      Another approach compares the target distribution with the distribution
+      obtained from measurements. For example, a model may minimise a
+      divergence between the two distributions. The difficulty is that the
+      complete quantum distribution can have an enormous number of outcomes,
+      making direct estimation expensive.
+    </p>
+
+    <p>
+      For this reason, some methods use sample-based objectives, kernel
+      distances, or other statistical measures instead of explicitly
+      calculating every probability.
+    </p>
+
+    <h3>21.1.5 Why quantum correlations matter</h3>
+
+    <p>
+      If we prepare qubits independently, their joint distribution may have a
+      restricted structure. Entangling gates can create correlations between
+      qubits that cannot be explained by a product of independent pure quantum
+      states.
+    </p>
+
+    <p>
+      This is useful when the data contains relationships between variables.
+      For example, two pixels in an image may frequently change together, or
+      two binary variables may be strongly correlated. A quantum circuit can
+      encode such relationships through its joint state.
+    </p>
+
+    <p>
+      However, entanglement alone does not guarantee that the model will learn
+      the correct correlations. The circuit architecture, available
+      parameters, objective function, and optimisation procedure all matter.
+      Some quantum distributions can also be represented efficiently by
+      classical models.
+    </p>
+
+    <h3>21.1.6 Strengths and limitations</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Potential strength</th><th>Practical difficulty</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Quantum states can represent rich joint probability structures.</td>
+            <td>Measurements reveal only samples, not the complete state.</td>
+          </tr>
+          <tr>
+            <td>Sampling can be a natural output of the circuit.</td>
+            <td>Many circuit executions may be needed for accurate statistics.</td>
+          </tr>
+          <tr>
+            <td>Parameterized circuits allow flexible model construction.</td>
+            <td>Training can become difficult as the circuit grows.</td>
+          </tr>
+          <tr>
+            <td>Some distributions may be difficult for classical computers to simulate.</td>
+            <td>Classical hardness does not automatically establish a useful learning advantage.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>Key idea:</strong> A Born machine learns a probability
+      distribution by controlling a quantum state and using measurement
+      probabilities as the model's output.
+    </div>
+  </section>
+
+  <section id="gan">
+    <h2>21.2 Quantum GANs</h2>
+
+    <h3>21.2.1 First understand a classical GAN</h3>
+
+    <p>
+      A Generative Adversarial Network, commonly called a GAN, contains two
+      models: a generator and a discriminator. The generator tries to produce
+      convincing synthetic examples. The discriminator tries to distinguish
+      real examples from generated ones.
+    </p>
+
+    <p>
+      Think of an art student who produces imitation paintings and a critic
+      who tries to identify which paintings are genuine. The student improves
+      by learning from the critic's feedback. The critic also improves as the
+      student's work becomes more convincing.
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Random input</div>
+        <div class="arrow">→</div>
+        <div class="node">Generator</div>
+        <div class="arrow">→</div>
+        <div class="node">Fake sample</div>
+      </div>
+      <p style="margin:14px 0">Real samples and fake samples are both presented to the discriminator.</p>
+      <div class="flow">
+        <div class="node">Real sample</div>
+        <div class="arrow">↘</div>
+        <div class="node">Discriminator</div>
+        <div class="arrow">→</div>
+        <div class="node">Real or fake score</div>
+      </div>
+    </div>
+
+    <p>
+      The generator and discriminator have opposing objectives. The generator
+      wants generated samples to appear real, while the discriminator wants
+      to identify the source correctly.
+    </p>
+
+    <h3>21.2.2 What changes in a quantum GAN?</h3>
+
+    <p>
+      A quantum GAN introduces one or more quantum components into this
+      adversarial process. In a common hybrid design, the generator is a
+      parameterised quantum circuit, while the discriminator is a classical
+      neural network. Other designs use quantum circuits for both components.
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Noise input</div>
+        <div class="arrow">→</div>
+        <div class="node">Quantum generator</div>
+        <div class="arrow">→</div>
+        <div class="node">Measured sample</div>
+      </div>
+      <div style="font-size:1.5rem;color:#4937a8;margin:10px">↓</div>
+      <div class="flow">
+        <div class="node">Classical or quantum discriminator</div>
+        <div class="arrow">→</div>
+        <div class="node">Training feedback</div>
+      </div>
+      <p class="diagram-caption">
+        A hybrid quantum GAN uses quantum measurement outcomes as generated
+        data and trains the components through an adversarial objective.
+      </p>
+    </div>
+
+    <p>
+      The generator may receive a random seed, encode it into qubits, apply
+      trainable gates, and measure the resulting state. The measurement
+      outcomes form the synthetic sample. The discriminator compares these
+      samples with real training examples.
+    </p>
+
+    <p>
+      An important design choice is what the generator actually outputs.
+      It may generate a bit string directly, generate a probability
+      distribution over bit strings, or produce quantum states that are
+      evaluated by a suitable measurement procedure. These are different
+      tasks, and they should not be treated as interchangeable.
+    </p>
+
+    <h3>21.2.3 The adversarial objective</h3>
+
+    <p>
+      A standard GAN uses the following minimax objective:
+    </p>
+
+    <div class="equation">
+      min<sub>G</sub> max<sub>D</sub>
+      V(D,G) =
+      E<sub>x ~ p<sub>data</sub></sub>[log D(x)]
+      + E<sub>z ~ p<sub>z</sub></sub>[log(1 − D(G(z)))]
+    </div>
+
+    <p>
+      Here, <code>G</code> is the generator, <code>D</code> is the
+      discriminator, <code>x</code> is a real example, and <code>z</code>
+      is a random input. The discriminator aims to assign high scores to
+      real samples and low scores to generated samples. The generator tries
+      to make its samples difficult to distinguish from real ones.
+    </p>
+
+    <p>
+      In a quantum GAN, the generator's parameters may be quantum gate
+      rotations. The objective still describes an adversarial learning
+      problem, but estimating it may involve repeated circuit execution,
+      measurement, and classical optimisation.
+    </p>
+
+    <p>
+      The displayed objective is the original minimax form. Practical GANs
+      often use alternative generator losses or discriminator objectives
+      because the original form can provide weak gradients during training.
+    </p>
+
+    <h3>21.2.4 How training works</h3>
+
+    <ol>
+      <li>Collect real training samples and prepare a batch of random inputs.</li>
+      <li>Run the generator to produce synthetic samples.</li>
+      <li>Train the discriminator to distinguish real samples from generated ones.</li>
+      <li>Use the discriminator's feedback to update the generator.</li>
+      <li>Repeat these steps while monitoring sample quality and training stability.</li>
+    </ol>
+
+    <p>
+      The generator and discriminator are normally updated in alternating
+      steps. If the discriminator becomes too strong too early, the generator
+      may receive unhelpful feedback. If the generator produces only a narrow
+      set of examples, the model may fail to represent the diversity of the
+      real data.
+    </p>
+
+    <h3>21.2.5 Mode collapse</h3>
+
+    <p>
+      Suppose a dataset contains many different handwritten digits. A
+      generator might discover that a small number of digit-like patterns
+      fool the discriminator. It then repeatedly generates similar patterns
+      instead of covering the entire dataset.
+    </p>
+
+    <p>
+      This is called <strong>mode collapse</strong>. A model may produce
+      convincing samples individually while failing to represent the variety
+      of the target distribution.
+    </p>
+
+    <p>
+      Quantum generators can face this problem too. Their quantum nature does
+      not remove the adversarial optimisation difficulties of GANs.
+      Limited circuit expressivity, noisy gradients, finite sampling, and
+      unstable updates can add further challenges.
+    </p>
+
+    <h3>21.2.6 Why use quantum components?</h3>
+
+    <p>
+      The research motivation is that quantum circuits may provide useful
+      ways to represent and sample certain complex distributions. A quantum
+      generator may also be studied in settings where quantum data or quantum
+      states are themselves the target of generation.
+    </p>
+
+    <p>
+      Nevertheless, a quantum GAN is not automatically better than a classical
+      GAN. It must be compared against a suitable classical baseline, using
+      the same task, appropriate computational budgets, and reliable
+      evaluation metrics.
+    </p>
+
+    <div class="callout">
+      <strong>Key idea:</strong> A quantum GAN combines quantum generation
+      with adversarial feedback. The generator learns to produce samples
+      that the discriminator struggles to distinguish from real data.
+    </div>
+  </section>
+
+  <section id="boltzmann">
+    <h2>21.3 Quantum Boltzmann machines</h2>
+
+    <h3>21.3.1 Learning through energy</h3>
+
+    <p>
+      A Boltzmann machine is an energy-based generative model. Instead of
+      directly assigning an independently learned probability to every
+      possible sample, it defines an energy for each configuration.
+      Lower-energy configurations are assigned higher probabilities.
+    </p>
+
+    <p>
+      Imagine a landscape of hills and valleys. A ball placed in the landscape
+      is more likely to settle in a valley than on a high hill. An energy-based
+      model uses a mathematical version of this idea to describe which
+      configurations are more likely.
+    </p>
+
+    <p>
+      The classical Boltzmann distribution is commonly written as:
+    </p>
+
+    <div class="equation">
+      p(x) = e<sup>−βE(x)</sup> / Z
+      <small>
+        E(x) is the energy of configuration x, β is the inverse temperature,
+        and Z is the partition function.
+      </small>
+    </div>
+
+    <p>
+      The partition function <code>Z</code> normalises all the probabilities
+      so that they sum to one:
+    </p>
+
+    <div class="equation">
+      Z = Σ<sub>x</sub> e<sup>−βE(x)</sup>
+    </div>
+
+    <p>
+      At a fixed positive temperature, lower-energy states have larger
+      probabilities. In machine learning, this framework can capture
+      relationships among visible variables and hidden variables.
+    </p>
+
+    <h3>21.3.2 Visible and hidden variables</h3>
+
+    <p>
+      Visible variables represent the data we observe. Hidden variables
+      provide extra flexibility for modelling relationships that are not
+      obvious from the data alone.
+    </p>
+
+    <p>
+      For example, if a model learns images of handwritten digits, visible
+      variables may represent the pixels. Hidden variables may help represent
+      properties such as curved strokes, stroke thickness, or combinations
+      of shapes. These interpretations are conceptual; hidden units do not
+      automatically learn human-readable features.
+    </p>
+
+    <p>
+      A classical Boltzmann machine can assign energy to joint configurations
+      of visible and hidden variables. To obtain a distribution over visible
+      data, it sums over the possible hidden configurations.
+    </p>
+
+    <div class="equation">
+      p(v) = Σ<sub>h</sub> p(v,h)
+    </div>
+
+    <p>
+      The difficulty is that calculating the distribution may require summing
+      over a very large number of configurations. This is one reason why
+      training and sampling from energy-based models can be computationally
+      demanding.
+    </p>
+
+    <h3>21.3.3 From a classical energy model to a quantum one</h3>
+
+    <p>
+      A quantum Boltzmann machine uses quantum-mechanical structures to
+      represent an energy-based model. In an important formulation, a
+      Hamiltonian operator plays the role of energy. A Hamiltonian is a
+      mathematical operator describing the energy of a quantum system.
+    </p>
+
+    <p>
+      A common thermal quantum state is the Gibbs state:
+    </p>
+
+    <div class="equation">
+      ρ = e<sup>−βH</sup> / Z
+      <br><br>
+      Z = Tr(e<sup>−βH</sup>)
+      <small>
+        H is the Hamiltonian, ρ is the density operator, and Tr denotes
+        the trace.
+      </small>
+    </div>
+
+    <p>
+      In a classical model, energy is a function evaluated on a configuration.
+      In a quantum model, the Hamiltonian is an operator acting on a quantum
+      state space. When the Hamiltonian is diagonal in the measurement basis,
+      its eigenvalues directly determine the corresponding thermal
+      probabilities. More general Hamiltonians can have quantum effects
+      arising from terms that do not commute with one another.
+    </p>
+
+    <p>
+      For example, a Hamiltonian may contain interactions between qubits,
+      local energy terms, and transverse-field terms that change the
+      computational-basis configuration. Such non-commuting terms make the
+      model genuinely quantum in structure.
+    </p>
+
+    <h3>21.3.4 What does training involve?</h3>
+
+    <p>
+      The goal is to adjust model parameters so that the generated
+      distribution resembles the training data. Training may involve
+      estimating expectations of observables, comparing data statistics
+      against model statistics, and updating the Hamiltonian parameters.
+    </p>
+
+    <p>
+      One can think of the training process as asking two questions:
+    </p>
+
+    <ul>
+      <li>What patterns appear frequently in the real data?</li>
+      <li>How should the model's energy landscape change so that it generates those patterns with appropriate probabilities?</li>
+    </ul>
+
+    <p>
+      Depending on the formulation, learning may require thermal-state
+      preparation, repeated sampling, approximate partition-function
+      calculations, or quantum subroutines. These operations can be difficult
+      on present-day hardware, particularly when low temperatures, strong
+      correlations, or large systems are involved.
+    </p>
+
+    <h3>21.3.5 A small conceptual example</h3>
+
+    <p>
+      Consider two binary variables that are usually equal in the training
+      data. The patterns <code>00</code> and <code>11</code> occur frequently,
+      while <code>01</code> and <code>10</code> are rare.
+    </p>
+
+    <p>
+      The model should assign lower energy to the matching configurations and
+      higher energy to the mismatching configurations. A quantum energy model
+      can encode interactions between the two qubits, while additional
+      quantum terms may alter the structure of its state.
+    </p>
+
+    <p>
+      This simple example illustrates how an energy landscape expresses
+      statistical relationships. It does not, by itself, demonstrate a
+      quantum advantage: a classical model can represent this two-variable
+      distribution easily.
+    </p>
+
+    <h3>21.3.6 Where could quantum Boltzmann machines help?</h3>
+
+    <p>
+      Researchers investigate them for structured probability modelling,
+      sampling, learning quantum systems, and tasks where quantum
+      interactions are relevant to the data. They are also useful as a
+      framework for studying how quantum state preparation and quantum
+      statistics interact with machine learning.
+    </p>
+
+    <p>
+      Their practical limitations include the difficulty of preparing
+      suitable thermal states, estimating expectations with limited
+      measurements, and training parameters reliably. The partition function
+      can also be difficult to estimate, although some training approaches
+      avoid calculating it directly.
+    </p>
+
+    <div class="callout">
+      <strong>Key idea:</strong> A quantum Boltzmann machine learns an
+      energy-based probability model using quantum states and interactions.
+      The energy structure determines which configurations are more likely.
+    </div>
+  </section>
+
+  <section id="autoencoder">
+    <h2>21.4 Quantum autoencoders</h2>
+
+    <h3>21.4.1 Why compress information?</h3>
+
+    <p>
+      Consider a photograph containing millions of pixel values. Many of
+      those values are related because they describe the same objects,
+      edges, colours, and shapes. A useful compression method tries to retain
+      the important information while using a smaller representation.
+    </p>
+
+    <p>
+      An autoencoder learns this compression process. It contains an encoder
+      that converts an input into a compact representation and a decoder that
+      reconstructs the input from that representation.
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Input</div>
+        <div class="arrow">→</div>
+        <div class="node">Encoder</div>
+        <div class="arrow">→</div>
+        <div class="node">Latent representation</div>
+        <div class="arrow">→</div>
+        <div class="node">Decoder</div>
+        <div class="arrow">→</div>
+        <div class="node">Reconstruction</div>
+      </div>
+      <p class="diagram-caption">
+        The encoder compresses useful information; the decoder attempts to
+        reconstruct the original input.
+      </p>
+    </div>
+
+    <p>
+      Training usually minimises a reconstruction loss that measures the
+      difference between the original input and the reconstructed output.
+      An autoencoder is not necessarily a generative model in the same sense
+      as a GAN or Born machine, but its latent representation can support
+      generative tasks when combined with an appropriate sampling or decoding
+      mechanism.
+    </p>
+
+    <h3>21.4.2 The quantum version</h3>
+
+    <p>
+      A quantum autoencoder uses quantum circuits to encode quantum states
+      into a smaller set of qubits or to learn a compact representation of
+      classical data using quantum states. These are related but distinct
+      settings, so it is important to identify which kind of input the model
+      receives.
+    </p>
+
+    <p>
+      In a quantum-data setting, the input is a quantum state that we want to
+      compress. The encoder is a quantum operation that moves useful
+      information into a smaller subsystem. The remaining qubits should become
+      approximately independent of the encoded information and, in a common
+      compression scheme, approach a fixed reference state.
+    </p>
+
+    <p>
+      For example, a four-qubit input might have most of its meaningful
+      variation captured by two qubits. If the other two qubits contain no
+      additional information needed for reconstruction, they may be
+      discarded or reset. The exact amount of compression depends on the
+      family of states and the required reconstruction accuracy.
+    </p>
+
+    <h3>21.4.3 The compression circuit</h3>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Input quantum state</div>
+        <div class="arrow">→</div>
+        <div class="node">Trainable encoder U(θ)</div>
+      </div>
+      <div style="font-size:1.5rem;color:#4937a8;margin:10px">↓</div>
+      <div class="flow">
+        <div class="node">Latent qubits retained</div>
+        <div class="arrow">+</div>
+        <div class="node">Discardable qubits</div>
+      </div>
+      <div style="font-size:1.5rem;color:#4937a8;margin:10px">↓</div>
+      <div class="flow">
+        <div class="node">Decoder U†(θ) or a learned decoder</div>
+        <div class="arrow">→</div>
+        <div class="node">Reconstructed state</div>
+      </div>
+    </div>
+
+    <p>
+      The encoder is often represented by a parameterised unitary
+      <code>U(θ)</code>. In a simple reversible construction, the decoder may
+      use the inverse operation <code>U†(θ)</code>. More general architectures
+      may use a different decoder or a more general quantum channel.
+    </p>
+
+    <p>
+      If the encoder can move the unwanted subsystem towards a fixed state
+      while retaining the information in the latent subsystem, the state
+      becomes easier to store or process using fewer active qubits.
+    </p>
+
+    <h3>21.4.4 What does the loss measure?</h3>
+
+    <p>
+      One possible objective compares the original quantum state with the
+      reconstructed state using fidelity. For pure states, fidelity is
+      commonly expressed as:
+    </p>
+
+    <div class="equation">
+      F(|ψ⟩, |φ⟩) = |⟨ψ|φ⟩|²
+    </div>
+
+    <p>
+      Here, <code>|ψ⟩</code> is the target state and <code>|φ⟩</code> is
+      the reconstructed state. Fidelity equals one when the two pure states
+      are physically identical, up to an irrelevant global phase. Lower
+      values indicate a greater difference.
+    </p>
+
+    <p>
+      A training objective may maximise fidelity or minimise
+      <code>1 − F</code>. In practice, fidelity is not always directly
+      available as a simple measurement, so the circuit may instead optimise
+      an experimentally accessible loss or use a method designed for the
+      particular input-state family.
+    </p>
+
+    <h3>21.4.5 Quantum autoencoders as generative models</h3>
+
+    <p>
+      How does compression connect to generation? Once a model has learned a
+      useful latent representation, we can try to sample latent states and
+      decode them into new outputs. A quantum autoencoder can therefore form
+      part of a generative pipeline.
+    </p>
+
+    <p>
+      However, compression alone does not guarantee generation. If the latent
+      states are simply stored examples and no meaningful latent distribution
+      has been learned, sampling new latent states may not produce realistic
+      outputs. A complete generative design must specify how latent samples
+      are obtained and how they are converted into meaningful data.
+    </p>
+
+    <h3>21.4.6 Practical uses and limitations</h3>
+
+    <ul>
+      <li><strong>Quantum-state compression:</strong> reducing the qubits needed to represent a known family of states.</li>
+      <li><strong>Quantum communication:</strong> exploring whether fewer resources can preserve the information needed by a receiver.</li>
+      <li><strong>Feature learning:</strong> learning compact representations for downstream tasks.</li>
+      <li><strong>Generative modelling:</strong> combining latent representations with a suitable sampling and decoding process.</li>
+    </ul>
+
+    <p>
+      The central challenge is that quantum states cannot generally be copied
+      or inspected freely. Training examples may require repeated state
+      preparation, and evaluating reconstruction quality may itself require
+      carefully designed measurements.
+    </p>
+
+    <div class="callout">
+      <strong>Key idea:</strong> A quantum autoencoder learns to preserve
+      important information in a smaller quantum representation. It becomes
+      generative when a suitable method is added to produce and decode new
+      latent samples.
+    </div>
+  </section>
+
+  <section id="diffusion">
+    <h2>21.5 Quantum diffusion and sampling models</h2>
+
+    <h3>21.5.1 How classical diffusion models work</h3>
+
+    <p>
+      Diffusion models have become an important family of classical
+      generative models. They learn to generate data by reversing a gradual
+      corruption process.
+    </p>
+
+    <p>
+      Imagine taking a clear photograph and repeatedly adding a small amount
+      of random noise. After many steps, the photograph becomes difficult to
+      recognise. A diffusion model learns a process that starts from noisy
+      data and gradually removes the noise to produce a meaningful sample.
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Clean image</div>
+        <div class="arrow">→</div>
+        <div class="node">Slight noise</div>
+        <div class="arrow">→</div>
+        <div class="node">More noise</div>
+        <div class="arrow">→</div>
+        <div class="node">Nearly random data</div>
+      </div>
+      <p style="margin:14px 0;font-weight:700;color:#4937a8">
+        Forward corruption process
+      </p>
+      <div class="flow">
+        <div class="node">Random noise</div>
+        <div class="arrow">→</div>
+        <div class="node">Learned denoising step</div>
+        <div class="arrow">→</div>
+        <div class="node">Further denoising</div>
+        <div class="arrow">→</div>
+        <div class="node">Generated sample</div>
+      </div>
+      <p class="diagram-caption">
+        The forward process destroys structure; the learned reverse process
+        attempts to recover the structure characteristic of the data.
+      </p>
+    </div>
+
+    <p>
+      In a common mathematical formulation, the forward process adds Gaussian
+      noise over a sequence of time steps. A neural network learns to predict
+      the noise or another equivalent quantity, allowing a reverse sampling
+      procedure to gradually generate data from random noise.
+    </p>
+
+    <h3>21.5.2 A simplified mathematical view</h3>
+
+    <p>
+      Let <code>x₀</code> be a clean data sample and
+      <code>xₜ</code> be its noisy version at step <code>t</code>.
+      A common forward-process expression is:
+    </p>
+
+    <div class="equation">
+      q(xₜ | x₀) =
+      N(√ᾱₜ x₀, (1 − ᾱₜ)I)
+    </div>
+
+    <p>
+      Here, <code>N</code> denotes a Gaussian distribution,
+      <code>ᾱₜ</code> controls how much of the original signal remains, and
+      <code>I</code> is the identity covariance matrix. As the noise schedule
+      progresses, the original signal is gradually obscured.
+    </p>
+
+    <p>
+      A neural network is trained to estimate the added noise or a related
+      quantity from the noisy sample and time step. During generation, the
+      model repeatedly uses its predictions to move towards cleaner samples.
+    </p>
+
+    <h3>21.5.3 What makes a quantum diffusion model different?</h3>
+
+    <p>
+      The term <em>quantum diffusion model</em> does not refer to one
+      universally established architecture. It describes a developing
+      research direction in which quantum circuits or quantum processes are
+      incorporated into some part of a diffusion-style generative procedure.
+    </p>
+
+    <p>Several distinct approaches are possible:</p>
+
+    <ul>
+      <li>
+        <strong>Quantum denoising models:</strong> use a parameterised quantum
+        circuit, or a hybrid quantum-classical network, to estimate a
+        denoising quantity or learn a reverse transition.
+      </li>
+      <li>
+        <strong>Quantum-state generation:</strong> model distributions over
+        quantum states or quantum measurement outcomes rather than ordinary
+        photographs or images.
+      </li>
+      <li>
+        <strong>Quantum sampling procedures:</strong> investigate whether a
+        quantum process can sample from a target distribution that is difficult
+        to sample from classically.
+      </li>
+      <li>
+        <strong>Hybrid diffusion pipelines:</strong> use classical networks
+        for most of the denoising process while a quantum component handles
+        a specific representation, feature transformation, or sampling step.
+      </li>
+    </ul>
+
+    <p>
+      These approaches should not be confused with one another. A classical
+      diffusion model that uses a quantum computer only for a small subroutine
+      is different from a model whose primary state is a quantum state.
+      Likewise, a quantum circuit that generates bit strings is not
+      automatically a quantum version of an image diffusion model.
+    </p>
+
+    <h3>21.5.4 Can quantum circuits reverse noise?</h3>
+
+    <p>
+      This question needs care. An arbitrary noisy process loses information,
+      and no general quantum circuit can perfectly reverse every possible
+      noisy channel. Quantum circuits are constrained by quantum mechanics,
+      including the fact that general quantum operations are not all
+      reversible.
+    </p>
+
+    <p>
+      A practical quantum generative model therefore does not simply run an
+      inverse of every physical noise process. It learns or implements a
+      suitable generation procedure that produces samples with the desired
+      distribution. In a hybrid diffusion model, this could involve a
+      classical denoiser, a quantum circuit, or both.
+    </p>
+
+    <h3>21.5.5 Sampling as the broader connection</h3>
+
+    <p>
+      Sampling is the task of producing an outcome from a probability
+      distribution. It is central to all the models in this chapter.
+      Born machines sample quantum measurement outcomes. Quantum GANs
+      generate samples to fool a discriminator. Quantum Boltzmann machines
+      sample from energy-based distributions. Diffusion models generate
+      samples by applying a sequence of learned transitions.
+    </p>
+
+    <p>
+      The important difference lies in how each model represents the
+      distribution and how it learns to produce the desired outcomes.
+    </p>
+
+    <h3>21.5.6 The cost of repeated generation steps</h3>
+
+    <p>
+      A classical diffusion model may require many denoising steps. If a
+      quantum component is invoked at every step, circuit execution,
+      measurement, and communication with the classical computer can add
+      considerable cost.
+    </p>
+
+    <p>
+      Reducing the number of steps, improving sample efficiency, and designing
+      circuits that can be trained reliably are therefore important research
+      problems. A model that produces good samples but takes too long to
+      generate them may be less useful than a simpler classical alternative.
+    </p>
+
+    <div class="callout">
+      <strong>Key idea:</strong> Classical diffusion learns to generate data
+      through gradual denoising. Quantum diffusion research explores whether
+      quantum circuits or quantum sampling can improve particular parts of
+      such generation procedures. A practical advantage has not been
+      established for generative tasks in general.
+    </div>
+  </section>
+
+  <section id="evaluation">
+    <h2>21.6 Evaluating generative quality</h2>
+
+    <h3>21.6.1 Why evaluation is difficult</h3>
+
+    <p>
+      Suppose a model generates a thousand images. How do we decide whether
+      they are good? Looking at a few samples may reveal obvious errors, but
+      it cannot tell us whether the model represents the entire data
+      distribution.
+    </p>
+
+    <p>
+      A generative model has several responsibilities. Its samples should be
+      realistic, cover the important variations in the data, avoid simply
+      memorising training examples, and be produced at an acceptable cost.
+      No single metric captures all these properties.
+    </p>
+
+    <div class="diagram">
+      <div class="flow">
+        <div class="node">Realism</div>
+        <div class="node">Diversity</div>
+        <div class="node">Distribution match</div>
+        <div class="node">Generalisation</div>
+        <div class="node">Sampling cost</div>
+      </div>
+      <p class="diagram-caption">
+        A sound evaluation combines several measurements instead of relying
+        on one attractive-looking output.
+      </p>
+    </div>
+
+    <h3>21.6.2 Distribution distance</h3>
+
+    <p>
+      If both the target and model distributions are known or can be estimated,
+      we can measure how different they are. One widely used quantity is
+      the Kullback–Leibler divergence, or KL divergence.
+    </p>
+
+    <div class="equation">
+      D<sub>KL</sub>(P || Q) =
+      Σₓ P(x) log(P(x) / Q(x))
+    </div>
+
+    <p>
+      Here, <code>P</code> is the target distribution and <code>Q</code> is
+      the model distribution. KL divergence is non-negative when defined,
+      and it is zero when the distributions agree. It is not symmetric:
+      generally, <code>D<sub>KL</sub>(P || Q)</code> differs from
+      <code>D<sub>KL</sub>(Q || P)</code>.
+    </p>
+
+    <p>
+      If the model assigns zero probability to an event that has positive
+      probability under the target distribution, the forward KL divergence
+      can become infinite. This makes support coverage an important concern.
+      In large generative problems, estimating either distribution accurately
+      can itself be difficult.
+    </p>
+
+    <p>
+      Another measure is total variation distance:
+    </p>
+
+    <div class="equation">
+      D<sub>TV</sub>(P,Q) =
+      ½ Σₓ |P(x) − Q(x)|
+    </div>
+
+    <p>
+      Total variation measures the overall difference between discrete
+      distributions. It ranges from zero to one. It is intuitive, but
+      calculating it requires reliable estimates across the relevant
+      outcomes, which may be impractical for a distribution with an enormous
+      number of possible bit strings.
+    </p>
+
+    <h3>21.6.3 Fidelity for quantum states</h3>
+
+    <p>
+      When the goal is to generate or reconstruct quantum states, classical
+      distribution metrics may not capture all the relevant properties.
+      Quantum-state fidelity measures the similarity between quantum states.
+    </p>
+
+    <p>
+      For density operators <code>ρ</code> and <code>σ</code>, one common
+      convention defines fidelity as:
+    </p>
+
+    <div class="equation">
+      F(ρ, σ) =
+      [Tr √(√ρ σ √ρ)]²
+    </div>
+
+    <p>
+      Under this convention, fidelity lies between zero and one. A value of
+      one means the states are identical, while smaller values indicate a
+      greater difference. For pure states, the expression reduces to the
+      squared overlap used earlier.
+    </p>
+
+    <p>
+      Fidelity can be useful for quantum autoencoders and quantum-state
+      generation. However, estimating it may require multiple measurements,
+      special experimental procedures, or additional copies of the state.
+      It is not a universal metric for every generative task.
+    </p>
+
+    <h3>21.6.4 Maximum mean discrepancy</h3>
+
+    <p>
+      In many quantum experiments, we can generate samples but cannot
+      efficiently evaluate every probability in the model distribution.
+      Sample-based comparison methods are therefore useful.
+    </p>
+
+    <p>
+      Maximum mean discrepancy, or MMD, compares two distributions through
+      the difference between their average representations in a feature
+      space defined by a kernel function.
+    </p>
+
+    <div class="equation">
+      MMD²(P,Q) =
+      E[k(X,X′)] + E[k(Y,Y′)] − 2E[k(X,Y)]
+      <small>
+        X and X′ are independent samples from P; Y and Y′ are independent
+        samples from Q; k is a chosen kernel.
+      </small>
+    </div>
+
+    <p>
+      Intuitively, the method asks whether samples from one distribution and
+      samples from the other distribution have similar relationships under
+      the chosen kernel. If the kernel is characteristic, a population-level
+      MMD of zero implies that the two distributions agree.
+    </p>
+
+    <p>
+      MMD is especially useful when samples are available but explicit
+      likelihoods are not. However, the result depends on the kernel,
+      finite-sample uncertainty, and the quality of the sample collection.
+      A poorly chosen kernel may fail to reveal important differences.
+    </p>
+
+    <h3>21.6.5 Image metrics: FID and Inception Score</h3>
+
+    <p>
+      When evaluating image generation, researchers often use metrics that
+      depend on a pretrained image classifier or feature extractor.
+      Two well-known examples are the Fréchet Inception Distance (FID) and
+      the Inception Score (IS).
+    </p>
+
+    <h4>Fréchet Inception Distance</h4>
+
+    <p>
+      FID compares the distributions of feature vectors extracted from real
+      and generated images. A common implementation approximates both
+      feature distributions as Gaussians and compares their means and
+      covariance matrices.
+    </p>
+
+    <div class="equation">
+      FID = ||μᵣ − μg||² +
+      Tr(Cᵣ + Cg − 2(Cᵣ Cg)<sup>1/2</sup>)
+    </div>
+
+    <p>
+      Here, <code>μᵣ</code> and <code>Cᵣ</code> are the mean and covariance
+      of real-image features, while <code>μg</code> and <code>Cg</code>
+      describe generated-image features. Lower FID values generally indicate
+      closer feature distributions under this approximation.
+    </p>
+
+    <p>
+      FID is not a universal quality score. It depends on the feature
+      extractor, preprocessing, dataset, and number of generated samples.
+      A low FID does not prove that the model has learned every rare pattern
+      or that it has avoided all forms of memorisation.
+    </p>
+
+    <h4>Inception Score</h4>
+
+    <p>
+      Inception Score evaluates whether generated images are confidently
+      classified and whether the predicted classes are diverse across the
+      sample set. In broad terms, it rewards samples that appear
+      recognisable to the classifier and a collection that covers multiple
+      predicted classes.
+    </p>
+
+    <p>
+      However, it does not directly compare the generated distribution with
+      the real distribution. It may also fail when the classifier's
+      categories do not match the dataset or when realistic images are not
+      well represented by those categories.
+    </p>
+
+    <div class="warning">
+      <strong>Quantum-specific caution:</strong> FID and Inception Score
+      are useful for appropriate image-generation tasks, not for arbitrary
+      quantum bit-string distributions. If a quantum model generates
+      binary samples or quantum states, choose metrics suited to that output.
+    </div>
+
+    <h3>21.6.6 Measuring diversity and mode coverage</h3>
+
+    <p>
+      A generator may produce very realistic examples but repeat the same
+      type of example over and over. This is why realism and diversity must
+      be measured separately.
+    </p>
+
+    <p>
+      For a small binary dataset, diversity can be assessed by counting the
+      distinct outcomes generated and comparing their frequencies with the
+      target. For images, one can compare feature distributions, inspect
+      nearest neighbours, and measure coverage of known classes or clusters.
+    </p>
+
+    <p>
+      Such checks help detect mode collapse, but simple unique-sample counts
+      are not sufficient by themselves. A model can generate many distinct
+      samples that are still unrealistic, or repeat a sample that genuinely
+      occurs often in the target distribution.
+    </p>
+
+    <h3>21.6.7 Train-test separation and memorisation</h3>
+
+    <p>
+      A model should be evaluated on data that was not used to train it.
+      Otherwise, a generator that memorises the training set may appear
+      better than it really is.
+    </p>
+
+    <p>
+      For image data, nearest-neighbour comparisons can help identify
+      generated images that are suspiciously close to training examples.
+      For discrete distributions, compare estimated probabilities on held-out
+      samples when likelihood evaluation is available.
+    </p>
+
+    <p>
+      Quantum models introduce an additional practical issue: measurement
+      noise can make frequency estimates uncertain. Researchers should
+      report the number of circuit executions, repeat experiments where
+      appropriate, and include uncertainty estimates rather than treating
+      every measured frequency as exact.
+    </p>
+
+    <h3>21.6.8 Computational cost and fair comparisons</h3>
+
+    <p>
+      Quality alone is not enough. A generative model may need many circuit
+      executions to estimate its probabilities or train its parameters.
+      A meaningful comparison should report the resources required to obtain
+      the measured quality.
+    </p>
+
+    <p>Useful quantities include:</p>
+
+    <ul>
+      <li>Number of qubits, circuit depth, and number of trainable parameters.</li>
+      <li>Number of circuit executions or measurement shots.</li>
+      <li>Training time, generation time, and classical optimisation cost.</li>
+      <li>Hardware noise, sampling uncertainty, and any error mitigation.</li>
+      <li>Quality and diversity compared with suitable classical baselines.</li>
+      <li>Performance on held-out data and sensitivity to random initialisation.</li>
+    </ul>
+
+    <p>
+      A fair experiment must use comparable data, preprocessing, evaluation
+      procedures, and resource accounting. If a quantum model is compared
+      with an intentionally weak classical baseline, the result does not
+      establish a meaningful advantage.
+    </p>
+
+    <div class="callout">
+      <strong>Key idea:</strong> Generative quality is multidimensional.
+      A strong evaluation measures distribution matching, realism, diversity,
+      generalisation, uncertainty, and computational cost using metrics
+      suited to the particular output.
+    </div>
+  </section>
+
+  <section id="comparison">
+    <h2>2. Comparing the main approaches</h2>
+
+    <p>
+      All these models are concerned with generation or representation, but
+      they organise the learning problem differently. The right choice depends
+      on what the model must produce and which mathematical structure is
+      useful for that task.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Main idea</th>
+            <th>Typical output or role</th>
+            <th>Main challenge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Born machine</strong></td>
+            <td>Uses measurement probabilities defined by a quantum state.</td>
+            <td>Samples from a learned distribution.</td>
+            <td>Learning and evaluating a large distribution from finite samples.</td>
+          </tr>
+          <tr>
+            <td><strong>Quantum GAN</strong></td>
+            <td>Trains a generator against a discriminator.</td>
+            <td>Synthetic samples that resemble training data.</td>
+            <td>Adversarial instability and mode collapse.</td>
+          </tr>
+          <tr>
+            <td><strong>Quantum Boltzmann machine</strong></td>
+            <td>Uses an energy-based quantum model.</td>
+            <td>Samples from an energy-defined distribution.</td>
+            <td>State preparation, sampling, and parameter estimation.</td>
+          </tr>
+          <tr>
+            <td><strong>Quantum autoencoder</strong></td>
+            <td>Compresses information into a smaller representation.</td>
+            <td>Latent representations or reconstructed states; generation with an added sampling mechanism.</td>
+            <td>Preserving information and evaluating reconstruction.</td>
+          </tr>
+          <tr>
+            <td><strong>Quantum diffusion model</strong></td>
+            <td>Incorporates quantum processes into diffusion-style generation or sampling.</td>
+            <td>Generated samples or quantum states, depending on the design.</td>
+            <td>Repeated execution cost and the lack of a generally established advantage.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>How to choose a model for a research problem</h3>
+
+    <p>
+      If the problem is to learn a distribution over binary measurement
+      outcomes, a Born machine is a natural starting point. If an adversarial
+      objective is important, a quantum GAN may be suitable. If the problem
+      is naturally expressed through energy and interactions, a quantum
+      Boltzmann machine is worth studying.
+    </p>
+
+    <p>
+      If the goal is to compress a family of quantum states, a quantum
+      autoencoder is more directly relevant. If the goal is iterative
+      denoising or generation from noise, diffusion-style methods are the
+      appropriate conceptual family.
+    </p>
+
+    <p>
+      These are not strict boundaries. The models can be combined. For
+      example, a quantum autoencoder may provide a latent representation for
+      another generative model, or a quantum circuit may act as a component
+      inside a classical diffusion pipeline.
+    </p>
+  </section>
+
+  <section id="practice">
+    <h2>3. A practical learning experiment</h2>
+
+    <h3>3.1 Start with a small distribution</h3>
+
+    <p>
+      Before trying to generate photographs or large datasets, begin with
+      a problem whose complete probability distribution is easy to inspect.
+      A two-qubit Born machine is a useful educational experiment because
+      there are only four possible measurement outcomes.
+    </p>
+
+    <p>The experiment can be organised as follows:</p>
+
+    <ol>
+      <li>Define a target distribution over the four two-bit strings.</li>
+      <li>Build a parameterised circuit with two qubits.</li>
+      <li>Execute the circuit repeatedly and count its measurement outcomes.</li>
+      <li>Convert the counts into estimated probabilities.</li>
+      <li>Define a suitable loss comparing model samples with the target.</li>
+      <li>Optimise the circuit parameters and repeat the measurements.</li>
+      <li>Evaluate the final distribution on new measurement batches.</li>
+    </ol>
+
+    <p>
+      This experiment teaches the central loop shared by many quantum
+      generative models: prepare, sample, compare, update, and evaluate.
+    </p>
+
+    <h3>3.2 Pseudocode for training a Born machine</h3>
+
+    <pre><code>target_distribution = {
+    "00": 0.50,
+    "01": 0.25,
+    "10": 0.15,
+    "11": 0.10
+}
+
+parameters = initialise_circuit_parameters()
+
+for step in range(number_of_training_steps):
+    circuit = build_quantum_circuit(parameters)
+
+    counts = execute_and_measure(
+        circuit,
+        shots=number_of_measurement_shots
+    )
+
+    model_distribution = estimate_probabilities(counts)
+
+    loss = compare_distributions(
+        target_distribution,
+        model_distribution
+    )
+
+    gradients = estimate_parameter_gradients(
+        parameters,
+        loss
+    )
+
+    parameters = optimiser_update(
+        parameters,
+        gradients
+    )
+
+final_counts = execute_and_measure(
+    build_quantum_circuit(parameters),
+    shots=evaluation_shots
+)
+
+evaluate_distribution(
+    target_distribution,
+    final_counts
+)</code></pre>
+
+    <p>
+      This is conceptual pseudocode, not a complete implementation for a
+      specific quantum SDK. The gradient method must match the circuit and
+      loss. A sample-based loss may be noisy, and the optimiser must account
+      for that uncertainty.
+    </p>
+
+    <h3>3.3 What should be recorded?</h3>
+
+    <ul>
+      <li>Target probabilities and measured probabilities before training.</li>
+      <li>Target probabilities and measured probabilities after training.</li>
+      <li>The loss across training steps.</li>
+      <li>The number of measurement shots used at each step.</li>
+      <li>Variation across repeated runs with different initial parameters.</li>
+      <li>Performance against a simple classical baseline.</li>
+    </ul>
+
+    <p>
+      An important lesson is that a better training loss does not always mean
+      that the model has learned the target distribution reliably. If the
+      training loss is estimated from a small number of samples, it may
+      improve by chance. Independent evaluation batches help reveal this
+      problem.
+    </p>
+
+    <h3>3.4 Suggested progression</h3>
+
+    <div class="definition">
+      <p><span class="mini-title">Stage 1 — Probability</span><br>
+        Understand normalised distributions, conditional probability, and
+        sampling error.</p>
+      <p><span class="mini-title">Stage 2 — Quantum circuits</span><br>
+        Build rotation gates, entangling gates, parameterised circuits, and
+        computational-basis measurements.</p>
+      <p><span class="mini-title">Stage 3 — Optimisation</span><br>
+        Implement a loss function and compare gradient-based optimisation
+        with derivative-free methods where appropriate.</p>
+      <p><span class="mini-title">Stage 4 — Model comparison</span><br>
+        Compare a Born machine with a classical distribution model using
+        the same target data.</p>
+      <p><span class="mini-title">Stage 5 — Research question</span><br>
+        Increase the problem size or change the target distribution, then
+        investigate where training, sampling, or classical simulation
+        becomes difficult.</p>
+    </div>
+  </section>
+
+  <section id="limitations">
+    <h2>4. Limitations and open research questions</h2>
+
+    <h3>4.1 The data-loading problem</h3>
+
+    <p>
+      A quantum model must receive information about the training data.
+      Encoding classical data into a quantum state can be expensive. If
+      preparing the quantum input costs more than the work saved by the
+      quantum computation, the overall approach may not be advantageous.
+    </p>
+
+    <p>
+      This is particularly important when the training dataset is large.
+      An efficient circuit does not automatically imply an efficient
+      end-to-end machine-learning pipeline.
+    </p>
+
+    <h3>4.2 Measurement and sampling costs</h3>
+
+    <p>
+      Quantum measurements are probabilistic. Estimating an outcome
+      probability accurately generally requires repeated circuit executions.
+      For a simple measurement with probability <code>p</code>, the
+      standard deviation of its empirical frequency after <code>N</code>
+      independent shots is <code>√(p(1 − p)/N)</code>.
+    </p>
+
+    <p>
+      Therefore, increasing the number of shots reduces statistical
+      uncertainty, but the improvement follows a square-root relationship.
+      Obtaining ten times smaller standard deviation can require roughly
+      one hundred times as many independent shots under the same conditions.
+    </p>
+
+    <h3>4.3 Noise and hardware restrictions</h3>
+
+    <p>
+      Real quantum processors experience errors caused by imperfect gates,
+      measurement errors, and interactions with their environment. Deeper
+      circuits can accumulate more errors, making it harder to obtain the
+      intended output distribution.
+    </p>
+
+    <p>
+      Error mitigation can improve some estimates, but it often introduces
+      extra measurements or computational overhead. It does not guarantee
+      that a noisy generative model will recover the ideal distribution.
+    </p>
+
+    <h3>4.4 Trainability and barren plateaus</h3>
+
+    <p>
+      Many quantum generative models rely on parameterised circuits. If the
+      gradients become extremely small, optimisation may struggle to find
+      useful parameter updates. This problem is related to barren plateaus,
+      discussed in the chapter on trainability.
+    </p>
+
+    <p>
+      The difficulty depends on the circuit architecture, initialisation,
+      objective function, and noise. Useful research directions include
+      structured circuit designs, local objectives, layerwise training, and
+      better gradient-estimation methods.
+    </p>
+
+    <h3>4.5 What counts as quantum advantage?</h3>
+
+    <p>
+      A quantum model producing plausible samples is not enough to prove
+      quantum advantage. A strong claim must specify the task and show that
+      the quantum method outperforms appropriate classical approaches under
+      a clearly defined measure of computational cost or solution quality.
+    </p>
+
+    <p>
+      Some quantum sampling problems are believed to be difficult to
+      reproduce classically, but sampling hardness and useful learning
+      advantage are different claims. A model may be difficult to simulate
+      while still being difficult to train, difficult to evaluate, or
+      irrelevant to the real-world task.
+    </p>
+
+    <h3>4.6 Important research questions</h3>
+
+    <ul>
+      <li>Which data distributions can quantum models learn more efficiently than the best classical alternatives?</li>
+      <li>How should the cost of loading data and measuring outputs be included in comparisons?</li>
+      <li>Can circuit architectures be designed to avoid barren plateaus while representing useful correlations?</li>
+      <li>How can researchers evaluate a model when the complete target distribution is unavailable?</li>
+      <li>Can quantum generative models provide useful benefits for quantum-state preparation, chemistry, or scientific sampling?</li>
+      <li>How can quantum and classical components be combined without making the complete pipeline unnecessarily expensive?</li>
+    </ul>
+
+    <div class="warning">
+      <strong>Research perspective:</strong> Quantum generative modelling is
+      an active area of investigation, not a settled replacement for
+      classical generative AI. Its value must be established separately for
+      each task and model design.
+    </div>
+  </section>
+
+  <section id="summary">
+    <h2>5. Chapter summary</h2>
+
+    <p>
+      Quantum generative models connect three central ideas: probability
+      distributions, trainable quantum processes, and sampling. Their
+      architectures differ, but all attempt to represent or produce
+      structured outcomes that follow a desired pattern.
+    </p>
+
+    <ol>
+      <li>
+        <strong>Born machines</strong> use the Born rule to convert quantum
+        state amplitudes into probabilities and generate samples.
+      </li>
+      <li>
+        <strong>Quantum GANs</strong> train a generator against a discriminator
+        so that generated samples become difficult to distinguish from real
+        samples.
+      </li>
+      <li>
+        <strong>Quantum Boltzmann machines</strong> use energy-based quantum
+        models to assign probabilities to configurations and learn
+        distributions.
+      </li>
+      <li>
+        <strong>Quantum autoencoders</strong> learn compact representations
+        and can support generation when combined with a suitable latent
+        sampling mechanism.
+      </li>
+      <li>
+        <strong>Quantum diffusion and sampling models</strong> explore
+        quantum components in iterative generation, denoising, and
+        distribution-sampling procedures.
+      </li>
+      <li>
+        <strong>Generative evaluation</strong> requires measures of
+        distribution matching, sample quality, diversity, generalisation,
+        uncertainty, and computational cost.
+      </li>
+    </ol>
+
+    <div class="callout">
+      <strong>The most important lesson:</strong> A quantum circuit does not
+      become a useful generative model simply because it contains qubits.
+      It must learn a meaningful distribution, generate useful samples, and
+      demonstrate its value through careful evaluation and comparison.
+    </div>
+
+    <h3>Check your understanding</h3>
+
+    <ol class="checklist">
+      <li>What is the difference between a discriminative model and a generative model?</li>
+      <li>How does the Born rule turn a quantum state into a probability distribution?</li>
+      <li>Why do Born machines need repeated measurements?</li>
+      <li>What are the roles of the generator and discriminator in a quantum GAN?</li>
+      <li>What is mode collapse, and why is it a problem?</li>
+      <li>How does an energy-based model use energy to determine probability?</li>
+      <li>What is the role of a Hamiltonian in a quantum Boltzmann machine?</li>
+      <li>How does a quantum autoencoder compress information?</li>
+      <li>Why is compression alone insufficient to make an autoencoder generative?</li>
+      <li>How does a diffusion model learn to generate samples from noise?</li>
+      <li>What is the difference between KL divergence and fidelity?</li>
+      <li>Why must diversity and generalisation be evaluated separately from realism?</li>
+      <li>Why does a large number of qubits not automatically establish quantum advantage?</li>
+    </ol>
+
+    <h3>Further thought</h3>
+
+    <p>
+      Suppose a two-qubit Born machine learns a distribution over four
+      bit strings. A classical computer can easily represent the same
+      distribution. What would have to change for the quantum model to
+      become scientifically interesting?
+    </p>
+
+    <p>
+      A useful answer would identify a larger or more structured task,
+      specify an appropriate classical baseline, account for state
+      preparation and measurement costs, and demonstrate a reproducible
+      improvement in sampling or learning. This is the difference between
+      demonstrating a quantum circuit and establishing a meaningful
+      machine-learning result.
+    </p>
+  </section>
+
+  <section id="references">
+    <h2>6. Further reading</h2>
+
+    <p>
+      The following papers provide foundations for the major ideas in this
+      chapter. They are useful starting points for understanding the
+      mathematical methods and the limits of current research.
+    </p>
+
+    <ol class="references">
+      <li>
+        <strong>Quantum Born machines:</strong>
+        Liu, J.-G. and Wang, L. (2018).
+        <em>Differentiable Learning of Quantum Circuit Born Machines.</em>
+        Physical Review A, 98, 062324.
+        <br>
+        <a href="https://doi.org/10.1103/PhysRevA.98.062324">
+          https://doi.org/10.1103/PhysRevA.98.062324
+        </a>
+      </li>
+
+      <li>
+        <strong>Quantum generative adversarial learning:</strong>
+        Dallaire-Demers, P.-L. and Killoran, N. (2018).
+        <em>Quantum Generative Adversarial Networks.</em>
+        Physical Review A, 98, 012324.
+        <br>
+        <a href="https://doi.org/10.1103/PhysRevA.98.012324">
+          https://doi.org/10.1103/PhysRevA.98.012324
+        </a>
+      </li>
+
+      <li>
+        <strong>Quantum Boltzmann machines:</strong>
+        Amin, M. H. et al. (2018).
+        <emQuantum Boltzmann Machine.</em>
+        Physical Review X, 8, 021050.
+        <br>
+        <a href="https://doi.org/10.1103/PhysRevX.8.021050">
+          https://doi.org/10.1103/PhysRevX.8.021050
+        </a>
+      </li>
+
+      <li>
+        <strong>Quantum autoencoders:</strong>
+        Romero, J., Olson, J. P. and Aspuru-Guzik, A. (2017).
+        <em>Quantum autoencoders for efficient compression of quantum data.</em>
+        Quantum Science and Technology, 2, 045001.
+        <br>
+        <a href="https://doi.org/10.1088/2058-9565/aa8072">
+          https://doi.org/10.1088/2058-9565/aa8072
+        </a>
+      </li>
+
+      <li>
+        <strong>Classical diffusion foundations:</strong>
+        Ho, J., Jain, A. and Abbeel, P. (2020).
+        <em>Denoising Diffusion Probabilistic Models.</em>
+        Advances in Neural Information Processing Systems.
+        <br>
+        <a href="https://arxiv.org/abs/2006.11239">
+          https://arxiv.org/abs/2006.11239
+        </a>
+      </li>
+
+      <li>
+        <strong>Evaluating generative models:</strong>
+        Heusel, M. et al. (2017).
+        <em>GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium.</em>
+        Advances in Neural Information Processing Systems.
+        <br>
+        <a href="https://arxiv.org/abs/1706.08500">
+          https://arxiv.org/abs/1706.08500
+        </a>
+      </li>
+
+      <li>
+        <strong>Quantum machine-learning foundations:</strong>
+        Schuld, M. and Petruccione, F. (2018).
+        <em>Supervised Learning with Quantum Computers.</em>
+        Springer.
+        <br>
+        <a href="https://doi.org/10.1007/978-3-319-96424-9">
+          https://doi.org/10.1007/978-3-319-96424-9
+        </a>
+      </li>
+    </ol>
+
+    <p class="warning">
+      <strong>Bibliographic note:</strong> These references cover foundational
+      work rather than an exhaustive survey of the field. Classical diffusion
+      models provide the background for the diffusion discussion; the cited
+      paper should not be interpreted as a demonstration of quantum diffusion
+      advantage.
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      <strong>End of Chapter 21.</strong>
+      The next step is to connect generative modelling with trainability,
+      quantum circuit expressivity, gradient estimation, and the practical
+      limits of noisy quantum hardware.
+    </p>
+  </footer>
+
+</main>
+</body>
+</html>

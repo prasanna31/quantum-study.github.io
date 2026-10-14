@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 13: Quantum Software Stack and Programming</title>
+    <style>
+        :root {
+            --primary: #173b65;
+            --secondary: #2878b5;
+            --accent: #e7f2fc;
+            --background: #f5f7fa;
+            --text: #263445;
+            --muted: #58697c;
+            --border: #d8e0e9;
+            --code: #172334;
+            --success: #e7f5ec;
+            --warning: #fff4df;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behaviour: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #102943, #2367a2);
+            color: white;
+            padding: 48px 22px;
+        }
+
+        header .container,
+        main,
+        footer {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        header h1 {
+            font-size: clamp(28px, 5vw, 42px);
+            line-height: 1.25;
+            margin: 0 0 18px;
+        }
+
+        header p {
+            max-width: 820px;
+            font-size: 17px;
+            color: #e2edf8;
+        }
+
+        .chapter-label {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #c1dcf7;
+        }
+
+        main {
+            padding: 25px 20px 60px;
+        }
+
+        section {
+            background: white;
+            padding: 28px;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(24, 48, 76, 0.035);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 27px;
+            line-height: 1.4;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        h3 {
+            color: #205b8b;
+            font-size: 21px;
+            margin-top: 28px;
+        }
+
+        h4 {
+            color: var(--primary);
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        li {
+            margin: 7px 0;
+        }
+
+        a {
+            color: #1765a5;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .contents {
+            background: #edf5fd;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .contents ul {
+            columns: 2;
+            padding-left: 22px;
+        }
+
+        .diagram {
+            margin: 22px 0;
+            padding: 22px;
+            border: 1px solid #ccdae9;
+            background: #f7faff;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stack-item {
+            max-width: 620px;
+            margin: 8px auto;
+            padding: 13px;
+            border-radius: 7px;
+            background: white;
+            border: 1px solid #9fbad4;
+            font-weight: bold;
+        }
+
+        .stack-item.hardware {
+            color: white;
+            background: #173b65;
+            border-color: #173b65;
+        }
+
+        .arrow {
+            color: #397bb1;
+            font-size: 23px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .note,
+        .warning,
+        .success {
+            padding: 15px 18px;
+            margin: 18px 0;
+            border-radius: 7px;
+        }
+
+        .note {
+            background: var(--accent);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .warning {
+            background: var(--warning);
+            border-left: 4px solid #d69a25;
+        }
+
+        .success {
+            background: var(--success);
+            border-left: 4px solid #36875a;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 570px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            text-align: left;
+            padding: 12px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf2fa;
+            color: var(--primary);
+        }
+
+        tr:nth-child(even) td {
+            background: #fbfcfe;
+        }
+
+        pre {
+            background: var(--code);
+            color: #e9f1fb;
+            padding: 20px;
+            border-radius: 9px;
+            overflow-x: auto;
+            line-height: 1.65;
+            font-size: 14px;
+            white-space: pre;
+        }
+
+        code {
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        p code,
+        li code,
+        td code {
+            background: #edf1f5;
+            color: #183b5d;
+            padding: 2px 5px;
+            border-radius: 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .equation {
+            text-align: center;
+            padding: 15px;
+            background: #f5f8fc;
+            border-radius: 7px;
+            font-size: 18px;
+            margin: 18px 0;
+        }
+
+        .step {
+            border-left: 3px solid #8bb8df;
+            padding: 2px 0 2px 18px;
+            margin: 20px 0;
+        }
+
+        .small {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .checklist li {
+            list-style: none;
+            position: relative;
+            padding-left: 27px;
+        }
+
+        .checklist li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27804c;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 25px 20px 45px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 650px) {
+            section {
+                padding: 19px;
+            }
+
+            .contents ul {
+                columns: 1;
+            }
+
+            header {
+                padding: 35px 20px;
+            }
+
+            h2 {
+                font-size: 23px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            section {
+                box-shadow: none;
+                break-inside: avoid;
+            }
+
+            header {
+                background: white;
+                color: black;
+                padding: 20px 0;
+            }
+
+            header p,
+            .chapter-label {
+                color: #333;
+            }
+
+            a {
+                color: black;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <div class="chapter-label">Quantum Computing · Chapter 13</div>
+        <h1>Quantum Software Stack and Programming</h1>
+        <p>
+            A quantum computer is not simply a machine on which we run a quantum
+            algorithm. Between the algorithm we write and the physical qubits
+            that perform the computation, several layers of software must work
+            together. This chapter explains how those layers fit together,
+            how quantum programs are compiled and executed, and how to make
+            their results reliable and reproducible.
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <section class="contents" id="contents">
+        <h2>Chapter Contents</h2>
+        <ul>
+            <li><a href="#intro">13.1 Overview of the Software Stack</a></li>
+            <li><a href="#frameworks">13.2 Quantum Programming Frameworks</a></li>
+            <li><a href="#compilation">13.3 Transpilation, Compilation and Qubit Routing</a></li>
+            <li><a href="#simulators">13.4 Quantum Simulators</a></li>
+            <li><a href="#hardware">13.5 Real Hardware and Cloud Platforms</a></li>
+            <li><a href="#reproducibility">13.6 Reproducibility and Best Practices</a></li>
+            <li><a href="#project">A Complete Practical Example</a></li>
+            <li><a href="#summary">Chapter Summary</a></li>
+        </ul>
+    </section>
+
+    <section id="intro">
+        <h2>13.1 Overview of the Quantum Software Stack: Algorithms to Hardware</h2>
+
+        <h3>13.1.1 Why does quantum computing need a software stack?</h3>
+
+        <p>
+            Imagine writing a program that sorts a list of numbers. You write
+            instructions in a programming language, a compiler translates those
+            instructions into operations that a processor understands, and the
+            processor executes them using electronic circuits.
+        </p>
+
+        <p>
+            Quantum computing follows a similar idea, but the physical machine
+            behaves differently. Instead of ordinary bits, it uses qubits.
+            Instead of conventional logic gates alone, it uses quantum gates,
+            which manipulate the state of qubits. Finally, measuring a qubit
+            produces a classical result that we can read.
+        </p>
+
+        <p>
+            A quantum algorithm may describe an operation at a high level,
+            but the actual device might support only a restricted collection
+            of native gates. Its qubits may also have limited connectivity,
+            different error rates and limited coherence times. Software must
+            bridge the gap between the algorithm and these physical
+            restrictions.
+        </p>
+
+        <p>
+            This collection of layers is called the <strong>quantum software
+            stack</strong>. It converts a mathematical idea into operations
+            that a real quantum processor can attempt to execute.
+        </p>
+
+        <h3>13.1.2 The layers of the stack</h3>
+
+        <div class="diagram">
+            <div class="stack-item">Application and Problem Definition</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Quantum Algorithm</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Programming Framework and Circuit Representation</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Compiler and Transpiler</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Hardware-Aware Circuit and Scheduling</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Control Electronics and Pulse-Level Operations</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item hardware">Physical Quantum Processor</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Measurement, Classical Processing and Results</div>
+        </div>
+
+        <p class="small">
+            This is a conceptual view. Actual platforms may combine, rearrange
+            or hide some layers. Not every user needs direct access to pulse
+            control or hardware scheduling.
+        </p>
+
+        <h3>13.1.3 Application and problem definition</h3>
+
+        <p>
+            The first layer describes what we want to solve. For example,
+            suppose we want to find the lowest energy of a small molecule,
+            search for a marked item, or find a good solution to an
+            optimisation problem.
+        </p>
+
+        <p>
+            At this level, the programmer thinks mainly about the problem
+            rather than the physical quantum processor. A chemistry application
+            might begin with a mathematical description of a molecule, while
+            an optimisation application might begin with a cost function.
+        </p>
+
+        <p>
+            A quantum algorithm is selected according to the structure of
+            the problem. Grover's algorithm, for example, is designed for
+            unstructured search under a suitable oracle model. The
+            Variational Quantum Eigensolver, or VQE, is commonly studied
+            for estimating low-energy states of quantum systems.
+        </p>
+
+        <div class="note">
+            <strong>Important distinction:</strong> choosing a quantum
+            algorithm does not guarantee that a quantum computer will solve
+            the problem faster than a classical computer. The input format,
+            output requirements, noise, hardware scale and classical
+            alternatives all matter.
+        </div>
+
+        <h3>13.1.4 Quantum circuit representation</h3>
+
+        <p>
+            Many quantum algorithms are expressed as quantum circuits.
+            A circuit is a sequence of operations applied to qubits.
+            Each operation changes the quantum state, and measurement
+            converts information about that state into classical data.
+        </p>
+
+        <p>
+            For a simple example, consider two qubits initially in the state
+            |00⟩. Applying a Hadamard gate to the first qubit and then a
+            controlled-NOT gate, or CNOT, produces the Bell state
+        </p>
+
+        <div class="equation">
+            |Φ⁺⟩ = (|00⟩ + |11⟩) / √2
+        </div>
+
+        <p>
+            If both qubits are measured in the computational basis, the
+            ideal outcomes are 00 and 11, each with probability one-half.
+            This circuit is simple enough to describe mathematically, yet
+            running it on real hardware still requires compilation, device
+            execution and measurement processing.
+        </p>
+
+        <h3>13.1.5 Compilation and hardware execution</h3>
+
+        <p>
+            A high-level circuit may use convenient gates such as Hadamard,
+            controlled-NOT and arbitrary rotations. A physical device may
+            implement only a particular native gate set efficiently.
+            The compiler rewrites the circuit into operations supported
+            by the target device.
+        </p>
+
+        <p>
+            If two logical qubits need to interact but their physical
+            counterparts are not connected directly, the compiler may insert
+            SWAP gates or choose another mapping. These transformations
+            make the circuit executable, but they can increase its size
+            and expose it to additional errors.
+        </p>
+
+        <p>
+            The device then performs the compiled operations, measures
+            selected qubits and returns classical results. A classical
+            program processes those results, estimates probabilities or
+            expectation values, and may decide what circuit to run next.
+        </p>
+
+        <h3>13.1.6 The classical computer remains essential</h3>
+
+        <p>
+            Quantum computers do not replace classical computers. Classical
+            machines prepare inputs, construct circuits, optimise parameters,
+            submit jobs, analyse measurements and store results.
+        </p>
+
+        <p>
+            In a hybrid algorithm such as VQE, the classical computer proposes
+            parameters for a quantum circuit. The quantum processor estimates
+            the energy associated with those parameters. The classical
+            optimiser then uses the estimate to select new parameters.
+            This cycle repeats until a stopping condition is reached.
+        </p>
+
+        <div class="diagram">
+            <div class="stack-item">Classical Optimiser Chooses Parameters</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Quantum Circuit Runs on a Simulator or QPU</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Measurements Estimate the Cost Function</div>
+            <div class="arrow">↓</div>
+            <div class="stack-item">Classical Optimiser Updates Parameters</div>
+            <div class="arrow">↺ Repeat until the stopping condition is met</div>
+        </div>
+
+        <p>
+            A QPU, or quantum processing unit, is the processor that operates
+            on qubits. The complete hybrid application may run mostly on a
+            classical computer, with the QPU performing particular quantum
+            operations.
+        </p>
+    </section>
+
+    <section id="frameworks">
+        <h2>13.2 Quantum Programming Frameworks</h2>
+
+        <h3>13.2.1 What is a quantum programming framework?</h3>
+
+        <p>
+            A quantum programming framework provides software tools for
+            describing, transforming, simulating or executing quantum
+            programs. It may provide circuit-building functions, mathematical
+            operations, optimisers, simulators, visualisation and access
+            to hardware providers.
+        </p>
+
+        <p>
+            Think of a framework as a workshop. It supplies the tools needed
+            to construct a quantum circuit, inspect it, test it and prepare
+            it for execution. Different workshops may use different
+            programming languages and have different strengths.
+        </p>
+
+        <p>
+            There is no single framework that is best for every task.
+            The right choice depends on whether we want to learn circuit
+            basics, study quantum algorithms, differentiate quantum circuits,
+            build a cloud application or experiment with a particular
+            hardware platform.
+        </p>
+
+        <h3>13.2.2 Qiskit</h3>
+
+        <p>
+            <strong>Qiskit</strong> is an open-source quantum computing
+            software ecosystem associated with IBM Quantum. Its circuit
+            tools are widely used for creating quantum circuits, transforming
+            them for different devices, running simulations and submitting
+            supported workloads to quantum hardware.
+        </p>
+
+        <p>
+            Qiskit is particularly useful for learning how circuits are
+            represented and how hardware constraints affect execution.
+            It also provides transpilation tools that can translate a
+            circuit into a form suitable for a target backend.
+        </p>
+
+        <p>
+            Python is commonly used to construct circuits with Qiskit.
+            The following example creates a Bell-state circuit using
+            the modern Qiskit circuit interface.
+        </p>
+
+<pre><code>from qiskit import QuantumCircuit
+
+# Create two qubits and two classical bits.
+qc = QuantumCircuit(2, 2)
+
+# Put the first qubit into an equal superposition.
+qc.h(0)
+
+# Entangle the two qubits.
+qc.cx(0, 1)
+
+# Measure both qubits.
+qc.measure([0, 1], [0, 1])
+
+print(qc.draw())</code></pre>
+
+        <p>
+            The first line inside the circuit applies a Hadamard gate.
+            The CNOT then entangles the qubits, and the final instruction
+            records their measurement results in classical bits.
+            This code constructs the circuit; it does not, by itself,
+            guarantee execution on a real quantum processor.
+        </p>
+
+        <h3>13.2.3 Cirq</h3>
+
+        <p>
+            <strong>Cirq</strong> is an open-source Python framework developed
+            by Google for constructing, transforming and executing quantum
+            circuits. It provides explicit representations of qubits,
+            operations, moments and circuits.
+        </p>
+
+        <p>
+            A moment represents operations that occupy the same logical
+            time step, subject to the framework's operation compatibility
+            rules. This makes Cirq useful for examining the arrangement
+            and scheduling of circuit operations.
+        </p>
+
+        <p>
+            Cirq can be used with simulators and supported hardware
+            integrations. It is especially useful for circuit-level
+            experimentation, research and understanding how circuit
+            structure affects execution.
+        </p>
+
+<pre><code>import cirq
+
+# Create two qubits.
+q0, q1 = cirq.LineQubit.range(2)
+
+# Build a Bell-state circuit.
+circuit = cirq.Circuit(
+    cirq.H(q0),
+    cirq.CNOT(q0, q1),
+    cirq.measure(q0, q1, key="result")
+)
+
+print(circuit)</code></pre>
+
+        <p>
+            This example constructs a circuit and adds a measurement.
+            To obtain measurement samples, we would run it using a
+            simulator or an appropriate backend.
+        </p>
+
+        <h3>13.2.4 PennyLane</h3>
+
+        <p>
+            <strong>PennyLane</strong> is an open-source framework focused
+            on quantum programming, differentiable quantum circuits and
+            hybrid quantum-classical machine learning. It connects quantum
+            operations with classical numerical and machine-learning tools.
+        </p>
+
+        <p>
+            One of its important ideas is the quantum node, often called a
+            QNode. A QNode connects a quantum function to a device, such as
+            a simulator or a supported quantum processor. Depending on the
+            device and operations, the resulting computation can be integrated
+            with classical automatic differentiation.
+        </p>
+
+        <p>
+            This is useful for variational circuits, quantum machine learning
+            and optimisation problems where circuit parameters are updated
+            using a classical learning procedure.
+        </p>
+
+<pre><code>import pennylane as qml
+from pennylane import numpy as np
+
+dev = qml.device("default.qubit", wires=1)
+
+@qml.qnode(dev)
+def circuit(theta):
+    qml.RY(theta, wires=0)
+    return qml.expval(qml.PauliZ(0))
+
+theta = np.array(0.5, requires_grad=True)
+
+value = circuit(theta)
+gradient = qml.grad(circuit)(theta)
+
+print("Expectation value:", value)
+print("Gradient:", gradient)</code></pre>
+
+        <p>
+            The circuit rotates one qubit around the Y axis and measures
+            the expectation value of the Pauli-Z operator. The framework
+            can calculate the derivative with respect to the rotation
+            parameter using a supported differentiation method.
+        </p>
+
+        <div class="note">
+            The device name and API shown in examples depend on the installed
+            PennyLane version. Real-device execution requires a compatible
+            plugin, credentials and an appropriate backend.
+        </div>
+
+        <h3>13.2.5 Q#</h3>
+
+        <p>
+            <strong>Q#</strong> is a programming language designed for
+            quantum computing. It provides language features for expressing
+            quantum operations and classical control around quantum
+            computation.
+        </p>
+
+        <p>
+            Unlike a circuit library that is simply imported into ordinary
+            Python code, Q# has its own syntax and programming model.
+            A quantum operation can allocate qubits, apply gates, measure
+            them and return classical information.
+        </p>
+
+        <p>
+            Q# is useful when learning to express quantum programs in a
+            language designed specifically for the task. Its development
+            and execution tools have evolved over time, so the available
+            workflow depends on the current Azure Quantum and QDK tooling.
+        </p>
+
+<pre><code>namespace BellExample {
+    open Microsoft.Quantum.Intrinsic;
+    open Microsoft.Quantum.Measurement;
+
+    @EntryPoint()
+    operation Main() : Result[] {
+        use qs = Qubit[2];
+
+        H(qs[0]);
+        CNOT(qs[0], qs[1]);
+
+        let results = [
+            M(qs[0]),
+            M(qs[1])
+        ];
+
+        ResetAll(qs);
+        return results;
+    }
+}</code></pre>
+
+        <p>
+            This example illustrates the language structure used to allocate
+            two qubits, create entanglement, measure them and reset the
+            qubits before leaving the operation. Exact project configuration
+            and command-line execution depend on the installed QDK version.
+        </p>
+
+        <h3>13.2.6 Amazon Braket</h3>
+
+        <p>
+            <strong>Amazon Braket</strong> is an AWS service for developing
+            and running quantum computing workloads. It provides access to
+            supported quantum computing hardware providers and managed
+            simulation options through a cloud-based workflow.
+        </p>
+
+        <p>
+            Braket includes the Amazon Braket SDK, which supports circuit
+            construction, simulator execution and submission of tasks to
+            compatible devices. It is useful when quantum workloads need
+            to fit into an AWS environment involving cloud permissions,
+            storage, monitoring and classical processing.
+        </p>
+
+        <p>
+            A quantum task is a unit of work submitted to a device. A
+            hybrid job can coordinate classical processing and quantum
+            tasks. Availability, device restrictions, cost and supported
+            features vary by provider and device.
+        </p>
+
+<pre><code>from braket.circuits import Circuit
+from braket.devices import LocalSimulator
+
+# Construct a Bell-state circuit.
+bell = Circuit().h(0).cnot(0, 1)
+
+# Run locally with a simulator.
+device = LocalSimulator()
+task = device.run(bell, shots=1000)
+
+result = task.result()
+
+print(result.measurement_counts)</code></pre>
+
+        <p>
+            This example uses a local simulator rather than a remote QPU.
+            A hardware workflow would select a supported device, configure
+            the required access and submit the task through the cloud
+            service.
+        </p>
+
+        <h3>13.2.7 Other useful tools and frameworks</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool or framework</th>
+                        <th>Main role</th>
+                        <th>Useful for</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>OpenQASM</strong></td>
+                        <td>A language for representing quantum circuits and related instructions.</td>
+                        <td>Interchange between tools and hardware-oriented workflows.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>QuTiP</strong></td>
+                        <td>Python tools for quantum dynamics and open quantum systems.</td>
+                        <td>Studying time evolution, decoherence and physical models.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ProjectQ</strong></td>
+                        <td>A quantum programming framework and compiler project.</td>
+                        <td>Learning compiler concepts and circuit representations; check current maintenance and compatibility before starting a new project.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CUDA-Q</strong></td>
+                        <td>A programming platform for quantum-classical computing.</td>
+                        <td>Hybrid applications and workflows involving supported quantum processors and classical computing resources.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Qualtran</strong></td>
+                        <td>Tools for describing and analysing quantum algorithms and their resource costs.</td>
+                        <td>Algorithm design, decomposition and resource estimation.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tensor-network libraries</strong></td>
+                        <td>Tools for representing and manipulating structured quantum states.</td>
+                        <td>Simulating circuits whose entanglement structure permits efficient tensor-network methods.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>13.2.8 Comparing the major frameworks</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework</th>
+                        <th>Common language or interface</th>
+                        <th>Primary emphasis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Qiskit</td>
+                        <td>Python ecosystem</td>
+                        <td>Circuit construction, compilation, simulation and supported hardware execution.</td>
+                    </tr>
+                    <tr>
+                        <td>Cirq</td>
+                        <td>Python</td>
+                        <td>Circuit structure, operations, simulation and hardware-oriented experimentation.</td>
+                    </tr>
+                    <tr>
+                        <td>PennyLane</td>
+                        <td>Python</td>
+                        <td>Hybrid algorithms, differentiable circuits and quantum machine learning.</td>
+                    </tr>
+                    <tr>
+                        <td>Q#</td>
+                        <td>Dedicated quantum language</td>
+                        <td>Expressing quantum programs and their classical control flow.</td>
+                    </tr>
+                    <tr>
+                        <td>Amazon Braket</td>
+                        <td>Cloud service and Python SDK</td>
+                        <td>Access to supported quantum devices and cloud simulation.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            These tools are not all direct substitutes for one another.
+            Some are programming frameworks, some are languages, and
+            some are cloud services. A cloud service can support more
+            than one programming workflow, while a programming framework
+            may target multiple simulators or hardware backends.
+        </p>
+
+        <div class="success">
+            <strong>Suggested learning path:</strong> start with Python
+            and a circuit framework such as Qiskit or Cirq. Learn gates,
+            measurement, entanglement and simulation first. Then study
+            compilation and hardware execution. Add PennyLane when you
+            want to explore differentiable circuits and hybrid machine
+            learning.
+        </div>
+    </section>
+
+    <section id="compilation">
+        <h2>13.3 Transpilation, Compilation and Qubit Routing</h2>
+
+        <h3>13.3.1 Why can we not run every circuit directly?</h3>
+
+        <p>
+            A programmer may create a circuit using convenient operations
+            without considering the physical arrangement of the qubits.
+            A real processor, however, supports only particular operations
+            and interaction patterns.
+        </p>
+
+        <p>
+            For example, a circuit may ask qubits 0 and 4 to interact using
+            a two-qubit gate. On a particular processor, those physical
+            qubits may not have a direct connection. Another device may
+            not support the exact gate used in the original circuit.
+        </p>
+
+        <p>
+            The compilation process transforms a circuit so that it is
+            compatible with the target system. It may decompose gates,
+            choose physical qubits, insert routing operations, optimise
+            gate sequences and schedule operations.
+        </p>
+
+        <h3>13.3.2 Compilation and transpilation</h3>
+
+        <p>
+            In classical computing, compilation generally translates a
+            program into a representation that can be executed by a
+            processor or runtime. Quantum computing uses a similar idea,
+            although its compilation pipeline has additional challenges
+            related to qubit connectivity, quantum state preservation
+            and measurement.
+        </p>
+
+        <p>
+            <strong>Transpilation</strong> commonly refers to transforming
+            a quantum circuit into another circuit that is more suitable
+            for a target gate set, connectivity graph or backend.
+            In some software ecosystems, transpilation is one stage of
+            a broader compilation pipeline.
+        </p>
+
+        <p>
+            The precise terminology differs between frameworks. The
+            essential idea is the same: convert a circuit from a convenient
+            representation into one the selected device can execute.
+        </p>
+
+        <h3>13.3.3 The main stages of a quantum compilation pipeline</h3>
+
+        <div class="step">
+            <h4>Stage 1: Circuit validation</h4>
+            <p>
+                The compiler checks whether the circuit is valid, whether
+                its operations are supported by the selected workflow,
+                and whether measurements and classical dependencies are
+                represented correctly.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Stage 2: Gate decomposition</h4>
+            <p>
+                A high-level gate may be replaced with a sequence of
+                lower-level gates. For instance, a device might implement
+                a particular rotation directly but require a controlled
+                operation to be expressed using several native operations.
+            </p>
+            <p>
+                The resulting circuit should preserve the intended
+                mathematical operation, apart from any explicitly accepted
+                approximation.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Stage 3: Initial qubit placement</h4>
+            <p>
+                The compiler assigns logical qubits to physical qubits.
+                Logical qubits are the qubits used in the program's
+                description. Physical qubits are the actual controllable
+                units in the processor.
+            </p>
+            <p>
+                The compiler may consider connectivity, error estimates,
+                calibration data and the interactions required by the
+                circuit.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Stage 4: Routing</h4>
+            <p>
+                If an operation requires qubits that are not directly
+                connected, the compiler finds a way to move their logical
+                states through the hardware connectivity graph. This
+                frequently involves SWAP gates or alternative decompositions.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Stage 5: Optimisation</h4>
+            <p>
+                The compiler may cancel adjacent inverse gates, combine
+                compatible operations, reduce unnecessary gate counts
+                or choose a more efficient decomposition.
+            </p>
+            <p>
+                Optimisation objectives can include circuit depth, gate
+                count, expected error, execution time and hardware
+                constraints. Improving one objective does not always
+                improve all the others.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Stage 6: Scheduling and execution preparation</h4>
+            <p>
+                Operations are arranged into a valid execution schedule.
+                The hardware interface may then prepare the instructions
+                needed for control electronics, measurements and data
+                collection. Some systems also expose pulse-level control
+                to advanced users.
+            </p>
+        </div>
+
+        <h3>13.3.4 Logical qubits and physical qubits</h3>
+
+        <p>
+            A logical qubit is a position in the program's abstract
+            circuit. A physical qubit is a device component used to
+            implement that position.
+        </p>
+
+        <p>
+            Consider a circuit with three logical qubits, labelled A, B
+            and C. The device might initially assign them to physical
+            qubits 2, 5 and 7. This assignment is called a qubit mapping.
+            Another mapping may produce a circuit that requires fewer
+            routing operations or uses better-calibrated physical qubits.
+        </p>
+
+        <p>
+            In ordinary circuit compilation, logical qubits are often
+            mapped to physical qubits without encoding each logical qubit
+            into an error-corrected block. In fault-tolerant quantum
+            computing, the term logical qubit can instead refer to a
+            protected quantum information unit encoded across multiple
+            physical qubits. These are related but distinct uses of the
+            term.
+        </p>
+
+        <h3>13.3.5 Qubit connectivity as a graph</h3>
+
+        <p>
+            A processor's connectivity can be represented by a graph.
+            Each vertex represents a physical qubit, and each edge
+            represents an allowed direct interaction under the device's
+            connectivity model.
+        </p>
+
+        <div class="diagram">
+            <svg viewBox="0 0 440 210" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Example of a linear quantum processor connectivity graph">
+                <g stroke="#7da5ca" stroke-width="4" fill="none">
+                    <line x1="65" y1="100" x2="165" y2="100"/>
+                    <line x1="165" y1="100" x2="265" y2="100"/>
+                    <line x1="265" y1="100" x2="365" y2="100"/>
+                </g>
+                <g fill="#e7f2fc" stroke="#2367a2" stroke-width="3">
+                    <circle cx="65" cy="100" r="27"/>
+                    <circle cx="165" cy="100" r="27"/>
+                    <circle cx="265" cy="100" r="27"/>
+                    <circle cx="365" cy="100" r="27"/>
+                </g>
+                <g font-size="16" fill="#173b65" text-anchor="middle" font-weight="bold">
+                    <text x="65" y="106">Q0</text>
+                    <text x="165" y="106">Q1</text>
+                    <text x="265" y="106">Q2</text>
+                    <text x="365" y="106">Q3</text>
+                </g>
+                <g font-size="13" fill="#52687d" text-anchor="middle">
+                    <text x="215" y="35">Linear connectivity</text>
+                    <text x="215" y="160">Direct neighbours can interact</text>
+                    <text x="215" y="181">under the supported gate model.</text>
+                </g>
+            </svg>
+        </div>
+
+        <p>
+            In this example, Q0 can interact directly with Q1, and Q1
+            can interact directly with Q2. But Q0 and Q3 are not direct
+            neighbours. A circuit that needs a two-qubit operation between
+            Q0 and Q3 must be transformed to respect the available
+            connectivity, unless the device offers another supported
+            mechanism for that interaction.
+        </p>
+
+        <h3>13.3.6 How does a SWAP gate help?</h3>
+
+        <p>
+            A SWAP gate exchanges the quantum states of two qubits.
+            It is commonly implemented using three CNOT gates when
+            CNOT is the chosen two-qubit primitive.
+        </p>
+
+        <div class="equation">
+            SWAP(A, B) = CNOT(A, B) · CNOT(B, A) · CNOT(A, B)
+        </div>
+
+        <p>
+            The expression indicates a sequence of three operations;
+            when reading the sequence as circuit instructions, operations
+            are applied in the order specified by the circuit. Matrix
+            multiplication conventions may display the written product
+            in the reverse order.
+        </p>
+
+        <p>
+            Suppose logical qubit A is located at physical Q0 and logical
+            qubit C is at Q3 in a linear device. The compiler may insert
+            SWAP operations along the path so that the states move closer
+            together. It can then perform the required interaction once
+            the logical qubits occupy compatible locations.
+        </p>
+
+        <p>
+            A SWAP is not free. It consumes operations and execution time,
+            and every additional operation can introduce errors. This is
+            why qubit routing is an important part of quantum compilation.
+        </p>
+
+        <h3>13.3.7 Circuit depth and gate count</h3>
+
+        <p>
+            Two useful measures of a circuit are its gate count and
+            circuit depth.
+        </p>
+
+        <ul>
+            <li>
+                <strong>Gate count:</strong> the total number of operations
+                represented in the circuit under the counting convention
+                being used.
+            </li>
+            <li>
+                <strong>Circuit depth:</strong> the number of sequential
+                operation layers required when compatible operations can
+                be performed in parallel.
+            </li>
+        </ul>
+
+        <p>
+            A circuit with many gates may have modest depth if numerous
+            gates can run in parallel. Another circuit with fewer gates
+            may have greater depth if its operations depend on one another.
+            Actual execution time also depends on gate durations, scheduling,
+            measurement and control-system overhead.
+        </p>
+
+        <p>
+            For noisy hardware, reducing unnecessary two-qubit gates and
+            depth can improve the chance of obtaining useful results.
+            However, an aggressively optimised circuit is not necessarily
+            the best circuit for every device. Calibration data and
+            compiler choices can affect the outcome.
+        </p>
+
+        <h3>13.3.8 Example of transpilation with Qiskit</h3>
+
+<pre><code>from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+
+qc = QuantumCircuit(2)
+qc.h(0)
+qc.cx(0, 1)
+qc.measure_all()
+
+simulator = AerSimulator()
+
+# Translate the circuit for the selected backend.
+compiled = transpile(
+    qc,
+    simulator,
+    optimization_level=2
+)
+
+print("Original circuit:")
+print(qc.draw())
+
+print("Compiled circuit:")
+print(compiled.draw())
+
+print("Compiled depth:", compiled.depth())
+print("Compiled operations:", compiled.count_ops())</code></pre>
+
+        <p>
+            This example illustrates backend-aware transpilation and
+            inspection of the resulting circuit. The simulator may accept
+            operations that a particular physical device does not.
+            For real hardware, transpilation should target the actual
+            backend so that its basis gates and connectivity can be
+            considered.
+        </p>
+
+        <div class="warning">
+            <strong>Remember:</strong> compilation does not remove the
+            laws of quantum mechanics or make a noisy processor perfect.
+            It transforms the circuit to make it executable and may
+            improve efficiency, but hardware errors remain.
+        </div>
+    </section>
+
+    <section id="simulators">
+        <h2>13.4 Quantum Simulators: Statevector, Density Matrix and Tensor Networks</h2>
+
+        <h3>13.4.1 Why do we need quantum simulators?</h3>
+
+        <p>
+            Before sending a circuit to a real quantum processor, it is
+            useful to test whether the circuit behaves as expected.
+            Quantum simulators do this using classical computing resources.
+            They calculate the behaviour of a mathematical model of a
+            quantum system rather than physically manipulating qubits.
+        </p>
+
+        <p>
+            Simulators help developers find mistakes, study measurement
+            probabilities, test algorithms and compare different circuit
+            designs. They are also important in research because experiments
+            on real devices may be expensive, slow or affected by noise.
+        </p>
+
+        <p>
+            The main difficulty is that a general quantum state can require
+            a large amount of classical memory to represent. A simulator
+            may work beautifully for a small circuit but become impractical
+            as the number of qubits or the complexity of the state grows.
+        </p>
+
+        <h3>13.4.2 Statevector simulation</h3>
+
+        <p>
+            A pure state of n qubits can be written as a superposition
+            of all computational basis states:
+        </p>
+
+        <div class="equation">
+            |ψ⟩ = Σ<sub>x=0</sub><sup>2ⁿ−1</sup> α<sub>x</sub>|x⟩
+        </div>
+
+        <p>
+            Each amplitude α describes the complex probability amplitude
+            associated with one basis state. The squared magnitude of
+            an amplitude gives the probability of observing that basis
+            state when measuring all qubits in the computational basis.
+        </p>
+
+        <div class="equation">
+            P(x) = |α<sub>x</sub>|²
+        </div>
+
+        <p>
+            A statevector simulator stores the amplitudes of a pure
+            quantum state. Since an n-qubit state has 2ⁿ complex
+            amplitudes in the general case, memory grows exponentially
+            with the number of qubits.
+        </p>
+
+        <p>
+            If each complex amplitude uses 16 bytes, as with two
+            64-bit floating-point numbers, the amplitudes alone require
+            approximately 16 × 2ⁿ bytes. At 30 qubits, this is roughly
+            16 GiB, before accounting for other memory needs. Actual
+            requirements depend on the simulator's data types and
+            implementation.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Number of qubits</th>
+                        <th>Number of amplitudes</th>
+                        <th>Approximate amplitude memory at 16 bytes each</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>5</td>
+                        <td>32</td>
+                        <td>512 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>1,024</td>
+                        <td>16 KiB</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>1,048,576</td>
+                        <td>16 MiB</td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td>1,073,741,824</td>
+                        <td>16 GiB</td>
+                    </tr>
+                    <tr>
+                        <td>40</td>
+                        <td>1,099,511,627,776</td>
+                        <td>16 TiB</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            These figures describe storage for the full, general statevector
+            using the stated precision. They are not universal limits.
+            Special circuits, sparse representations, lower precision,
+            distributed computing and alternative simulation methods can
+            change what is feasible.
+        </p>
+
+        <h4>How does a statevector simulator execute a gate?</h4>
+
+        <p>
+            A quantum gate is represented by a mathematical transformation.
+            For a gate U, the state changes from |ψ⟩ to
+            U|ψ⟩. The simulator applies this transformation to the
+            stored amplitudes.
+        </p>
+
+        <p>
+            For example, the Hadamard gate transforms |0⟩ into
+            (|0⟩ + |1⟩)/√2. A simulator updates the statevector
+            to represent the resulting amplitudes. If the qubit is
+            measured, the simulator samples an outcome according to
+            the corresponding probabilities.
+        </p>
+
+        <p>
+            A simulator can often calculate the exact ideal probabilities
+            before sampling. A real device generally returns finite
+            measurement data affected by noise and hardware imperfections.
+        </p>
+
+        <h3>13.4.3 Density-matrix simulation</h3>
+
+        <p>
+            A statevector is sufficient to represent a pure quantum state.
+            But quantum systems can also be mixed, particularly when we
+            describe uncertainty about the state or the effects of
+            interactions with the environment.
+        </p>
+
+        <p>
+            Density matrices provide a general representation that
+            includes pure and mixed states. The density matrix of a
+            pure state can be written as
+        </p>
+
+        <div class="equation">
+            ρ = |ψ⟩⟨ψ|
+        </div>
+
+        <p>
+            A mixed state can be represented as a probabilistic mixture
+            of states:
+        </p>
+
+        <div class="equation">
+            ρ = Σ<sub>i</sub> p<sub>i</sub>|ψ<sub>i</sub>⟩⟨ψ<sub>i</sub>|
+        </div>
+
+        <p>
+            Here, the probabilities p<sub>i</sub> are non-negative and
+            sum to one. The density matrix contains information about
+            the populations and coherences of the represented state.
+        </p>
+
+        <p>
+            Density matrices are useful for modelling noise channels,
+            decoherence and certain forms of measurement uncertainty.
+            For example, a noise channel may describe how a qubit can
+            lose energy or lose phase coherence while interacting with
+            its environment.
+        </p>
+
+        <h4>Why does density-matrix simulation need more memory?</h4>
+
+        <p>
+            A general n-qubit density matrix has 2ⁿ rows and 2ⁿ columns.
+            It therefore contains 4ⁿ complex entries in a straightforward
+            representation. This makes a general density-matrix simulation
+            much more expensive than a statevector simulation as the
+            number of qubits increases.
+        </p>
+
+        <p>
+            Density-matrix simulation is valuable when noise is central
+            to the question, but it is not always the most practical
+            choice for large systems.
+        </p>
+
+        <h3>13.4.4 Tensor-network simulation</h3>
+
+        <p>
+            A tensor is a mathematical object that generalises numbers,
+            vectors and matrices to multiple dimensions. Tensor-network
+            methods represent a large quantum state or circuit using
+            a collection of smaller tensors connected according to a
+            chosen structure.
+        </p>
+
+        <p>
+            The advantage is that some quantum states have structure
+            that can be represented efficiently in this form. Rather
+            than storing every amplitude explicitly, a simulator can
+            store a collection of tensors and contract them to calculate
+            selected quantities.
+        </p>
+
+        <p>
+            This is particularly useful for certain low-entanglement
+            states, structured circuits and circuits whose connectivity
+            makes the tensor contractions manageable.
+        </p>
+
+        <p>
+            However, tensor networks are not a universal solution to
+            exponential scaling. Highly entangled states and difficult
+            circuit structures can require large bond dimensions or
+            expensive contractions. The efficiency depends on the
+            structure of the circuit, not merely on the number of qubits.
+        </p>
+
+        <h3>13.4.5 Comparing the simulation methods</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Representation</th>
+                        <th>Strength</th>
+                        <th>Main limitation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Statevector</td>
+                        <td>Vector of 2ⁿ complex amplitudes</td>
+                        <td>Direct and efficient for many small pure-state circuits.</td>
+                        <td>Memory generally grows exponentially with qubit count.</td>
+                    </tr>
+                    <tr>
+                        <td>Density matrix</td>
+                        <td>Matrix of 4ⁿ complex entries</td>
+                        <td>Represents mixed states and supports general noise modelling.</td>
+                        <td>Very high memory and computational requirements.</td>
+                    </tr>
+                    <tr>
+                        <td>Tensor network</td>
+                        <td>Network of connected tensors</td>
+                        <td>Can exploit favourable state and circuit structure.</td>
+                        <td>Cost can rise sharply for difficult contractions or high entanglement.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>13.4.6 Exact simulation versus sampling</h3>
+
+        <p>
+            A simulator may calculate an ideal probability distribution,
+            or it may generate a finite number of samples from that
+            distribution. These are different tasks.
+        </p>
+
+        <p>
+            Suppose the ideal probability of observing 0 is 0.7 and
+            the probability of observing 1 is 0.3. An exact probability
+            calculation gives those values directly. A run with 100
+            measurements might return 68 zeros and 32 ones. The measured
+            frequencies need not equal the exact probabilities.
+        </p>
+
+        <p>
+            Increasing the number of shots generally reduces sampling
+            uncertainty, but it does not remove systematic hardware
+            errors or model errors.
+        </p>
+
+        <h3>13.4.7 Choosing the right simulator</h3>
+
+        <ul>
+            <li>
+                Use a statevector simulator for small ideal circuits,
+                gate debugging and exact pure-state calculations.
+            </li>
+            <li>
+                Use density-matrix simulation when mixed states or
+                explicitly modelled noise are important and the system
+                is small enough.
+            </li>
+            <li>
+                Consider tensor-network methods when the circuit has
+                structure that the selected implementation can exploit.
+            </li>
+            <li>
+                Use a real device when the goal requires experimental
+                measurements from physical quantum hardware.
+            </li>
+        </ul>
+
+        <div class="note">
+            A simulator can verify that a circuit is mathematically
+            sensible under its model. It cannot automatically prove
+            that the same circuit will perform well on a noisy physical
+            processor.
+        </div>
+    </section>
+
+    <section id="hardware">
+        <h2>13.5 Running on Real Hardware and Cloud Platforms</h2>
+
+        <h3>13.5.1 What is a quantum processing unit?</h3>
+
+        <p>
+            A quantum processing unit, or QPU, is a physical processor
+            that controls and manipulates qubits. Depending on the
+            technology, those qubits may be built using superconducting
+            circuits, trapped ions, photons, neutral atoms or other
+            physical systems.
+        </p>
+
+        <p>
+            These technologies differ in their operating conditions,
+            gate implementations, connectivity, measurement methods
+            and error characteristics. As a result, a circuit that
+            performs well on one device may need substantial changes
+            before it can run efficiently on another.
+        </p>
+
+        <h3>13.5.2 Why use cloud platforms?</h3>
+
+        <p>
+            Building and maintaining a quantum processor requires specialised
+            hardware, control electronics, calibration and often demanding
+            environmental conditions. Most programmers do not have a
+            quantum processor sitting on their desk.
+        </p>
+
+        <p>
+            Cloud platforms allow users to submit quantum workloads through
+            software interfaces. The provider manages access to the
+            underlying hardware and returns the results to the user.
+            The exact experience depends on the platform, account,
+            selected device and available access programme.
+        </p>
+
+        <p>
+            This makes quantum experimentation accessible without requiring
+            every researcher or developer to operate a physical processor.
+            It does not mean that every device is free, immediately
+            available or suitable for every circuit.
+        </p>
+
+        <h3>13.5.3 Common parts of a cloud execution workflow</h3>
+
+        <div class="step">
+            <h4>Step 1: Select a device</h4>
+            <p>
+                Choose a simulator or a supported QPU. Consider the
+                number of qubits, gate set, connectivity, calibration
+                information, availability, pricing and access restrictions.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 2: Prepare the circuit</h4>
+            <p>
+                Construct the circuit using a compatible framework.
+                Check that it contains the intended gates and measurement
+                operations.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 3: Compile for the target</h4>
+            <p>
+                Translate the circuit for the chosen device, taking
+                its supported operations and connectivity into account.
+                Inspect the compiled circuit when the platform permits it.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 4: Submit a job or task</h4>
+            <p>
+                The framework sends the workload through the platform's
+                interface. The request may enter a queue, depending
+                on the device and service.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 5: Execute and collect measurements</h4>
+            <p>
+                The platform executes the circuit, collects measurement
+                data and makes the results available. The returned
+                data may include counts, bitstrings, expectation values
+                or other supported result formats.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Step 6: Analyse the results</h4>
+            <p>
+                The classical application processes the results, estimates
+                quantities of interest and determines whether additional
+                circuit runs are needed.
+            </p>
+        </div>
+
+        <h3>13.5.4 Shots and measurement counts</h3>
+
+        <p>
+            Quantum measurements are probabilistic. To estimate the
+            distribution of outcomes, a circuit is often executed
+            repeatedly. Each repetition is called a shot.
+        </p>
+
+        <p>
+            Suppose a two-qubit Bell-state circuit ideally produces
+            00 and 11 with equal probability. After 1,000 shots, a
+            real experiment might return 486 occurrences of 00, 493
+            occurrences of 11 and a small number of 01 or 10 outcomes.
+            The exact counts depend on sampling and hardware errors;
+            these numbers are illustrative rather than an experimental result.
+        </p>
+
+        <p>
+            A useful first check is whether the observed results broadly
+            match the expected distribution. If unexpected outcomes
+            occur, possible causes include gate errors, readout errors,
+            circuit-construction mistakes or differences between the
+            assumed model and the actual device.
+        </p>
+
+        <h3>13.5.5 Sampling uncertainty</h3>
+
+        <p>
+            Suppose a measurement outcome has probability p and the
+            circuit is measured independently N times. The estimated
+            probability is the number of occurrences divided by N.
+            Its approximate standard error under ideal independent
+            sampling is
+        </p>
+
+        <div class="equation">
+            Standard error ≈ √[p(1 − p) / N]
+        </div>
+
+        <p>
+            This relationship shows that statistical uncertainty usually
+            decreases in proportion to 1/√N. To reduce the sampling
+            error by roughly a factor of two, about four times as many
+            shots are needed, assuming the same ideal sampling model.
+        </p>
+
+        <p>
+            More shots cost additional execution resources and do not
+            automatically correct biased measurements or other systematic
+            errors. Shot selection should reflect the accuracy required
+            by the application.
+        </p>
+
+        <h3>13.5.6 A simple simulator execution example</h3>
+
+        <p>
+            Before using remote hardware, we can test a circuit with
+            a local simulator. The following Qiskit example creates
+            a Bell state, executes it repeatedly and displays the
+            measurement counts.
+        </p>
+
+<pre><code>from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+
+qc = QuantumCircuit(2, 2)
+
+qc.h(0)
+qc.cx(0, 1)
+
+qc.measure([0, 1], [0, 1])
+
+simulator = AerSimulator()
+
+compiled = transpile(qc, simulator)
+
+job = simulator.run(compiled, shots=1000)
+result = job.result()
+
+counts = result.get_counts()
+print(counts)</code></pre>
+
+        <p>
+            An ideal simulator should return predominantly 00 and 11,
+            with their frequencies varying due to finite sampling.
+            The precise display format and availability of simulator
+            packages depend on the installed versions.
+        </p>
+
+        <h3>13.5.7 Moving from a simulator to a real QPU</h3>
+
+        <p>
+            The conceptual workflow is similar, but the execution target
+            changes. A real-device run needs an appropriate provider,
+            valid authentication, access to the selected backend and
+            compliance with its supported circuit and job limits.
+        </p>
+
+        <p>
+            The provider's current documentation should be followed for
+            authentication, device selection, compilation and submission.
+            Avoid assuming that a simulator backend and a hardware backend
+            expose exactly the same features or APIs.
+        </p>
+
+        <p>
+            Before spending resources on a QPU, it is sensible to run
+            a small circuit, confirm that the expected measurements are
+            being returned, inspect the compiled circuit and estimate
+            the likely cost of repeated executions.
+        </p>
+
+        <h3>13.5.8 What can go wrong on real hardware?</h3>
+
+        <ul>
+            <li>
+                <strong>Gate errors:</strong> the physical operation may
+                not perfectly match the intended quantum gate.
+            </li>
+            <li>
+                <strong>Readout errors:</strong> the reported classical
+                bit may differ from the qubit's state at measurement.
+            </li>
+            <li>
+                <strong>Decoherence:</strong> interactions with the
+                environment can disturb quantum information.
+            </li>
+            <li>
+                <strong>Connectivity overhead:</strong> routing may
+                require extra operations.
+            </li>
+            <li>
+                <strong>Queueing and execution limits:</strong> the
+                requested job may be delayed or rejected under provider
+                constraints.
+            </li>
+            <li>
+                <strong>Calibration drift:</strong> device performance
+                can change over time.
+            </li>
+            <li>
+                <strong>Classical integration issues:</strong> credentials,
+                network configuration, SDK versions or job settings
+                may prevent successful submission.
+            </li>
+        </ul>
+
+        <p>
+            These are reasons to test a circuit progressively rather
+            than immediately sending a large experiment to hardware.
+        </p>
+    </section>
+
+    <section id="reproducibility">
+        <h2>13.6 Reproducibility and Best Practices</h2>
+
+        <h3>13.6.1 What does reproducibility mean?</h3>
+
+        <p>
+            A result is reproducible when another person can understand
+            how it was produced and repeat the procedure under the
+            same or sufficiently similar conditions. In quantum computing,
+            this requires more than sharing the circuit alone.
+        </p>
+
+        <p>
+            A circuit's observed behaviour may depend on the framework
+            version, compiler settings, simulator method, random seed,
+            number of shots, noise model, hardware backend and calibration
+            conditions.
+        </p>
+
+        <p>
+            If these details are missing, two people can run what appears
+            to be the same experiment and obtain different results
+            without either person making a programming mistake.
+        </p>
+
+        <h3>13.6.2 Record the software environment</h3>
+
+        <p>
+            Libraries evolve. Function names, defaults, backend behaviour
+            and supported devices may change between releases. Record
+            the versions used in an experiment and, when possible,
+            use a dependency lock file to recreate the environment.
+        </p>
+
+<pre><code># Example: record installed Python packages
+python --version
+python -m pip freeze > requirements-lock.txt
+
+# Later, recreate the environment in a suitable
+# virtual environment:
+python -m pip install -r requirements-lock.txt</code></pre>
+
+        <p>
+            A package list is helpful, but it is not a complete guarantee
+            of reproducibility. The Python version, operating system,
+            hardware dependencies and external services may also matter.
+        </p>
+
+        <h3>13.6.3 Preserve the circuit and compilation settings</h3>
+
+        <p>
+            Save the original circuit as well as the compiled circuit
+            when possible. The original describes the intended computation;
+            the compiled version shows how that computation was adapted
+            to a particular backend.
+        </p>
+
+        <p>
+            Record the backend, compiler or transpiler version, optimisation
+            settings, qubit mapping and relevant basis-gate or routing
+            information. This is especially important when investigating
+            differences between devices.
+        </p>
+
+        <h3>13.6.4 Record the simulator configuration</h3>
+
+        <p>
+            Statevector and density-matrix simulations may represent
+            different physical assumptions. A noiseless statevector
+            simulation should not be treated as equivalent to a noisy
+            hardware experiment.
+        </p>
+
+        <p>
+            Record the simulator name, simulation method, noise model,
+            number of shots, precision and any random seeds used.
+            If a seed is supported, it can help reproduce pseudorandom
+            sampling under the same software and execution conditions.
+        </p>
+
+        <div class="warning">
+            A fixed random seed does not guarantee identical results
+            across every simulator, library version, parallel execution
+            configuration or hardware backend. It controls only the
+            randomness supported by the particular workflow.
+        </div>
+
+        <h3>13.6.5 Treat real hardware as an experiment</h3>
+
+        <p>
+            Physical devices can change between runs. Calibration,
+            noise, device availability and queue conditions may differ.
+            Therefore, record the execution date, backend identifier,
+            job identifier, shot count and relevant calibration information
+            whenever the platform makes them available.
+        </p>
+
+        <p>
+            If a result is important, consider repeating the experiment.
+            Compare the results statistically instead of expecting every
+            run to return exactly the same measurement counts.
+        </p>
+
+        <h3>13.6.6 Use a layered testing strategy</h3>
+
+        <p>
+            A useful quantum software workflow resembles testing in
+            ordinary software engineering. Each layer should be checked
+            before relying on the complete application.
+        </p>
+
+        <div class="step">
+            <h4>Test 1: Mathematical expectations</h4>
+            <p>
+                Calculate what should happen for a small example.
+                For a Bell-state circuit, the ideal computational-basis
+                probabilities should assign one-half to 00 and one-half
+                to 11.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Test 2: Circuit construction</h4>
+            <p>
+                Inspect the circuit diagram, gate order, qubit indices,
+                measurement mapping and classical registers. A small
+                indexing mistake can change the experiment.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Test 3: Ideal simulation</h4>
+            <p>
+                Compare the circuit against the expected mathematical
+                behaviour using an ideal simulator. This helps separate
+                programming mistakes from physical noise.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Test 4: Noisy simulation</h4>
+            <p>
+                Introduce a suitable noise model to investigate how
+                errors may affect the result. A simulated noise model
+                is only as useful as its assumptions and calibration.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Test 5: Small hardware experiment</h4>
+            <p>
+                Run a simple circuit on the selected QPU. Confirm that
+                submission, measurement and result retrieval work before
+                scaling up the workload.
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Test 6: Statistical analysis</h4>
+            <p>
+                Compare observed frequencies or expectation values with
+                the ideal prediction and any noise-model prediction.
+                Consider uncertainty and systematic errors when drawing
+                conclusions.
+            </p>
+        </div>
+
+        <h3>13.6.7 Be careful when comparing frameworks</h3>
+
+        <p>
+            Suppose a circuit produces different results in two frameworks.
+            It is tempting to conclude that one framework is incorrect.
+            But the difference may come from measurement conventions,
+            qubit ordering, gate definitions, compilation, shot counts,
+            simulator methods or noise settings.
+        </p>
+
+        <p>
+            A fair comparison should use the same mathematical circuit,
+            equivalent gate conventions, the same measurement basis,
+            comparable execution settings and clearly documented
+            assumptions.
+        </p>
+
+        <p>
+            Bitstring ordering deserves particular attention. Different
+            tools may display classical bits in different orders.
+            A result shown as 01 in one representation can correspond
+            to the same physical outcome represented differently in
+            another. Verify the framework's bit-ordering convention
+            before comparing output strings.
+        </p>
+
+        <h3>13.6.8 Maintain an experiment record</h3>
+
+        <p>
+            A simple experiment record might contain the following
+            information:
+        </p>
+
+        <ul class="checklist">
+            <li>Problem statement and algorithm used.</li>
+            <li>Original circuit and relevant source code.</li>
+            <li>Framework, SDK and Python versions.</li>
+            <li>Compilation settings and compiled circuit.</li>
+            <li>Simulator method and noise assumptions.</li>
+            <li>Backend and device identifier, where applicable.</li>
+            <li>Number of shots and random seeds, if supported.</li>
+            <li>Execution date, job identifier and calibration metadata, where available.</li>
+            <li>Raw measurement results and processed results.</li>
+            <li>Statistical uncertainty and known limitations.</li>
+        </ul>
+
+        <p>
+            Store raw data separately from processed data. If an
+            analysis script changes later, retaining the original
+            measurements allows the new analysis to be performed
+            without repeating an expensive experiment.
+        </p>
+
+        <h3>13.6.9 Reproducibility and responsible claims</h3>
+
+        <p>
+            A successful quantum circuit execution is not, by itself,
+            proof of a quantum advantage. To make a meaningful
+            performance claim, one must define the task, compare against
+            strong classical methods, account for data loading and
+            result extraction, include relevant overheads and report
+            uncertainty.
+        </p>
+
+        <p>
+            Likewise, a small demonstration that works on a simulator
+            does not establish that the same method will scale to a
+            useful problem on present-day hardware.
+        </p>
+
+        <p>
+            Good quantum software practice combines mathematical
+            reasoning, careful implementation, appropriate simulation,
+            transparent experiments and honest interpretation of results.
+        </p>
+    </section>
+
+    <section id="project">
+        <h2>A Complete Practical Example: From Algorithm to Results</h2>
+
+        <h3>Step 1: Define the goal</h3>
+
+        <p>
+            We want to prepare a two-qubit Bell state and check whether
+            measurements show the expected correlation. This is a small
+            experiment, but it illustrates the entire software workflow.
+        </p>
+
+        <h3>Step 2: Write down the expected behaviour</h3>
+
+        <p>
+            Starting from |00⟩, apply a Hadamard gate to qubit 0 and
+            a CNOT gate with qubit 0 as the control and qubit 1 as
+            the target.
+        </p>
+
+        <div class="equation">
+            |00⟩ → (|00⟩ + |10⟩)/√2 → (|00⟩ + |11⟩)/√2
+        </div>
+
+        <p>
+            The ideal measurement probabilities are P(00) = 0.5,
+            P(11) = 0.5, P(01) = 0 and P(10) = 0.
+            These are predictions of the ideal circuit, not guaranteed
+            frequencies from a finite experiment.
+        </p>
+
+        <h3>Step 3: Build the circuit</h3>
+
+<pre><code>from qiskit import QuantumCircuit
+
+qc = QuantumCircuit(2, 2)
+qc.h(0)
+qc.cx(0, 1)
+qc.measure([0, 1], [0, 1])
+
+print(qc.draw())</code></pre>
+
+        <h3>Step 4: Simulate it</h3>
+
+<pre><code>from qiskit import transpile
+from qiskit_aer import AerSimulator
+
+simulator = AerSimulator()
+compiled = transpile(qc, simulator)
+
+job = simulator.run(compiled, shots=1000)
+result = job.result()
+
+counts = result.get_counts()
+print(counts)</code></pre>
+
+        <p>
+            The counts should be dominated by 00 and 11 for an ideal
+            simulation. Finite sampling can make the two counts unequal.
+        </p>
+
+        <h3>Step 5: Inspect the compiled circuit</h3>
+
+        <p>
+            Examine the compiled circuit and count its operations.
+            For a simulator, the compiler may preserve or transform
+            operations according to that simulator's supported gates.
+            For a QPU, the result can differ according to the hardware
+            target and its connectivity.
+        </p>
+
+<pre><code>print(compiled.draw())
+print("Depth:", compiled.depth())
+print("Operations:", compiled.count_ops())</code></pre>
+
+        <h3>Step 6: Execute on a QPU, if access is available</h3>
+
+        <p>
+            Select a compatible device through the platform's current
+            workflow, transpile for that target, submit the circuit
+            and collect its results. Keep the simulator output for
+            comparison. Do not assume that the hardware result must
+            exactly match the simulated counts.
+        </p>
+
+        <h3>Step 7: Analyse the results</h3>
+
+        <p>
+            Calculate the frequency of each outcome by dividing its
+            count by the total number of shots. Compare those
+            frequencies with the expected distribution. Record the
+            device, software versions, compilation settings and job
+            details so that the experiment can be understood later.
+        </p>
+
+        <div class="success">
+            <strong>What have we learned?</strong> A quantum program
+            begins with a mathematical goal, becomes a circuit, is
+            transformed for a chosen execution target, runs on a
+            simulator or physical processor, and finally produces
+            classical data that must be analysed carefully.
+        </div>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter Summary</h2>
+
+        <p>
+            The quantum software stack connects quantum algorithms
+            to physical quantum hardware. Each layer solves a different
+            problem, from describing the desired computation to
+            transforming circuits and collecting measurement results.
+        </p>
+
+        <ul>
+            <li>
+                The <strong>software stack</strong> links the application,
+                algorithm, programming framework, compiler, hardware
+                interface and result-processing stages.
+            </li>
+            <li>
+                <strong>Qiskit, Cirq, PennyLane and Q#</strong> provide
+                different ways to express and work with quantum programs.
+                Amazon Braket provides a cloud service for supported
+                simulators and hardware.
+            </li>
+            <li>
+                <strong>Compilation and transpilation</strong> transform
+                circuits to respect the target device's gate set,
+                connectivity and other constraints.
+            </li>
+            <li>
+                <strong>Qubit routing</strong> handles interactions
+                between logical qubits that may not be directly
+                connected on the physical processor.
+            </li>
+            <li>
+                <strong>Statevector simulation</strong> represents
+                pure states, while <strong>density-matrix simulation</strong>
+                also represents mixed states. <strong>Tensor-network
+                methods</strong> can exploit favourable circuit structure.
+            </li>
+            <li>
+                <strong>Cloud platforms</strong> allow users to submit
+                quantum workloads without operating their own quantum
+                processor.
+            </li>
+            <li>
+                <strong>Shots</strong> are repeated circuit executions
+                used to estimate measurement distributions. More shots
+                reduce sampling uncertainty but do not automatically
+                eliminate hardware errors.
+            </li>
+            <li>
+                <strong>Reproducibility</strong> requires preserving
+                code, versions, circuits, compiler settings, simulator
+                assumptions, execution details and raw results.
+            </li>
+        </ul>
+
+        <h3>The central idea</h3>
+
+        <p>
+            Quantum programming is not merely about applying quantum
+            gates. It is about connecting mathematical algorithms,
+            software representations, compilation, physical constraints
+            and experimental evidence into one reliable workflow.
+            A good quantum programmer understands not only what a
+            circuit is supposed to do, but also how the software
+            transforms it, how the hardware executes it and how
+            the resulting data should be interpreted.
+        </p>
+
+        <h3>Questions for revision</h3>
+
+        <ol>
+            <li>Why does a quantum computer require a software stack?</li>
+            <li>What is the difference between a quantum framework, a programming language and a cloud platform?</li>
+            <li>How does transpilation make a circuit suitable for a particular device?</li>
+            <li>Why can limited qubit connectivity lead to additional SWAP gates?</li>
+            <li>Why does a general statevector require memory that grows exponentially with the number of qubits?</li>
+            <li>When would density-matrix simulation be more suitable than statevector simulation?</li>
+            <li>How do tensor-network methods exploit circuit structure?</li>
+            <li>What is a shot, and why can measurement counts differ from ideal probabilities?</li>
+            <li>Which details should be recorded to reproduce a quantum experiment?</li>
+            <li>Why is successful execution on a quantum processor not sufficient evidence of quantum advantage?</li>
+        </ol>
+    </section>
+
+    <section id="references">
+        <h2>Further Reading and Official Documentation</h2>
+
+        <p>
+            The following resources are useful for checking current APIs,
+            installation instructions, supported devices and practical
+            examples. Quantum software evolves quickly, so use the
+            documentation that matches your installed version.
+        </p>
+
+        <ul>
+            <li>
+                <a href="https://quantum.cloud.ibm.com/docs" target="_blank" rel="noopener noreferrer">
+                    IBM Quantum Documentation
+                </a>
+                — Qiskit, circuits, transpilation and quantum hardware workflows.
+            </li>
+            <li>
+                <a href="https://quantumai.google/cirq" target="_blank" rel="noopener noreferrer">
+                    Cirq Documentation
+                </a>
+                — Circuit construction, simulation and quantum programming.
+            </li>
+            <li>
+                <a href="https://docs.pennylane.ai/" target="_blank" rel="noopener noreferrer">
+                    PennyLane Documentation
+                </a>
+                — Differentiable circuits and hybrid quantum-classical algorithms.
+            </li>
+            <li>
+                <a href="https://learn.microsoft.com/azure/quantum/" target="_blank" rel="noopener noreferrer">
+                    Azure Quantum Documentation
+                </a>
+                — Q#, development tools and quantum cloud workflows.
+            </li>
+            <li>
+                <a href="https://docs.aws.amazon.com/braket/" target="_blank" rel="noopener noreferrer">
+                    Amazon Braket Documentation
+                </a>
+                — The Braket SDK, quantum tasks, simulators and supported devices.
+            </li>
+            <li>
+                <a href="https://qutip.org/" target="_blank" rel="noopener noreferrer">
+                    QuTiP
+                </a>
+                — Quantum dynamics, open quantum systems and simulation.
+            </li>
+            <li>
+                <a href="https://openqasm.com/" target="_blank" rel="noopener noreferrer">
+                    OpenQASM
+                </a>
+                — Quantum circuit representation and language documentation.
+            </li>
+        </ul>
+    </section>
+
+</main>
+
+<footer>
+    <p>Quantum Computing: From Classical Foundations to Quantum Algorithms</p>
+    <p>Chapter 13 — Quantum Software Stack and Programming</p>
+</footer>
+
+</body>
+</html>

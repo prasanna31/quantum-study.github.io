@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 16: Encoding Classical Data into Quantum States</title>
+    <style>
+        :root {
+            --primary: #174ea6;
+            --primary-light: #e8f0fe;
+            --accent: #087f8c;
+            --background: #f7f9fc;
+            --surface: #ffffff;
+            --text: #263238;
+            --muted: #586777;
+            --border: #dce3ed;
+            --formula: #f0f5ff;
+            --warning: #fff5df;
+            --success: #e8f5e9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        header {
+            padding: 52px 22px 44px;
+            color: white;
+            background: linear-gradient(135deg, #102b57, #176b87);
+        }
+
+        header .container,
+        main {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        header h1 {
+            margin: 0 0 16px;
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.2;
+        }
+
+        header p {
+            max-width: 800px;
+            margin: 0;
+            color: #e2edf8;
+            font-size: 19px;
+        }
+
+        .chapter-label {
+            margin-bottom: 12px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #a8e5ef;
+        }
+
+        main {
+            padding: 30px 22px 70px;
+        }
+
+        h2, h3, h4 {
+            color: #173d70;
+            line-height: 1.4;
+        }
+
+        h2 {
+            margin-top: 54px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+            font-size: 29px;
+        }
+
+        h3 {
+            margin-top: 32px;
+            font-size: 22px;
+        }
+
+        h4 {
+            margin-top: 24px;
+            font-size: 18px;
+        }
+
+        p {
+            margin: 16px 0;
+        }
+
+        li {
+            margin-bottom: 9px;
+        }
+
+        .lead {
+            font-size: 19px;
+            color: #394d63;
+        }
+
+        .learning-box,
+        .note,
+        .example,
+        .warning,
+        .takeaway {
+            margin: 24px 0;
+            padding: 20px 24px;
+            border-radius: 10px;
+        }
+
+        .learning-box {
+            background: var(--primary-light);
+            border-left: 5px solid var(--primary);
+        }
+
+        .note {
+            background: #eaf7f7;
+            border-left: 5px solid var(--accent);
+        }
+
+        .example {
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .warning {
+            background: var(--warning);
+            border-left: 5px solid #d59b27;
+        }
+
+        .takeaway {
+            background: var(--success);
+            border-left: 5px solid #39834b;
+        }
+
+        .formula {
+            margin: 22px 0;
+            padding: 22px 14px;
+            overflow-x: auto;
+            border: 1px solid #d8e4f7;
+            border-radius: 8px;
+            background: var(--formula);
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 17px;
+            line-height: 1.9;
+        }
+
+        .formula-description {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .diagram {
+            margin: 26px 0;
+            padding: 22px 12px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .diagram-box {
+            padding: 12px 15px;
+            border: 1px solid #9db8de;
+            border-radius: 8px;
+            background: #edf4ff;
+            color: #173d70;
+            font-weight: bold;
+        }
+
+        .arrow {
+            color: var(--accent);
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .diagram-caption {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            margin: 25px 0;
+            border-collapse: collapse;
+            background: var(--surface);
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        th, td {
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf0fa;
+            color: #173d70;
+        }
+
+        code {
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: #eef1f5;
+            font-family: "Courier New", monospace;
+            font-size: 0.92em;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .contents {
+            padding: 24px 28px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+        }
+
+        .contents a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .contents a:hover {
+            text-decoration: underline;
+        }
+
+        .contents ol {
+            padding-left: 24px;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .comparison article {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: var(--surface);
+        }
+
+        .comparison h4 {
+            margin-top: 0;
+        }
+
+        .check-list li::marker {
+            color: var(--accent);
+        }
+
+        footer {
+            padding: 28px 20px;
+            background: #102b45;
+            color: #dce9f5;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+
+            header {
+                padding: 38px 18px;
+            }
+
+            main {
+                padding: 22px 16px 50px;
+            }
+
+            h2 {
+                font-size: 25px;
+            }
+
+            .learning-box,
+            .note,
+            .example,
+            .warning,
+            .takeaway {
+                padding: 16px;
+            }
+
+            th, td {
+                padding: 9px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <div class="chapter-label">Quantum Computing and Quantum Machine Learning</div>
+        <h1>Chapter 16: Encoding Classical Data into Quantum States</h1>
+        <p>
+            How do we teach a quantum computer about an ordinary photograph,
+            a collection of numbers, or a customer's shopping history?
+            The answer begins with encoding: the process of representing
+            classical information using quantum states.
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <section id="introduction">
+        <h2>Introduction: Teaching a Quantum Computer About Data</h2>
+
+        <p class="lead">
+            Before a quantum computer can learn from data, it must first
+            receive that data in a form that its hardware can process.
+            This sounds simple, but it is one of the most important design
+            decisions in quantum machine learning.
+        </p>
+
+        <p>
+            Consider a normal machine learning model that predicts the price
+            of a house. Its input might contain the area of the house, the
+            number of bedrooms, its age, and its distance from the city
+            centre. These are ordinary classical numbers. A classical
+            computer stores and processes them using bits and mathematical
+            operations.
+        </p>
+
+        <p>
+            A quantum computer, however, operates on quantum states. Its
+            basic units of information are qubits, and the operations it
+            performs are quantum gates. We therefore need a method to
+            transform the classical input into a quantum state before the
+            quantum circuit can process it.
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="diagram-box">Classical Data</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Encoding Circuit</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Quantum State</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Quantum Processing</div>
+            </div>
+            <p class="diagram-caption">
+                The general journey from ordinary data to quantum computation.
+            </p>
+        </div>
+
+        <p>
+            The encoding circuit is not merely a device for copying numbers
+            into qubits. Different encoding methods produce different
+            quantum states, require different amounts of hardware, and
+            influence which patterns a quantum learning model can represent.
+            Consequently, the choice of encoding affects both computational
+            cost and learning capability.
+        </p>
+
+        <div class="learning-box">
+            <strong>The central idea of this chapter:</strong>
+            Classical data does not automatically become useful quantum
+            information just because it is placed inside a quantum circuit.
+            We must choose a representation that preserves the information
+            we need and allows the circuit to use it effectively.
+        </div>
+
+        <nav class="contents">
+            <h3>Chapter Contents</h3>
+            <ol>
+                <li><a href="#why-encoding">Why Data Encoding Matters</a></li>
+                <li><a href="#basis-encoding">Basis Encoding</a></li>
+                <li><a href="#amplitude-encoding">Amplitude Encoding</a></li>
+                <li><a href="#angle-encoding">Angle (Rotation) Encoding</a></li>
+                <li><a href="#higher-order">Higher-Order and IQP-Style Encodings</a></li>
+                <li><a href="#re-uploading">Data Re-uploading</a></li>
+                <li><a href="#qram">QRAM and Its Practical Limitations</a></li>
+                <li><a href="#expressivity">Encoding as the Source of Expressivity</a></li>
+                <li><a href="#comparison">Comparing Encoding Methods</a></li>
+                <li><a href="#summary">Chapter Summary and Questions</a></li>
+            </ol>
+        </nav>
+    </section>
+
+    <section id="why-encoding">
+        <h2>16.1 Why Data Encoding Matters</h2>
+
+        <h3>16.1.1 Classical data and quantum states are different things</h3>
+
+        <p>
+            Let us begin with a simple dataset:
+        </p>
+
+        <div class="formula">
+            x = [0.2, 0.7, 0.4]
+        </div>
+
+        <p>
+            These three numbers could represent three normalised features
+            of a person, a product, or an image. A classical computer can
+            store each number in its ordinary memory. A quantum computer
+            cannot directly apply a quantum gate to the classical number
+            0.7. Instead, a preparation procedure must use that number to
+            determine the state of one or more qubits.
+        </p>
+
+        <p>
+            A single qubit has two computational basis states, written
+            <code>|0⟩</code> and <code>|1⟩</code>. Its general pure state is
+            represented as:
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = α|0⟩ + β|1⟩
+            <br><br>
+            |α|² + |β|² = 1
+        </div>
+
+        <p>
+            The numbers α and β are called probability amplitudes. They
+            can be complex numbers, and their squared magnitudes determine
+            the probabilities of the two computational-basis measurement
+            outcomes.
+        </p>
+
+        <p>
+            A data-encoding circuit uses classical values to determine
+            which quantum gates to apply or how those gates are configured.
+            The resulting quantum state then carries information about
+            the input.
+        </p>
+
+        <h3>16.1.2 Encoding is a representation choice</h3>
+
+        <p>
+            Imagine that we want to represent the number 0.7 in a quantum
+            circuit. We could encode it in several ways:
+        </p>
+
+        <ul>
+            <li>Use the binary digits of a fixed-precision representation.</li>
+            <li>Use the number to determine a qubit's rotation angle.</li>
+            <li>Include it in the amplitude of a larger quantum state.</li>
+            <li>Use it in a more complicated transformation involving interactions between qubits.</li>
+        </ul>
+
+        <p>
+            All these approaches can represent information about the same
+            classical number, but they create different quantum states.
+            They also have different preparation costs and different
+            implications for the subsequent quantum computation.
+        </p>
+
+        <h3>16.1.3 The number of qubits is not the whole story</h3>
+
+        <p>
+            A common attraction of quantum encoding is that a quantum state
+            can involve a very large number of amplitudes. With n qubits,
+            a pure state can be expressed as a superposition of 2ⁿ
+            computational basis states.
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = Σ aᵢ|i⟩
+            <br><br>
+            i = 0, 1, ..., 2ⁿ − 1
+        </div>
+
+        <p>
+            This expression describes the general state of n qubits, with
+            amplitudes satisfying the normalisation condition
+            Σ|aᵢ|² = 1.
+        </p>
+
+        <p>
+            The large number of amplitudes does not mean that we can
+            freely write down, load, or read all 2ⁿ values at negligible
+            cost. Preparing a particular state may require a circuit
+            whose gate count grows rapidly with the number of amplitudes.
+            Measurement also does not reveal the entire state in one shot.
+        </p>
+
+        <div class="warning">
+            <strong>Important distinction:</strong>
+            A quantum state may mathematically contain many amplitudes,
+            but this does not automatically give a quantum algorithm free
+            access to an equally large classical dataset. State preparation,
+            circuit execution, measurement, and classical post-processing
+            must all be included when evaluating the cost.
+        </div>
+
+        <h3>16.1.4 The encoding must suit the problem</h3>
+
+        <p>
+            Suppose we want to classify handwritten digits. If each input
+            contains thousands of pixel values, a method using one qubit
+            per feature may be expensive. An amplitude-based representation
+            may use fewer qubits, but preparing the required state can be
+            difficult.
+        </p>
+
+        <p>
+            If the input contains only a few numerical features, rotation
+            encoding may be much simpler. If the task depends on complex
+            relationships between features, an encoding that introduces
+            nonlinear feature combinations or interactions between qubits
+            may be more useful.
+        </p>
+
+        <p>
+            There is therefore no universally best encoding. The choice
+            depends on the dataset, the quantum hardware, the available
+            operations, and the learning task.
+        </p>
+
+        <div class="takeaway">
+            Encoding matters because it determines how classical
+            information enters the quantum system, how much preparation
+            work is required, and which relationships the quantum model
+            can potentially learn.
+        </div>
+    </section>
+
+    <section id="basis-encoding">
+        <h2>16.2 Basis Encoding</h2>
+
+        <h3>16.2.1 The basic idea</h3>
+
+        <p>
+            Basis encoding represents classical binary information using
+            computational basis states. It is one of the most direct ways
+            to connect ordinary bits with qubits.
+        </p>
+
+        <p>
+            A classical bit has a value of either 0 or 1. We can represent
+            these values using the corresponding qubit basis states:
+        </p>
+
+        <div class="formula">
+            0 → |0⟩
+            <br>
+            1 → |1⟩
+        </div>
+
+        <p>
+            To encode the three-bit string 101, we prepare three qubits in
+            the state:
+        </p>
+
+        <div class="formula">
+            |101⟩ = |1⟩ ⊗ |0⟩ ⊗ |1⟩
+        </div>
+
+        <p>
+            The symbol ⊗ denotes the tensor product. It combines the
+            individual qubit states into one joint state. In this example,
+            each qubit represents one classical bit.
+        </p>
+
+        <h3>16.2.2 Preparing a basis state</h3>
+
+        <p>
+            A quantum circuit usually begins with qubits initialised to
+            <code>|0⟩</code>. The Pauli-X gate changes a qubit from
+            <code>|0⟩</code> to <code>|1⟩</code>, and from
+            <code>|1⟩</code> to <code>|0⟩</code>.
+        </p>
+
+        <div class="formula">
+            X|0⟩ = |1⟩
+            <br>
+            X|1⟩ = |0⟩
+        </div>
+
+        <p>
+            To prepare <code>|101⟩</code> from <code>|000⟩</code>, we
+            apply an X gate to the first and third qubits, leaving the
+            middle qubit unchanged.
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="diagram-box">Initial: |000⟩</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">X on qubits 1 and 3</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Final: |101⟩</div>
+            </div>
+            <p class="diagram-caption">
+                A simple circuit prepares a computational basis state
+                using bit flips.
+            </p>
+        </div>
+
+        <p>
+            For an n-bit input, this basic procedure requires at most n
+            qubits and at most n bit-flip gates when the initial state is
+            <code>|0⟩ⁿ</code>. This assumes that the classical bits are
+            already available and that we are encoding a single binary
+            string.
+        </p>
+
+        <h3>16.2.3 Encoding integers</h3>
+
+        <p>
+            Basis encoding can also represent an integer by first writing
+            it in binary. For example, the decimal number 5 is represented
+            by the three-bit binary string 101.
+        </p>
+
+        <div class="formula">
+            5 in decimal = 101 in binary
+            <br>
+            5 → |101⟩
+        </div>
+
+        <p>
+            Three qubits are enough to represent any integer from 0 to 7
+            using three-bit binary encoding. More generally, n qubits
+            can represent 2ⁿ distinct binary strings, corresponding to
+            integers from 0 to 2ⁿ − 1.
+        </p>
+
+        <p>
+            Notice that the qubits in this example do not store the integer
+            in the same way as a classical register physically stores its
+            bits. Rather, the computational basis state labels the
+            corresponding bit string. When measured in the computational
+            basis, an ideally prepared state returns that bit string.
+        </p>
+
+        <h3>16.2.4 Can basis encoding represent real-valued data?</h3>
+
+        <p>
+            Yes, but real-valued data must first be converted into a
+            finite-precision representation, such as a fixed-point or
+            floating-point binary format. The resulting bits can then be
+            basis-encoded.
+        </p>
+
+        <p>
+            For example, if we choose to represent a number using a
+            fixed-point scheme with a specified scale, the encoding circuit
+            receives the corresponding bit string. The choice of scale,
+            number of bits, and rounding rule determines the precision
+            of the representation.
+        </p>
+
+        <p>
+            This conversion introduces a design decision before quantum
+            computation even begins. A representation that uses too few
+            bits may lose useful information, while a representation that
+            uses many bits requires more qubits.
+        </p>
+
+        <h3>16.2.5 Advantages and limitations</h3>
+
+        <div class="comparison">
+            <article>
+                <h4>Advantages</h4>
+                <ul>
+                    <li>Conceptually simple.</li>
+                    <li>Directly represents binary strings.</li>
+                    <li>Can be efficient for discrete data.</li>
+                    <li>Computational-basis measurements recover the encoded string reliably in the ideal case.</li>
+                </ul>
+            </article>
+            <article>
+                <h4>Limitations</h4>
+                <ul>
+                    <li>Requires one qubit per encoded bit.</li>
+                    <li>Numerical precision can require many qubits.</li>
+                    <li>Binary representation may hide useful numerical relationships.</li>
+                    <li>It does not automatically create a useful superposition of inputs.</li>
+                </ul>
+            </article>
+        </div>
+
+        <p>
+            Basis encoding is useful when the information is naturally
+            discrete or binary. However, if a dataset contains many
+            real-valued features, other approaches may represent it more
+            compactly in terms of qubit count.
+        </p>
+    </section>
+
+    <section id="amplitude-encoding">
+        <h2>16.3 Amplitude Encoding</h2>
+
+        <h3>16.3.1 Using amplitudes to represent data</h3>
+
+        <p>
+            Basis encoding uses qubits to represent individual bits.
+            Amplitude encoding takes a different approach: it places
+            classical data into the probability amplitudes of a quantum
+            state.
+        </p>
+
+        <p>
+            Consider a classical vector containing four values:
+        </p>
+
+        <div class="formula">
+            x = [x₀, x₁, x₂, x₃]
+        </div>
+
+        <p>
+            First, we normalise the vector so that the sum of the squares
+            of its entries is one. If the vector is non-zero, define:
+        </p>
+
+        <div class="formula">
+            ||x|| = √(x₀² + x₁² + x₂² + x₃²)
+            <br><br>
+            aᵢ = xᵢ / ||x||
+        </div>
+
+        <p>
+            We can then represent the normalised values as amplitudes of
+            a two-qubit state:
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = a₀|00⟩ + a₁|01⟩ + a₂|10⟩ + a₃|11⟩
+        </div>
+
+        <p>
+            The amplitudes satisfy:
+        </p>
+
+        <div class="formula">
+            |a₀|² + |a₁|² + |a₂|² + |a₃|² = 1
+        </div>
+
+        <p>
+            Two qubits provide four computational basis states. In this
+            way, a vector with four components can be represented using
+            two qubits, provided the required state can be prepared.
+        </p>
+
+        <h3>16.3.2 A numerical example</h3>
+
+        <p>
+            Consider the classical vector:
+        </p>
+
+        <div class="formula">
+            x = [1, 2, 2, 1]
+        </div>
+
+        <p>
+            Its Euclidean norm is:
+        </p>
+
+        <div class="formula">
+            ||x|| = √(1² + 2² + 2² + 1²)
+            <br>
+            ||x|| = √10
+        </div>
+
+        <p>
+            Dividing each component by √10 gives the normalised vector:
+        </p>
+
+        <div class="formula">
+            a = [1/√10, 2/√10, 2/√10, 1/√10]
+        </div>
+
+        <p>
+            The corresponding two-qubit state is:
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = (1/√10)|00⟩
+            <br>
+            + (2/√10)|01⟩
+            <br>
+            + (2/√10)|10⟩
+            <br>
+            + (1/√10)|11⟩
+        </div>
+
+        <p>
+            This is a valid quantum state because the sum of the squared
+            amplitudes equals one:
+        </p>
+
+        <div class="formula">
+            1/10 + 4/10 + 4/10 + 1/10 = 1
+        </div>
+
+        <p>
+            If we measure this state in the computational basis, the
+            probabilities of obtaining <code>00</code>, <code>01</code>,
+            <code>10</code>, and <code>11</code> are respectively
+            1/10, 4/10, 4/10, and 1/10.
+        </p>
+
+        <div class="note">
+            <strong>Do not confuse amplitudes with probabilities.</strong>
+            In this example, the amplitude associated with
+            <code>|01⟩</code> is 2/√10, but the probability of observing
+            <code>01</code> is its squared magnitude, which is 4/10.
+            The measurement outcome is probabilistic, even though the
+            quantum state itself is precisely specified.
+        </div>
+
+        <h3>16.3.3 Why amplitude encoding looks attractive</h3>
+
+        <p>
+            A state of n qubits has 2ⁿ computational basis amplitudes.
+            Consequently, amplitude encoding can represent a vector of
+            dimension 2ⁿ using n qubits.
+        </p>
+
+        <div class="formula">
+            Number of amplitudes = 2ⁿ
+            <br>
+            Qubits needed for a vector of dimension N:
+            <br>
+            n = ⌈log₂ N⌉
+        </div>
+
+        <p>
+            If the vector dimension is not a power of two, we can pad
+            the vector with zeroes to reach the next power of two. For
+            example, a five-component vector can be embedded into an
+            eight-component vector and represented using three qubits.
+        </p>
+
+        <p>
+            This is a compact representation in terms of qubit count.
+            It does not mean that preparing an arbitrary amplitude-encoded
+            state is equally cheap.
+        </p>
+
+        <h3>16.3.4 The hidden cost: state preparation</h3>
+
+        <p>
+            Suppose a classical dataset contains one million unrelated
+            numerical values. Amplitude encoding may describe the
+            normalised vector using about twenty qubits because
+            2²⁰ is slightly above one million.
+        </p>
+
+        <p>
+            However, a general quantum state with one million amplitudes
+            may require a large number of quantum gates to prepare.
+            If the original million values exist in classical memory,
+            the preparation circuit must somehow make the appropriate
+            amplitudes appear in the quantum system.
+        </p>
+
+        <p>
+            For a general dense vector with no special structure, standard
+            exact state-preparation procedures can require a number of
+            operations that grows linearly with the vector dimension,
+            up to details of the gate set and preparation method.
+            Specially structured vectors may be much cheaper to prepare.
+        </p>
+
+        <div class="warning">
+            <strong>A key lesson:</strong>
+            Reducing the number of qubits does not necessarily reduce
+            the total computational cost. The cost of loading the data
+            may dominate the later quantum computation.
+        </div>
+
+        <h3>16.3.5 What about negative and complex values?</h3>
+
+        <p>
+            Quantum amplitudes may be negative or complex. This allows
+            amplitude encoding to represent more than just non-negative
+            probability weights.
+        </p>
+
+        <p>
+            For real-valued input vectors, negative components can be
+            represented as negative amplitudes. Their signs affect
+            relative phases and can influence later interference. For
+            complex-valued vectors, both magnitudes and phases can be
+            represented in the amplitudes.
+        </p>
+
+        <p>
+            Nevertheless, measurement probabilities depend on squared
+            magnitudes. A direct measurement of the computational basis
+            does not reveal the signs or phases of all amplitudes. Those
+            features must be accessed through suitable quantum operations
+            and measurements, often with repeated experiments.
+        </p>
+
+        <h3>16.3.6 When is amplitude encoding useful?</h3>
+
+        <p>
+            Amplitude encoding is especially interesting when an algorithm
+            operates directly on quantum states and the input can be
+            prepared efficiently. It appears in discussions of quantum
+            linear algebra, quantum state processing, and algorithms that
+            assume access to quantum data.
+        </p>
+
+        <p>
+            It is less automatically attractive when a large classical
+            dataset must be loaded afresh for every experiment. The
+            preparation cost, data-access method, and number of circuit
+            repetitions must be considered before claiming an advantage.
+        </p>
+    </section>
+
+    <section id="angle-encoding">
+        <h2>16.4 Angle (Rotation) Encoding</h2>
+
+        <h3>16.4.1 Representing numbers through rotations</h3>
+
+        <p>
+            Angle encoding is one of the most intuitive approaches for
+            numerical inputs. Instead of representing a number as a
+            collection of binary digits or as an amplitude in a large
+            state, we use the number to control the angle of a quantum
+            gate.
+        </p>
+
+        <p>
+            A common choice is a rotation around the Y axis of the Bloch
+            sphere. This gate is written as Rᵧ(θ), where θ is the rotation
+            angle.
+        </p>
+
+        <div class="formula">
+            Rᵧ(θ) =
+            <br>
+            [ cos(θ/2)   −sin(θ/2) ]
+            <br>
+            [ sin(θ/2)    cos(θ/2) ]
+        </div>
+
+        <p>
+            Applying this gate to the initial state <code>|0⟩</code>
+            gives:
+        </p>
+
+        <div class="formula">
+            Rᵧ(θ)|0⟩ =
+            <br>
+            cos(θ/2)|0⟩ + sin(θ/2)|1⟩
+        </div>
+
+        <p>
+            The classical value determines the angle θ. The rotation
+            transforms the qubit into a superposition whose amplitudes
+            depend on that value.
+        </p>
+
+        <h3>16.4.2 A simple example</h3>
+
+        <p>
+            Suppose we have one classical feature x and encode it by
+            choosing θ = x. The encoding operation is:
+        </p>
+
+        <div class="formula">
+            |ψ(x)⟩ = Rᵧ(x)|0⟩
+            <br>
+            = cos(x/2)|0⟩ + sin(x/2)|1⟩
+        </div>
+
+        <p>
+            If x = 0, the rotation does nothing and the state remains
+            <code>|0⟩</code>. If x = π, the state becomes
+            <code>|1⟩</code>, up to the sign of the resulting amplitude.
+            Between these values, the qubit moves continuously between
+            the two basis states.
+        </p>
+
+        <p>
+            The probability of measuring the outcome 1 is:
+        </p>
+
+        <div class="formula">
+            P(1|x) = sin²(x/2)
+        </div>
+
+        <p>
+            This equation shows how the classical input affects the
+            measurement statistics of the quantum state.
+        </p>
+
+        <div class="note">
+            <strong>Angles must be defined consistently.</strong>
+            Rotation gates usually use radians in mathematical definitions
+            and in many programming interfaces. If a feature is originally
+            measured in metres, rupees, or years, it should normally be
+            scaled or transformed before being used as an angle.
+        </div>
+
+        <h3>16.4.3 Encoding several features</h3>
+
+        <p>
+            Suppose a data point contains three features:
+        </p>
+
+        <div class="formula">
+            x = [x₁, x₂, x₃]
+        </div>
+
+        <p>
+            A straightforward approach is to use three qubits and apply
+            one rotation to each:
+        </p>
+
+        <div class="formula">
+            |ψ(x)⟩ =
+            Rᵧ(x₁)|0⟩ ⊗
+            Rᵧ(x₂)|0⟩ ⊗
+            Rᵧ(x₃)|0⟩
+        </div>
+
+        <p>
+            Equivalently, the encoding circuit applies
+            Rᵧ(x₁) to the first qubit, Rᵧ(x₂) to the second, and
+            Rᵧ(x₃) to the third. The result is a product state before
+            any entangling gates are introduced.
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="diagram-box">x₁ → Rᵧ(x₁)</div>
+                <div class="diagram-box">x₂ → Rᵧ(x₂)</div>
+                <div class="diagram-box">x₃ → Rᵧ(x₃)</div>
+            </div>
+            <p class="diagram-caption">
+                Each numerical feature controls a rotation on a qubit.
+            </p>
+        </div>
+
+        <p>
+            In this simple arrangement, the number of qubits grows with
+            the number of features. The encoding uses a small number of
+            gates per feature, assuming that the necessary single-qubit
+            rotations are directly available.
+        </p>
+
+        <h3>16.4.4 Choosing a scaling rule</h3>
+
+        <p>
+            Real-world data does not always lie in a convenient angular
+            range. A feature such as a person's age might lie between
+            0 and 100, while an image pixel might lie between 0 and 255.
+            Feeding these raw values directly into a rotation can create
+            many repeated or rapidly changing states because rotation
+            angles are periodic.
+        </p>
+
+        <p>
+            A common strategy is to normalise each feature and map it
+            to a chosen interval. For example, if a feature has been
+            scaled to the interval [0, 1], one may define:
+        </p>
+
+        <div class="formula">
+            θ = πx
+        </div>
+
+        <p>
+            The encoding then uses Rᵧ(πx). This is only one possible
+            choice. Another task may benefit from a different range,
+            an offset, or a data-dependent transformation.
+        </p>
+
+        <p>
+            Scaling is not a trivial preprocessing detail. It influences
+            how sensitive the encoded quantum state is to changes in
+            the input. A poor scaling rule can make distinct data points
+            produce very similar states or can create undesirable
+            periodic behaviour.
+        </p>
+
+        <h3>16.4.5 Other rotation gates</h3>
+
+        <p>
+            Angle encoding does not have to use only Rᵧ rotations.
+            The Pauli-X, Pauli-Y, and Pauli-Z axes define three common
+            rotation gates:
+        </p>
+
+        <div class="formula">
+            Rₓ(θ) = exp(−iθX/2)
+            <br>
+            Rᵧ(θ) = exp(−iθY/2)
+            <br>
+            R𝓏(θ) = exp(−iθZ/2)
+        </div>
+
+        <p>
+            Here, X, Y, and Z are Pauli operators and i is the imaginary
+            unit. These rotations change the quantum state in different
+            ways. In particular, a Z-axis rotation applied to
+            <code>|0⟩</code> alone changes only a global phase, which
+            cannot be observed. A Z rotation becomes useful for encoding
+            relative phase when the state has appropriate superposition
+            components.
+        </p>
+
+        <h3>16.4.6 Advantages and limitations</h3>
+
+        <ul>
+            <li><strong>Compact and practical:</strong> each feature can often be encoded with a single rotation.</li>
+            <li><strong>Natural for numerical inputs:</strong> continuous values directly determine gate parameters.</li>
+            <li><strong>Hardware-friendly:</strong> single-qubit rotations are supported by many quantum platforms.</li>
+            <li><strong>Potential limitation:</strong> one qubit per feature may still be costly for high-dimensional datasets.</li>
+            <li><strong>Potential limitation:</strong> a simple product-state encoding does not initially create entanglement between features.</li>
+            <li><strong>Potential limitation:</strong> periodic rotations can map different classical values to the same or similar quantum states.</li>
+        </ul>
+
+        <p>
+            Rotation encoding is widely used in parameterised quantum
+            circuits because it gives a simple connection between
+            classical features and quantum operations.
+        </p>
+    </section>
+
+    <section id="higher-order">
+        <h2>16.5 Higher-Order and IQP-Style Encodings</h2>
+
+        <h3>16.5.1 Why encode features together?</h3>
+
+        <p>
+            Imagine predicting whether a student will perform well in
+            an examination. The number of hours studied may matter, and
+            sleep duration may matter. But the relationship between
+            studying and performance could also depend on sleep duration.
+            Studying for ten hours after a good night's sleep may have a
+            different effect from studying for ten hours after almost
+            no sleep.
+        </p>
+
+        <p>
+            In machine learning, this is an example of an interaction
+            between features. A model that only examines each feature
+            independently may struggle to represent such relationships.
+        </p>
+
+        <p>
+            Quantum encoding can be designed to introduce interactions
+            between input features. Instead of allowing each number to
+            control only a separate single-qubit rotation, we can use
+            products of features to determine operations involving
+            multiple qubits.
+        </p>
+
+        <h3>16.5.2 Higher-order feature combinations</h3>
+
+        <p>
+            In classical machine learning, a feature map might transform
+            two input features x₁ and x₂ into a richer representation:
+        </p>
+
+        <div class="formula">
+            φ(x) = [x₁, x₂, x₁², x₂², x₁x₂]
+        </div>
+
+        <p>
+            The term x₁x₂ is especially important because it represents
+            an interaction between the two original features. The squared
+            terms can represent curvature or nonlinear effects.
+        </p>
+
+        <p>
+            Quantum circuits can produce related effects through their
+            input-dependent rotations and interactions. For example,
+            a gate may have an angle proportional to x₁x₂ rather than
+            only x₁ or x₂.
+        </p>
+
+        <div class="formula">
+            θ₁ = λx₁
+            <br>
+            θ₂ = λx₂
+            <br>
+            θ₁₂ = λx₁x₂
+        </div>
+
+        <p>
+            Here, λ is a scaling constant. The first two angles depend
+            on individual features, while the third depends on their
+            product.
+        </p>
+
+        <p>
+            This is called higher-order feature encoding when the encoding
+            explicitly incorporates combinations of multiple input
+            features. The exact meaning depends on the construction:
+            higher-order terms may appear directly in rotation angles,
+            in phases, or in the resulting measurement functions.
+        </p>
+
+        <h3>16.5.3 A two-qubit example</h3>
+
+        <p>
+            Suppose we begin with two qubits in the state
+            <code>|00⟩</code>. We apply Hadamard gates to create an
+            equal superposition:
+        </p>
+
+        <div class="formula">
+            H⊗H|00⟩ =
+            <br>
+            (|00⟩ + |01⟩ + |10⟩ + |11⟩)/2
+        </div>
+
+        <p>
+            We now apply an input-dependent controlled phase operation.
+            One possible gate is a controlled-Z rotation, written
+            schematically as:
+        </p>
+
+        <div class="formula">
+            U(x₁,x₂) = exp(iλx₁x₂ Z⊗Z)
+        </div>
+
+        <p>
+            In this expression, Z⊗Z acts jointly on the two qubits.
+            The phase angle depends on the product x₁x₂. As the
+            input values change, the relative phases of the basis
+            components change.
+        </p>
+
+        <p>
+            Relative phases may be difficult to observe directly, but
+            later gates can make their effects visible in measurement
+            statistics. As a result, the output may depend on the
+            interaction between x₁ and x₂.
+        </p>
+
+        <div class="note">
+            The operation above is an illustrative higher-order phase
+            encoding. It should not be confused with a claim that every
+            two-qubit phase operation creates entanglement for every
+            input. Whether the resulting state is entangled depends on
+            the operation and the state to which it is applied.
+        </div>
+
+        <h3>16.5.4 What is IQP-style encoding?</h3>
+
+        <p>
+            IQP stands for <em>Instantaneous Quantum Polynomial-time</em>.
+            IQP circuits are a family of quantum circuits with a
+            particular structure, commonly involving commuting gates
+            that are diagonal in a chosen basis, together with
+            basis-changing operations such as Hadamard gates.
+        </p>
+
+        <p>
+            In quantum machine learning, an IQP-style feature map uses
+            input-dependent phase operations to encode a classical
+            data point into a quantum state. The phase operations may
+            involve individual features and products of several features.
+        </p>
+
+        <p>
+            A simplified feature-map construction has the following form:
+        </p>
+
+        <div class="formula">
+            |φ(x)⟩ = U<sub>φ</sub>(x)|+⟩ⁿ
+        </div>
+
+        <p>
+            Here, <code>|+⟩ = (|0⟩ + |1⟩)/√2</code>, and
+            <code>Uφ(x)</code> is an input-dependent unitary operation
+            built from selected phase gates.
+        </p>
+
+        <p>
+            One possible illustrative form is:
+        </p>
+
+        <div class="formula">
+            U<sub>φ</sub>(x) =
+            exp(i Σ φᵢ(x)Zᵢ
+            + i Σ φᵢⱼ(x)ZᵢZⱼ)
+        </div>
+
+        <p>
+            The operators Zᵢ act on individual qubits, while ZᵢZⱼ
+            denotes an interaction between a pair of qubits. The
+            functions φᵢ(x) and φᵢⱼ(x) determine how the input values
+            influence these phases.
+        </p>
+
+        <p>
+            This expression describes one possible diagonal phase
+            feature map, not every IQP circuit. In some implementations,
+            Hadamard gates surround the diagonal operations; in others,
+            the construction is described directly as a feature map
+            applied to an initial superposition.
+        </p>
+
+        <h3>16.5.5 Connection to quantum kernels</h3>
+
+        <p>
+            One reason these feature maps are important is that they
+            can be used to define quantum kernels. In classical machine
+            learning, a kernel measures a notion of similarity between
+            two inputs. A quantum feature map defines a quantum state
+            for each input, and the overlap between those states can
+            serve as a similarity measure.
+        </p>
+
+        <div class="formula">
+            K(x,z) = |⟨φ(x)|φ(z)⟩|²
+        </div>
+
+        <p>
+            This is the fidelity between the two pure states when
+            they are represented by normalised state vectors. It lies
+            between zero and one.
+        </p>
+
+        <p>
+            If two inputs produce identical states, the kernel value
+            is one. If their states are orthogonal, the value is zero.
+            Intermediate values describe partial overlap.
+        </p>
+
+        <p>
+            The feature map determines which aspects of the classical
+            data influence this similarity. A richer map may capture
+            more complicated relationships, but it can also make the
+            circuit harder to execute and the resulting kernel harder
+            to estimate accurately.
+        </p>
+
+        <h3>16.5.6 More complexity is not always better</h3>
+
+        <p>
+            Adding more feature interactions may increase the range of
+            functions that a model can represent. However, a more
+            complicated feature map may require more gates, more
+            entangling operations, and more measurements.
+        </p>
+
+        <p>
+            On noisy hardware, deep circuits can lose useful information
+            before the final measurement. A feature map that is
+            mathematically expressive but impossible to execute
+            reliably may be less useful than a simpler one.
+        </p>
+
+        <p>
+            The goal is not to add the largest possible number of
+            interactions. The goal is to introduce the relationships
+            that are useful for the task without making the circuit
+            unnecessarily expensive.
+        </p>
+    </section>
+
+    <section id="re-uploading">
+        <h2>16.6 Data Re-uploading</h2>
+
+        <h3>16.6.1 The idea of using the same data repeatedly</h3>
+
+        <p>
+            In a simple angle-encoding circuit, we may encode each
+            input feature once and then apply trainable quantum gates.
+            This creates a quantum state that depends on the input,
+            but a shallow circuit may have limited ability to represent
+            complicated functions of that input.
+        </p>
+
+        <p>
+            Data re-uploading takes a different approach. The same
+            classical data is inserted into the circuit multiple times,
+            with trainable operations placed between the encoding stages.
+            Each stage allows the input to influence the state again.
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="diagram-box">Input x</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Encode x</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Trainable Gates</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Encode x Again</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Measurement</div>
+            </div>
+            <p class="diagram-caption">
+                Data re-uploading repeatedly introduces the input between
+                trainable quantum transformations.
+            </p>
+        </div>
+
+        <h3>16.6.2 A mathematical description</h3>
+
+        <p>
+            Let U<sub>enc</sub>(x) be an encoding operation determined
+            by the input x. Let U<sub>θ₁</sub> and U<sub>θ₂</sub>
+            be trainable quantum operations whose parameters are
+            represented by θ₁ and θ₂.
+        </p>
+
+        <p>
+            A two-stage re-uploading circuit can be written as:
+        </p>
+
+        <div class="formula">
+            |ψ(x,θ)⟩ =
+            U<sub>enc</sub>(x)
+            U<sub>θ₂</sub>
+            U<sub>enc</sub>(x)
+            U<sub>θ₁</sub>
+            |0⟩ⁿ
+        </div>
+
+        <p>
+            This expression specifies the order of operations when
+            read from right to left: first the initial trainable
+            transformation is applied, followed by data encoding,
+            another trainable transformation, and the final encoding.
+        </p>
+
+        <p>
+            Different conventions may place the trainable gates and
+            encoding gates in different orders. The essential idea
+            is that the input-dependent operation appears repeatedly
+            throughout the circuit.
+        </p>
+
+        <h3>16.6.3 Why can repeated encoding help?</h3>
+
+        <p>
+            Consider the simpler case of a single qubit with rotations
+            whose angles depend on x. The resulting measurement
+            probabilities and expectation values are trigonometric
+            functions of x.
+        </p>
+
+        <p>
+            A single rotation may produce a relatively simple dependence
+            on x. When additional input-dependent rotations and
+            trainable operations are composed, the resulting
+            trigonometric expression can contain more combinations
+            of frequencies and phases.
+        </p>
+
+        <p>
+            These additional combinations can allow the model to
+            approximate a wider range of functions. In suitable
+            constructions, increasing the number of re-uploading
+            layers can improve the expressive power of the model.
+        </p>
+
+        <p>
+            However, repeated encoding does not guarantee that every
+            target function becomes easy to learn. The available
+            frequencies, circuit architecture, optimisation procedure,
+            and measurement choices still matter.
+        </p>
+
+        <h3>16.6.4 A practical example</h3>
+
+        <p>
+            Suppose we want a quantum classifier to distinguish two
+            groups of points on a graph. The boundary between the
+            groups may be curved rather than a straight line.
+        </p>
+
+        <p>
+            A shallow circuit with a simple encoding might fail to
+            represent the boundary accurately. Re-uploading the same
+            coordinates through several trainable layers may introduce
+            additional nonlinear relationships into the measured
+            output.
+        </p>
+
+        <p>
+            The trainable parameters can then be adjusted using a
+            classical optimisation algorithm. During training, the
+            circuit predicts an output, a loss function evaluates
+            the prediction, and the parameters are updated to improve
+            the result.
+        </p>
+
+        <p>
+            The classical data is not changed during re-uploading.
+            Instead, the same values influence the quantum state
+            at multiple points in the circuit.
+        </p>
+
+        <h3>16.6.5 Expressivity versus trainability</h3>
+
+        <p>
+            A deeper circuit may represent more complicated functions,
+            but deeper is not always better. Additional gates increase
+            execution time and create more opportunities for noise
+            to affect the state.
+        </p>
+
+        <p>
+            Some deep, highly parameterised circuits also suffer from
+            barren plateaus, where gradients of the training objective
+            become extremely small in certain regions of parameter
+            space. Such gradients can make optimisation difficult.
+            This behaviour depends on the circuit, cost function,
+            initialisation, and problem structure; it is not an
+            inevitable consequence of every deep circuit.
+        </p>
+
+        <div class="takeaway">
+            Data re-uploading is a way to make a small quantum circuit
+            reuse the same input across several transformations. It can
+            increase expressive power without requiring one new qubit
+            for every additional encoding layer, although the circuit
+            depth and gate count still grow.
+        </div>
+    </section>
+
+    <section id="qram">
+        <h2>16.7 QRAM and Its Practical Limitations</h2>
+
+        <h3>16.7.1 The data-loading problem</h3>
+
+        <p>
+            So far, we have discussed how classical values can be
+            transformed into quantum states. This raises a bigger
+            question: what happens when the dataset is enormous?
+        </p>
+
+        <p>
+            A real machine learning application might contain millions
+            of records. Preparing an individual quantum state from
+            each record could become expensive. We would like a
+            mechanism that allows a quantum algorithm to access
+            classical data efficiently.
+        </p>
+
+        <p>
+            Quantum Random Access Memory, commonly called QRAM, is
+            a proposed architecture for accessing stored classical
+            information using quantum-address inputs. It is intended
+            to support certain kinds of data loading in quantum
+            algorithms.
+        </p>
+
+        <h3>16.7.2 How ordinary random-access memory works</h3>
+
+        <p>
+            In a conventional computer, memory is organised into
+            addressable locations. A program supplies an address,
+            and the memory returns the data stored at that location.
+        </p>
+
+        <p>
+            For example, a memory containing eight records can use
+            a three-bit address to select one of the eight locations.
+            If the address is 101, the system returns the data stored
+            at location 5 when counting from zero.
+        </p>
+
+        <h3>16.7.3 The quantum version</h3>
+
+        <p>
+            QRAM aims to extend this idea to quantum superpositions
+            of addresses. Consider a simplified idealised operation:
+        </p>
+
+        <div class="formula">
+            Σ αᵢ|i⟩|0⟩
+            <br>
+            →
+            <br>
+            Σ αᵢ|i⟩|dᵢ⟩
+        </div>
+
+        <p>
+            Here, <code>|i⟩</code> represents an address,
+            <code>|dᵢ⟩</code> represents the data associated with
+            that address, and αᵢ is the amplitude of the address
+            state. The summation runs over the addresses included
+            in the input superposition.
+        </p>
+
+        <p>
+            The operation correlates each address with its corresponding
+            data. If the address register is in a superposition, the
+            idealised result is a superposition of address-data pairs.
+            This is different from a classical memory operation that
+            selects one definite address at a time.
+        </p>
+
+        <p>
+            The expression is an idealised model of quantum data
+            access, not a complete engineering description of a
+            practical memory device. Real implementations must
+            account for how the stored information is physically
+            represented, how the query is routed, and how errors
+            are controlled.
+        </p>
+
+        <h3>16.7.4 Why is QRAM interesting?</h3>
+
+        <p>
+            Some quantum algorithms are described under the assumption
+            that they can access data through an efficient quantum
+            oracle or memory structure. QRAM is one proposed way to
+            realise certain such access patterns.
+        </p>
+
+        <p>
+            In an ideal setting, an algorithm may exploit a coherent
+            query that acts on a superposition of addresses. This
+            can be important in theoretical algorithms for searching,
+            sampling, linear algebra, and quantum machine learning.
+        </p>
+
+        <p>
+            The potential advantage, however, depends on what the
+            algorithm does with the data after accessing it. Even
+            if a coherent query is efficient, the algorithm may
+            require many queries, complicated post-processing,
+            or repeated measurements.
+        </p>
+
+        <h3>16.7.5 Why practical QRAM is difficult</h3>
+
+        <p>
+            QRAM is a theoretical and engineering challenge rather
+            than a universal, readily available replacement for
+            ordinary computer memory. Several issues must be solved.
+        </p>
+
+        <h4>1. Hardware size and routing</h4>
+
+        <p>
+            A memory containing many entries requires physical
+            resources to store or encode those entries and route
+            queries to the relevant locations. A design that appears
+            compact in an abstract circuit diagram may involve a
+            large physical structure.
+        </p>
+
+        <h4>2. Noise and errors</h4>
+
+        <p>
+            Quantum information is vulnerable to noise and unwanted
+            interactions. A large memory-access structure may involve
+            many components and operations, each of which can
+            introduce errors. Preserving coherent information
+            throughout the query is a major challenge.
+        </p>
+
+        <h4>3. Building and maintaining the memory</h4>
+
+        <p>
+            The memory must be loaded with data, and its stored
+            information must remain usable. Loading the dataset,
+            updating it, and maintaining the hardware may require
+            substantial resources.
+        </p>
+
+        <h4>4. The cost of a query</h4>
+
+        <p>
+            An idealised algorithm may count one coherent memory
+            query as a single operation. A practical device must
+            implement that query using physical components and
+            elementary operations. These costs can be very different.
+        </p>
+
+        <h4>5. Error correction and fault tolerance</h4>
+
+        <p>
+            A large-scale coherent memory may require reliable
+            components, control systems, and potentially quantum
+            error correction. These additional resources can be
+            substantial, depending on the architecture.
+        </p>
+
+        <h3>16.7.6 QRAM does not remove the input bottleneck automatically</h3>
+
+        <p>
+            Suppose a classical dataset contains one million numbers.
+            If the data begins in an ordinary database, a practical
+            system still needs a way to transfer or represent those
+            values in the proposed memory structure. The time and
+            resources required to build and initialise that structure
+            cannot simply be ignored.
+        </p>
+
+        <p>
+            If the same data is used repeatedly, preparation costs
+            may be amortised across many queries. If the data changes
+            frequently or is used for only one small computation,
+            those costs may make the approach unattractive.
+        </p>
+
+        <p>
+            Furthermore, the quantum algorithm cannot simply print
+            every item in a superposition as though it were a
+            conventional database response. Measurement returns
+            limited classical information, so the algorithm must
+            be designed around the information it actually needs.
+        </p>
+
+        <div class="warning">
+            <strong>Practical rule:</strong>
+            A quantum speedup based on efficient QRAM access must state
+            its assumptions about data loading, memory construction,
+            query cost, errors, and the number of times the memory
+            is used. An efficient theoretical query alone does not
+            establish an end-to-end speedup for a machine learning task.
+        </div>
+    </section>
+
+    <section id="expressivity">
+        <h2>16.8 Encoding as the Source of Expressivity</h2>
+
+        <h3>16.8.1 What does expressivity mean?</h3>
+
+        <p>
+            In machine learning, a model is expressive if it can
+            represent a sufficiently wide range of useful relationships
+            between inputs and outputs. A model that can represent
+            only very simple relationships may perform poorly on a
+            task requiring a complicated decision boundary.
+        </p>
+
+        <p>
+            Consider a classifier that receives two features, x₁
+            and x₂, and predicts either class A or class B. A simple
+            model may separate the classes using a straight line.
+            Another model may need a curved boundary or several
+            disconnected regions.
+        </p>
+
+        <p>
+            The representation used by the model influences which
+            boundaries it can express. Quantum machine learning is
+            no different: the encoding and the subsequent quantum
+            circuit together determine how the input affects the
+            final prediction.
+        </p>
+
+        <h3>16.8.2 The quantum feature map</h3>
+
+        <p>
+            We can describe encoding as a mathematical function that
+            maps classical inputs to quantum states:
+        </p>
+
+        <div class="formula">
+            x → |φ(x)⟩
+        </div>
+
+        <p>
+            The function that performs this transformation is called
+            a quantum feature map. It converts an ordinary data point
+            into a state in a quantum state space.
+        </p>
+
+        <p>
+            A trainable quantum circuit can then process the encoded
+            state, and a measurement produces the quantity used by
+            the learning model. A common form of a prediction is:
+        </p>
+
+        <div class="formula">
+            f(x;θ) =
+            ⟨φ(x)|U†(θ) M U(θ)|φ(x)⟩
+        </div>
+
+        <p>
+            Here:
+        </p>
+
+        <ul>
+            <li><code>|φ(x)⟩</code> is the state created by encoding the input x.</li>
+            <li><code>U(θ)</code> is a trainable quantum operation.</li>
+            <li><code>M</code> is an observable, representing the quantity measured from the circuit.</li>
+            <li><code>U†(θ)</code> is the adjoint of the unitary operation.</li>
+            <li><code>f(x;θ)</code> is the expectation value used to form a prediction.</li>
+        </ul>
+
+        <p>
+            This equation is important because it separates the two
+            main sources of modelling capability: the way data enters
+            the quantum state and the way the trainable circuit
+            transforms that state before measurement.
+        </p>
+
+        <h3>16.8.3 Encoding changes the function being learned</h3>
+
+        <p>
+            Imagine two quantum models with the same number of qubits
+            and the same trainable circuit, but different encodings.
+            One uses a simple rotation based on each individual
+            feature. The other introduces input-dependent interactions
+            between features.
+        </p>
+
+        <p>
+            Although the hardware structure may be similar, the two
+            models can represent different families of functions.
+            Their measurements depend on different mathematical
+            combinations of the input values.
+        </p>
+
+        <p>
+            In this sense, encoding helps determine the feature space
+            in which learning takes place. It is not merely a
+            preliminary step that can be ignored after the circuit
+            has been prepared.
+        </p>
+
+        <h3>16.8.4 Interference creates useful relationships</h3>
+
+        <p>
+            One distinctive property of quantum computation is
+            interference. Quantum amplitudes can reinforce or cancel
+            one another when paths through a circuit are combined.
+            Input-dependent phases and rotations can change how
+            this interference occurs.
+        </p>
+
+        <p>
+            For example, two inputs may produce states with similar
+            measurement probabilities immediately after encoding,
+            but their relative phases may differ. A subsequent
+            quantum operation can transform those phase differences
+            into different measurement probabilities.
+        </p>
+
+        <p>
+            This is one reason why the full quantum state matters
+            more than a list of the probabilities obtained from
+            measuring it immediately. The later circuit can use
+            relative phase information through interference.
+        </p>
+
+        <div class="note">
+            <strong>Important:</strong>
+            Interference is a computational resource, not a guarantee
+            of better prediction. The circuit must be designed so
+            that useful distinctions in the input affect the final
+            measurement in a way that the learning process can exploit.
+        </div>
+
+        <h3>16.8.5 Expressivity and quantum kernels</h3>
+
+        <p>
+            Recall the quantum kernel:
+        </p>
+
+        <div class="formula">
+            K(x,z) = |⟨φ(x)|φ(z)⟩|²
+        </div>
+
+        <p>
+            The feature map determines which pairs of inputs have
+            high or low overlap. If the map transforms inputs in
+            a way that reflects useful similarities for the task,
+            the resulting kernel may help a classifier distinguish
+            the relevant classes.
+        </p>
+
+        <p>
+            If the feature map does not preserve the relationships
+            needed for the task, the kernel may be unhelpful. A
+            more complicated feature map can also create problems:
+            its overlaps may be difficult to estimate, or the
+            resulting kernel may be unsuitable for the available
+            training data.
+        </p>
+
+        <p>
+            Quantum kernels therefore illustrate a broader point:
+            the choice of representation can matter as much as the
+            choice of the algorithm that operates on the representation.
+        </p>
+
+        <h3>16.8.6 Expressivity versus trainability</h3>
+
+        <p>
+            It is tempting to assume that the most expressive circuit
+            must be the best model. In practice, the ability to
+            represent a function and the ability to learn that
+            function are different things.
+        </p>
+
+        <p>
+            A highly expressive circuit may have many parameters,
+            require substantial measurement resources, or produce
+            gradients that are difficult to optimise. Noise can
+            also make its theoretical behaviour hard to realise
+            on physical hardware.
+        </p>
+
+        <p>
+            A simpler encoding may perform better if it preserves
+            the important information and allows the model to train
+            reliably. Classical machine learning has a similar
+            principle: a model should be complex enough for the
+            task, but unnecessary complexity can increase training
+            difficulty and overfitting.
+        </p>
+
+        <h3>16.8.7 Expressivity versus generalisation</h3>
+
+        <p>
+            Generalisation means performing well on new data rather
+            than merely memorising the training examples. An encoding
+            that allows a model to fit very complicated patterns
+            may also allow it to fit noise in a small dataset.
+        </p>
+
+        <p>
+            Consequently, more expressive quantum feature maps do
+            not automatically generalise better. Their performance
+            depends on the data distribution, training procedure,
+            model architecture, regularisation, and the relationship
+            between the chosen features and the task.
+        </p>
+
+        <p>
+            The objective is to find an encoding that makes the
+            relevant patterns accessible without creating needless
+            computational expense or making the model unnecessarily
+            difficult to train.
+        </p>
+
+        <h3>16.8.8 The complete picture</h3>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="diagram-box">Classical Features</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Encoding / Feature Map</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Trainable Circuit</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Measurement</div>
+                <div class="arrow">→</div>
+                <div class="diagram-box">Prediction</div>
+            </div>
+            <p class="diagram-caption">
+                Quantum machine learning depends on the entire pipeline,
+                from the original data to the final classical prediction.
+            </p>
+        </div>
+
+        <p>
+            A quantum learning model should therefore be evaluated as
+            a complete system. The number of qubits and the expressive
+            power of the circuit are only part of the story. We must
+            also examine the cost of preparing the input, the number
+            of measurements required, the effects of noise, the
+            difficulty of optimisation, and the model's performance
+            on unseen data.
+        </p>
+
+        <div class="takeaway">
+            Encoding is one of the main sources of expressivity because
+            it decides how classical information is represented in
+            the quantum state. But useful expressivity is not simply
+            about creating the most complicated state. It is about
+            representing the right relationships efficiently and
+            making them accessible to the learning process.
+        </div>
+    </section>
+
+    <section id="comparison">
+        <h2>Comparing the Main Encoding Methods</h2>
+
+        <p>
+            We have now encountered several ways of converting classical
+            information into quantum states. Each method makes a
+            different trade-off between qubit count, preparation
+            complexity, and the type of information represented.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>How data is represented</th>
+                    <th>Typical qubit requirement</th>
+                    <th>Main advantage</th>
+                    <th>Main limitation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Basis encoding</strong></td>
+                    <td>Binary values determine computational basis states.</td>
+                    <td>One qubit per encoded bit.</td>
+                    <td>Simple and natural for discrete data.</td>
+                    <td>Many bits may be needed for high-precision values.</td>
+                </tr>
+                <tr>
+                    <td><strong>Amplitude encoding</strong></td>
+                    <td>Vector components determine quantum amplitudes.</td>
+                    <td>About log₂(N) qubits for N components.</td>
+                    <td>Compact representation of large vectors in terms of qubit count.</td>
+                    <td>General state preparation can be expensive.</td>
+                </tr>
+                <tr>
+                    <td><strong>Angle encoding</strong></td>
+                    <td>Numerical values determine rotation angles.</td>
+                    <td>Often one qubit per feature in a simple design.</td>
+                    <td>Simple to implement with rotation gates.</td>
+                    <td>Feature scaling and circuit depth must be managed.</td>
+                </tr>
+                <tr>
+                    <td><strong>Higher-order encoding</strong></td>
+                    <td>Individual features and combinations determine phases or gates.</td>
+                    <td>Depends on the feature map and its interactions.</td>
+                    <td>Can capture relationships between features.</td>
+                    <td>More complex interactions can increase gate cost.</td>
+                </tr>
+                <tr>
+                    <td><strong>IQP-style encoding</strong></td>
+                    <td>Input-dependent diagonal phase operations encode the data.</td>
+                    <td>Depends on the chosen feature map.</td>
+                    <td>Useful for constructing quantum feature maps and kernels.</td>
+                    <td>Expressivity and useful advantage depend on the construction and hardware.</td>
+                </tr>
+                <tr>
+                    <td><strong>Data re-uploading</strong></td>
+                    <td>The same input is encoded repeatedly throughout the circuit.</td>
+                    <td>Can reuse a fixed number of qubits across layers.</td>
+                    <td>Can increase expressive power with repeated input-dependent transformations.</td>
+                    <td>Greater circuit depth may increase noise and training difficulty.</td>
+                </tr>
+                <tr>
+                    <td><strong>QRAM-assisted access</strong></td>
+                    <td>Quantum address states are correlated with stored data.</td>
+                    <td>Address registers scale logarithmically with the number of locations in the idealised model, but the memory requires additional physical resources.</td>
+                    <td>Potentially supports coherent access to large datasets.</td>
+                    <td>Practical construction, loading, routing, and error control are challenging.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            The qubit counts in this table are not measures of total
+            computational cost. A fair comparison must include state
+            preparation, circuit depth, gate quality, measurement
+            repetitions, classical preprocessing, and data access.
+        </div>
+    </section>
+
+    <section id="design-principles">
+        <h2>How to Choose an Encoding for a Real Problem</h2>
+
+        <p>
+            Suppose you are designing a quantum machine learning model
+            for a practical dataset. Rather than selecting an encoding
+            because it sounds advanced, ask a sequence of questions.
+        </p>
+
+        <h3>1. What kind of data do you have?</h3>
+
+        <p>
+            Binary labels, discrete categories, and numerical features
+            have different representation needs. Basis encoding may
+            suit binary information, while angle encoding is a natural
+            starting point for small numerical feature vectors.
+        </p>
+
+        <h3>2. How large is the dataset?</h3>
+
+        <p>
+            A dataset with five features presents a different problem
+            from an image with tens of thousands of pixel values.
+            Consider how many qubits are required and whether the
+            encoding procedure can be executed efficiently.
+        </p>
+
+        <h3>3. How often must the data be loaded?</h3>
+
+        <p>
+            If the same data is reused for many quantum computations,
+            some preparation costs may be amortised. If a large
+            state must be prepared from scratch for every training
+            example, the overall cost can become significant.
+        </p>
+
+        <h3>4. Which relationships must the model learn?</h3>
+
+        <p>
+            If the task depends on interactions between features,
+            consider whether an encoding with input-dependent phases,
+            multiple encoding stages, or suitable entangling gates
+            can represent those interactions.
+        </p>
+
+        <h3>5. Can the hardware execute the circuit reliably?</h3>
+
+        <p>
+            The number and type of gates matter. A deep circuit with
+            many two-qubit gates may be difficult to execute on
+            noisy hardware. A simpler feature map may offer a better
+            practical balance.
+        </p>
+
+        <h3>6. How will you measure success?</h3>
+
+        <p>
+            Compare the quantum model against relevant classical
+            baselines using the same data splits and a suitable
+            evaluation procedure. Include data preparation and
+            measurement costs where they are relevant to the proposed
+            application. Do not treat a large state space or a
+            small qubit count as proof of a computational advantage.
+        </p>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter Summary</h2>
+
+        <p>
+            Encoding is the bridge between classical information and
+            quantum computation. It determines how ordinary numbers,
+            binary strings, and feature vectors become quantum states.
+            Different encodings can lead to very different resource
+            requirements and learning behaviour.
+        </p>
+
+        <ul class="check-list">
+            <li><strong>Basis encoding</strong> represents classical bits using computational basis states.</li>
+            <li><strong>Amplitude encoding</strong> places normalised vector components into the amplitudes of a quantum state.</li>
+            <li><strong>Angle encoding</strong> uses classical values to control quantum rotation angles.</li>
+            <li><strong>Higher-order encoding</strong> introduces feature combinations that can represent interactions between input variables.</li>
+            <li><strong>IQP-style encoding</strong> uses input-dependent phase operations and is relevant to quantum feature maps and kernels.</li>
+            <li><strong>Data re-uploading</strong> introduces the same classical input multiple times between trainable transformations.</li>
+            <li><strong>QRAM</strong> proposes coherent access to stored classical data, but practical construction and operation remain challenging.</li>
+            <li><strong>Expressivity</strong> depends on the encoding, the trainable circuit, and the measurements used to produce predictions.</li>
+        </ul>
+
+        <div class="takeaway">
+            <strong>The most important lesson:</strong>
+            A quantum computer does not gain a practical advantage merely
+            because a large amount of information can be described by
+            a small number of qubits. The information must be encoded
+            efficiently, processed usefully, and extracted through
+            measurements at a cost that makes sense for the problem.
+        </div>
+    </section>
+
+    <section id="questions">
+        <h2>Questions for Understanding</h2>
+
+        <h3>Part A: Basic Concepts</h3>
+
+        <ol>
+            <li>Why must classical data be encoded before a quantum circuit can process it?</li>
+            <li>What is the difference between a computational basis state and a superposition?</li>
+            <li>Why does an n-qubit state have 2ⁿ computational basis amplitudes?</li>
+            <li>Why does having 2ⁿ amplitudes not mean that all those values can be read out in a single measurement?</li>
+        </ol>
+
+        <h3>Part B: Encoding Methods</h3>
+
+        <ol start="5">
+            <li>How would you basis-encode the binary string 1101? How many qubits are required?</li>
+            <li>Why must the amplitudes of an amplitude-encoded state satisfy a normalisation condition?</li>
+            <li>How does the Rᵧ(θ) gate encode a numerical feature into a qubit?</li>
+            <li>What is the difference between encoding individual features and encoding their products?</li>
+            <li>Why might data re-uploading increase the expressive power of a parameterised quantum circuit?</li>
+        </ol>
+
+        <h3>Part C: Deeper Thinking</h3>
+
+        <ol start="10">
+            <li>A vector contains 1,024 components. How many qubits are sufficient to represent it using amplitude encoding, assuming a normalised state can be prepared?</li>
+            <li>Why might amplitude encoding be unattractive if the input vector is a large, arbitrary classical dataset?</li>
+            <li>Explain how an input-dependent phase can affect a later measurement even when the phase is not directly visible in computational-basis probabilities.</li>
+            <li>What assumptions about data loading and memory access should be considered when evaluating a quantum algorithm that uses QRAM?</li>
+            <li>Why can an expressive quantum model still be difficult to train?</li>
+            <li>Describe how encoding, trainable gates, and measurement work together to produce a quantum machine learning prediction.</li>
+        </ol>
+
+        <h3>Numerical Exercise</h3>
+
+        <div class="example">
+            <p>
+                Consider the vector x = [3, 4]. Assume it is encoded
+                using amplitude encoding.
+            </p>
+            <ol>
+                <li>Calculate its Euclidean norm.</li>
+                <li>Write the normalised vector.</li>
+                <li>Write the corresponding one-qubit state.</li>
+                <li>Calculate the probabilities of measuring 0 and 1 in the computational basis.</li>
+                <li>Explain why the probabilities alone do not preserve the sign of every possible amplitude.</li>
+            </ol>
+        </div>
+
+        <h3>Suggested answers to the numerical exercise</h3>
+
+        <div class="example">
+            <p><strong>1. Norm</strong></p>
+            <div class="formula">
+                ||x|| = √(3² + 4²) = 5
+            </div>
+
+            <p><strong>2. Normalised vector</strong></p>
+            <div class="formula">
+                a = [3/5, 4/5]
+            </div>
+
+            <p><strong>3. One-qubit state</strong></p>
+            <div class="formula">
+                |ψ⟩ = (3/5)|0⟩ + (4/5)|1⟩
+            </div>
+
+            <p><strong>4. Measurement probabilities</strong></p>
+            <div class="formula">
+                P(0) = |3/5|² = 9/25
+                <br>
+                P(1) = |4/5|² = 16/25
+            </div>
+
+            <p><strong>5. Why probabilities are not enough</strong></p>
+            <p>
+                Squared magnitudes remove signs and complex phases.
+                For example, the states
+                <code>(3/5)|0⟩ + (4/5)|1⟩</code> and
+                <code>(3/5)|0⟩ − (4/5)|1⟩</code> produce the same
+                computational-basis measurement probabilities.
+                Their relative phases can nevertheless affect the
+                results of later quantum operations.
+            </p>
+        </div>
+    </section>
+
+    <section id="next-chapter">
+        <h2>Looking Ahead</h2>
+
+        <p>
+            We now know how classical data can enter a quantum computer.
+            But encoding alone does not create a complete learning
+            algorithm. After preparing the state, we must decide which
+            quantum operations to apply, which parameters to train,
+            which measurements to perform, and how to use the results.
+        </p>
+
+        <p>
+            These questions lead naturally to parameterised quantum
+            circuits and variational quantum algorithms, where quantum
+            operations and classical optimisation work together to
+            solve a learning task.
+        </p>
+
+        <div class="learning-box">
+            <strong>Remember this connection:</strong>
+            Chapter 16 explains how data enters the quantum model.
+            The next step is to understand how the model transforms
+            that data, learns from examples, and produces a prediction.
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>Quantum Computing and Quantum Machine Learning</p>
+    <p>Chapter 16 — Encoding Classical Data into Quantum States</p>
+</footer>
+
+</body>
+</html>

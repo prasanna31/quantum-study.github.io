@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 17: Parameterized Quantum Circuits as Models</title>
+    <style>
+        :root {
+            --primary: #244b8a;
+            --secondary: #4776b8;
+            --accent: #e9f1fc;
+            --text: #263238;
+            --muted: #5e6b78;
+            --border: #d9e1ec;
+            --background: #ffffff;
+            --code-bg: #f3f5f8;
+            --highlight: #fff5d9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        header {
+            background: linear-gradient(135deg, #16345f, #4776b8);
+            color: white;
+            padding: 48px 22px;
+        }
+
+        header .container,
+        main {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        header h1 {
+            font-size: clamp(29px, 5vw, 43px);
+            line-height: 1.25;
+            margin: 0 0 18px;
+        }
+
+        header p {
+            max-width: 800px;
+            font-size: 18px;
+            margin: 0;
+            color: #edf4ff;
+        }
+
+        main {
+            padding: 28px 22px 70px;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 29px;
+            line-height: 1.35;
+            margin-top: 52px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            color: #315b91;
+            font-size: 22px;
+            margin-top: 34px;
+            line-height: 1.4;
+        }
+
+        h4 {
+            color: #334b68;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin: 14px 0;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        a {
+            color: var(--primary);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .callout {
+            background: var(--accent);
+            border-left: 5px solid var(--secondary);
+            padding: 17px 21px;
+            margin: 24px 0;
+            border-radius: 5px;
+        }
+
+        .warning {
+            background: var(--highlight);
+            border-left: 5px solid #c59628;
+            padding: 17px 21px;
+            margin: 24px 0;
+            border-radius: 5px;
+        }
+
+        .formula {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 17px 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            text-align: center;
+            font-family: "Times New Roman", serif;
+            font-size: 21px;
+        }
+
+        pre {
+            background: #182433;
+            color: #e9f0f8;
+            padding: 22px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.65;
+            white-space: pre;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            font-size: 0.9em;
+        }
+
+        p code, li code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 4px;
+            overflow-wrap: anywhere;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 22px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 11px 13px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--accent);
+            color: #1f426e;
+        }
+
+        .diagram {
+            margin: 24px 0;
+            padding: 22px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fafcff;
+            text-align: center;
+        }
+
+        .diagram-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .node {
+            padding: 12px 15px;
+            border: 1px solid #8da9ce;
+            background: #eaf2ff;
+            border-radius: 7px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            color: var(--secondary);
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .caption {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 13px;
+        }
+
+        .toc {
+            background: #f7f9fc;
+            padding: 20px 25px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .toc ol {
+            padding-left: 22px;
+        }
+
+        .key-idea {
+            font-weight: bold;
+            color: #214b83;
+        }
+
+        .small {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .end-note {
+            margin-top: 45px;
+            padding: 23px;
+            border-top: 3px solid var(--primary);
+            background: #f7f9fc;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+
+            main {
+                padding: 20px 16px 50px;
+            }
+
+            header {
+                padding: 35px 18px;
+            }
+
+            h2 {
+                font-size: 25px;
+            }
+
+            pre {
+                font-size: 12px;
+                padding: 15px;
+            }
+
+            .formula {
+                font-size: 18px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <p>QUANTUM MACHINE LEARNING · CHAPTER 17</p>
+        <h1>Parameterized Quantum Circuits as Models</h1>
+        <p>
+            How quantum circuits learn from data, how their parameters are
+            trained, why gradients matter, and how to build a quantum
+            classifier using PennyLane.
+        </p>
+    </div>
+</header>
+
+<main>
+
+    <section id="introduction">
+        <h2>Introduction: Can a Quantum Circuit Learn?</h2>
+
+        <p>
+            Consider a simple problem. You are given information about a
+            student's study hours and attendance, and you want to predict
+            whether the student will pass an examination. You have examples
+            from previous students, including their inputs and the correct
+            outcomes. Your task is to construct a model that learns the
+            relationship between the inputs and the outcomes.
+        </p>
+
+        <p>
+            A classical machine learning model might use a decision tree,
+            logistic regression, or a neural network. These models contain
+            adjustable values called <strong>parameters</strong>. Training
+            changes these parameters until the model produces useful
+            predictions.
+        </p>
+
+        <p>
+            A parameterized quantum circuit follows a similar idea. It uses
+            quantum gates whose operations depend on adjustable numerical
+            parameters. We supply data, run the circuit, measure the resulting
+            quantum state, and use the measurement results to make predictions.
+            Training then adjusts the gate parameters.
+        </p>
+
+        <p>
+            Such a circuit is commonly called a
+            <strong>parameterized quantum circuit (PQC)</strong>. When it is
+            used as a trainable model, it is also often called a
+            <strong>variational quantum circuit (VQC)</strong>.
+        </p>
+
+        <div class="callout">
+            <strong>Central idea:</strong> A parameterized quantum circuit is
+            not a machine that learns automatically merely because it uses
+            qubits. It becomes a learning model when we define its inputs,
+            adjustable parameters, prediction rule, loss function, and training
+            procedure.
+        </div>
+
+        <p>
+            The important connection is this: quantum computing provides the
+            circuit, machine learning provides the objective, and optimisation
+            provides the method for improving the model.
+        </p>
+
+        <div class="toc">
+            <h3>Chapter contents</h3>
+            <ol>
+                <li><a href="#anatomy">Anatomy of a variational quantum model</a></li>
+                <li><a href="#fourier">Quantum models as Fourier series</a></li>
+                <li><a href="#expressibility">Expressibility and entangling capability</a></li>
+                <li><a href="#gradients">Gradient computation: parameter-shift rule and beyond</a></li>
+                <li><a href="#natural-gradient">Quantum natural gradient</a></li>
+                <li><a href="#hybrid">Hybrid quantum-classical training loops</a></li>
+                <li><a href="#pennylane">Hands-on: training a quantum classifier in PennyLane</a></li>
+                <li><a href="#summary">Summary and exercises</a></li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="anatomy">
+        <h2>17.1 Anatomy of a Variational Quantum Model</h2>
+
+        <h3>17.1.1 From a circuit to a model</h3>
+
+        <p>
+            A normal quantum circuit applies gates to qubits and eventually
+            measures them. A variational circuit adds one important feature:
+            some gates depend on parameters that we can change during training.
+        </p>
+
+        <p>
+            Let the input data be represented by a vector
+            <strong>x</strong>, and let the trainable parameters be represented
+            by <strong>θ</strong> (theta). The model can be written as
+            follows:
+        </p>
+
+        <div class="formula">
+            f(x; θ) = quantum circuit output for input x and parameters θ
+        </div>
+
+        <p>
+            The semicolon separates the input from the trainable parameters.
+            The input describes the example we want to classify, while the
+            parameters describe the model's current learned behaviour.
+        </p>
+
+        <p>
+            Suppose we want to classify handwritten digits into two groups.
+            The model receives features extracted from an image. These features
+            are encoded into a quantum state, the circuit processes that state,
+            and a measurement produces a number used to predict the class.
+        </p>
+
+        <h3>17.1.2 The five parts of a variational model</h3>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="node">Classical input x</div>
+                <div class="arrow">→</div>
+                <div class="node">Data encoding</div>
+                <div class="arrow">→</div>
+                <div class="node">Trainable circuit U(θ)</div>
+                <div class="arrow">→</div>
+                <div class="node">Measurement</div>
+                <div class="arrow">→</div>
+                <div class="node">Prediction</div>
+            </div>
+            <p class="caption">
+                Figure 17.1: The main stages of a parameterized quantum model.
+            </p>
+        </div>
+
+        <p>
+            Each stage has a distinct responsibility. Keeping these
+            responsibilities separate makes the design easier to understand
+            and debug.
+        </p>
+
+        <h4>Part 1: Input data</h4>
+
+        <p>
+            The model begins with ordinary classical data. For example, an
+            input could be a vector containing two numbers:
+            x = (x₁, x₂). These numbers might describe two measurements of a
+            physical system or two features of a customer.
+        </p>
+
+        <p>
+            Quantum circuits do not directly accept arbitrary real-valued
+            vectors as quantum states. We must first transform the information
+            into a representation that a quantum circuit can use.
+        </p>
+
+        <h4>Part 2: Data encoding</h4>
+
+        <p>
+            Data encoding converts classical information into quantum states
+            or into parameters of quantum operations. One common approach is
+            angle encoding, in which a data value determines the rotation
+            angle of a gate.
+        </p>
+
+        <p>
+            For example, a single-qubit rotation around the Y-axis is written
+            as RY(x). Its action depends on the input value x. Applying this
+            gate to the initial state |0⟩ produces
+        </p>
+
+        <div class="formula">
+            RY(x)|0⟩ = cos(x/2)|0⟩ + sin(x/2)|1⟩
+        </div>
+
+        <p>
+            The input now influences the amplitudes of the quantum state.
+            When we measure the qubit, the probabilities of observing 0 and 1
+            depend on x.
+        </p>
+
+        <p>
+            Encoding does not itself mean the model has learned anything.
+            It merely provides a way for the input to enter the circuit.
+            The trainable part of the circuit must learn how to use that
+            information.
+        </p>
+
+        <h4>Part 3: Trainable quantum circuit</h4>
+
+        <p>
+            The trainable circuit contains quantum gates with adjustable
+            parameters. For example, the circuit may contain rotations
+            RY(θ₁), RZ(θ₂), and RY(θ₃). The parameters θ₁, θ₂, and θ₃ are
+            initially assigned values, often randomly.
+        </p>
+
+        <p>
+            The circuit may also contain entangling gates such as CNOT.
+            These gates allow the qubits to develop correlations that cannot
+            always be described by treating each qubit independently.
+        </p>
+
+        <p>
+            The circuit's job is to transform the encoded state so that its
+            measurement statistics become useful for the prediction task.
+        </p>
+
+        <h4>Part 4: Measurement</h4>
+
+        <p>
+            A quantum computer does not normally reveal the complete quantum
+            state when we measure it. Instead, measurement returns an outcome
+            sampled according to the probabilities specified by the state.
+        </p>
+
+        <p>
+            We can repeat the same circuit many times, called shots, and
+            estimate an expectation value. For a Pauli-Z measurement on one
+            qubit, the outcome is +1 for |0⟩ and -1 for |1⟩.
+        </p>
+
+        <div class="formula">
+            ⟨Z⟩ = P(0) − P(1)
+        </div>
+
+        <p>
+            Since P(0) + P(1) = 1, the expectation value lies between -1 and
+            +1. It can therefore serve as a simple numerical output from the
+            quantum model.
+        </p>
+
+        <h4>Part 5: Prediction and loss</h4>
+
+        <p>
+            The measured expectation value is converted into a prediction.
+            For a binary classification problem, we could interpret positive
+            values as evidence for one class and negative values as evidence
+            for the other. Alternatively, we can convert the value into a
+            probability.
+        </p>
+
+        <p>
+            A loss function measures how far the prediction is from the
+            correct answer. If the model repeatedly makes incorrect
+            predictions, the loss will generally be high. If it produces
+            useful predictions, the loss should decrease.
+        </p>
+
+        <p>
+            Training changes θ to reduce the loss. This completes the
+            connection between quantum circuits and machine learning.
+        </p>
+
+        <h3>17.1.3 The mathematical model</h3>
+
+        <p>
+            Suppose the circuit contains a data-encoding operation
+            U(x) followed by a trainable operation U(θ). Its action on the
+            initial state can be represented as
+        </p>
+
+        <div class="formula">
+            |ψ(x, θ)⟩ = U(θ)U(x)|0...0⟩
+        </div>
+
+        <p>
+            Here, |0...0⟩ represents a register of qubits initially prepared
+            in the all-zero state. U(x) encodes the input, and U(θ) transforms
+            the encoded state using trainable gates.
+        </p>
+
+        <p>
+            If we measure an observable O, the model output is
+        </p>
+
+        <div class="formula">
+            f(x; θ) = ⟨ψ(x, θ)|O|ψ(x, θ)⟩
+        </div>
+
+        <p>
+            This expression is an expectation value. It tells us the average
+            measurement result predicted by the quantum state. In practice,
+            a finite number of measurements provides an estimate of this
+            value.
+        </p>
+
+        <p>
+            Given a dataset of input-output pairs (xᵢ, yᵢ), training aims to
+            minimise a loss such as
+        </p>
+
+        <div class="formula">
+            L(θ) = (1/N) Σᵢ ℓ(f(xᵢ; θ), yᵢ)
+        </div>
+
+        <p>
+            The symbol N is the number of training examples, and ℓ is the
+            loss for a single example. This is the same basic optimisation
+            structure used in classical machine learning.
+        </p>
+
+        <div class="callout">
+            <strong>Important distinction:</strong> The quantum circuit
+            calculates the model output. The loss function judges the output,
+            and the optimiser decides how the parameters should change.
+            These are three different responsibilities.
+        </div>
+
+        <h3>17.1.4 What is an ansatz?</h3>
+
+        <p>
+            An <strong>ansatz</strong> is a chosen structure for a quantum
+            circuit whose parameters can be adjusted. The word is used in
+            physics and mathematics for a proposed form of a solution.
+        </p>
+
+        <p>
+            For a variational quantum model, an ansatz specifies which gates
+            are used, the order in which they appear, which qubits they act
+            on, and where trainable parameters are placed.
+        </p>
+
+        <p>
+            For example, a simple ansatz might apply a trainable rotation to
+            each qubit and then use CNOT gates to entangle neighbouring
+            qubits. Repeating these operations creates multiple layers.
+        </p>
+
+        <p>
+            The ansatz determines which quantum states the circuit can reach.
+            A circuit that is too restricted may be unable to represent the
+            patterns in the data. A circuit that is unnecessarily complicated
+            may be difficult to train and expensive to execute.
+        </p>
+
+        <p>
+            Designing an ansatz is therefore similar to choosing the
+            architecture of a classical neural network. It determines the
+            model's capabilities before training begins.
+        </p>
+    </section>
+
+    <section id="fourier">
+        <h2>17.2 Quantum Models as Fourier Series</h2>
+
+        <h3>17.2.1 Why does a quantum model resemble a wave?</h3>
+
+        <p>
+            Quantum mechanics is closely connected to waves. Quantum states
+            contain complex amplitudes, and quantum gates change the
+            relationships between these amplitudes. When a state is measured,
+            the resulting probabilities depend on these changes.
+        </p>
+
+        <p>
+            Rotation gates are especially important in quantum machine
+            learning because their matrix entries contain sine and cosine
+            functions. When data values determine rotation angles, the
+            resulting measurement probabilities can depend on those data
+            through trigonometric functions.
+        </p>
+
+        <p>
+            This creates a surprising connection: some quantum models behave
+            mathematically like Fourier models, which represent functions
+            using combinations of sine and cosine waves.
+        </p>
+
+        <h3>17.2.2 A simple one-qubit example</h3>
+
+        <p>
+            Begin with a qubit in the state |0⟩. Apply a Y-axis rotation
+            whose angle is the input x:
+        </p>
+
+        <div class="formula">
+            RY(x)|0⟩ = cos(x/2)|0⟩ + sin(x/2)|1⟩
+        </div>
+
+        <p>
+            Now measure the qubit in the computational basis. The
+            probabilities of observing the two outcomes are
+        </p>
+
+        <div class="formula">
+            P(0) = cos²(x/2)
+            <br/>
+            P(1) = sin²(x/2)
+        </div>
+
+        <p>
+            The expectation value of Pauli-Z is therefore
+        </p>
+
+        <div class="formula">
+            f(x) = P(0) − P(1) = cos(x)
+        </div>
+
+        <p>
+            The model output varies like a cosine wave. This is a direct
+            example of a quantum circuit implementing a periodic function.
+        </p>
+
+        <p>
+            A single cosine is not a very flexible model. However, more
+            complicated circuits can produce combinations of multiple
+            frequencies. Trainable parameters influence the coefficients
+            and the way the circuit combines these contributions.
+        </p>
+
+        <h3>17.2.3 What is a Fourier series?</h3>
+
+        <p>
+            A Fourier series represents a periodic function as a sum of
+            sine and cosine components. In complex notation, it can be
+            expressed as
+        </p>
+
+        <div class="formula">
+            f(x) = Σₖ cₖ e<sup>ikx</sup>
+        </div>
+
+        <p>
+            Here, k represents a frequency index, and cₖ represents the
+            coefficient associated with that frequency. For a real-valued
+            function, the coefficients have the relationships required to
+            make the final result real.
+        </p>
+
+        <p>
+            Imagine trying to describe a complicated sound. Instead of
+            describing every movement of the sound wave directly, we can
+            describe it as a combination of simpler waves at different
+            frequencies. Fourier analysis uses this idea to understand
+            signals.
+        </p>
+
+        <p>
+            A similar idea can be used for a function learned by a quantum
+            circuit. Its output can sometimes be expressed as a Fourier-like
+            expansion over the input variables.
+        </p>
+
+        <h3>17.2.4 Where do the frequencies come from?</h3>
+
+        <p>
+            Consider a circuit whose data encoding uses rotations such as
+            RY(x). Each occurrence of the input-dependent gate contributes
+            to the possible frequency structure of the final expectation
+            value.
+        </p>
+
+        <p>
+            The exact frequencies depend on the encoding gates, the
+            generators of those gates, how many times data is encoded, and
+            how the circuit operations are arranged. The available
+            frequencies are not arbitrary; the circuit structure imposes
+            restrictions on them.
+        </p>
+
+        <p>
+            If data is encoded only once in a very simple circuit, the
+            resulting function may contain only a small number of
+            frequency components. Repeated data encoding can expand the
+            set of frequencies that the model can represent.
+        </p>
+
+        <p>
+            This is one reason data re-uploading is useful. The circuit can
+            repeatedly receive the same input while applying different
+            trainable operations between encoding steps.
+        </p>
+
+        <h3>17.2.5 A practical illustration</h3>
+
+        <p>
+            Suppose the target function is more complicated than a single
+            cosine. A simple model might struggle to reproduce it. A model
+            with more accessible frequency components could potentially
+            approximate it more accurately.
+        </p>
+
+        <p>
+            For example, a target function might contain a slow variation
+            and a rapid variation at the same time. These correspond to
+            lower and higher frequencies. A circuit that can represent only
+            the lower frequency may miss the rapid changes.
+        </p>
+
+        <p>
+            This suggests a useful design principle: choose the data
+            encoding and circuit structure with the target function in
+            mind. Adding more layers may expand the available function
+            space, but it does not guarantee better learning.
+        </p>
+
+        <div class="warning">
+            <strong>A necessary qualification:</strong> The statement that
+            quantum models are Fourier series is not a claim that every
+            quantum circuit has the same frequencies or that every target
+            function is easy to learn. Fourier descriptions are especially
+            useful for particular data-encoding schemes, including
+            parameterised rotation encodings.
+        </div>
+
+        <h3>17.2.6 Why this connection matters</h3>
+
+        <p>
+            Viewing a quantum circuit as a Fourier model helps researchers
+            understand its expressive power. It explains how circuit depth,
+            encoding choices, and repeated data injection affect the
+            functions the circuit can represent.
+        </p>
+
+        <p>
+            It also gives a way to study a quantum model without relying
+            only on numerical experiments. We can ask which frequencies
+            are available, which are missing, and how difficult it is to
+            learn the coefficients associated with them.
+        </p>
+
+        <p>
+            However, representing a function and learning that function
+            efficiently are different challenges. A model may theoretically
+            contain the right frequency components but still be difficult
+            to train with noisy measurements and limited computational
+            resources.
+        </p>
+    </section>
+
+    <section id="expressibility">
+        <h2>17.3 Expressibility and Entangling Capability</h2>
+
+        <h3>17.3.1 What does it mean for a model to be expressive?</h3>
+
+        <p>
+            Imagine two artists who are asked to draw a landscape. One artist
+            knows only how to draw straight lines, while the other can draw
+            curves, shadows, textures, and complex shapes. The second artist
+            has a larger set of possible drawings.
+        </p>
+
+        <p>
+            In machine learning, this ability to represent different
+            patterns is called <strong>expressibility</strong>. For a
+            parameterized quantum circuit, expressibility describes the
+            range of quantum states or functions the circuit can represent
+            as its parameters vary.
+        </p>
+
+        <p>
+            A circuit with one rotation gate and no other operations has
+            limited possibilities. A circuit with multiple rotation layers
+            and entangling gates can usually represent a broader collection
+            of states.
+        </p>
+
+        <p>
+            Yet a larger collection of possible states does not automatically
+            make a model better. A useful model must represent the patterns
+            needed by the task and must also be trainable with the available
+            resources.
+        </p>
+
+        <h3>17.3.2 The role of circuit depth</h3>
+
+        <p>
+            Circuit depth refers roughly to the number of sequential layers
+            of quantum operations. Gates acting independently on separate
+            qubits can sometimes run in parallel, so depth is not simply
+            the total number of gates.
+        </p>
+
+        <p>
+            Increasing depth can allow the circuit to perform more
+            complicated transformations. More trainable rotations create
+            more adjustable degrees of freedom, and additional entangling
+            operations can create richer relationships between qubits.
+        </p>
+
+        <p>
+            However, deeper circuits require more operations and may suffer
+            more from hardware noise. They can also create difficult
+            optimisation landscapes in which gradients become extremely
+            small.
+        </p>
+
+        <p>
+            This means that increasing depth is a trade-off rather than
+            an unconditional improvement.
+        </p>
+
+        <h3>17.3.3 Entanglement and correlations</h3>
+
+        <p>
+            A system of two qubits can be in a product state, meaning its
+            state can be written as the state of the first qubit multiplied
+            by the state of the second. In such a state, the two qubits
+            have no quantum entanglement.
+        </p>
+
+        <p>
+            An entangled state cannot be written as a product of independent
+            single-qubit states. Its properties must be described using
+            the joint system.
+        </p>
+
+        <p>
+            For example, begin with two qubits in |00⟩. Apply a Hadamard
+            gate to the first qubit and then a CNOT gate controlled by the
+            first qubit. The resulting state is
+        </p>
+
+        <div class="formula">
+            |ψ⟩ = (|00⟩ + |11⟩)/√2
+        </div>
+
+        <p>
+            This is a Bell state. Measuring both qubits in the computational
+            basis produces either 00 or 11, each with probability one-half.
+            The outcomes are perfectly correlated in this measurement basis.
+        </p>
+
+        <p>
+            Entanglement can allow a circuit to represent joint quantum
+            states that cannot be produced by independent single-qubit
+            operations alone. This can be useful when the learning task
+            depends on relationships between several features.
+        </p>
+
+        <p>
+            Nevertheless, entanglement is not a magic ingredient that
+            guarantees a quantum advantage. Some classical models can
+            represent the same task efficiently, and some quantum tasks do
+            not need entanglement to achieve good results.
+        </p>
+
+        <h3>17.3.4 What is entangling capability?</h3>
+
+        <p>
+            Entangling capability describes how effectively a circuit
+            structure can generate entangled states. It depends on the
+            arrangement of gates, the number of qubits, the topology of
+            their connections, and the range of parameter values.
+        </p>
+
+        <p>
+            A circuit may contain CNOT gates yet still produce little
+            entanglement for certain parameter settings. Conversely, a
+            carefully designed circuit can generate useful entanglement
+            without needing a very large number of gates.
+        </p>
+
+        <p>
+            Entangling capability is therefore related to circuit design,
+            not merely to counting how many entangling gates appear in
+            the circuit.
+        </p>
+
+        <h3>17.3.5 Measuring expressibility</h3>
+
+        <p>
+            There is no single universal measurement of expressibility
+            that is best for every circuit and task. One common approach
+            is to sample many parameter settings, generate the resulting
+            quantum states, and compare their distribution with a chosen
+            reference distribution, such as the Haar distribution over
+            pure quantum states.
+        </p>
+
+        <p>
+            The Haar distribution describes a mathematically natural,
+            uniform distribution over quantum pure states. For small
+            systems, researchers can compare the statistics of sampled
+            states with Haar-random states using measures based on
+            state overlaps or probability distributions.
+        </p>
+
+        <p>
+            Such comparisons require care. A circuit that closely
+            resembles a Haar-random state generator may be highly
+            expressive according to one measure, but that does not mean
+            it is well suited to a particular classification problem.
+        </p>
+
+        <h3>17.3.6 The barren plateau problem</h3>
+
+        <p>
+            Here is a major difficulty. A highly expressive circuit can
+            sometimes be extremely difficult to train because the
+            gradients of its loss function become very small.
+        </p>
+
+        <p>
+            If the gradient is almost zero, changing the parameters
+            produces little measurable improvement in the loss. The
+            optimiser may struggle to identify a useful direction.
+            This phenomenon is associated with
+            <strong>barren plateaus</strong>.
+        </p>
+
+        <p>
+            Barren plateaus can arise under several conditions, including
+            certain random circuit constructions and cost functions.
+            Their severity depends on the circuit, the observable, the
+            number of qubits, and the training setup. They are not
+            inevitable in every variational quantum model.
+        </p>
+
+        <p>
+            The lesson is important: a model needs enough expressive
+            power to learn the task, but it should not be made
+            unnecessarily complicated. Shallow, structured circuits,
+            local cost functions, and sensible initialisation can help
+            in some settings.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Design property</th>
+                    <th>Potential benefit</th>
+                    <th>Possible difficulty</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>More layers</td>
+                    <td>Can represent more complex transformations</td>
+                    <td>Greater noise and potentially harder optimisation</td>
+                </tr>
+                <tr>
+                    <td>More trainable parameters</td>
+                    <td>More freedom to fit the training data</td>
+                    <td>More values to optimise and possible overfitting</td>
+                </tr>
+                <tr>
+                    <td>Entangling gates</td>
+                    <td>Can capture joint quantum correlations</td>
+                    <td>Extra hardware operations and noise</td>
+                </tr>
+                <tr>
+                    <td>Highly random circuits</td>
+                    <td>May cover a broad range of quantum states</td>
+                    <td>Can suffer from small gradients</td>
+                </tr>
+                <tr>
+                    <td>Problem-informed circuits</td>
+                    <td>May focus on transformations useful for the task</td>
+                    <td>Require knowledge of the problem and careful design</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout">
+            <strong>Design principle:</strong> The best circuit is not
+            necessarily the deepest or the most expressive. It is the
+            circuit that can represent the relevant patterns and can be
+            trained reliably under the available hardware and measurement
+            constraints.
+        </div>
+    </section>
+
+    <section id="gradients">
+        <h2>17.4 Gradient Computation: Parameter-Shift Rule and Beyond</h2>
+
+        <h3>17.4.1 Why does training need gradients?</h3>
+
+        <p>
+            Suppose a model has three trainable parameters:
+            θ₁, θ₂, and θ₃. We calculate its loss and find that the
+            current prediction is incorrect. We now need to decide how
+            to change the three parameters.
+        </p>
+
+        <p>
+            A gradient tells us how sensitive the loss is to each
+            parameter. If the derivative with respect to θ₁ is large,
+            a small change in θ₁ may have a noticeable effect on the
+            loss. If the derivative is close to zero, a small change
+            may have very little effect at the current point.
+        </p>
+
+        <p>
+            For a loss function L(θ), the gradient is
+        </p>
+
+        <div class="formula">
+            ∇L(θ) = (∂L/∂θ₁, ∂L/∂θ₂, ..., ∂L/∂θₘ)
+        </div>
+
+        <p>
+            A basic gradient descent update is
+        </p>
+
+        <div class="formula">
+            θ ← θ − η∇L(θ)
+        </div>
+
+        <p>
+            Here, η is the learning rate. It determines the size of
+            each update. The minus sign means that we move in the
+            direction that locally decreases the loss.
+        </p>
+
+        <p>
+            Classical neural networks calculate gradients using
+            backpropagation. Quantum circuits need a way to estimate
+            derivatives of functions that are obtained through quantum
+            operations and measurements.
+        </p>
+
+        <h3>17.4.2 The basic idea of the parameter-shift rule</h3>
+
+        <p>
+            One approach is to change a parameter slightly in both
+            directions, measure the resulting outputs, and estimate
+            the derivative. This resembles the finite-difference
+            method from numerical mathematics.
+        </p>
+
+        <p>
+            For a function f(θ), a central finite-difference estimate
+            is
+        </p>
+
+        <div class="formula">
+            f′(θ) ≈ [f(θ + ε) − f(θ − ε)]/(2ε)
+        </div>
+
+        <p>
+            The approximation becomes more accurate for suitable small
+            values of ε, although very small values can make numerical
+            or measurement noise more troublesome.
+        </p>
+
+        <p>
+            Quantum rotation gates have a useful mathematical property.
+            For common gates generated by suitable Pauli operators, we
+            can calculate the derivative exactly using shifted
+            evaluations of the quantum circuit rather than relying
+            on an arbitrarily small finite-difference step.
+        </p>
+
+        <div class="formula">
+            ∂f/∂θ = [f(θ + π/2) − f(θ − π/2)]/2
+        </div>
+
+        <p>
+            This is the standard two-evaluation parameter-shift rule
+            for common Pauli-generated rotation gates when the
+            parameter and gate convention satisfy its assumptions.
+            The shift is π/2, and the difference is divided by two.
+        </p>
+
+        <p>
+            The result is an exact derivative of the ideal expectation
+            value in exact arithmetic. On real quantum hardware,
+            however, each expectation value is estimated from finite
+            measurements, so the resulting gradient still has
+            statistical uncertainty.
+        </p>
+
+        <h3>17.4.3 A numerical example</h3>
+
+        <p>
+            Consider the function f(θ) = cos(θ). Its derivative is
+            f′(θ) = −sin(θ). At θ = π/3, the exact derivative is
+            −√3/2, approximately −0.866.
+        </p>
+
+        <p>
+            Apply the parameter-shift rule:
+        </p>
+
+        <div class="formula">
+            f′(π/3) =
+            [cos(π/3 + π/2) − cos(π/3 − π/2)]/2
+            <br/><br/>
+            = [cos(5π/6) − cos(−π/6)]/2
+            <br/><br/>
+            = [−√3/2 − √3/2]/2
+            <br/><br/>
+            = −√3/2
+        </div>
+
+        <p>
+            The shifted evaluations recover the exact derivative
+            without taking a tiny numerical step.
+        </p>
+
+        <h3>17.4.4 Why can this work on quantum hardware?</h3>
+
+        <p>
+            The rule comes from the mathematical structure of the
+            parameterised gate. For a suitable rotation generated
+            by a Pauli operator, the expectation value as a function
+            of that gate's parameter has a restricted trigonometric
+            form. Differentiating this form leads to the shifted
+            evaluation formula.
+        </p>
+
+        <p>
+            A quantum computer does not need to expose the internal
+            amplitudes of its state. It only needs to run the circuit
+            with the shifted parameter values and measure the
+            observable. The classical training code combines those
+            measured results to obtain the gradient estimate.
+        </p>
+
+        <p>
+            This is particularly useful when the quantum device acts
+            as a black box: the classical optimiser can still learn
+            how the output changes as the circuit parameters change.
+        </p>
+
+        <h3>17.4.5 What if a parameter appears more than once?</h3>
+
+        <p>
+            If the same parameter is used in multiple gate occurrences,
+            care is required. A derivative with respect to that
+            parameter includes the contributions from every occurrence.
+            One safe conceptual approach is to differentiate each
+            occurrence and add the resulting contributions.
+        </p>
+
+        <p>
+            For gates with generators having more than two distinct
+            eigenvalues, the simple two-shift formula may not apply
+            directly. Generalised parameter-shift rules can use
+            multiple shifted evaluations with appropriate shifts and
+            coefficients.
+        </p>
+
+        <p>
+            Thus, the parameter-shift rule is a family of derivative
+            methods, not one universal formula that can be applied
+            unchanged to every parameterised quantum operation.
+        </p>
+
+        <h3>17.4.6 Other ways to calculate gradients</h3>
+
+        <h4>Finite differences</h4>
+
+        <p>
+            Finite differences estimate the derivative by evaluating
+            the circuit at nearby parameter values. They are easy to
+            understand and can be useful for checking implementations.
+            However, they introduce a step-size choice and can be
+            sensitive to shot noise.
+        </p>
+
+        <h4>Adjoint differentiation</h4>
+
+        <p>
+            Some quantum simulators can calculate gradients using
+            adjoint differentiation. Instead of independently
+            evaluating shifted circuits for every parameter, the
+            simulator uses the structure of the state evolution to
+            compute derivatives more efficiently.
+        </p>
+
+        <p>
+            The precise cost depends on the simulator, circuit
+            representation, number of parameters, and measured
+            quantities. Adjoint methods are often attractive for
+            statevector simulations but are not automatically
+            available in the same form on hardware-only devices.
+        </p>
+
+        <h4>Backpropagation through a simulator</h4>
+
+        <p>
+            A classical quantum simulator represents the circuit
+            using numerical arrays and operations. Automatic
+            differentiation tools can differentiate many of these
+            operations, allowing a developer to use familiar
+            optimisation frameworks.
+        </p>
+
+        <p>
+            This is conceptually close to classical deep learning.
+            However, differentiating a simulation of a quantum
+            circuit is not the same as directly differentiating
+            unknown hardware states. Hardware measurements still
+            require appropriate gradient-estimation procedures.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>How it works</th>
+                    <th>Important limitation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Parameter-shift</td>
+                    <td>Uses mathematically chosen shifted circuit evaluations</td>
+                    <td>Requires the appropriate shift rule for each operation</td>
+                </tr>
+                <tr>
+                    <td>Finite difference</td>
+                    <td>Estimates a derivative from nearby evaluations</td>
+                    <td>Step size and measurement noise affect accuracy</td>
+                </tr>
+                <tr>
+                    <td>Adjoint differentiation</td>
+                    <td>Uses simulator state evolution to calculate derivatives</td>
+                    <td>Depends on simulator capabilities and supported measurements</td>
+                </tr>
+                <tr>
+                    <td>Automatic differentiation</td>
+                    <td>Propagates derivatives through supported numerical operations</td>
+                    <td>Hardware measurements need a compatible differentiation method</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>17.4.7 The cost of gradients</h3>
+
+        <p>
+            A quantum circuit's output may be estimated using many
+            repeated measurements. If the model has numerous parameters,
+            calculating a full gradient can require many circuit
+            evaluations.
+        </p>
+
+        <p>
+            With a straightforward parameter-shift implementation,
+            each parameter occurrence can require multiple shifted
+            evaluations. The total cost also depends on the number
+            of training examples, the number of shots per evaluation,
+            and the circuit depth.
+        </p>
+
+        <p>
+            For this reason, training a small model on a simulator
+            may be straightforward, while training a large model on
+            real quantum hardware can be much more demanding.
+        </p>
+
+        <div class="callout">
+            <strong>Key lesson:</strong> Gradient calculation makes
+            variational circuits trainable, but gradients are not free.
+            Measurement cost, circuit depth, noise, and the number of
+            parameters all influence how practical training will be.
+        </div>
+    </section>
+
+    <section id="natural-gradient">
+        <h2>17.5 Quantum Natural Gradient</h2>
+
+        <h3>17.5.1 Why ordinary gradient descent may not be enough</h3>
+
+        <p>
+            Ordinary gradient descent assumes that a small numerical
+            change in each parameter provides a useful description
+            of a small step in the model's behaviour. This is a
+            convenient approximation, but it ignores the geometry
+            of the model's parameter space.
+        </p>
+
+        <p>
+            Consider two parameters in a quantum circuit. Changing
+            the first parameter by 0.01 might change the quantum
+            state considerably, while changing the second by 0.01
+            might barely change it. The same numerical step can
+            therefore have different physical effects.
+        </p>
+
+        <p>
+            There is another complication: different parameter
+            settings can sometimes describe the same quantum state
+            or nearly the same observable behaviour. The parameter
+            space can contain redundancies and curved directions.
+        </p>
+
+        <p>
+            Quantum natural gradient methods take this geometry
+            into account when deciding how parameters should change.
+        </p>
+
+        <h3>17.5.2 Understanding the geometry of quantum states</h3>
+
+        <p>
+            A quantum state is represented by a vector of complex
+            amplitudes, but physically equivalent descriptions can
+            differ by a global phase. Furthermore, two states may
+            be close in terms of their physical distinguishability
+            even when their parameter values are not numerically
+            close.
+        </p>
+
+        <p>
+            The geometry of quantum states can be studied using
+            quantities such as fidelity and the quantum geometric
+            tensor. Fidelity measures how similar two quantum
+            states are. For pure states |ψ⟩ and |φ⟩, their fidelity
+            is commonly written as
+        </p>
+
+        <div class="formula">
+            F = |⟨ψ|φ⟩|²
+        </div>
+
+        <p>
+            Fidelity equals one for identical pure states and
+            decreases as the states become less similar.
+        </p>
+
+        <p>
+            This gives us a way to ask a useful question: if we
+            change a parameter slightly, how much does the physical
+            quantum state change?
+        </p>
+
+        <h3>17.5.3 The quantum geometric tensor</h3>
+
+        <p>
+            For a parameterised pure state |ψ(θ)⟩, the quantum
+            geometric tensor describes how the state changes as
+            the parameters change. Its real part is closely
+            related to the quantum Fisher information metric.
+            Under common conventions, the corresponding metric
+            is written as
+        </p>
+
+        <div class="formula">
+            Gᵢⱼ = Re(
+            ⟨∂ᵢψ|∂ⱼψ⟩
+            − ⟨∂ᵢψ|ψ⟩⟨ψ|∂ⱼψ⟩
+            )
+        </div>
+
+        <p>
+            Here, ∂ᵢψ denotes the derivative of the state with
+            respect to parameter θᵢ. The subtraction removes the
+            component associated with a change that does not
+            alter the physical state beyond a global phase.
+        </p>
+
+        <p>
+            Conventions differ across the literature, particularly
+            in whether a factor of four is included in the metric.
+            The central idea remains the same: the metric measures
+            the distinguishable change in a quantum state caused
+            by changes in its parameters.
+        </p>
+
+        <h3>17.5.4 The natural-gradient update</h3>
+
+        <p>
+            Ordinary gradient descent uses the gradient directly.
+            Quantum natural gradient instead rescales or transforms
+            the gradient using a metric that describes the geometry
+            of the quantum state space.
+        </p>
+
+        <div class="formula">
+            θ ← θ − η G⁻¹ ∇L(θ)
+        </div>
+
+        <p>
+            In this expression, G is the metric matrix, ∇L is the
+            loss gradient, and η is the learning rate. The inverse
+            metric changes the direction and scale of the update
+            according to how parameter changes affect the state.
+        </p>
+
+        <p>
+            This resembles a preconditioned optimisation method:
+            the update is adjusted so that the optimiser accounts
+            for differences in the sensitivity and geometry of
+            different parameter directions.
+        </p>
+
+        <p>
+            If G is singular or poorly conditioned, directly
+            inverting it can be unstable. Practical implementations
+            may use a regularised matrix such as G + λI, where
+            λ is a small positive value and I is the identity
+            matrix.
+        </p>
+
+        <h3>17.5.5 A simple intuition</h3>
+
+        <p>
+            Imagine walking on a hilly landscape. On a flat map,
+            moving one centimetre east and one centimetre north
+            seems equally straightforward. On the actual terrain,
+            however, one direction may lead up a steep slope while
+            another follows a gentle path.
+        </p>
+
+        <p>
+            Ordinary gradient descent uses the local slope to
+            choose a direction in parameter coordinates. A natural
+            gradient also considers how those coordinates relate
+            to changes in the underlying model.
+        </p>
+
+        <p>
+            In a quantum circuit, the underlying model is the
+            quantum state and its measurement behaviour. The
+            natural gradient tries to make optimisation steps
+            more meaningful with respect to that geometry.
+        </p>
+
+        <h3>17.5.6 Why not always use quantum natural gradient?</h3>
+
+        <p>
+            Computing and solving systems involving the metric
+            matrix can be expensive. With many trainable parameters,
+            the matrix can be large, and estimating its entries
+            may require additional quantum circuit evaluations.
+        </p>
+
+        <p>
+            Regularisation, approximation, and circuit-specific
+            structure can reduce the cost, but they introduce
+            further implementation choices.
+        </p>
+
+        <p>
+            Quantum natural gradient can improve optimisation in
+            some situations, but it is not guaranteed to outperform
+            ordinary gradient descent or adaptive optimisers.
+            The correct choice depends on the model, the cost
+            of estimating the metric, and the available resources.
+        </p>
+
+        <div class="callout">
+            <strong>Remember the distinction:</strong> The ordinary
+            gradient tells us how the loss changes with the
+            parameters. The quantum natural gradient also considers
+            how the parameters describe changes in the quantum state.
+        </div>
+    </section>
+
+    <section id="hybrid">
+        <h2>17.6 Hybrid Quantum-Classical Training Loops</h2>
+
+        <h3>17.6.1 Why do we need a hybrid system?</h3>
+
+        <p>
+            A quantum circuit is good at performing quantum
+            operations, but an entire machine learning workflow
+            involves much more than executing gates. We need to
+            store datasets, calculate losses, choose optimisation
+            algorithms, update parameters, and evaluate predictions.
+        </p>
+
+        <p>
+            Classical computers already perform these tasks
+            efficiently and have mature software libraries for
+            them. Variational quantum machine learning therefore
+            commonly combines a classical computer with a quantum
+            processor or simulator.
+        </p>
+
+        <p>
+            The classical computer controls the experiment and
+            processes the results. The quantum device evaluates
+            the parameterised circuit. The two systems repeatedly
+            exchange numerical information during training.
+        </p>
+
+        <h3>17.6.2 The training loop</h3>
+
+        <div class="diagram">
+            <div class="diagram-row">
+                <div class="node">Initial parameters θ</div>
+                <div class="arrow">→</div>
+                <div class="node">Quantum circuit</div>
+                <div class="arrow">→</div>
+                <div class="node">Measurement results</div>
+            </div>
+            <p class="arrow">↓</p>
+            <div class="diagram-row">
+                <div class="node">Calculate loss</div>
+                <div class="arrow">→</div>
+                <div class="node">Estimate gradients</div>
+                <div class="arrow">→</div>
+                <div class="node">Classical optimiser</div>
+            </div>
+            <p class="arrow">↓</p>
+            <div class="node">Updated parameters θ</div>
+            <p class="caption">
+                Figure 17.2: A hybrid training loop. The updated parameters
+                are sent back to the quantum circuit for the next iteration.
+            </p>
+        </div>
+
+        <p>
+            The procedure begins by choosing initial parameters.
+            The quantum circuit is executed using these parameters,
+            and the measurement results are returned to the classical
+            program. The program calculates the loss and estimates
+            its gradient with respect to the parameters.
+        </p>
+
+        <p>
+            The optimiser then updates the parameters. The circuit
+            runs again with the new values, and the process repeats
+            until a stopping condition is reached.
+        </p>
+
+        <p>
+            A stopping condition might be a sufficiently low loss,
+            a maximum number of training iterations, or the absence
+            of meaningful improvement over several iterations.
+        </p>
+
+        <h3>17.6.3 What happens in one iteration?</h3>
+
+        <ol>
+            <li>
+                <strong>Select a batch of examples.</strong>
+                The classical computer selects one or more training
+                examples and their correct labels.
+            </li>
+            <li>
+                <strong>Encode each input.</strong>
+                The input values determine the data-dependent gates
+                or other encoding operations.
+            </li>
+            <li>
+                <strong>Execute the parameterised circuit.</strong>
+                The circuit uses the current trainable parameters
+                and produces measurement samples or expectation values.
+            </li>
+            <li>
+                <strong>Calculate the loss.</strong>
+                The classical program compares the predictions with
+                the correct labels.
+            </li>
+            <li>
+                <strong>Calculate the gradient.</strong>
+                A compatible differentiation method estimates how
+                the loss changes with each parameter.
+            </li>
+            <li>
+                <strong>Update the parameters.</strong>
+                The optimiser uses the gradient to generate a new
+                parameter vector.
+            </li>
+            <li>
+                <strong>Repeat.</strong>
+                The updated circuit is evaluated again until training
+                stops.
+            </li>
+        </ol>
+
+        <h3>17.6.4 Why use mini-batches?</h3>
+
+        <p>
+            Suppose the dataset contains ten thousand examples.
+            Evaluating every example during every update can be
+            expensive. Instead, the classical optimiser can use
+            a smaller batch of examples to estimate the direction
+            of improvement.
+        </p>
+
+        <p>
+            This is the same general idea used in classical
+            mini-batch stochastic gradient descent. It can reduce
+            the amount of work required for an update, although
+            the resulting gradient is noisier because it is
+            estimated from fewer examples.
+        </p>
+
+        <p>
+            Quantum training has another source of noise: the
+            measurement process itself. A small batch and a small
+            number of measurement shots can produce a particularly
+            noisy estimate. Choosing batch size and shot count
+            is therefore an important practical decision.
+        </p>
+
+        <h3>17.6.5 The role of measurement shots</h3>
+
+        <p>
+            Suppose we estimate an expectation value by running
+            the same circuit 100 times. The observed average will
+            generally differ from the exact expectation value.
+            If we increase the number of independent shots, the
+            statistical uncertainty of a simple sample average
+            typically decreases in proportion to the inverse
+            square root of the shot count.
+        </p>
+
+        <div class="formula">
+            Standard error ∝ 1/√S
+        </div>
+
+        <p>
+            Here, S is the number of shots, assuming independent
+            samples with a fixed underlying distribution.
+        </p>
+
+        <p>
+            This means that reducing the statistical error by
+            approximately a factor of two generally requires
+            about four times as many shots. The exact costs of
+            an experiment depend on the hardware and the
+            measurement procedure.
+        </p>
+
+        <p>
+            Too few shots can make the loss and gradient estimates
+            unreliable. Too many shots can make training slow
+            and expensive. The right balance depends on the
+            accuracy needed at each stage of optimisation.
+        </p>
+
+        <h3>17.6.6 Simulator versus real quantum hardware</h3>
+
+        <p>
+            During development, it is common to start with a
+            simulator. A simulator makes it easy to inspect
+            circuit behaviour, test gradients, and run repeated
+            experiments without waiting for access to physical
+            hardware.
+        </p>
+
+        <p>
+            An ideal statevector simulator can calculate quantum
+            states and expectation values accurately within
+            numerical precision, subject to the limitations of
+            the simulator and the size of the system. A finite-shot
+            simulation introduces sampling uncertainty. A noisy
+            simulator can additionally model specified hardware
+            errors.
+        </p>
+
+        <p>
+            Real devices introduce physical noise, calibration
+            variation, connectivity restrictions, queueing delays,
+            and execution costs. A model that trains well on an
+            ideal simulator may behave differently on hardware.
+        </p>
+
+        <p>
+            A sensible development process is to validate the
+            mathematics on a simulator, test finite-shot behaviour,
+            investigate realistic noise, and only then move to
+            hardware when appropriate.
+        </p>
+
+        <h3>17.6.7 Why hybrid does not automatically mean faster</h3>
+
+        <p>
+            A hybrid model has additional communication and
+            execution costs. Gradient calculation may require
+            many circuit evaluations, and real devices may take
+            considerable time to return measurement results.
+        </p>
+
+        <p>
+            Therefore, using a quantum processor does not
+            automatically make a machine learning problem
+            faster. A convincing advantage requires a fair
+            comparison against strong classical methods,
+            including the costs of data encoding, circuit
+            execution, measurements, and classical processing.
+        </p>
+
+        <div class="callout">
+            <strong>Practical lesson:</strong> A hybrid quantum-classical
+            model is an optimisation workflow distributed across
+            two kinds of computing resources. Its usefulness depends
+            on the complete workflow, not just the quantum circuit.
+        </div>
+    </section>
+
+    <section id="pennylane">
+        <h2>17.7 Hands-on: Training a Quantum Classifier in PennyLane</h2>
+
+        <h3>17.7.1 What will we build?</h3>
+
+        <p>
+            We will construct a small binary classifier using PennyLane.
+            The classifier receives two numerical features and predicts
+            one of two classes. We will use a two-qubit circuit with
+            angle encoding, trainable rotations, and an entangling gate.
+        </p>
+
+        <p>
+            The example uses a simulator so that it can run on an
+            ordinary computer without access to a quantum processor.
+            The code uses a hybrid training loop: PennyLane evaluates
+            the circuit and calculates derivatives, while a classical
+            optimiser updates the parameters.
+        </p>
+
+        <p>
+            The goal is not to demonstrate quantum advantage. It is
+            to understand how the components of a variational model
+            fit together in working code.
+        </p>
+
+        <h3>17.7.2 Install the required libraries</h3>
+
+        <p>
+            Create a Python environment and install PennyLane and
+            NumPy. The following command is suitable for a standard
+            Python environment in which package installation is
+            permitted.
+        </p>
+
+        <pre><code>python -m pip install pennylane numpy</code></pre>
+
+        <p>
+            The code below uses PennyLane's NumPy wrapper, which
+            supports automatic differentiation, and the
+            <code>default.qubit</code> simulator.
+        </p>
+
+        <h3>17.7.3 Define the dataset</h3>
+
+        <p>
+            We will create a small, two-dimensional dataset. Each
+            example has two features, and its label is either -1
+            or +1. The features are deliberately simple so that
+            we can focus on the quantum model rather than on
+            data processing.
+        </p>
+
+        <pre><code>import pennylane as qml
+from pennylane import numpy as np
+
+# Two numerical features per example.
+X = np.array([
+    [-0.80, -0.70],
+    [-0.60, -0.90],
+    [-0.90, -0.40],
+    [-0.40, -0.60],
+    [ 0.70,  0.80],
+    [ 0.90,  0.50],
+    [ 0.50,  0.90],
+    [ 0.80,  0.40],
+], requires_grad=False)
+
+# The two classes are represented by -1 and +1.
+y = np.array(
+    [-1, -1, -1, -1, 1, 1, 1, 1],
+    requires_grad=False
+)
+
+print("Dataset shape:", X.shape)
+print("Number of examples:", len(y))</code></pre>
+
+        <p>
+            The dataset has eight examples and two features per example.
+            Four examples belong to the negative class, and four belong
+            to the positive class.
+        </p>
+
+        <p>
+            In a real project, the dataset would need suitable
+            preprocessing, feature scaling, and separate training and
+            testing sets. The small dataset here is only a demonstration
+            of the training mechanics.
+        </p>
+
+        <h3>17.7.4 Create the quantum device</h3>
+
+        <p>
+            PennyLane represents a quantum execution target as a device.
+            The device specifies where the circuit runs and how its
+            operations are evaluated.
+        </p>
+
+        <pre><code>n_qubits = 2
+n_layers = 2
+
+dev = qml.device(
+    "default.qubit",
+    wires=n_qubits
+)</code></pre>
+
+        <p>
+            We use two qubits because our example contains two features.
+            This is a convenient design choice, not a general requirement
+            that the number of features must equal the number of qubits.
+            Other encoding strategies can map more features to a
+            smaller or larger quantum register.
+        </p>
+
+        <h3>17.7.5 Design the variational circuit</h3>
+
+        <p>
+            The circuit has three main stages. First, we encode the
+            input features using Y-axis rotations. Next, we apply
+            trainable rotation gates and a CNOT entangling operation.
+            Finally, we measure Pauli-Z on the first qubit.
+        </p>
+
+        <pre><code>@qml.qnode(dev, interface="autograd")
+def quantum_model(x, weights):
+    # Stage 1: Encode the two classical features.
+    qml.RY(x[0], wires=0)
+    qml.RY(x[1], wires=1)
+
+    # Stage 2: Trainable layers.
+    for layer in range(n_layers):
+        qml.RY(weights[layer, 0], wires=0)
+        qml.RZ(weights[layer, 1], wires=0)
+
+        qml.RY(weights[layer, 2], wires=1)
+        qml.RZ(weights[layer, 3], wires=1)
+
+        # Entangle the two qubits.
+        qml.CNOT(wires=[0, 1])
+
+    # Stage 3: Return an expectation value.
+    return qml.expval(qml.PauliZ(wires=0))</code></pre>
+
+        <p>
+            The decorator <code>@qml.qnode</code> tells PennyLane
+            to construct a quantum node. The interface setting
+            allows the quantum computation to work with PennyLane's
+            automatic differentiation system.
+        </p>
+
+        <p>
+            Each trainable layer has four parameters. Two control
+            rotations on the first qubit, and two control rotations
+            on the second. Since there are two layers, the model
+            has eight trainable parameters.
+        </p>
+
+        <p>
+            The CNOT gate introduces an interaction between the qubits.
+            The measured expectation value is a real number between
+            -1 and +1, which will be used as the model's prediction
+            score.
+        </p>
+
+        <h3>17.7.6 Inspect the circuit</h3>
+
+        <p>
+            Before training, it is useful to inspect the circuit
+            generated by PennyLane. A diagram makes the order of
+            operations easier to understand.
+        </p>
+
+        <pre><code>initial_weights = np.array(
+    np.random.uniform(
+        low=-0.1,
+        high=0.1,
+        size=(n_layers, 4)
+    ),
+    requires_grad=True
+)
+
+print(
+    qml.draw(quantum_model)(
+        X[0],
+        initial_weights
+    )
+)</code></pre>
+
+        <p>
+            The diagram will show the input rotations, the trainable
+            gates, the CNOT gates, and the final measurement.
+            The precise printed representation can vary by
+            PennyLane version.
+        </p>
+
+        <h3>17.7.7 Convert the circuit output into a loss</h3>
+
+        <p>
+            We need a rule that tells the optimiser whether the
+            circuit is making useful predictions. Since our labels
+            are -1 and +1, we can use a simple squared-error loss.
+        </p>
+
+        <div class="formula">
+            L(θ) = (1/N) Σᵢ [f(xᵢ; θ) − yᵢ]²
+        </div>
+
+        <p>
+            When the model output is close to the correct label,
+            the contribution to the loss is small. When the output
+            is far from the label, the contribution is larger.
+        </p>
+
+        <pre><code>def predict_one(x, weights):
+    return quantum_model(x, weights)
+
+
+def loss_function(weights, X_batch, y_batch):
+    predictions = np.stack([
+        predict_one(x, weights)
+        for x in X_batch
+    ])
+
+    errors = predictions - y_batch
+
+    return np.mean(errors ** 2)</code></pre>
+
+        <p>
+            This loss is appropriate for our simple score-based
+            demonstration. It should not be confused with a
+            universal loss for quantum classification. If a model
+            produces class probabilities, cross-entropy may be
+            more appropriate. If we use different output
+            conventions, the labels and loss must be adjusted
+            accordingly.
+        </p>
+
+        <h3>17.7.8 Train the model</h3>
+
+        <p>
+            We can now use a classical optimiser to adjust the
+            circuit parameters. PennyLane provides interfaces
+            for calculating gradients of supported quantum
+            functions. The following code uses
+            <code>GradientDescentOptimizer</code>.
+        </p>
+
+        <pre><code># Initialise trainable parameters.
+weights = np.array(
+    np.random.uniform(
+        low=-0.1,
+        high=0.1,
+        size=(n_layers, 4)
+    ),
+    requires_grad=True
+)
+
+optimizer = qml.GradientDescentOptimizer(
+    stepsize=0.2
+)
+
+epochs = 60
+
+for epoch in range(epochs):
+    weights, current_loss = optimizer.step_and_cost(
+        lambda w: loss_function(w, X, y),
+        weights
+    )
+
+    if epoch % 10 == 0 or epoch == epochs - 1:
+        print(
+            f"Epoch {epoch:02d} | "
+            f"Loss: {float(current_loss):.6f}"
+        )</code></pre>
+
+        <p>
+            At each iteration, PennyLane differentiates the loss
+            with respect to the trainable parameters using the
+            selected device and differentiation configuration.
+            The optimiser then changes the parameters to reduce
+            the loss.
+        </p>
+
+        <p>
+            On the ideal simulator, the default analytic
+            expectation-value evaluation can avoid finite-shot
+            sampling noise. The exact gradient calculation method
+            depends on the device, interface, and differentiation
+            settings. Parameter-shift is one common approach,
+            but it should not be assumed that every PennyLane
+            configuration uses it automatically.
+        </p>
+
+        <p>
+            The printed loss should be inspected rather than
+            assumed to decrease on every iteration. Optimisation
+            is not guaranteed to succeed from every random
+            initialisation, and the final outcome can depend on
+            the learning rate, circuit structure, and dataset.
+        </p>
+
+        <h3>17.7.9 Evaluate predictions</h3>
+
+        <p>
+            After training, we can inspect the model outputs and
+            convert each score into a class prediction. For this
+            example, scores greater than or equal to zero predict
+            +1, while negative scores predict -1.
+        </p>
+
+        <pre><code>predictions = np.stack([
+    quantum_model(x, weights)
+    for x in X
+])
+
+predicted_labels = np.where(
+    predictions >= 0,
+    1,
+    -1
+)
+
+accuracy = np.mean(
+    predicted_labels == y
+)
+
+print("Scores:")
+print(predictions)
+
+print("Predicted labels:")
+print(predicted_labels)
+
+print("Training accuracy:", float(accuracy))</code></pre>
+
+        <p>
+            Training accuracy tells us how many training examples
+            the model classified correctly. It does not tell us
+            how well the model will perform on unseen examples.
+        </p>
+
+        <p>
+            To evaluate generalisation, a proper experiment should
+            use a separate test set or cross-validation. For a
+            very small dataset, measured accuracy can also change
+            substantially with the chosen examples and initial
+            parameters.
+        </p>
+
+        <h3>17.7.10 A complete runnable version</h3>
+
+        <p>
+            The following is the complete example in one place.
+            Use this version when you want to copy the program
+            into a Python file or notebook and run it directly.
+        </p>
+
+        <pre><code>import pennylane as qml
+from pennylane import numpy as np
+
+# --------------------------------------------------
+# 1. Dataset
+# --------------------------------------------------
+
+X = np.array([
+    [-0.80, -0.70],
+    [-0.60, -0.90],
+    [-0.90, -0.40],
+    [-0.40, -0.60],
+    [ 0.70,  0.80],
+    [ 0.90,  0.50],
+    [ 0.50,  0.90],
+    [ 0.80,  0.40],
+], requires_grad=False)
+
+y = np.array(
+    [-1, -1, -1, -1, 1, 1, 1, 1],
+    requires_grad=False
+)
+
+# --------------------------------------------------
+# 2. Quantum device and model configuration
+# --------------------------------------------------
+
+n_qubits = 2
+n_layers = 2
+
+dev = qml.device(
+    "default.qubit",
+    wires=n_qubits
+)
+
+# --------------------------------------------------
+# 3. Parameterized quantum circuit
+# --------------------------------------------------
+
+@qml.qnode(dev, interface="autograd")
+def quantum_model(x, weights):
+    # Encode the classical features.
+    qml.RY(x[0], wires=0)
+    qml.RY(x[1], wires=1)
+
+    # Apply trainable circuit layers.
+    for layer in range(n_layers):
+        qml.RY(weights[layer, 0], wires=0)
+        qml.RZ(weights[layer, 1], wires=0)
+
+        qml.RY(weights[layer, 2], wires=1)
+        qml.RZ(weights[layer, 3], wires=1)
+
+        qml.CNOT(wires=[0, 1])
+
+    return qml.expval(qml.PauliZ(wires=0))
+
+
+# --------------------------------------------------
+# 4. Loss function
+# --------------------------------------------------
+
+def loss_function(weights, X_batch, y_batch):
+    predictions = np.stack([
+        quantum_model(x, weights)
+        for x in X_batch
+    ])
+
+    return np.mean((predictions - y_batch) ** 2)
+
+
+# --------------------------------------------------
+# 5. Parameter initialisation and training
+# --------------------------------------------------
+
+np.random.seed(7)
+
+weights = np.array(
+    np.random.uniform(
+        low=-0.1,
+        high=0.1,
+        size=(n_layers, 4)
+    ),
+    requires_grad=True
+)
+
+optimizer = qml.GradientDescentOptimizer(
+    stepsize=0.2
+)
+
+epochs = 60
+
+for epoch in range(epochs):
+    weights, current_loss = optimizer.step_and_cost(
+        lambda w: loss_function(w, X, y),
+        weights
+    )
+
+    if epoch % 10 == 0 or epoch == epochs - 1:
+        print(
+            f"Epoch {epoch:02d} | "
+            f"Loss: {float(current_loss):.6f}"
+        )
+
+
+# --------------------------------------------------
+# 6. Evaluate the training examples
+# --------------------------------------------------
+
+scores = np.stack([
+    quantum_model(x, weights)
+    for x in X
+])
+
+predicted_labels = np.where(
+    scores >= 0,
+    1,
+    -1
+)
+
+accuracy = np.mean(predicted_labels == y)
+
+print("\\nFinal scores:")
+print(scores)
+
+print("\\nPredicted labels:")
+print(predicted_labels)
+
+print("\\nActual labels:")
+print(y)
+
+print("\\nTraining accuracy:", float(accuracy))</code></pre>
+
+        <div class="warning">
+            <strong>What should you expect?</strong> The program
+            should execute with a compatible PennyLane installation,
+            but no particular final accuracy or exact loss sequence
+            is guaranteed. Training performance depends on the
+            optimisation behaviour and the circuit's ability to
+            represent the chosen dataset. Always inspect the
+            outputs rather than treating successful execution as
+            proof that the classifier has learned well.
+        </div>
+
+        <h3>17.7.11 Understanding the complete workflow</h3>
+
+        <p>
+            Let us connect the code back to the theory. The array
+            <code>X</code> supplies the classical input data, and
+            <code>y</code> supplies the labels. The first pair of
+            rotations encodes each input into the quantum state.
+        </p>
+
+        <p>
+            The array <code>weights</code> stores the trainable
+            parameters. Each execution of <code>quantum_model</code>
+            produces an expectation value. The loss function
+            compares these values with the correct labels.
+        </p>
+
+        <p>
+            The optimiser requests a gradient and uses it to update
+            the parameters. Repeated executions of the circuit
+            therefore change the prediction function, ideally
+            making it better at separating the two classes.
+        </p>
+
+        <p>
+            This is the essential structure of a variational quantum
+            classifier. Larger models may use more qubits, more
+            layers, different encodings, different observables,
+            or more sophisticated classical optimisers, but the
+            basic training loop remains recognisable.
+        </p>
+
+        <h3>17.7.12 How to improve the experiment</h3>
+
+        <p>
+            Once the basic model works, change one design decision
+            at a time and compare the results. This is a better
+            way to understand the model than changing every part
+            simultaneously.
+        </p>
+
+        <ul>
+            <li>
+                <strong>Change circuit depth.</strong> Try one,
+                two, and three layers. Observe whether additional
+                parameters help the model or make optimisation
+                less stable.
+            </li>
+            <li>
+                <strong>Change the learning rate.</strong> A
+                learning rate that is too large may produce
+                unstable updates, while one that is too small
+                may lead to slow progress.
+            </li>
+            <li>
+                <strong>Change the entangling pattern.</strong>
+                Compare the CNOT arrangement with a circuit
+                containing no entangling gates. This helps
+                investigate whether the chosen task benefits
+                from interactions between qubits.
+            </li>
+            <li>
+                <strong>Change the encoding.</strong> Try a
+                different rotation axis or repeated data encoding.
+                Keep the input range sensible and compare the
+                resulting learning behaviour.
+            </li>
+            <li>
+                <strong>Change the optimiser.</strong> Compare
+                gradient descent with an adaptive optimiser
+                supported by the installed PennyLane version.
+            </li>
+            <li>
+                <strong>Test generalisation.</strong> Use a
+                held-out dataset rather than evaluating only
+                the examples used during training.
+            </li>
+            <li>
+                <strong>Introduce finite shots.</strong> Configure
+                the simulator to use a finite number of shots
+                and observe how measurement uncertainty affects
+                predictions and gradients.
+            </li>
+        </ul>
+
+        <p>
+            These experiments reveal an important fact: quantum
+            machine learning is not only about inventing new
+            circuits. It also requires careful experimental design,
+            numerical analysis, debugging, and fair evaluation.
+        </p>
+    </section>
+
+    <section id="summary">
+        <h2>Chapter Summary</h2>
+
+        <p>
+            A parameterized quantum circuit becomes a machine
+            learning model when classical data is encoded into
+            the circuit, trainable gates transform the quantum
+            state, measurements produce outputs, and an optimiser
+            adjusts the parameters to minimise a loss.
+        </p>
+
+        <p>
+            The model's mathematical behaviour is influenced by
+            its data encoding and gate structure. For suitable
+            encoding schemes, its outputs can be understood
+            through Fourier-like expansions. Circuit depth and
+            entangling operations influence the range of states
+            and functions that the model can represent.
+        </p>
+
+        <p>
+            Expressibility alone is not enough. A circuit must
+            also be trainable. Excessively difficult optimisation
+            landscapes, small gradients, finite measurement
+            precision, and hardware noise can make training
+            challenging.
+        </p>
+
+        <p>
+            The parameter-shift rule provides a principled method
+            for calculating derivatives of suitable parameterised
+            quantum circuits. Quantum natural gradient methods
+            go further by considering the geometry of the quantum
+            state space. Both approaches can be useful, but
+            their computational costs and assumptions matter.
+        </p>
+
+        <p>
+            Finally, hybrid quantum-classical training combines
+            quantum circuit execution with classical loss
+            calculations and optimisation. PennyLane provides
+            tools for constructing these workflows, differentiating
+            supported circuits, and testing quantum models on
+            simulators and compatible hardware.
+        </p>
+
+        <div class="end-note">
+            <h3>Questions to test your understanding</h3>
+
+            <ol>
+                <li>
+                    Why does a parameterized quantum circuit need
+                    a loss function before it can be trained?
+                </li>
+                <li>
+                    What is the difference between data-encoding
+                    parameters and trainable circuit parameters?
+                </li>
+                <li>
+                    How does a rotation gate produce a periodic
+                    dependence on its input?
+                </li>
+                <li>
+                    Why can a highly expressive circuit still be
+                    difficult to train?
+                </li>
+                <li>
+                    Under what assumptions can the standard
+                    parameter-shift rule be used?
+                </li>
+                <li>
+                    How does quantum natural gradient differ
+                    from ordinary gradient descent?
+                </li>
+                <li>
+                    Why does a hybrid model need a classical
+                    computer even when a quantum processor is used?
+                </li>
+                <li>
+                    Why is training accuracy insufficient to
+                    demonstrate that a classifier generalises?
+                </li>
+            </ol>
+
+            <h3>Further reading</h3>
+
+            <ul>
+                <li>
+                    Maria Schuld and Francesco Petruccione,
+                    <em>Machine Learning with Quantum Computers</em>,
+                    Springer.
+                </li>
+                <li>
+                    Marcello Benedetti, Erika Lloyd, Stefan Sack,
+                    and Mattia Fiorentini, "Parameterized quantum
+                    circuits as machine learning models", a review
+                    of the structure and applications of
+                    parameterized circuits.
+                </li>
+                <li>
+                    James Stokes, Josh Izaac, Nathan Killoran,
+                    and Giuseppe Carleo, "Quantum Natural Gradient",
+                    on geometric optimisation for quantum circuits.
+                </li>
+                <li>
+                    PennyLane documentation:
+                    <a href="https://docs.pennylane.ai/" target="_blank" rel="noopener noreferrer">
+                        https://docs.pennylane.ai/
+                    </a>
+                </li>
+                <li>
+                    PennyLane demonstrations:
+                    <a href="https://pennylane.ai/qml/" target="_blank" rel="noopener noreferrer">
+                        https://pennylane.ai/qml/
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

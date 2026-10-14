@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 20: Trainability and Barren Plateaus</title>
+  <style>
+    :root {
+      --ink: #202b3c;
+      --muted: #566579;
+      --accent: #2458a6;
+      --accent-light: #eaf1fc;
+      --border: #dce3ed;
+      --surface: #f6f8fc;
+      --highlight: #fff5dc;
+      --green: #e9f7ef;
+      --purple: #f1edfc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #edf1f7;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 17px;
+      line-height: 1.85;
+    }
+
+    .page {
+      max-width: 1000px;
+      margin: 32px auto;
+      padding: 54px 64px;
+      background: #fff;
+      box-shadow: 0 8px 32px rgba(25, 40, 70, 0.08);
+    }
+
+    .chapter-label {
+      color: var(--accent);
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, h4 {
+      color: #172b4d;
+      line-height: 1.35;
+    }
+
+    h1 {
+      margin-top: 15px;
+      margin-bottom: 18px;
+      font-size: 42px;
+    }
+
+    h2 {
+      margin-top: 58px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+      font-size: 29px;
+    }
+
+    h3 {
+      margin-top: 34px;
+      font-size: 22px;
+    }
+
+    h4 {
+      margin-top: 25px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 17px 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.65;
+    }
+
+    .lead {
+      margin: 28px 0;
+      padding: 22px 25px;
+      border-left: 5px solid var(--accent);
+      background: var(--accent-light);
+      font-size: 19px;
+    }
+
+    .contents {
+      margin: 32px 0;
+      padding: 25px 30px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+
+    .contents h2 {
+      margin-top: 0;
+      border: 0;
+      font-size: 23px;
+    }
+
+    .contents ol {
+      padding-left: 24px;
+    }
+
+    .contents a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .contents a:hover {
+      text-decoration: underline;
+    }
+
+    .equation {
+      overflow-x: auto;
+      margin: 24px 0;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f8faff;
+      color: #142f5a;
+      font-family: "Times New Roman", serif;
+      font-size: 21px;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .equation small {
+      display: block;
+      margin-top: 9px;
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .callout {
+      margin: 25px 0;
+      padding: 21px 24px;
+      border-radius: 8px;
+      background: var(--highlight);
+    }
+
+    .callout.green {
+      background: var(--green);
+    }
+
+    .callout.purple {
+      background: var(--purple);
+    }
+
+    .callout strong {
+      color: #173d72;
+    }
+
+    .diagram {
+      margin: 28px 0;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fbfcff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    .diagram-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .node {
+      min-width: 115px;
+      padding: 13px 16px;
+      border: 1px solid #b7c8e6;
+      border-radius: 8px;
+      background: #eaf1fc;
+      color: #193e75;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .arrow {
+      color: #526783;
+      font-size: 23px;
+    }
+
+    .caption {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      margin: 24px 0;
+      border-collapse: collapse;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    th, td {
+      padding: 13px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf3fc;
+      color: #193e75;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #eef1f6;
+      font-family: Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .exercise {
+      margin: 20px 0;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .exercise h3 {
+      margin-top: 0;
+    }
+
+    .reference {
+      overflow-wrap: anywhere;
+      font-size: 15px;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        font-size: 16px;
+      }
+
+      .page {
+        margin: 0;
+        padding: 28px 20px;
+      }
+
+      h1 {
+        font-size: 33px;
+      }
+
+      h2 {
+        font-size: 25px;
+      }
+
+      .equation {
+        font-size: 17px;
+        text-align: left;
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        max-width: none;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none;
+      }
+
+      h2 {
+        break-after: avoid;
+      }
+
+      .equation, .callout, .diagram {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<main class="page">
+
+  <header>
+    <div class="chapter-label">Quantum Machine Learning · Chapter 20</div>
+    <h1>Trainability and Barren Plateaus</h1>
+    <p class="subtitle">
+      Why can a quantum model have millions of possible configurations and
+      still be extremely difficult to train? This chapter connects quantum
+      circuits, gradients, entanglement, optimisation, geometry and classical
+      computation to answer that question.
+    </p>
+  </header>
+
+  <div class="lead">
+    <strong>The central idea:</strong> a quantum model is useful only when
+    we can find circuit parameters that produce the desired behaviour.
+    A circuit may be mathematically expressive enough to represent a good
+    solution, yet its training process may provide almost no useful
+    information about how to reach that solution. This is the problem of
+    trainability, and barren plateaus are one of its most important obstacles.
+  </div>
+
+  <nav class="contents">
+    <h2>Chapter contents</h2>
+    <ol>
+      <li><a href="#sec1">What are barren plateaus?</a></li>
+      <li><a href="#sec2">Causes: expressivity, entanglement, noise and global costs</a></li>
+      <li><a href="#sec3">Mathematical intuition and key theorems</a></li>
+      <li><a href="#sec4">Mitigation strategies</a></li>
+      <li><a href="#sec5">Symmetry-aware and geometric ansätze</a></li>
+      <li><a href="#sec6">Connections to classical simulability</a></li>
+      <li><a href="#summary">Putting everything together</a></li>
+      <li><a href="#exercises">Exercises and further reading</a></li>
+    </ol>
+  </nav>
+
+  <section id="sec1">
+    <h2>20.1 What Are Barren Plateaus?</h2>
+
+    <h3>20.1.1 Training a quantum model</h3>
+
+    <p>
+      In classical machine learning, a model receives input data, performs
+      calculations using adjustable parameters, and produces a prediction.
+      Training changes those parameters until the predictions become useful.
+      A neural network, for instance, may adjust millions of weights using
+      gradient descent.
+    </p>
+
+    <p>
+      A variational quantum model follows a related process. A classical
+      computer supplies parameters to a quantum circuit. The circuit applies
+      parameter-dependent quantum gates, and measurements provide information
+      about the model's output. A classical optimiser then uses that
+      information to update the parameters.
+    </p>
+
+    <div class="diagram">
+      <div class="diagram-row">
+        <div class="node">Input data</div>
+        <div class="arrow">→</div>
+        <div class="node">Quantum circuit</div>
+        <div class="arrow">→</div>
+        <div class="node">Measurements</div>
+      </div>
+      <div style="font-size:24px; margin:10px;">↓</div>
+      <div class="diagram-row">
+        <div class="node">Loss function</div>
+        <div class="arrow">→</div>
+        <div class="node">Classical optimiser</div>
+        <div class="arrow">↺</div>
+        <div class="node">New parameters</div>
+      </div>
+      <p class="caption">
+        Figure 20.1: The hybrid training loop. The optimiser must receive
+        informative measurements to decide which parameter changes are useful.
+      </p>
+    </div>
+
+    <p>
+      Let the adjustable parameters be collected into a vector
+      θ = (θ₁, θ₂, ..., θₚ). The quantum circuit prepares a state
+      |ψ(θ)⟩, and a cost function measures how well the circuit performs
+      a task. We want to minimise that cost.
+    </p>
+
+    <div class="equation">
+      θ* = arg min<sub>θ</sub> C(θ)
+      <small>
+        The goal is to find the parameter values θ* that give the smallest
+        cost C(θ).
+      </small>
+    </div>
+
+    <p>
+      The optimiser needs to know how the cost changes when a parameter
+      changes. This information is supplied by a gradient. For the parameter
+      θᵢ, the corresponding gradient component is
+    </p>
+
+    <div class="equation">
+      gᵢ = ∂C(θ) / ∂θᵢ
+    </div>
+
+    <p>
+      If the gradient is positive, a small decrease in that parameter may
+      reduce the cost. If it is negative, a small increase may help. The
+      exact update depends on the optimiser, but the important point is
+      that the gradient tells us which direction is locally promising.
+    </p>
+
+    <h3>20.1.2 The plateau problem</h3>
+
+    <p>
+      Imagine walking through a hilly landscape while trying to reach its
+      lowest point. On a normal slope, the ground tells you which direction
+      goes downhill. On a completely flat plain, moving a little to the
+      left or right gives you almost no such information.
+    </p>
+
+    <p>
+      A <strong>barren plateau</strong> is a region of parameter space in
+      which the cost function has gradients that are extremely small,
+      often becoming exponentially small as the number of qubits increases.
+      The optimiser then struggles to identify a useful direction for
+      improvement.
+    </p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 620 265" width="100%" role="img"
+           aria-label="Comparison of a useful cost landscape and a flat barren plateau">
+        <line x1="45" y1="218" x2="295" y2="218" stroke="#65758b" stroke-width="1.5"/>
+        <line x1="45" y1="218" x2="45" y2="25" stroke="#65758b" stroke-width="1.5"/>
+        <path d="M55 48 C95 55, 120 190, 170 198 S245 205, 285 208"
+              fill="none" stroke="#2458a6" stroke-width="4"/>
+        <circle cx="115" cy="128" r="5" fill="#2458a6"/>
+        <circle cx="170" cy="198" r="5" fill="#2458a6"/>
+        <text x="85" y="28" font-size="13" fill="#193e75">Useful gradient</text>
+        <text x="108" y="244" font-size="12" fill="#566579">Parameter θ</text>
+        <text x="8" y="135" font-size="12" fill="#566579"
+              transform="rotate(-90 8 135)">Cost</text>
+
+        <line x1="340" y1="218" x2="590" y2="218" stroke="#65758b" stroke-width="1.5"/>
+        <line x1="340" y1="218" x2="340" y2="25" stroke="#65758b" stroke-width="1.5"/>
+        <path d="M350 145 C410 143, 480 147, 580 144"
+              fill="none" stroke="#c47a1c" stroke-width="4"/>
+        <text x="390" y="28" font-size="13" fill="#8c5610">Barren plateau</text>
+        <text x="402" y="244" font-size="12" fill="#566579">Parameter θ</text>
+        <text x="303" y="135" font-size="12" fill="#566579"
+              transform="rotate(-90 303 135)">Cost</text>
+        <text x="386" y="174" font-size="12" fill="#8c5610">Almost no slope</text>
+      </svg>
+      <p class="caption">
+        Figure 20.2: Schematic cost landscapes. A barren plateau does not
+        necessarily mean the cost is optimal. It means local gradient
+        information is too weak to guide training effectively.
+      </p>
+    </div>
+
+    <p>
+      The word "barren" is important. The landscape may contain good
+      solutions, but ordinary gradient-based training cannot easily find
+      them because the gradients are too small to be useful.
+    </p>
+
+    <h3>20.1.3 Why very small gradients are troublesome</h3>
+
+    <p>
+      Consider a gradient-descent update:
+    </p>
+
+    <div class="equation">
+      θᵢ ← θᵢ − ηgᵢ
+    </div>
+
+    <p>
+      Here, η is the learning rate. Suppose η is 0.1 and the gradient is
+      0.5. The update has magnitude 0.05. If the gradient is only
+      10<sup>−8</sup>, the update has magnitude 10<sup>−9</sup>.
+      The second update is so small that it may have little practical effect.
+    </p>
+
+    <p>
+      Simply increasing the learning rate is not a general solution. A
+      large learning rate can cause instability in regions where gradients
+      are informative, and it cannot recover useful information that is
+      absent from noisy measurements.
+    </p>
+
+    <h3>20.1.4 A flat gradient is not always a barren plateau</h3>
+
+    <p>
+      A gradient can vanish at an ordinary local minimum, at a maximum, at
+      a saddle point or at a symmetry-protected stationary point. Those
+      situations are not automatically barren plateaus.
+    </p>
+
+    <p>
+      The term is particularly useful when discussing a statistical
+      phenomenon: for a suitable family of random quantum circuits and
+      cost functions, the typical gradient variance decreases rapidly as
+      the circuit size grows. This behaviour can make large circuits
+      difficult to train even when their parameter counts are substantial.
+    </p>
+
+    <div class="callout">
+      <strong>Key distinction:</strong> expressivity asks whether a model
+      can represent a desired function. Trainability asks whether an
+      optimisation procedure can find useful parameters. A model can be
+      expressive without being easy to train.
+    </div>
+  </section>
+
+  <section id="sec2">
+    <h2>20.2 Causes: Expressivity, Entanglement, Noise and Global Cost Functions</h2>
+
+    <p>
+      Barren plateaus do not have just one cause. Different mechanisms can
+      produce similar symptoms, and several mechanisms may appear together
+      in the same circuit. Understanding the cause matters because each
+      cause suggests a different remedy.
+    </p>
+
+    <h3>20.2.1 Expressivity: when a circuit becomes too random</h3>
+
+    <p>
+      In Chapter 17, parameterised quantum circuits were introduced as
+      models whose behaviour changes with adjustable gate parameters.
+      The collection of states or transformations a circuit can represent
+      is related to its <strong>expressivity</strong>.
+    </p>
+
+    <p>
+      A simple circuit with a few gates may explore only a restricted set
+      of quantum states. Adding layers and more adjustable gates generally
+      expands what the circuit can represent. This is useful because a
+      model must be sufficiently flexible to capture the structure of a
+      task.
+    </p>
+
+    <p>
+      However, adding layers without considering their structure can make
+      a circuit behave like a highly random unitary transformation. If the
+      resulting circuit samples states that are sufficiently close to
+      certain uniform distributions over quantum states or unitaries,
+      many observables can have nearly the same expectation value across
+      typical parameter settings.
+    </p>
+
+    <p>
+      When the output becomes insensitive to small changes in individual
+      parameters, the gradient becomes small. Thus, increasing expressivity
+      can eventually make optimisation harder rather than easier.
+    </p>
+
+    <p>
+      The lesson is not that expressive models are bad. It is that
+      expressivity must be balanced with useful structure. A circuit should
+      have enough freedom to learn the task without behaving like a random
+      transformation that hides meaningful directions from the optimiser.
+    </p>
+
+    <h3>20.2.2 Entanglement: useful correlations, but not a guarantee of trainability</h3>
+
+    <p>
+      Entanglement is one of the features that distinguishes quantum
+      systems from ordinary classical probability models. Two qubits are
+      entangled when their joint state cannot be represented as a product
+      of independent states for those qubits.
+    </p>
+
+    <p>
+      For example, the two-qubit state
+      </p>
+
+    <div class="equation">
+      |Φ⁺⟩ = (|00⟩ + |11⟩) / √2
+    </div>
+
+    <p>
+      is entangled. Neither qubit alone has a definite pure state, yet
+      their measurement outcomes are strongly correlated.
+    </p>
+
+    <p>
+      Entangling gates allow a quantum model to represent relationships
+      between qubits. This can be essential for learning correlations
+      that a circuit without suitable entangling operations cannot capture.
+      But deep, broadly connected entangling circuits can also spread
+      information across the system and make local parameter changes
+      difficult to detect through a chosen measurement.
+    </p>
+
+    <p>
+      In many random-circuit settings, sufficient depth and entanglement
+      help the circuit approach highly random unitary behaviour. Under
+      appropriate mathematical assumptions, this can contribute to a
+      barren plateau.
+    </p>
+
+    <p>
+      Entanglement alone is not the enemy. A shallow circuit can be
+      entangled and trainable. A carefully structured deep circuit can
+      also be trainable. What matters is the relationship between
+      entanglement, circuit depth, parameter placement, observables and
+      the cost function.
+    </p>
+
+    <div class="callout purple">
+      <strong>Useful principle:</strong> do not maximise entanglement
+      merely because quantum computers can create it. Use entanglement
+      where the task needs it, and preserve a meaningful relationship
+      between adjustable gates and measurable outputs.
+    </div>
+
+    <h3>20.2.3 Global cost functions</h3>
+
+    <p>
+      A cost function is the quantity that training attempts to minimise.
+      It translates the task into a number that can be estimated from
+      measurements.
+    </p>
+
+    <p>
+      A <strong>global cost function</strong> depends on a property of
+      the entire quantum system. One example is a cost based on the
+      overlap between the final state and a target state:
+    </p>
+
+    <div class="equation">
+      C(θ) = 1 − |⟨ψ<sub>target</sub>|ψ(θ)⟩|²
+    </div>
+
+    <p>
+      If the circuit prepares the target state perfectly, the overlap
+      has magnitude one and the cost is zero. If the overlap is small,
+      the cost is larger.
+    </p>
+
+    <p>
+      This cost can be useful, but it asks the circuit to coordinate its
+      behaviour across all qubits at once. For sufficiently random
+      circuits, a local parameter change may have an exponentially
+      small effect on the expected value of such a global quantity.
+    </p>
+
+    <p>
+      A <strong>local cost function</strong>, by comparison, can depend
+      on one qubit or a small group of neighbouring qubits. Such a cost
+      may provide a more direct training signal for individual parts of
+      the circuit.
+    </p>
+
+    <p>
+      Local costs are not automatically better in every respect. They
+      may fail to capture the global objective, and minimising each local
+      part does not always guarantee that the full system reaches the
+      desired state. Their advantage is that they can avoid some of the
+      gradient-concentration mechanisms associated with global objectives.
+    </p>
+
+    <h3>20.2.4 Noise: when useful information disappears</h3>
+
+    <p>
+      Real quantum hardware is imperfect. A qubit can lose coherence,
+      gates can introduce errors, and measurements can be inaccurate.
+      These effects are often grouped under the term <strong>quantum noise</strong>.
+    </p>
+
+    <p>
+      Noise can affect trainability in several ways. It may reduce the
+      difference between outputs produced by nearby parameter values.
+      It may increase uncertainty in gradient estimates. In some
+      architectures, noise can also create a barren plateau even when
+      the corresponding ideal circuit does not exhibit the same problem.
+    </p>
+
+    <p>
+      Consider two nearby parameter settings, θ and θ + δ. Suppose their
+      ideal costs differ by a small amount. If hardware noise causes
+      fluctuations larger than this difference, the observed measurements
+      may not reliably tell us which setting is better.
+    </p>
+
+    <p>
+      The problem is therefore not only the size of the mathematical
+      gradient. It is also the size of the gradient relative to the
+      uncertainty of the estimate.
+    </p>
+
+    <h3>20.2.5 Shot noise and the cost of estimating a gradient</h3>
+
+    <p>
+      Quantum measurements are probabilistic. A device normally repeats
+      the same circuit many times, using a process called sampling or
+      taking <em>shots</em>, to estimate an expectation value.
+    </p>
+
+    <p>
+      For an observable with measurement outcomes between −1 and +1,
+      the standard error of a simple sample-mean estimate decreases
+      approximately as the inverse square root of the number of shots:
+    </p>
+
+    <div class="equation">
+      Standard error ∝ 1 / √N
+      <small>N is the number of independent measurement shots.</small>
+    </div>
+
+    <p>
+      To reduce the standard error by a factor of ten, approximately
+      one hundred times as many shots are needed, assuming comparable
+      measurement variance and independent samples.
+    </p>
+
+    <p>
+      A tiny gradient may therefore be expensive to distinguish from
+      measurement noise. The optimiser might need an impractically large
+      number of circuit evaluations to determine the correct update.
+    </p>
+
+    <h3>20.2.6 Depth, hardware noise and the combined effect</h3>
+
+    <p>
+      Deeper circuits often require more gates and longer execution times.
+      Depending on the hardware, this can increase the chance that
+      unwanted noise affects the final state. A deep circuit may therefore
+      face two difficulties at once: an unfavourable ideal cost landscape
+      and a noisy physical implementation.
+    </p>
+
+    <p>
+      It is useful to distinguish the mechanisms:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Mechanism</th>
+          <th>What goes wrong?</th>
+          <th>Possible response</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Excessive random expressivity</td>
+          <td>Typical gradients concentrate near zero.</td>
+          <td>Use structured circuits and suitable initialisation.</td>
+        </tr>
+        <tr>
+          <td>Deep, broadly entangling circuits</td>
+          <td>Local parameters may have weak influence on the selected cost.</td>
+          <td>Control depth and use problem-aware connectivity.</td>
+        </tr>
+        <tr>
+          <td>Global cost functions</td>
+          <td>Useful global information can become exponentially weak.</td>
+          <td>Consider local or layered objectives.</td>
+        </tr>
+        <tr>
+          <td>Hardware noise</td>
+          <td>Noise can suppress sensitivity and corrupt estimates.</td>
+          <td>Use noise-aware design and shorter circuits.</td>
+        </tr>
+        <tr>
+          <td>Finite measurement shots</td>
+          <td>Gradient estimates have substantial statistical uncertainty.</td>
+          <td>Allocate shots carefully and monitor uncertainty.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="sec3">
+    <h2>20.3 Mathematical Intuition and Key Theorems</h2>
+
+    <h3>20.3.1 The cost is an expectation value</h3>
+
+    <p>
+      Quantum mechanics gives us a natural way to define many cost
+      functions: measure an observable on the state prepared by the
+      circuit and take its expected value.
+    </p>
+
+    <div class="equation">
+      C(θ) = ⟨ψ(θ)| O |ψ(θ)⟩
+      <small>
+        Here, O is an observable, represented mathematically by a
+        Hermitian operator.
+      </small>
+    </div>
+
+    <p>
+      The observable O describes what is measured. The parameterised
+      circuit prepares the state |ψ(θ)⟩. Changing θ changes the state
+      and can therefore change the cost.
+    </p>
+
+    <p>
+      For a circuit composed of gates, the state can be written as
+    </p>
+
+    <div class="equation">
+      |ψ(θ)⟩ = U(θ)|0⟩<sup>⊗n</sup>
+    </div>
+
+    <p>
+      The symbol U(θ) represents the complete unitary transformation
+      implemented by the circuit, while n is the number of qubits.
+      The initial state shown here is the all-zero computational basis
+      state. Other initial states are possible.
+    </p>
+
+    <p>
+      A barren plateau concerns the behaviour of the derivatives of
+      C(θ), not simply whether the circuit has many parameters. To
+      understand it, we examine how gradients behave over a distribution
+      of possible parameter settings.
+    </p>
+
+    <h3>20.3.2 Why gradient variance matters</h3>
+
+    <p>
+      Suppose we randomly initialise a circuit many times and compute
+      the gradient for one parameter each time. We obtain a distribution
+      of gradient values. Some may be positive, some negative, and some
+      close to zero.
+    </p>
+
+    <p>
+      The variance measures how widely those gradient values are spread
+      around their mean:
+    </p>
+
+    <div class="equation">
+      Var(g) = E[g²] − E[g]²
+    </div>
+
+    <p>
+      Here, E[g] is the expected gradient and E[g²] is the expected
+      squared gradient. If the mean gradient is zero and the variance
+      is also extremely small, the gradients are typically close to zero.
+    </p>
+
+    <p>
+      This is a useful way to formalise the barren plateau phenomenon.
+      In many relevant results, the expected gradient is zero or vanishes
+      by symmetry, while the variance becomes exponentially small in
+      the number of qubits.
+    </p>
+
+    <div class="equation">
+      Var(∂C/∂θᵢ) ≤ A e<sup>−bn</sup>
+      <small>
+        Schematic exponential-decay bound: A and b are positive constants
+        independent of n in the regime under consideration. This is not
+        a universal bound for every circuit or cost function.
+      </small>
+    </div>
+
+    <p>
+      If b is positive, increasing n reduces the bound exponentially.
+      For example, a factor such as e<sup>−bn</sup> can become extremely
+      small even when n increases by only a few dozen qubits, depending
+      on b.
+    </p>
+
+    <p>
+      The significance is practical. When gradients are exponentially
+      small, estimating their direction may require a rapidly growing
+      amount of measurement data or computational effort.
+    </p>
+
+    <h3>20.3.3 The exponential cost of resolving a small gradient</h3>
+
+    <p>
+      Assume, for intuition, that a gradient signal has magnitude of
+      order e<sup>−bn</sup> and that an estimator's standard error
+      decreases as 1/√N. To make the standard error comparable to or
+      smaller than the signal, we need roughly
+    </p>
+
+    <div class="equation">
+      1 / √N ≲ e<sup>−bn</sup>
+      <br>
+      N ≳ e<sup>2bn</sup>
+    </div>
+
+    <p>
+      This simplified argument shows why exponentially small gradient
+      signals can lead to exponentially expensive sampling. It assumes
+      comparable measurement variance and a suitable estimator; exact
+      shot requirements depend on the observable, noise, circuit and
+      desired confidence.
+    </p>
+
+    <p>
+      Notice that two separate problems are involved. The optimiser
+      may need a great deal of data to estimate a small gradient, and
+      even a perfectly estimated small gradient may produce very slow
+      progress. More shots address the first problem, but they do not
+      automatically fix the second.
+    </p>
+
+    <h3>20.3.4 The parameter-shift rule</h3>
+
+    <p>
+      Many quantum circuit gradients can be estimated using the
+      parameter-shift rule. For a suitable gate generated by a
+      two-eigenvalue generator, the derivative can be obtained from
+      cost evaluations at shifted parameter values.
+    </p>
+
+    <div class="equation">
+      ∂C/∂θᵢ =
+      [C(θ + (π/2)eᵢ) − C(θ − (π/2)eᵢ)] / 2
+    </div>
+
+    <p>
+      The vector eᵢ changes only the i-th parameter. This expression
+      applies to the standard rotation-gate setting with the usual
+      generator normalisation; more general generators can require
+      different shift rules.
+    </p>
+
+    <p>
+      The rule is valuable because it provides an exact derivative
+      formula for the ideal expectation value, rather than relying on
+      an arbitrary finite-difference approximation. In hardware, however,
+      both shifted costs must still be estimated from measurements.
+    </p>
+
+    <p>
+      If the two costs are nearly equal, their difference may be tiny.
+      The parameter-shift rule does not remove the barren plateau;
+      it gives a valid method for measuring the gradient whose statistical
+      cost may still be large.
+    </p>
+
+    <h3>20.3.5 The McClean et al. barren plateau result</h3>
+
+    <p>
+      One of the foundational papers on this subject is the 2018 work
+      by McClean and collaborators, <em>Barren plateaus in quantum
+      neural network training landscapes</em>.
+    </p>
+
+    <p>
+      The work established that, under specific assumptions involving
+      random parameterised circuits and cost functions, gradient
+      variance can decrease exponentially with the number of qubits.
+      This was an important warning against assuming that adding
+      parameters and circuit depth necessarily makes a quantum model
+      easier to train.
+    </p>
+
+    <p>
+      The result is not a theorem saying that every quantum neural
+      network has a barren plateau. The circuit ensemble, structure,
+      cost function and placement of the differentiated parameter
+      matter. The theorem identifies conditions under which trainability
+      becomes difficult, rather than declaring all variational quantum
+      algorithms unusable.
+    </p>
+
+    <h3>20.3.6 The role of 2-designs</h3>
+
+    <p>
+      A useful mathematical concept in this area is a
+      <strong>unitary 2-design</strong>. Informally, an ensemble of
+      quantum transformations forms a 2-design when its first and
+      second statistical moments reproduce those of the uniform
+      Haar-random unitary ensemble.
+    </p>
+
+    <p>
+      The Haar ensemble describes a mathematically uniform distribution
+      over unitary transformations. It is useful for analysing what
+      happens when a circuit behaves sufficiently like a random
+      transformation, even though physically sampling exact Haar-random
+      unitaries is generally impractical.
+    </p>
+
+    <p>
+      Certain gradient-variance calculations depend on second moments.
+      Therefore, when a circuit ensemble forms an appropriate 2-design,
+      mathematical tools from random-unitary theory can establish
+      small-gradient results for particular cost functions.
+    </p>
+
+    <p>
+      A circuit need not contain every possible quantum gate to exhibit
+      this behaviour. Certain sufficiently expressive random circuits
+      can approximate the relevant statistical properties. But not
+      every deep circuit is a 2-design, and circuit depth alone is not
+      enough to conclude that a barren plateau must occur.
+    </p>
+
+    <h3>20.3.7 Global and local costs have different scaling behaviour</h3>
+
+    <p>
+      The distinction between global and local objectives has a strong
+      mathematical basis. For particular random circuit ensembles,
+      the variance of gradients for global cost functions can decrease
+      exponentially with system size. Under suitable assumptions,
+      local costs can avoid this particular exponential scaling and
+      have more favourable variance behaviour.
+    </p>
+
+    <p>
+      A common intuition is that a local observable examines only a
+      small part of the system. Its value may therefore depend on
+      a smaller portion of the circuit's behaviour, whereas a global
+      objective may require many parts of the system to align in a
+      coordinated way.
+    </p>
+
+    <p>
+      This is a trend under specified mathematical conditions, not a
+      guarantee. Local objectives can also develop barren plateaus,
+      especially when circuit depth, noise, parameter placement or
+      other structural features create unfavourable conditions.
+    </p>
+
+    <h3>20.3.8 Noise-induced barren plateaus</h3>
+
+    <p>
+      Work on noise-induced barren plateaus has shown that certain
+      local-noise models can suppress gradient information exponentially
+      with circuit depth. In such settings, the relevant scaling may
+      depend strongly on depth and the noise process, rather than
+      only on the number of qubits.
+    </p>
+
+    <p>
+      This creates an important distinction:
+    </p>
+
+    <ul>
+      <li><strong>Expressivity-induced plateaus:</strong> the ideal circuit and cost landscape have concentrated gradients.</li>
+      <li><strong>Noise-induced plateaus:</strong> the physical noisy implementation suppresses gradient signals.</li>
+      <li><strong>Sampling difficulty:</strong> measurement uncertainty makes small gradients difficult to estimate.</li>
+    </ul>
+
+    <p>
+      These difficulties can overlap, but they are not interchangeable.
+      A useful diagnosis should examine ideal gradients, noisy gradients
+      and measurement uncertainty separately.
+    </p>
+
+    <div class="callout green">
+      <strong>What the mathematics teaches us:</strong> the key question
+      is not simply whether a circuit is large. It is how gradient
+      information scales with the number of qubits, circuit depth,
+      measurement cost and noise level.
+    </div>
+  </section>
+
+  <section id="sec4">
+    <h2>20.4 Mitigation Strategies: Initialisation, Local Costs and Layerwise Training</h2>
+
+    <p>
+      Barren plateaus are not solved by one universal technique. The
+      appropriate strategy depends on why the gradients are small.
+      A useful design principle is to build the model so that its
+      parameters retain a meaningful influence on measurable outputs.
+    </p>
+
+    <h3>20.4.1 Strategy one: choose a better initialisation</h3>
+
+    <p>
+      Initialisation means choosing the parameter values before training
+      begins. A random initialisation may seem natural, but an
+      unrestricted random choice can place the circuit in a region
+      where gradients are already very small.
+    </p>
+
+    <p>
+      Instead, the initial parameters can be chosen to keep the circuit
+      near a simple, interpretable transformation. For rotation gates,
+      one possible starting point is to initialise angles near zero,
+      so that many gates initially perform transformations close to
+      the identity.
+    </p>
+
+    <div class="equation">
+      R<sub>y</sub>(θ) =
+      [ cos(θ/2)  −sin(θ/2) ]
+      <br>
+      [ sin(θ/2)   cos(θ/2) ]
+      <small>
+        Matrix representation of a single-qubit rotation around the
+        y-axis, using the computational basis.
+      </small>
+    </div>
+
+    <p>
+      At θ = 0, this gate is the identity transformation. Starting near
+      zero can make the overall circuit initially simpler than a circuit
+      whose gates are all sampled from broad random distributions.
+    </p>
+
+    <p>
+      However, setting every parameter exactly to zero is not always
+      appropriate. Symmetries may force certain derivatives to vanish,
+      and a completely symmetric initial state may prevent the model
+      from learning distinctions it needs. Small, structured
+      perturbations can sometimes help.
+    </p>
+
+    <p>
+      A more informed approach uses the task, circuit architecture
+      and expected output to choose initial parameters. For example,
+      a circuit intended to learn small corrections to a known
+      transformation may be initialised close to that transformation.
+    </p>
+
+    <h3>20.4.2 Identity-block initialisation</h3>
+
+    <p>
+      An identity block is a group of gates arranged so that their
+      combined operation is the identity, or close to it, at the
+      initial parameter setting. The block can contain several
+      adjustable gates, even though its initial overall action is
+      simple.
+    </p>
+
+    <p>
+      During training, the parameters move away from their initial
+      values and the block begins to perform a learned transformation.
+      The idea is to obtain a circuit that starts with a controlled
+      behaviour rather than a highly random one.
+    </p>
+
+    <p>
+      Identity-block initialisation is useful in some variational
+      architectures, but it does not guarantee trainability. The
+      surrounding circuit and objective can still suppress gradients.
+    </p>
+
+    <h3>20.4.3 Strategy two: use local cost functions</h3>
+
+    <p>
+      Suppose the task is to prepare a target state across many qubits.
+      A global objective might compare the entire output state with
+      the target in a single quantity. A local alternative could
+      measure the agreement of individual qubits or small groups of
+      qubits with their desired states.
+    </p>
+
+    <p>
+      If the target is a product state, for example, a local cost
+      could be built from single-qubit observables:
+    </p>
+
+    <div class="equation">
+      C<sub>local</sub>(θ) =
+      (1/n) Σ<sub>i=1</sub><sup>n</sup> C<sub>i</sub>(θ)
+    </div>
+
+    <p>
+      Each Cᵢ evaluates a local property associated with qubit i.
+      The total objective averages the local errors.
+    </p>
+
+    <p>
+      This can provide more direct information about the circuit's
+      local behaviour. It can also be easier to interpret: if the
+      contribution from one region is poor, the optimiser has a
+      measurable indication of that problem.
+    </p>
+
+    <p>
+      The challenge is that the local objective must still be related
+      to the desired final task. A circuit may optimise all selected
+      local measurements without reproducing the required global
+      correlations.
+    </p>
+
+    <p>
+      One practical solution is to use local objectives during early
+      training and gradually introduce terms that capture more global
+      properties. Such a schedule is problem-dependent and must be
+      evaluated experimentally.
+    </p>
+
+    <h3>20.4.4 Strategy three: layerwise training</h3>
+
+    <p>
+      A deep parameterised circuit may contain many layers. Training
+      all the layers simultaneously can create a complicated
+      optimisation problem, especially if the circuit is poorly
+      initialised.
+    </p>
+
+    <p>
+      Layerwise training changes the process. Instead of activating
+      every layer at once, we train a smaller circuit first, then
+      extend it gradually.
+    </p>
+
+    <div class="diagram">
+      <div class="diagram-row">
+        <div class="node">Train layer 1</div>
+        <div class="arrow">→</div>
+        <div class="node">Add layer 2</div>
+        <div class="arrow">→</div>
+        <div class="node">Add layer 3</div>
+        <div class="arrow">→</div>
+        <div class="node">Refine model</div>
+      </div>
+      <p class="caption">
+        Figure 20.3: A simple layerwise training schedule. New layers are
+        added after earlier layers have acquired a useful behaviour.
+      </p>
+    </div>
+
+    <p>
+      The first layer is trained using the original cost function.
+      When the circuit reaches a useful state, a second layer is
+      introduced. The parameters of the existing layers may be retained
+      or partly frozen, while the new layer is trained. Further layers
+      are added as needed.
+    </p>
+
+    <p>
+      There are several variants. One approach trains each newly added
+      layer while keeping earlier layers fixed. Another allows earlier
+      layers to be fine-tuned after the new layer has become useful.
+      A third gradually increases the number of active parameters.
+    </p>
+
+    <p>
+      The advantage is that the optimiser initially deals with a
+      simpler problem. The limitation is that an early layer may learn
+      a representation that makes later optimisation difficult.
+      Layerwise training can also consume more total training stages
+      and does not eliminate every kind of barren plateau.
+    </p>
+
+    <h3>20.4.5 Strategy four: control circuit depth and connectivity</h3>
+
+    <p>
+      More layers are not automatically better. Every extra layer
+      introduces additional gates, parameters and opportunities for
+      noise. The goal is to use the depth needed by the task, rather
+      than making the circuit as deep as possible.
+    </p>
+
+    <p>
+      Connectivity matters as well. A circuit in which every qubit
+      interacts with every other qubit has a different structure from
+      one in which each qubit interacts only with its neighbours.
+      Local connectivity can preserve a clear relationship between
+      parts of the circuit and may delay some randomisation effects.
+    </p>
+
+    <p>
+      Restricted connectivity can, however, make some tasks more
+      difficult or require additional circuit depth. The right choice
+      depends on the relationships the model needs to represent and
+      on the hardware's available interactions.
+    </p>
+
+    <h3>20.4.6 Strategy five: use problem-informed ansätze</h3>
+
+    <p>
+      An ansatz is the chosen family of quantum circuits from which
+      the model selects a particular transformation. A generic ansatz
+      might repeat the same rotation and entangling gates regardless
+      of the task. A problem-informed ansatz uses knowledge about the
+      task to restrict the available transformations.
+    </p>
+
+    <p>
+      For example, a molecular simulation circuit may be designed
+      to respect particle-number constraints. A circuit for a spin
+      system may preserve a relevant symmetry. A circuit for data
+      arranged on a grid may use a connectivity pattern reflecting
+      that arrangement.
+    </p>
+
+    <p>
+      These restrictions can reduce unnecessary freedom and help
+      keep the circuit within a physically meaningful part of the
+      state space. They can improve trainability, but the effect is
+      not universal: a poorly chosen restriction can exclude the
+      desired solution altogether.
+    </p>
+
+    <h3>20.4.7 Strategy six: improve the measurement budget</h3>
+
+    <p>
+      Even a trainable ideal circuit can be difficult to optimise
+      when gradient estimates are noisy. Measurements should therefore
+      be allocated according to the information needed.
+    </p>
+
+    <p>
+      For example, an optimiser may use fewer shots during early
+      exploration and more shots when comparing promising parameter
+      settings. It can also estimate uncertainty and avoid treating
+      two costs as meaningfully different when the observed difference
+      is smaller than the statistical error.
+    </p>
+
+    <p>
+      This strategy helps manage sampling costs. It does not remove
+      the underlying exponential concentration of gradients if that
+      concentration is present.
+    </p>
+
+    <h3>20.4.8 Strategy seven: use suitable optimisers and gradient-free methods</h3>
+
+    <p>
+      Gradient-based methods are not the only way to optimise a quantum
+      circuit. Derivative-free methods can search using cost evaluations
+      alone, and methods such as Bayesian optimisation may be useful
+      for low-dimensional parameter spaces.
+    </p>
+
+    <p>
+      Their success depends on the problem. If the cost landscape is
+      almost flat and measurement estimates are noisy, a gradient-free
+      method may also struggle. It may simply explore the landscape
+      with a different strategy.
+    </p>
+
+    <p>
+      Similarly, adaptive learning rates and momentum can help with
+      some optimisation difficulties, but they cannot guarantee
+      recovery of a gradient signal that is exponentially small
+      relative to the noise.
+    </p>
+
+    <h3>20.4.9 A practical mitigation workflow</h3>
+
+    <ol>
+      <li><strong>Start small.</strong> Test the circuit on a modest number of qubits.</li>
+      <li><strong>Inspect gradients.</strong> Measure their mean, variance and magnitude at several initial parameter settings.</li>
+      <li><strong>Compare ideal and noisy simulations.</strong> Determine whether the problem exists before hardware noise is introduced.</li>
+      <li><strong>Check the objective.</strong> Investigate whether a global cost can be replaced or supplemented by a useful local objective.</li>
+      <li><strong>Change the initialisation.</strong> Compare random, near-identity and task-informed starting points.</li>
+      <li><strong>Control depth.</strong> Add layers only when the existing circuit needs more capacity.</li>
+      <li><strong>Evaluate scaling.</strong> Repeat the experiment at different qubit counts and depths.</li>
+    </ol>
+
+    <p>
+      A mitigation strategy should be judged by measurable evidence:
+      gradient statistics, optimisation success, number of circuit
+      evaluations, final task performance and robustness to noise.
+      A visually complicated circuit is not evidence of a good model.
+    </p>
+  </section>
+
+  <section id="sec5">
+    <h2>20.5 Symmetry-Aware and Geometric Ansätze</h2>
+
+    <h3>20.5.1 Why symmetry matters</h3>
+
+    <p>
+      Symmetry appears whenever a system remains unchanged under
+      certain transformations. A square, for example, retains its
+      shape when rotated by 90 degrees. In physics, a symmetry can
+      express a conservation law or a constraint on which states
+      are physically allowed.
+    </p>
+
+    <p>
+      Quantum systems also have symmetries. An observable or
+      Hamiltonian may remain unchanged under a particular
+      transformation. A quantum circuit can be designed to respect
+      that symmetry, restricting the states it can prepare to a
+      physically relevant sector.
+    </p>
+
+    <p>
+      Why should this help trainability? If a task only requires
+      states within a particular symmetry sector, allowing the
+      circuit to explore every possible state may introduce
+      unnecessary degrees of freedom. A symmetry-aware circuit
+      removes some of those irrelevant directions.
+    </p>
+
+    <h3>20.5.2 Symmetry in mathematical form</h3>
+
+    <p>
+      Let H be a Hamiltonian and let S be a symmetry operator.
+      A common symmetry condition is
+    </p>
+
+    <div class="equation">
+      [H, S] = HS − SH = 0
+    </div>
+
+    <p>
+      This means that H and S commute. They can therefore share
+      eigenstates under the usual finite-dimensional Hermitian
+      setting. If the system begins in a suitable symmetry
+      eigenstate, its ideal evolution under H preserves the
+      corresponding symmetry sector.
+    </p>
+
+    <p>
+      For a circuit ansatz U(θ), a strong symmetry-preserving
+      condition is
+    </p>
+
+    <div class="equation">
+      [U(θ), S] = 0
+    </div>
+
+    <p>
+      If this holds for every allowed parameter setting, the circuit
+      preserves the relevant symmetry. More generally, circuit
+      design may preserve a sector without requiring this exact
+      commutation relation for every possible operator S.
+    </p>
+
+    <p>
+      The important point is that the ansatz is restricted by
+      mathematical structure, rather than by an arbitrary decision
+      to reduce its size.
+    </p>
+
+    <h3>20.5.3 Example: preserving particle number</h3>
+
+    <p>
+      In some quantum chemistry problems, the number of particles
+      is a physically meaningful quantity. A circuit that changes
+      the particle number without a physical reason may waste
+      computational effort exploring states that are irrelevant
+      to the target problem.
+    </p>
+
+    <p>
+      A particle-number-preserving ansatz uses gates chosen to
+      preserve the appropriate particle-number sector. This can
+      reduce the search space and prevent the circuit from leaving
+      the desired sector during ideal evolution.
+    </p>
+
+    <p>
+      Such a restriction can be helpful for both physical correctness
+      and optimisation. However, a circuit must still have enough
+      freedom to represent the desired state within that sector.
+      If the ansatz is too restrictive, it can introduce an
+      approximation error that training cannot eliminate.
+    </p>
+
+    <h3>20.5.4 Symmetry and trainability are related, but not identical</h3>
+
+    <p>
+      Symmetry-aware design is not a universal cure for barren
+      plateaus. Restricting a circuit to a smaller sector can
+      improve the relevance of its parameters, but a random circuit
+      that becomes sufficiently expressive within that sector
+      can still develop small gradients.
+    </p>
+
+    <p>
+      The effect also depends on the cost function. If the cost
+      cannot distinguish states within a symmetry sector, or if
+      the chosen initial state is incompatible with the desired
+      sector, the circuit may still be difficult to train.
+    </p>
+
+    <p>
+      The best outcome occurs when the symmetry reflects genuine
+      structure in the task, the initial state belongs to the
+      appropriate sector, and the ansatz provides enough flexibility
+      to reach the target.
+    </p>
+
+    <h3>20.5.5 Geometric ansätze</h3>
+
+    <p>
+      The word <strong>geometry</strong> here refers to the structure
+      of the state space and the paths that a parameterised circuit
+      can follow through it. It does not mean merely drawing gates
+      in a visually attractive arrangement.
+    </p>
+
+    <p>
+      A parameterised circuit defines a family of quantum states.
+      As its parameters change, the prepared state moves through
+      this family. The optimiser tries to find a path through
+      parameter space that leads towards a low-cost state.
+    </p>
+
+    <p>
+      Different parameterisations produce different paths. Some
+      paths may be poorly conditioned, meaning that changes in
+      certain parameter directions have almost no effect while
+      changes in others have a very large effect. This can make
+      optimisation slow or unstable.
+    </p>
+
+    <p>
+      Geometric circuit design aims to make the accessible family
+      of states and the parameterisation suitable for the task.
+      It can draw on physical symmetries, local interactions,
+      conservation laws, circuit topology and the geometry of
+      quantum states.
+    </p>
+
+    <h3>20.5.6 Quantum natural gradient</h3>
+
+    <p>
+      Ordinary gradient descent measures parameter changes using
+      the coordinates θ chosen by the circuit designer. But
+      different parameter changes can have very different effects
+      on the quantum state. A small change in one direction may
+      substantially alter the state, while a larger change in
+      another direction may barely change it.
+    </p>
+
+    <p>
+      Quantum natural gradient methods try to account for this
+      geometry. They use a metric related to the distinguishability
+      of nearby quantum states, commonly connected to the quantum
+      geometric tensor and, in appropriate settings, the
+      Fubini–Study metric.
+    </p>
+
+    <div class="equation">
+      Δθ = −η F<sup>−1</sup> ∇C
+      <small>
+        Schematic natural-gradient update. F is a suitable metric
+        or metric approximation, with regularisation or a
+        pseudoinverse used when necessary.
+      </small>
+    </div>
+
+    <p>
+      Here, ∇C is the ordinary cost gradient. The metric F adjusts
+      the update to reflect how parameter changes affect the
+      represented quantum state.
+    </p>
+
+    <p>
+      This can improve conditioning and reduce the effect of an
+      arbitrary choice of parameter coordinates. It is especially
+      useful when the model's geometry differs greatly across
+      parameter directions.
+    </p>
+
+    <p>
+      However, natural gradient does not guarantee a solution to
+      barren plateaus. If the cost gradient itself is extremely
+      small, multiplying it by an approximate inverse metric may
+      still fail to provide a useful update. In addition, estimating
+      the metric can be expensive, and a nearly singular metric
+      can require careful regularisation.
+    </p>
+
+    <h3>20.5.7 Expressivity, geometry and redundancy</h3>
+
+    <p>
+      A circuit may contain many parameters without representing
+      an equally large number of independent changes in quantum
+      state. Some parameters may be redundant, or different
+      parameter settings may prepare physically equivalent states.
+    </p>
+
+    <p>
+      From a geometric perspective, these redundancies mean that
+      parameter space can contain directions that produce little
+      or no meaningful change in the state. Such directions can
+      complicate optimisation.
+    </p>
+
+    <p>
+      A carefully designed ansatz seeks a useful balance: enough
+      independent directions to represent the required states,
+      but not so much unnecessary freedom that training becomes
+      needlessly difficult.
+    </p>
+
+    <div class="callout">
+      <strong>Design principle:</strong> use the physics and
+      mathematical structure of the task to decide which states
+      and transformations the circuit should explore. The aim is
+      not maximum freedom; it is sufficient, relevant freedom.
+    </div>
+  </section>
+
+  <section id="sec6">
+    <h2>20.6 Connections to Classical Simulability</h2>
+
+    <h3>20.6.1 What does classical simulability mean?</h3>
+
+    <p>
+      A quantum circuit is classically simulable when a classical
+      computer can reproduce the quantities of interest from that
+      circuit with manageable computational resources. Depending
+      on the task, this might mean computing an output probability,
+      estimating an expectation value or sampling from the
+      circuit's output distribution.
+    </p>
+
+    <p>
+      Some quantum circuits are easy to simulate classically.
+      Others appear to require substantially more resources as
+      their size grows, although the difficulty depends on the
+      circuit family, the observable and the computational task.
+    </p>
+
+    <p>
+      It is tempting to assume that a circuit which is difficult
+      to simulate classically must be a good machine-learning
+      model. That conclusion does not follow. Classical
+      simulation difficulty and optimisation difficulty are
+      different properties.
+    </p>
+
+    <h3>20.6.2 Entanglement and classical simulation</h3>
+
+    <p>
+      A general pure state of n qubits requires 2<sup>n</sup>
+      complex amplitudes to represent directly. This exponential
+      growth is one reason why general quantum-state simulation
+      can become expensive.
+    </p>
+
+    <div class="equation">
+      |ψ⟩ = Σ<sub>x=0</sub><sup>2ⁿ−1</sup> α<sub>x</sub>|x⟩
+      <br>
+      Σ<sub>x</sub> |α<sub>x</sub>|² = 1
+    </div>
+
+    <p>
+      The second equation expresses normalisation: the total
+      probability across all computational basis outcomes is one.
+      In a general state, the amplitudes may require an
+      exponentially large description.
+    </p>
+
+    <p>
+      Yet not every quantum state needs an exponential
+      description. A product state can be described by its
+      individual qubit states. Certain structured states can
+      also be represented efficiently using methods such as
+      tensor networks.
+    </p>
+
+    <p>
+      Entanglement is relevant because it can make a state harder
+      to represent as a simple product of independent states.
+      However, the amount and pattern of entanglement matter.
+      Some highly entangled states still have efficient
+      representations under particular structures.
+    </p>
+
+    <h3>20.6.3 Tensor networks and circuit structure</h3>
+
+    <p>
+      Tensor-network methods represent a large quantum state
+      using smaller tensors connected according to a chosen
+      structure. Their efficiency often depends on quantities
+      such as bond dimension and the entanglement structure
+      across partitions of the system.
+    </p>
+
+    <p>
+      For one-dimensional systems, matrix product states can
+      represent many physically relevant states efficiently
+      when the required entanglement is sufficiently limited.
+      But a general state may require a very large bond dimension,
+      removing this advantage.
+    </p>
+
+    <p>
+      This creates an interesting relationship with variational
+      circuits. A shallow, locally connected circuit may be
+      easier to simulate classically than a deep, highly
+      entangling circuit. At the same time, the shallow circuit
+      may be easier to train because its parameters retain
+      more direct influence over local measurements.
+    </p>
+
+    <p>
+      This is not a universal relationship. A shallow circuit
+      can still be difficult to simulate for particular tasks,
+      and a deeper circuit can remain classically simulable
+      when its structure permits an efficient representation.
+    </p>
+
+    <h3>20.6.4 The surprising connection: random circuits can be difficult to simulate and difficult to train</h3>
+
+    <p>
+      Random, highly expressive circuits can be challenging
+      to simulate classically because they may generate
+      complicated quantum states and output distributions.
+      Certain random circuit families also exhibit barren
+      plateaus for suitable cost functions.
+    </p>
+
+    <p>
+      These two observations seem surprising at first. We might
+      expect a circuit that produces complex quantum behaviour
+      to be a powerful model. But complexity of representation
+      does not guarantee that an optimiser can identify a useful
+      direction in parameter space.
+    </p>
+
+    <p>
+      A random circuit may be hard for a classical computer to
+      represent explicitly, while its average cost changes
+      very little under small parameter adjustments. In that
+      situation, the circuit is computationally complex in one
+      sense but difficult to learn in another.
+    </p>
+
+    <p>
+      This distinction is central to quantum machine learning:
+      computational complexity is not the same as learning
+      efficiency.
+    </p>
+
+    <h3>20.6.5 A simple comparison</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Question being asked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Expressivity</td>
+          <td>Can the circuit represent the desired state or function?</td>
+        </tr>
+        <tr>
+          <td>Classical simulability</td>
+          <td>Can a classical computer reproduce the relevant circuit behaviour efficiently?</td>
+        </tr>
+        <tr>
+          <td>Trainability</td>
+          <td>Can an optimiser find useful parameters with reasonable effort?</td>
+        </tr>
+        <tr>
+          <td>Quantum advantage</td>
+          <td>Can the quantum approach outperform relevant classical alternatives on a well-defined task and resource measure?</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      These properties influence one another, but none can be
+      substituted for another. A circuit may be expressive and
+      hard to simulate yet difficult to train. Another circuit
+      may be easy to simulate but still be a useful model for
+      a small problem or as a component in a larger algorithm.
+    </p>
+
+    <h3>20.6.6 Can avoiding barren plateaus make a model classically simulable?</h3>
+
+    <p>
+      Not necessarily. Reducing circuit depth, restricting
+      entanglement or introducing local structure may improve
+      trainability. Those same restrictions can sometimes make
+      classical simulation easier, but there is no general
+      theorem saying that every trainable circuit must be
+      efficiently classically simulable.
+    </p>
+
+    <p>
+      Conversely, adding enough entanglement to make simulation
+      expensive does not prove that the circuit provides
+      a useful quantum-learning advantage. The model still
+      needs to learn the task, and the data preparation,
+      measurements, optimisation and total resource costs
+      must be considered.
+    </p>
+
+    <p>
+      A sensible research objective is therefore to find
+      architectures that balance three requirements:
+    </p>
+
+    <ol>
+      <li><strong>Representation:</strong> the circuit can express useful solutions.</li>
+      <li><strong>Trainability:</strong> its parameters can be optimised efficiently.</li>
+      <li><strong>Computational value:</strong> the complete method offers a meaningful benefit over relevant classical approaches.</li>
+    </ol>
+
+    <h3>20.6.7 The role of data loading and measurement</h3>
+
+    <p>
+      Quantum machine-learning proposals sometimes focus on the
+      internal circuit while overlooking the cost of loading
+      classical data into quantum states. If encoding a large
+      dataset requires substantial resources, that cost can
+      offset a speed-up within the circuit itself.
+    </p>
+
+    <p>
+      Measurement creates another limitation. A quantum state
+      may contain many amplitudes, but a measurement does not
+      reveal all those amplitudes in a single run. Estimating
+      a desired output can require repeated experiments.
+    </p>
+
+    <p>
+      Trainability adds a third cost: the number of circuit
+      evaluations needed to optimise the parameters. Therefore,
+      a fair comparison with a classical model must include
+      encoding, circuit execution, optimisation and measurement,
+      rather than considering only the number of quantum gates.
+    </p>
+
+    <div class="callout green">
+      <strong>Research perspective:</strong> a quantum model
+      should not be judged by how mysterious or complicated
+      its circuit looks. It should be judged by whether the
+      model can be trained, whether the result is useful and
+      whether the complete computational cost is competitive.
+    </div>
+  </section>
+
+  <section id="summary">
+    <h2>Putting Everything Together</h2>
+
+    <p>
+      Trainability is the bridge between a circuit's theoretical
+      capabilities and its practical usefulness. Expressivity
+      determines what a model can represent, but optimisation
+      determines whether its parameters can be found in a
+      reasonable amount of time.
+    </p>
+
+    <p>
+      Barren plateaus arise when gradient information becomes
+      too small to guide training effectively. Random and highly
+      expressive circuits, certain global cost functions, deep
+      noisy circuits and finite measurement budgets can all
+      contribute, although their mathematical mechanisms differ.
+    </p>
+
+    <p>
+      The most useful response is to identify the mechanism
+      before changing the architecture. Better initialisation,
+      local objectives, layerwise training, symmetry-aware
+      ansätze and geometry-aware optimisation can help under
+      suitable conditions. None of these methods guarantees
+      success for every problem.
+    </p>
+
+    <p>
+      The relationship with classical simulability adds one
+      final lesson. Making a circuit hard to simulate is not
+      the same as making it easy to train, and neither property
+      by itself establishes quantum advantage.
+    </p>
+
+    <div class="diagram">
+      <div class="diagram-row">
+        <div class="node">Task structure</div>
+        <div class="arrow">→</div>
+        <div class="node">Ansatz design</div>
+        <div class="arrow">→</div>
+        <div class="node">Cost function</div>
+      </div>
+      <div style="font-size:24px; margin:10px;">↓</div>
+      <div class="diagram-row">
+        <div class="node">Gradient behaviour</div>
+        <div class="arrow">→</div>
+        <div class="node">Training strategy</div>
+        <div class="arrow">→</div>
+        <div class="node">Measured performance</div>
+      </div>
+      <p class="caption">
+        Figure 20.4: The design logic of a trainable quantum model.
+        Each decision affects the usefulness and computational cost
+        of the final learning system.
+      </p>
+    </div>
+
+    <h3>Six ideas to remember</h3>
+
+    <ol>
+      <li>A barren plateau is a region where gradients are typically extremely small, often with exponentially decreasing variance.</li>
+      <li>Expressivity is useful, but randomisation and excessive depth can make optimisation difficult.</li>
+      <li>Entanglement supports quantum correlations; its effect on trainability depends on the circuit and objective.</li>
+      <li>Local costs and layerwise training can improve gradient behaviour under suitable conditions.</li>
+      <li>Symmetry-aware design and quantum natural gradient exploit problem structure and quantum-state geometry, but neither is a universal cure.</li>
+      <li>Classical simulation difficulty, trainability and quantum advantage are separate questions that must be evaluated independently.</li>
+    </ol>
+  </section>
+
+  <section id="exercises">
+    <h2>Exercises and Further Reading</h2>
+
+    <div class="exercise">
+      <h3>Exercise 1: Understand a gradient</h3>
+      <p>
+        A circuit has a cost function C(θ). At one parameter
+        setting, the gradient is 0.4. At another, it is 0.000001.
+        If both use a learning rate of 0.1, calculate the magnitude
+        of each gradient-descent update.
+      </p>
+      <p class="small-note">
+        Hint: multiply the learning rate by the absolute value
+        of the gradient.
+      </p>
+    </div>
+
+    <div class="exercise">
+      <h3>Exercise 2: Sampling requirements</h3>
+      <p>
+        Suppose the gradient signal decreases like e<sup>−bn</sup>
+        and the standard error of its estimate decreases like
+        1/√N. Derive the approximate scaling of N needed to keep
+        the standard error comparable to the gradient signal.
+      </p>
+      <p class="small-note">
+        Hint: set 1/√N approximately equal to e<sup>−bn</sup>
+        and square both sides after rearranging.
+      </p>
+    </div>
+
+    <div class="exercise">
+      <h3>Exercise 3: Design a mitigation experiment</h3>
+      <p>
+        Consider a parameterised circuit with eight qubits.
+        Propose an experiment comparing random initialisation
+        with near-identity initialisation. Specify what you would
+        measure to decide which approach is more trainable.
+      </p>
+      <p class="small-note">
+        Consider gradient variance, optimisation success,
+        number of circuit evaluations and final task performance.
+      </p>
+    </div>
+
+    <div class="exercise">
+      <h3>Exercise 4: Global versus local objectives</h3>
+      <p>
+        Suppose a task requires preparing a target state. Explain
+        one advantage and one disadvantage of replacing a global
+        state-overlap cost with a sum of local measurement costs.
+      </p>
+    </div>
+
+    <div class="exercise">
+      <h3>Exercise 5: Symmetry-aware design</h3>
+      <p>
+        Choose a physical system with a conserved quantity.
+        Explain how an ansatz that preserves the corresponding
+        symmetry could reduce the search space. What could go
+        wrong if the ansatz is too restrictive?
+      </p>
+    </div>
+
+    <div class="exercise">
+      <h3>Exercise 6: Trainability versus simulability</h3>
+      <p>
+        Explain why a circuit that is difficult to simulate
+        classically is not necessarily a good quantum machine-learning
+        model. Discuss optimisation, data encoding and measurement.
+      </p>
+    </div>
+
+    <h3>Further reading</h3>
+
+    <ol class="reference">
+      <li>
+        McClean, J. R., Boixo, S., Smelyanskiy, V. N., Babbush, R.
+        and Neven, H. (2018). <em>Barren plateaus in quantum
+        neural network training landscapes.</em> Nature Communications,
+        9, 4812.
+        <br>
+        <a href="https://doi.org/10.1038/s41467-018-07090-4"
+           target="_blank" rel="noopener noreferrer">
+          https://doi.org/10.1038/s41467-018-07090-4
+        </a>
+      </li>
+      <li>
+        Cerezo, M., Sone, A., Volkoff, T., Cincio, L. and Coles, P. J.
+        (2021). <em>Cost function dependent barren plateaus in shallow
+        parametrized quantum circuits.</em> Nature Communications,
+        12, 1791.
+        <br>
+        <a href="https://doi.org/10.1038/s41467-021-21728-w"
+           target="_blank" rel="noopener noreferrer">
+          https://doi.org/10.1038/s41467-021-21728-w
+        </a>
+      </li>
+      <li>
+        Wang, S., Fontana, E., Cerezo, M. and collaborators (2021).
+        <em>Noise-induced barren plateaus in variational quantum
+        algorithms.</em> Nature Communications, 12, 6961.
+        <br>
+        <a href="https://doi.org/10.1038/s41467-021-27045-6"
+           target="_blank" rel="noopener noreferrer">
+          https://doi.org/10.1038/s41467-021-27045-6
+        </a>
+      </li>
+      <li>
+        Stokes, J., Izaac, J., Killoran, N. and Carleo, G. (2020).
+        <em>Quantum natural gradient.</em> Quantum, 4, 269.
+        <br>
+        <a href="https://doi.org/10.22331/q-2020-05-25-269"
+           target="_blank" rel="noopener noreferrer">
+          https://doi.org/10.22331/q-2020-05-25-269
+        </a>
+      </li>
+      <li>
+        Sim, S., Johnson, P. D. and Aspuru-Guzik, A. (2019).
+        <em>Expressibility and entangling capability of parameterized
+        quantum circuits for hybrid quantum-classical algorithms.</em>
+        Advanced Quantum Technologies, 2, 1900070.
+        <br>
+        <a href="https://doi.org/10.1002/qute.201900070"
+           target="_blank" rel="noopener noreferrer">
+          https://doi.org/10.1002/qute.201900070
+        </a>
+      </li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>
+      <strong>End of Chapter 20.</strong> The next step is to study how
+      these optimisation challenges influence practical quantum
+      learning systems, including quantum neural networks, quantum
+      kernels and hybrid classical–quantum models.
+    </p>
+    <p>
+      All exponential-scaling statements in this chapter refer to
+      specified circuit families and assumptions, not to every
+      possible quantum circuit.
+    </p>
+  </footer>
+
+</main>
+</body>
+</html>
